@@ -31,7 +31,7 @@ window.onload = function() {
     let config = {
         type: Phaser.AUTO,
         parent: 'game',
-        scene: [ LoaderBackground, Loader, Login, Title, /*CollectionManager, DeckSelection, Duel, WaitingForMatch*/ ], //Builder
+        scene: [ LoaderBackground, Loader, Login, Title, CollectionManager/*, DeckSelection, Duel, WaitingForMatch*/ ], //Builder
         /*fps: {
             target: 60,
             forceSetTimeOut: true

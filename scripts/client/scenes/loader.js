@@ -6,6 +6,7 @@ class LoaderBackground extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/backgrounds/background.png');
         this.load.image('background2', 'assets/backgrounds/background2.jpg');
+        this.load.image('background3', 'assets/backgrounds/background3.jpg');
         this.load.image('logo', 'assets/logo.jpg');
     }
 
