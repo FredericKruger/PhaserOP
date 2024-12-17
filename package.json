@@ -1,0 +1,29 @@
+{
+    "name": "phaser-op-tcg",
+    "version": "0.0.1",
+    "description": "A simple card game server using Node.js, socket.io, and Phaser.",
+    "main": "server.ts",
+    "dependencies": {
+        "express": "^4.19.2",
+        "socket.io": "^2.0.3"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DanZC/phaser-tcg.git"
+    },
+    "keywords": [
+        "socketio",
+        "phaser",
+        "tcg"
+    ],
+    "author": "Frederic Kruger",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/DanZC/phaser-tcg/issues"
+    },
+    "homepage": "https://github.com/DanZC/phaser-tcg#readme"
+}

@@ -1,0 +1,3214 @@
+[
+    {
+        "collectionnb": 1,
+        "name": "ARIEL",
+        "subname": "On Human Legs",
+        "tags": ["Storyborn", "Hero", "Princess"],
+        "type": "CHARACTER",
+        "color": "AMBER",
+        "colorid": 1,
+        "cost": 4, "hp": 4, "atk": 3, "quest": 2,
+        "inkable": true,
+        "onplaysound": "01",
+        "action": {
+            "CANNOT_SING": true
+        }
+    }, {
+        "collectionnb": 2,
+        "name": "ARIEL",
+        "subname": "Spectacular Singer",
+        "tags": ["Storyborn", "Hero", "Princess"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3, "hp":3, "atk":2, "quest":1,
+        "inkable": true,
+        "actions":{
+            "SINGER": {
+                "songcost": 5
+            }
+        }
+    }, {
+        "collectionnb": 3,
+        "name": "CINDERELLA",
+        "subname": "Gentle and Kind",
+        "tags": ["Storyborn", "Hero", "Princess"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":4,"hp":5,"atk":2,"quest":2,
+        "inkable": true,
+        "onplaysound":"01",
+        "actions": {
+            "SINGER": {
+                "songcost": 5
+            },
+            "ON_EXERT": [{
+                "optional": true,
+                "action_name": "A WONDERFUL DREAM",
+                "artnb": "00",
+                "soundnb":"02",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"],
+                    "card_tags": ["Princess"]
+                },
+                "repeatable": {
+                    "repeatable_amount": 1,
+                    "repeatable_same_target": true
+                },
+                "actionsequence": [
+                    {
+                        "function": "remove_damage",
+                        "amount": 3
+                    }
+                ]  
+            }]
+        }
+    }, {
+        "collectionnb":4,
+        "name": "GOOFY",
+        "subname": "Musketeer",
+        "tags": ["Dreamborn", "Hero", "Musketeer"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":5,"hp":6,"atk":3,"quest":1,
+        "inkable": true,
+        "onplaysound": "01",
+        "actions": {
+            "BODYGUARD": true,
+            "ON_PLAY": 
+            [
+                {
+                    "optional": true,
+                    "action_name": "BODYGUARD",
+                    "artnb": "00",
+                    "actionsequence": [
+                        {
+                            "function": "exert",
+                            "can_ready_next_turn": true
+                        }
+                    ]
+                }, 
+                {
+                    "optional": true,
+                    "action_name": "AND TWO FOR TEA!",
+                    "artnb": "02",
+                    "soundnb": "02",
+                    "target": {
+                        "target_player":"PLAYER",
+                        "target_type":"ALL",
+                        "card_type":["CHARACTER"],
+                        "card_tags":["Musketeer"],
+                        "include_self": false
+                    },
+                    "actionsequence":[
+                        {
+                            "function": "remove_damage",
+                            "amount": 2
+                        }
+                    ]
+                }
+            ]
+        }
+    }, {
+        "collectionnb":5,
+        "name":"HADES",
+        "subname":"King of Olympus",
+        "tags":["Floodborn","Villain","King","Deity"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":8,"hp":7,"atk":6,"quest":1,
+        "inkable":false,
+        "actions": {
+            "SHIFT": 6
+        }
+    }, {
+        "collectionnb": 6,
+        "name":"HADES",
+        "subname":"Lord of the Underworld",
+        "tags":["Storyborn","Villain","Deity"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":4,"hp":2,"atk":3,"quest":1,
+        "inkable":false,
+        "onplaysound":"01",
+        "actions": {
+            "ON_PLAY":[{
+                "optional": false,
+                "action_name": "WELL OF SOULS",
+                "card_selection_panel": {
+                    "target_player": "PLAYER",
+                    "source": "DISCARD",
+                    "source_amount": "ALL",
+                    "card_type": ["CHARACTER"],
+                    "destination": "HAND",
+                    "amount_to_select": 1 
+                },
+                "actionsequence":[
+                    {
+                        "function": "show_card_selection_panel"
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 7,
+        "name":"HEIHEI",
+        "subname":"Boat Snack",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":2,"atk":1,"quest":1,
+        "inkable":true,
+        "onplaysound": "01",
+        "actions": {
+            "ON_QUEST": [{
+                "optional": true,
+                "action_name": "SUPPORT",
+                "artnb": "00",
+                "soundnb":"01",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "modify_attack",
+                        "amount": "this"
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb":8,
+        "name":"LEFOU",
+        "subname":"Bumbler",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":2,"hp":2,"atk":1,"quest":2,
+        "inkable":true
+    }, {
+        "collectionnb": 9,
+        "name":"LILO",
+        "subname":"Making a Wish",
+        "tags":["Storyborn","Hero"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":1,"atk":1,"quest":2,
+        "inkable":false,
+        "onplaysound": "01"
+    }, {
+        "collectionnb": 10,
+        "name":"MAXIMUS",
+        "subname":"Palace Horse",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":5,"hp":5,"atk":4,"quest":1,
+        "inkable":true,
+        "onplaysound":"01",
+        "actions": {
+            "BODYGUARD": true,
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "BODYGUARD",
+                "artnb": "00",
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn": true
+                    }
+                ]
+            }],
+            "ON_QUEST": [{
+                "optional": true,
+                "action_name": "SUPPORT",
+                "artnb": "01",
+                "soundnb": "02",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "modify_attack",
+                        "amount": "this"
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 11,
+        "name":"MAXIMUS",
+        "subname":"Relentless Pursuer",
+        "tags":["Dreamborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3,"hp":3,"atk":3,"quest":1,
+        "inkable":true,
+        "onplaysound":"01",
+        "actions":{
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "HORSE KICK",
+                "soundnb":"02",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function":"modify_attack",
+                        "amount": -2
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 12,
+        "name":"MICKEY MOUSE",
+        "subname":"True Friend",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3,"hp":3,"atk":3,"quest":2,
+        "inkable":true,
+        "onplaysound":"01"
+    }, {
+        "collectionnb": 13,
+        "name":"MINNIE MOUSE",
+        "subname":"Beloved Princess",
+        "tags":["Dreamborn","Princess"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":2,"hp":3,"atk":2,"quest":1,
+        "inkable":true,
+        "onplaysound": "01"
+    }, {
+        "collectionnb": 14,
+        "name":"MOANA",
+        "subname":"Of Motunui",
+        "tags":["Storyborn", "Hero", "Princess"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3,"hp":6,"atk":1,"quest":3,
+        "inkable":true,
+        "actions": {
+            "ON_QUEST": [{
+                "optional": true,
+                "action_name": "WE CAN FIX IT",
+                "artnb": "00",
+                "target": {
+                    "target_player":"PLAYER",
+                    "target_type":"ALL",
+                    "card_type":["CHARACTER"],
+                    "card_tags":["Princess"],
+                    "include_self": false
+                },
+                "actionsequence": [
+                    {
+                        "function": "ready",
+                        "can_quest": false
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 15,
+        "name":"MR. SMEE",
+        "subname":"Loyal First Mate",
+        "tags":["Dreamborn", "Ally", "Pirate"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3,"hp":2,"atk":5,"quest":1,
+        "inkable":true
+    }, {
+        "collectionnb": 16,
+        "name":"PRINCE PHILLIP",
+        "subname":"Dragonslayer",
+        "tags":["Storyborn", "Hero", "Prince"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":4,"hp":3,"atk":3,"quest":2,
+        "inkable":false,
+        "actions": {
+            "ON_BANISH": [{
+                "optional": true,
+                "action_name": "HEROISM",
+                "artnb": "00",
+                "conditions": [
+                    {"state": "BANISHED"},
+                    {"challenge": "ATTACKER"}
+                ],
+                "target": {
+                    "target_type": "DEFENDER"
+                },
+                "actionsequence": [
+                    {
+                        "function": "banish"
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 17,
+        "name":"PUMBA",
+        "subname":"Friendly Warhog",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":4,"hp":5,"atk":3,"quest":1,
+        "inkable":true
+    }, {
+        "collectionnb": 18,
+        "name":"RAPUNZEL",
+        "subname":"Gifted with Healing",
+        "tags":["Storyborn","Hero", "Princess"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":4,"hp":5,"atk":1,"quest":2,
+        "inkable":true, 
+        "onplaysound":"01",
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "GLEAM AND GLOW",
+                "soundnb":"02",
+                "target": {
+                    "target_player":"PLAYER",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "remove_damage",
+                        "amount": 3
+                    },
+                    {
+                        "function": "draw_card",
+                        "amount": "amountHealed"
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 19,
+        "name":"SEBASTIAN",
+        "subname":"Court Composer",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":2,"hp":2,"atk":2,"quest":1,
+        "inkable":true,
+        "actions": {
+            "SINGER": {
+                "songcost": 4
+            }
+        }
+    }, {
+        "collectionnb": 20,
+        "name":"SIMBA",
+        "subname":"Protective Cub",
+        "tags":["Storyborn","Hero", "Prince"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":2,"hp":3,"atk":2,"quest":1,
+        "inkable":true,
+        "actions": {
+            "BODYGUARD": true,
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "BODYGUARD",
+                "artnb": "00",
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn": true
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 21,
+        "name":"STITCH",
+        "subname":"Carefree Surfer",
+        "tags":["Dreamborn","Hero", "Alien"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":8,"atk":4,"quest":2,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "OHANA",
+                "artnb": "00",
+                "conditions": [
+                    {
+                        "has_card": "CHARACTER",
+                        "target": "PLAYER",
+                        "amount": 2,
+                        "include_self": false
+                    }
+                ],
+                "actionsequence": [
+                    {
+                        "function":"draw_card",
+                        "amount": 2
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 22,
+        "name":"STITCH",
+        "subname":"New Dog",
+        "tags":["Storyborn","Hero", "Alien"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    }, {
+        "collectionnb": 23,
+        "name":"STITCH",
+        "subname":"Rock Star",
+        "tags":["Floodborn","Hero", "Alien"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":6,"hp":5,"atk":3,"quest":3,
+        "inkable":true,
+        "actions": {
+            "SHIFT": 4,
+            "ON_CARD_PLAY": [{
+                "optional": true,
+                "action_name": "ADORING FANS",
+                "artnb": "01",
+                "conditions":[
+                    {"pay_cost":2 , "target": "played_card"},
+                    {"has_type": "CHARACTER", "target": "played_card"}
+                ],
+                "actionsequence":[
+                    {
+                        "function": "exert",
+                        "target": "played_card",
+                        "can_ready_next_turn": true
+                    }, {
+                        "function": "draw_card",
+                        "amount": 1
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 24,
+        "name":"TIMON",
+        "subname":"Grub Rustler",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":2,"atk":1,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "TASTES LIKE CHICKEN",
+                "artnb": "00",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "repeatable": {
+                    "repeatable_amount": 1,
+                    "repeatable_same_target": true
+                },
+                "actionsequence": [
+                    {
+                        "function": "remove_damage",
+                        "amount": 1
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 25,
+        "name":"BE OUR GUEST",
+        "subname":"",
+        "tags":["Action","Song"],
+        "type":"SONG",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    }, {
+        "collectionnb": 26,
+        "name":"CONTROL YOUR TEMPER",
+        "subname":"",
+        "tags":["Action"],
+        "type":"ACTION",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "CONTROL YOUR TEMPER",
+                "artnb": "00",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "modify_attack",
+                        "amount": -2
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 27,
+        "name":"HAKUNA MATATA",
+        "subname":"",
+        "tags":["Action","Song"],
+        "type":"SONG",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":4,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name":"HAKUNA MATATA",
+                "artnb": "01",
+                "soundnb": "01",
+                "target": {
+                    "target_player":"PLAYER",
+                    "target_type":"ALL",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "remove_damage",
+                        "amount": 3
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 28,
+        "name":"HEALING GLOW",
+        "subname":"",
+        "tags":["Action"],
+        "type":"ACTION",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "HEALING GLOW",
+                "artnb": "00",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "repeatable": {
+                    "repeatable_amount": 1,
+                    "repeatable_same_target": true
+                },
+                "actionsequence": [
+                    {
+                        "function": "remove_damage",
+                        "amount": 2
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 29,
+        "name":"JUST IN TIME",
+        "subname":"",
+        "tags":["Action"],
+        "type":"ACTION",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    }, {
+        "collectionnb": 30,
+        "name":"PART OF YOUR WORLD",
+        "subname":"",
+        "tags":["Action","Song"],
+        "type":"SONG",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions": {
+            "SONG": 3,
+            "ON_PLAY":[{
+                "optional": false,
+                "action_name": "PART OF YOUR WORLD",
+                "soundnb":"01",
+                "card_selection_panel": {
+                    "target_player": "PLAYER",
+                    "source": "DISCARD",
+                    "source_amount": "ALL",
+                    "card_type": ["CHARACTER"],
+                    "destination": "HAND",
+                    "amount_to_select": 1
+                },
+                "actionsequence":[
+                    {
+                        "function":"show_card_selection_panel"
+                    }
+                ]
+            }]
+        }
+    }, {
+        "collectionnb": 31,
+        "name":"YOU HAVE FORGOTTEN ME",
+        "subname":"",
+        "tags":["Action"],
+        "type":"ACTION",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":4,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    }, {
+        "collectionnb": 32,
+        "name":"DINGLEHOPPER",
+        "subname":"",
+        "tags":["Item"],
+        "type":"ITEM",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_EXERT": [{
+                "optional": true,
+                "action_name":"STRAIGHTEN HAIR",
+                "artnb":"00",
+                "soundnb":"02",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "repeatable": {
+                    "repeatable_amount": 1,
+                    "repeatable_same_target": true
+                },
+                "actionsequence": [
+                    {
+                        "function": "remove_damage",
+                        "amount": 1
+                    }
+                ]  
+            }]
+        }
+    }, {
+        "collectionnb": 33,
+        "name":"LANTERN",
+        "subname":"",
+        "tags":["Item"],
+        "type":"ITEM",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    }, {
+        "collectionnb": 34,
+        "name":"URSULA'S SHELL NECKLACE",
+        "subname":"",
+        "tags":["Item"],
+        "type":"ITEM",
+        "color":"AMBER",
+        "colorid": 1,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    }, {
+        "collectionnb": 35,
+        "name":"ANNA",
+        "subname":"Heir to Arendelle",
+        "tags":["Storyborn", "Hero", "Queen"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":4,"hp":4,"atk":2,"quest":2,
+        "inkable":true
+    }, {
+        "collectionnb": 36,
+        "name":"ARCHIMEDES",
+        "subname":"Highly Educated Owl",
+        "tags":["Dreamborn","Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":1,"hp":2,"atk":2,"quest":1,
+        "inkable":true,
+        "onplaysound": "01"
+    }, {
+        "collectionnb": 37,
+        "name":"DR. FACILIER",
+        "subname":"Agent Provocateur",
+        "tags":["Floodborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":7,"hp":5,"atk":4,"quest":3,
+        "inkable":false,
+        "actions": {
+            "SHIFT": 5
+        }
+    } , {
+        "collectionnb": 38,
+        "name":"DR. FACILIER",
+        "subname":"Charlatan",
+        "tags":["Storyborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":2,"hp":4,"atk":0,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 39,
+        "name":"DR. FACILIER",
+        "subname":"Remarkable Gentleman",
+        "tags":["Storyborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":3,"hp":4,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 40,
+        "name":"ELSA",
+        "subname":"Queen Regent",
+        "tags":["Storyborn", "Hero", "Queen", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":4,"hp":4,"atk":4,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 41,
+        "name":"ELSA",
+        "subname":"Snow Queen",
+        "tags":["Dreamborn", "Hero", "Queen", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":3,"hp":3,"atk":2,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_EXERT": [{
+                "optional": true,
+                "action_name": "FREEZE",
+                "artnb": "00",
+                "target": {
+                    "target_player": "OPPONENT",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn": true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 42,
+        "name":"ELSA",
+        "subname":"Spirit of Winter",
+        "tags":["Floodborn", "Hero", "Queen", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":8,"hp":6,"atk":4,"quest":3,
+        "inkable":false,
+        "onplaysound": "01",
+        "actions": {
+            "SHIFT":6,
+            "ON_PLAY":[{
+                "optional": true,
+                "action_name": "DEEP FREEZE",
+                "artnb": "01",
+                "soundnb": "02",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "repeatable": {
+                    "repeatable_amount": 2,
+                    "repeatable_same_target": false
+                },
+                "actionsequence":[
+                    {
+                        "function":"exert",
+                        "can_ready_next_turn": false
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 43,
+        "name":"FLOTSAM",
+        "subname":"Ursula's Spy",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":5,"hp":4,"atk":3,"quest":2,
+        "inkable":false,
+        "actions": {
+            "RUSH": true
+        }
+    } , {
+        "collectionnb": 44,
+        "name":"JAFAR",
+        "subname":"Keeper of Secrets",
+        "tags":["Dreamborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":4,"hp":5,"atk":0,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 45,
+        "name":"JAFAR",
+        "subname":"Wicked Sorcerer",
+        "tags":["Dreamborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":4,"hp":5,"atk":2,"quest":1,
+        "inkable":true,
+        "actions": {
+            "CHALLENGER": 3
+        }
+    } , {
+        "collectionnb": 46,
+        "name":"JETSAM",
+        "subname":"Ursula's Spy",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":4,"hp":3,"atk":3,"quest":1,
+        "inkable":true,
+        "actions":{
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 47,
+        "name":"MAGIC BROOM",
+        "subname":"Bucket Brigade",
+        "tags":["Dreamborn", "Broom"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":2,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 48,
+        "name":"MALEFICENT",
+        "subname":"Biding Her Time",
+        "tags":["Dreamborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":1,"hp":1,"atk":1,"quest":2,
+        "inkable":false
+    } , {
+        "collectionnb": 49,
+        "name":"MALEFICENT",
+        "subname":"Sorceress",
+        "tags":["Storyborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":3,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 50,
+        "name":"MARSHMALLOW",
+        "subname":"Persistent Guardian",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":6,"hp":5,"atk":5,"quest":1,
+        "inkable":false
+    } , {
+        "collectionnb": 51,
+        "name":"MICKEY MOUSE",
+        "subname":"Wayward Sorcerer",
+        "tags":["Dreamborn", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":4,"hp":4,"atk":3,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 52,
+        "name":"OLAF",
+        "subname":"Friendly Snowman",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":1,"hp":3,"atk":1,"quest":1,
+        "inkable":true,
+        "onplaysound": "01"
+    } , {
+        "collectionnb": 53,
+        "name":"PASCAL",
+        "subname":"Rapunzel's Companion",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":1,"hp":1,"atk":1,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_UPDATE" : [{
+                "action_name": "CAMOUFLAGE",
+                "optional": false,
+                "actionsequence":[
+                    {
+                        "function": "add_evasive_status",
+                        "conditions":[
+                            {
+                                "has_card": "CHARACTER",
+                                "target": "PLAYER",
+                                "amount": 1,
+                                "include_self": false
+                            }
+                        ]
+                    }
+                ]    
+            }]
+        }
+    } , {
+        "collectionnb": 54,
+        "name":"RAFIKI",
+        "subname":"Mysterious Sage",
+        "tags":["Dreamborn", "Mentor", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":3,"hp":3,"atk":3,"quest":1,
+        "inkable":false,
+        "actions": {
+            "RUSH": true
+        }
+    } , {
+        "collectionnb": 55,
+        "name":"SVEN",
+        "subname":"Official Ice Deliverer",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":6,"hp":7,"atk":5,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 56,
+        "name":"THE QUEEN",
+        "subname":"Wicked and Vain",
+        "tags":["Storyborn", "Villain", "Queen"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":5,"hp":5,"atk":4,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_EXERT": [{
+                "optional": true,
+                "action_name": "I SUMMON THEE",
+                "artnb": "00",
+                "actionsequence": [
+                    {
+                        "function": "draw_card",
+                        "amount": 1
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 57,
+        "name":"THE WARDROBE",
+        "subname":"Belle's Confident",
+        "tags":["Dreamborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":3,"hp":4,"atk":3,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 58,
+        "name":"TINKER BELL",
+        "subname":"Peter Pan's Ally",
+        "tags":["Storyborn", "Ally", "Fairy"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":5,"hp":3,"atk":3,"quest":2,
+        "inkable":false,
+        "actions": {
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 59,
+        "name":"URSULA",
+        "subname":"Power Hungry",
+        "tags":["Storyborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":7,"hp":8,"atk":2,"quest":3,
+        "inkable":false,
+        "onplaysound":"01",
+        "actions":{
+            "ON_PLAY":[{
+                "optional":false,
+                "action_name":"IT'S TOO EASY!",
+                "actionsequence":[
+                    {
+                        "function": "modify_lore",
+                        "amount": -1,
+                        "target": "OPPONENT"
+                    },
+                    {
+                        "function": "draw_card",
+                        "amount": 1
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 60,
+        "name":"YZMA",
+        "subname":"Alchemist",
+        "tags":["Dreamborn", "Villain", "Sorcerer"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":2,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 61,
+        "name":"ZEUS",
+        "subname":"God of Lightning",
+        "tags":["Storyborn", "Deity"],
+        "type":"CHARACTER",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":4,"hp":4,"atk":0,"quest":2,
+        "inkable":false, 
+        "actions": {
+            "RUSH": true,
+            "CHALLENGER": 4
+        }
+    } , {
+        "collectionnb": 62,
+        "name":"BEFUDDLE",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY":[{
+                "optional": false,
+                "action_name": "BEFUDDLE",
+                "soundnb": "01",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER", "ITEM"],
+                    "card_cost": 2
+                },
+                "actionsequence":[
+                    {
+                        "function":"return_hand"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 63,
+        "name":"FREEZE",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "artnb": "00",
+                "action_name": "FREEZE",
+                "target": {
+                    "target_player": "OPPONENT",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn": true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 64,
+        "name":"FRIENDS ON THE OTHER SIDE",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "FRIENDS ON THE OTHER SIDE",
+                "artnb": "01",
+                "actionsequence": [
+                    {
+                        "function": "draw_card",
+                        "amount": 2
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 65,
+        "name":"REFLECTION",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 66,
+        "name":"MAGIC MIRROR",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions": {
+            "ON_EXERT": [{
+                "optional": false,
+                "action_name": "SPEAK!",
+                "artnb": "00",
+                "conditions": [
+                    {"pay_cost": 2}
+                ],
+                "actionsequence": [
+                    {
+                        "function": "draw_card",
+                        "amount": 4
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 67,
+        "name":"URSULA'S CAULDRON",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    }, {
+        "collectionnb": 68,
+        "name":"WHITE RABBIT'S POCKET WATCH",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"AMETHYST",
+        "colorid": 2,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "onplaysound": "01",
+        "actions": {
+            "ON_EXERT":[{
+                "optional": true,
+                "action_name": "I'M LATE!",
+                "artnb":"00",
+                "soundnb":"02",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "conditions":[
+                    {"pay_cost": 1}
+                ],
+                "actionsequence":[
+                    {
+                        "function":"add_rush",
+                        "until_end_of_turn": true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 69,
+        "name":"ALADDIN",
+        "subname":"Prince Ali",
+        "tags":["Storyborn", "Hero", "Prince"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":2,"atk":2,"quest":2,
+        "inkable":true,
+        "onplaysound":"01",
+        "actions": {
+            "WARD": true
+        }
+    } , {
+        "collectionnb": 70,
+        "name":"BEAST",
+        "subname":"Wolfsbane",
+        "tags":["Dreamborn", "Hero", "Prince"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":4,"hp":4,"atk":4,"quest":2,
+        "inkable":false,
+        "onplaysound":"01",
+        "actions": {
+            "RUSH": true,
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "ROAR",
+                "soundnb": "02",
+                "target": {
+                    "target_player":"OPPONENT",
+                    "target_type": "ALL",
+                    "card_type": ["CHARACTER"],
+                    "target_damaged": true
+                },
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn":true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 71,
+        "name":"CHESHIRE CAT",
+        "subname":"Not All There",
+        "tags":["Storyborn"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":3,"atk":0,"quest":2,
+        "inkable":true,
+        "onplaysound":"01",
+        "actions": {
+            "ON_BANISH": [{
+                "optional": false,
+                "action_name": "LOSE SOMETHING?",
+                "soundnb":"02",
+                "conditions": [
+                    {"state": "BANISHED"},
+                    {"challenge": "DEFENDER"}
+                ],
+                "target": {
+                    "target_type": "ATTACKER"
+                },
+                "actionsequence": [
+                    {
+                        "function": "banish"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 72,
+        "name":"CRUELLA DE VIL",
+        "subname":"Miserable as Usual",
+        "tags":["Storyborn", "Villain"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":3,"atk":1,"quest":1,
+        "inkable":true,
+        "onplaysound":"01",
+        "actions": {
+            "ON_BANISH":[{
+                "optional": true,
+                "action_name": "YOU'LL BE SORRY!",
+                "artnb": "00",
+                "soundnb":"02",
+                "conditions":[
+                    {"state": "BANISHED"},
+                    {"challenge": "DEFENDER"}
+                ],
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence":[{
+                    "function":"return_hand"
+                }]
+            }]
+        }
+    } , {
+        "collectionnb": 73,
+        "name":"DUKE OF WESELTON",
+        "subname":"Opportunistic Official",
+        "tags":["Storyborn", "Villain"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":1,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 74,
+        "name":"FLYNN RIDER",
+        "subname":"Charming Rogue",
+        "tags":["Storyborn", "Hero", "Prince"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":2,"atk":1,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 75,
+        "name":"GENIE",
+        "subname":"On the Job",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":6,"hp":4,"atk":3,"quest":2,
+        "inkable":false,
+        "actions":{
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 76,
+        "name":"GENIE",
+        "subname":"Powers Unleashed",
+        "tags":["Floodborn", "Hero"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":8,"hp":5,"atk":3,"quest":2,
+        "inkable":false,
+        "actions": {
+            "SHIFT": 6,
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 77,
+        "name":"GENIE",
+        "subname":"The Ever Impressive",
+        "tags":["Dreamborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":3,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 78,
+        "name":"HANS",
+        "subname":"Scheming Prince",
+        "tags":["Storyborn", "Villain", "Prince"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":4,"hp":3,"atk":3,"quest":3,
+        "inkable":true
+    } , {
+        "collectionnb": 79,
+        "name":"HORACE",
+        "subname":"No-Good Scoundrel",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":3,"atk":4,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 80,
+        "name":"IAGO",
+        "subname":"Loud-Mouthed Parrot",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":4,"atk":1,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 81,
+        "name":"JASPER",
+        "subname":"Common Crook",
+        "tags":["Storyborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":4,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 82,
+        "name":"JOHN SILVER",
+        "subname":"Alin Pirate",
+        "tags":["Storyborn", "Villain", "Alien", "Pirate", "Captain"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":6,"hp":5,"atk":5,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 83,
+        "name":"JUMBA JOOKIBA",
+        "subname":"Renegade Scientist",
+        "tags":["Dreamborn", "Alien", "Inventor"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":5,"hp":5,"atk":4,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 84,
+        "name":"KUZCO",
+        "subname":"Temperamental Emperor",
+        "tags":["Storyborn", "King"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":5,"hp":4,"atk":2,"quest":3,
+        "inkable":false,
+        "actions": {
+            "WARD": true,
+            "ON_BANISH": [{
+                "optional": true,
+                "action_name": "NO TOUCHY!",
+                "artnb": "00",
+                "conditions": [
+                    {"state": "BANISHED"},
+                    {"challenge": "DEFENDER"}
+                ],
+                "target": {
+                    "target_type": "ATTACKER"
+                },
+                "actionsequence": [
+                    {
+                        "function": "banish"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 85,
+        "name":"LADY TREMAINE",
+        "subname":"Wicked Stepmother",
+        "tags":["Dreamborn", "Villain"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":6,"hp":5,"atk":1,"quest":1,
+        "inkable":false,
+        "onplaysound": "01",
+        "actions":{
+            "ON_PLAY":[{
+                "optional": true,
+                "action_name" : "DO IT AGAIN!",
+                "artnb":"00",
+                "soundnb":"02",
+                "card_selection_panel": {
+                    "target_player": "PLAYER",
+                    "source": "DISCARD",
+                    "source_amount": "ALL",
+                    "card_type": ["ACTION"],
+                    "destination": "HAND",
+                    "amount_to_select": 1
+                },
+                "actionsequence": [
+                    {
+                        "function": "show_card_selection_panel"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 86,
+        "name":"MAD HATTER",
+        "subname":"Gracious Host",
+        "tags":["Storyborn"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":5,"hp":4,"atk":2,"quest":3,
+        "inkable":true,
+        "onplaysound":"01",
+        "actions": {
+            "ON_CHALLENGE":[{
+                "optional": true,
+                "action_name": "TEA PARTY",
+                "artnb": "00",
+                "soundnb":"01",
+                "conditions":[
+                    {"challenge": "DEFENDER"}
+                ],
+                "actionsequence":[{
+                    "function":"draw_card",
+                    "amount": 1
+                }]
+            }]
+        }
+    } , {
+        "collectionnb": 87,
+        "name":"MEGARA",
+        "subname":"Pulling the String",
+        "tags":["Dreamborn", "Ally"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":1,"atk":2,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional":false,
+                "action_name": "WONDER BOY",
+                "artnb": "00",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function":"modify_attack",
+                        "amount": 2
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 88,
+        "name":"MICKEY MOUSE",
+        "subname":"Artful Rogue",
+        "tags":["Floodborn", "Hero"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":7,"hp":5,"atk":6,"quest":2,
+        "inkable":false,
+        "actions": {
+            "SHIFT": 5
+        }
+    } , {
+        "collectionnb": 89,
+        "name":"MICKEY MOUSE",
+        "subname":"Steamboat Pilot",
+        "tags":["Storyborn", "Hero", "Captain"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":4,"atk":3,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 90,
+        "name":"MOTHER GOTHEL",
+        "subname":"Selfish Manipulator",
+        "tags":["Storyborn", "Villain"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":6,"hp":6,"atk":3,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 91,
+        "name":"PETER PAN",
+        "subname":"Never Landing",
+        "tags":["Dreamborn", "Hero"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":2,"atk":3,"quest":1,
+        "inkable":true,
+        "actions":{
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 92,
+        "name":"TAMATOA",
+        "subname":"Drab Little Crab",
+        "tags":["Dreamborn"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":4,"atk":1,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 93,
+        "name":"TINKER BELL",
+        "subname":"Most Helpful",
+        "tags":["Storyborn", "Ally", "Fairy"],
+        "type":"CHARACTER",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":4,"hp":3,"atk":2,"quest":2,
+        "inkable":true,
+        "actions": {
+            "EVASIVE": true,
+            "ON_PLAY":[{
+                "optional": false,
+                "action_name": "PIXIE DUST",
+                "artnb": "00",
+                "soundnb": "01",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence":[
+                    {
+                        "function": "add_evasive",
+                        "until_end_of_turn": true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 94,
+        "name":"DO IT AGAIN!",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions":{
+            "ON_PLAY":[{
+                "optional": false,
+                "action_name" : "DO IT AGAIN!",
+                "soundnb":"01",
+                "card_selection_panel": {
+                    "target_player": "PLAYER",
+                    "source": "DISCARD",
+                    "source_amount": "ALL",
+                    "card_type": ["ACTION"],
+                    "destination": "HAND",
+                    "amount_to_select": 1
+                },
+                "actionsequence": [
+                    {
+                        "function": "show_card_selection_panel"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 95,
+        "name":"MOTHER KNOWS BEST",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions": {
+            "ON_PLAY":[{
+                "optional": false,
+                "action_name": "MOTHER KNOWS BEST",
+                "artnb": "00",
+                "soundnb": "01",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence":[
+                    {
+                        "function": "return_hand"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 96,
+        "name":"STAMPEDE",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "STAMPEDE",
+                "soundnb":"01",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"],
+                    "target_damaged": true
+                }, 
+                "actionsequence":[
+                    {
+                        "function": "deal_damage",
+                        "amount": 2
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 97,
+        "name":"STEAL FROM THE RICH",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":5,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 98,
+        "name":"SUDDEN CHILL",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 99,
+        "name":"THE BEST IS MINE!",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 100,
+        "name":"VICIOUS BETRAYAL",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 101,
+        "name":"DR. FACILIER'S CARDS",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 102,
+        "name":"STOLEN SCIMITAR",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"EMERALD",
+        "colorid": 3,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 103,
+        "name":"ABU",
+        "subname":"Mischievous Monkey",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":3,"hp":2,"atk":3,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 104,
+        "name":"ALADDIN",
+        "subname":"Heroic Outlaw",
+        "tags":["Floodborn", "Hero"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":7,"hp":5,"atk":5,"quest":2,
+        "inkable":true,
+        "actions": {
+            "SHIFT": 5
+        }
+    } , {
+        "collectionnb": 105,
+        "name":"ALADDIN",
+        "subname":"Street Rat",
+        "tags":["Storyborn", "Hero"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":3,"hp":2,"atk":2,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 106,
+        "name":"CAPTAIN",
+        "subname":"Colonel's Lieutenant",
+        "tags":["Storyborn","Ally","Captain"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":5,"hp":5,"atk":6,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 107,
+        "name":"CAPTAIN HOOK",
+        "subname":"Ruthless Pirate",
+        "tags":["Storyborn","Villain","Pirate","Captain"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":7,"hp":5,"atk":5,"quest":2,
+        "inkable":false,
+        "actions":{
+            "RUSH":true
+        }
+    } , {
+        "collectionnb": 108,
+        "name":"DONALD DUCK",
+        "subname":"Boisterous Fowl",
+        "tags":["Storyborn"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":2,"hp":3,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 109,
+        "name":"ELSA",
+        "subname":"Ice Surfer",
+        "tags":["Dreamborn","Hero","Queen","Sorcerer"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":4,"hp":4,"atk":3,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 110,
+        "name":"GASTON",
+        "subname":"Arrogant Hunter",
+        "tags":["Storyborn","Villain"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":2,"hp":2,"atk":4,"quest":0,
+        "inkable":true,
+        "actions":{
+            "RECKLESS":true
+        }
+    } , {
+        "collectionnb": 111,
+        "name":"GOOFY",
+        "subname":"Daredevil",
+        "tags":["Dreamborn","Hero"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":5,"hp":4,"atk":3,"quest":2,
+        "inkable":true,
+        "actions": {
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 112,
+        "name":"LEFOU",
+        "subname":"Instigator",
+        "tags":["Dreamborn","Ally"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":2,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 113,
+        "name":"MALEFICENT",
+        "subname":"Monstrous Dragon",
+        "tags":["Storyborn","Villain","Dragon"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":1,"hp":5,"atk":7,"quest":2,
+        "inkable":true,
+        "onplaysound": "01",
+        "actions": {
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "DRAGON FIRE",
+                "artnb": "00",
+                "soundnb": "02",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function":"banish"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 114,
+        "name":"MAUI",
+        "subname":"Hero to All",
+        "tags":["Storyborn","Hero","Deity"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":5,"hp":5,"atk":6,"quest":0,
+        "inkable":true,
+        "actions": {
+            "RUSH": true,
+            "RECKLESS": true
+        }
+    } , {
+        "collectionnb": 115,
+        "name":"MICKEY MOUSE",
+        "subname":"Brave Little Tailor",
+        "tags":["Dreamborn","Hero"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":8,"hp":5,"atk":5,"quest":4,
+        "inkable":true,
+        "actions": {
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 116,
+        "name":"MINNIE MOUSE",
+        "subname":"Always Classy",
+        "tags":["Storyborn","Hero"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":1,"hp":3,"atk":1,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 117,
+        "name":"MOANA",
+        "subname":"Chosen by the Ocean",
+        "tags":["Storyborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":5,"hp":6,"atk":2,"quest":2,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "THIS IS NOT WHO YOU ARE",
+                "artnb": "00",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"],
+                    "card_name": "TE KA"
+                },
+                "actionsequence": [
+                    {
+                        "function": "banish"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 118,
+        "name":"MULAN",
+        "subname":"Imperial Soldier",
+        "tags":["Storyborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":5,"hp":5,"atk":4,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 119,
+        "name":"PETER PAN",
+        "subname":"Fearless Fighter",
+        "tags":["Storyborn","Hero"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":3,"hp":2,"atk":3,"quest":1,
+        "inkable":true,
+        "actions":{
+            "RUSH":true
+        }
+    } , {
+        "collectionnb": 120,
+        "name":"PONGO",
+        "subname":"Ol' Rascal",
+        "tags":["Storyborn","Hero"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":4,"hp":3,"atk":2,"quest":2,
+        "inkable":true,
+        "actions": {
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 121,
+        "name":"RAPUNZEL",
+        "subname":"Letting Down Her Hair",
+        "tags":["Dreamborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":6,"hp":4,"atk":5,"quest":2,
+        "inkable":false
+    } , {
+        "collectionnb": 122,
+        "name":"SCAR",
+        "subname":"Fiery Usurper",
+        "tags":["Dreamborn","Villain"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":4,"hp":3,"atk":5,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 123,
+        "name":"SCAR",
+        "subname":"Shameless Firebrand",
+        "tags":["Floodborn","Villain","King"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":8,"hp":6,"atk":6,"quest":1,
+        "inkable":false,
+        "actions": {
+            "SHIFT": 6,
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "ROUSING SPEECH",
+                "artnb": "01",
+                "target": {
+                    "target_player": "PLAYER",
+                    "target_type": "ALL",
+                    "card_type": ["CHARACTER"],
+                    "card_cost": 3,
+                    "include_self": false
+                },
+                "actionsequence": [
+                    {
+                        "function": "ready",
+                        "can_quest": false
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 124,
+        "name":"SERGEANT TIBBS",
+        "subname":"Courageous Cat",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":1,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 125,
+        "name":"STITCH",
+        "subname":"Abomination",
+        "tags":["Storyborn","Hero","Alien"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":6,"hp":6,"atk":4,"quest":3,
+        "inkable":true
+    } , {
+        "collectionnb": 126,
+        "name":"TE KA",
+        "subname":"The Burning One",
+        "tags":["Storyborn","Villain","Deity"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":6,"hp":6,"atk":8,"quest":0,
+        "inkable":false,
+        "actions": {
+            "RECKLESS":true
+        }
+    } , {
+        "collectionnb": 127,
+        "name":"TIGGER",
+        "subname":"Wonderful Thing",
+        "tags":["Storyborn","Tigger"],
+        "type":"CHARACTER",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":6,"hp":4,"atk":4,"quest":2,
+        "inkable":true,
+        "actions":{
+            "EVASIVE": true
+        }
+    } , {
+        "collectionnb": 128,
+        "name":"BE PREPARED",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":7,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "BE PREPARED",
+                "artnb": "01",
+                "soundnb": "01",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type": "ALL",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "banish"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 129,
+        "name":"CUT TO THE CHASE",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 130,
+        "name":"DRAGON FIRE",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":5,"hp":0,"atk":0,"quest":0,
+        "inkable":false,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "DRAGON FIRE",
+                "soundnb":"01",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function":"banish"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 131,
+        "name":"FAN THE FLAMES",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY":[{
+                "optional": false,
+                "action_name": "FAN THE FLAMES",
+                "artnb": "00",
+                "target": {
+                    "target_player":"ANY",
+                    "target_type":"SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "ready",
+                        "can_quest": false
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 132,
+        "name":"HE'S GOT A SWORD!",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "HE'S GOT A SWORD!",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function":"modify_attack",
+                        "amount": 2
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 133,
+        "name":"TANGLE",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 134,
+        "name":"POISONED APPLE",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 135,
+        "name":"SHIELD OF VIRTUE",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 136,
+        "name":"SWORD OF TRUTH",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"RUBY",
+        "colorid": 4,
+        "cost":4,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 137,
+        "name":"ARIEL",
+        "subname":"Whoseit Collector",
+        "tags":["Storyborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":4,"hp":3,"atk":3,"quest":1,
+        "inkable":false
+    } , {
+        "collectionnb": 138,
+        "name":"AURORA",
+        "subname":"Briar Rose",
+        "tags":["Storyborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":4,"hp":5,"atk":2,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "DISARMING BEAUTY",
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function":"modify_attack",
+                        "amount": -2
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 139,
+        "name":"AURORA",
+        "subname":"Dreaming Guardian",
+        "tags":["Floodborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":5,"hp":5,"atk":3,"quest":2,
+        "inkable":true,
+        "actions": {
+            "SHIFT": 3
+        }
+    } , {
+        "collectionnb": 140,
+        "name":"AURORA",
+        "subname":"Regal Princess",
+        "tags":["Storyborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":2,"hp":2,"atk":2,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 141,
+        "name":"BELL",
+        "subname":"Inventive Engineer",
+        "tags":["Dreamborn","Hero","Princess","Inventor"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":3,"hp":3,"atk":2,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 142,
+        "name":"BELLE",
+        "subname":"Strange but Special",
+        "tags":["Storyborn","Hero","Princess"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":4,"hp":4,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 143,
+        "name":"CHIEF TUI",
+        "subname":"Respected Leader",
+        "tags":["Storyborn","Mentor","King"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":7,"hp":6,"atk":3,"quest":3,
+        "inkable":true,
+        "actions": {
+            "ON_QUEST": [{
+                "artnb": "00",
+                "action_name": "SUPPORT",
+                "optional": true,
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "modify_attack",
+                        "amount": "this"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 144,
+        "name":"DONALD DUCK",
+        "subname":"Strutting His Stuff",
+        "tags":["Dreamborn","Hero","Inventor"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":5,"hp":3,"atk":4,"quest":2,
+        "inkable":true, 
+        "actions":{
+            "WARD": true
+        }
+    } , {
+        "collectionnb": 145,
+        "name":"FLOUNDER",
+        "subname":"Voice of Reason",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":1,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 146,
+        "name":"GRAMMA TALA",
+        "subname":"Storyteller",
+        "tags":["Storyborn","Mentor"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":2,"hp":1,"atk":1,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 147,
+        "name":"HADES",
+        "subname":"Infernal Schemer",
+        "tags":["Dreamborn","Villain","Deity"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":7,"hp":6,"atk":3,"quest":2,
+        "inkable":false
+    } , {
+        "collectionnb": 148,
+        "name":"JASMINE",
+        "subname":"Disguised",
+        "tags":["Storyborn","Princess"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":3,"hp":3,"atk":3,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 149,
+        "name":"JASMINE",
+        "subname":"Queen of Agrabah",
+        "tags":["Floodborn","Hero","Princess","Queen"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":5,"hp":5,"atk":2,"quest":2,
+        "inkable":true,
+        "actions": {
+            "SHIFT": 3
+        }
+    } , {
+        "collectionnb": 150,
+        "name":"MALEFICENT",
+        "subname":"Sinister Visitor",
+        "tags":["Storyborn","Villain","Sorcerer"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":4,"hp":4,"atk":3,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 151,
+        "name":"MALEFICENT",
+        "subname":"Uninvited",
+        "tags":["Dreamborn","Villain","Sorcerer"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":5,"hp":6,"atk":3,"quest":3,
+        "inkable":true
+    } , {
+        "collectionnb": 152,
+        "name":"MAURICE",
+        "subname":"World-Famous Inventor",
+        "tags":["Dreamborn","Mentor","Inventor"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":6,"hp":7,"atk":2,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 153,
+        "name":"MERLIN",
+        "subname":"Self-Appointed Mentor",
+        "tags":["Dreamborn","Mentor","Sorcerer"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":4,"hp":4,"atk":3,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_QUEST": [{
+                "artnb": "00",
+                "action_name": "SUPPORT",
+                "optional": true,
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "modify_attack",
+                        "amount": "this"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 154,
+        "name":"MICKEY MOUSE",
+        "subname":"Detective",
+        "tags":["Dreamborn","Hero","Detective"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":3,"hp":3,"atk":1,"quest":1,
+        "inkable":false
+    } , {
+        "collectionnb": 155,
+        "name":"MUFASA",
+        "subname":"Kind of the Pride Lands",
+        "tags":["Storyborn","Mentor","King"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":6,"hp":6,"atk":4,"quest":3,
+        "inkable":true
+    } , {
+        "collectionnb": 156,
+        "name":"PHILOCTETES",
+        "subname":"Trainer of Heroes",
+        "tags":["Storyborn", "Mentor"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":2,"hp":1,"atk":3,"quest":1,
+        "inkable":true,
+        "actions": {
+            "ON_QUEST": [{
+                "artnb": "00",
+                "action_name": "SUPPORT",
+                "optional": true,
+                "target": {
+                    "target_player": "ANY",
+                    "target_type": "SINGLE",
+                    "card_type": ["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function": "modify_attack",
+                        "amount": "this"
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 157,
+        "name":"ROBIN HOOD",
+        "subname":"Unrivaled Archer",
+        "tags":["Storyborn","Hero"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":6,"hp":4,"atk":4,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 158,
+        "name":"SCAR",
+        "subname":"Mastermind",
+        "tags":["Storyborn","Villain"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":6,"hp":4,"atk":5,"quest":2,
+        "inkable":true,
+        "actions":{
+            "ON_PLAY": [{
+                "optional": false,
+                "action_name": "INSIDIOUS PLOT",
+                "target": {
+                    "target_player": "OPPONENT",
+                    "target_type": "SINGLE",
+                    "card_type":["CHARACTER"]
+                },
+                "actionsequence": [
+                    {
+                        "function":"modify_attack",
+                        "amount": -5
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 159,
+        "name":"TAMATOA",
+        "subname":"So Shiny!",
+        "tags":["Storyborn","Villain"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":8,"hp":8,"atk":5,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 160,
+        "name":"TRITON",
+        "subname":"The Sea King",
+        "tags":["Storyborn","King"],
+        "type":"CHARACTER",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":7,"hp":9,"atk":5,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 161,
+        "name":"DEVELOP YOUR BRAIN",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 162,
+        "name":"IF IT'S NOT BAROQUE",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 163,
+        "name":"LET IT GO",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":5,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 164,
+        "name":"ONE JUMP AHEAD",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 165,
+        "name":"WORK TOGETHER",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 166,
+        "name":"COCONUT BASKET",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 167,
+        "name":"EYE OF THE FATES",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":4,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 168,
+        "name":"FISHBONE QUILL",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 169,
+        "name":"MAGIC GOLDEN FLOWER",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 170,
+        "name":"SCEPTER OF ARENDELLE",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"SAPPHIRE",
+        "colorid": 5,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 171,
+        "name":"ALADDIN",
+        "subname":"Concerned Swordsman",
+        "tags":["Storyborn","Hero"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":2,"hp":1,"atk":2,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 172,
+        "name":"BEAST",
+        "subname":"Hardheaded",
+        "tags":["Storyborn","Hero","Prince"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":5,"hp":4,"atk":4,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 173,
+        "name":"CAPTAIN HOOK",
+        "subname":"Captain of the Jolly Roger",
+        "tags":["Storyborn","Villain","Pirate","Captain"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":4,"hp":4,"atk":3,"quest":1,
+        "inkable":false
+    } , {
+        "collectionnb": 174,
+        "name":"CAPTAIN HOOK",
+        "subname":"Forceful Duelist",
+        "tags":["Dreamborn","Villain","Pirate","Captain"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":1,"hp":2,"atk":1,"quest":1,
+        "inkable":true,
+        "actions": {
+            "CHALLENGER": 2
+        }
+    } , {
+        "collectionnb": 175,
+        "name":"CAPTAIN HOOK",
+        "subname":"Thinking a Happy Thought",
+        "tags":["Floodborn","Villain","Pirate","Captain"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":5,"hp":5,"atk":2,"quest":1,
+        "inkable":false,
+        "actions": {
+            "SHIFT": 3,
+            "CHALLENGER": 3
+        }
+    } , {
+        "collectionnb": 176,
+        "name":"CERBERUS",
+        "subname":"Three-Headed Dog",
+        "tags":["Storyborn"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":5,"hp":6,"atk":5,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 177,
+        "name":"DONALD DUCK",
+        "subname":"Musketeer",
+        "tags":["Dreamborn","Hero","Musketeer"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":4,"hp":5,"atk":2,"quest":1,
+        "inkable":true,
+        "actions": {
+            "BODYGUARD": true,
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "BODYGUARD",
+                "artnb": "00",
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn": true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 178,
+        "name":"GANTU",
+        "subname":"Galactic Federation Captain",
+        "tags":["Storyborn","Alien","Captain"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":8,"hp":6,"atk":6,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 179,
+        "name":"GOONS",
+        "subname":"Maleficent's Underlings",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":1,"hp":2,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 180,
+        "name":"HANS",
+        "subname":"Thirteenth in Line",
+        "tags":["Storyborn","Villain","Prince"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":4,"hp":3,"atk":3,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 181,
+        "name":"HERCULES",
+        "subname":"True Hero",
+        "tags":["Dreamborn","Hero","Prince"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":3,"hp":3,"atk":3,"quest":1,
+        "inkable":true,
+        "actions": {
+            "BODYGUARD": true,
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "BODYGUARD",
+                "artnb": "00",
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn": true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 182,
+        "name":"KRISTOFF",
+        "subname":"Official Ice Master",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":3,"hp":3,"atk":3,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 183,
+        "name":"KRONK",
+        "subname":"Right-Hand Man",
+        "tags":["Storyborn","Ally"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":6,"hp":6,"atk":6,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 184,
+        "name":"LILO",
+        "subname":"Galactic Hero",
+        "tags":["Dreamborn","Hero"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":3,"hp":2,"atk":4,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 185,
+        "name":"MAUI",
+        "subname":"Demigod",
+        "tags":["Storyborn","Hero","Deity"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":8,"hp":8,"atk":8,"quest":3,
+        "inkable":true
+    } , {
+        "collectionnb": 186,
+        "name":"MICKEY MOUSE",
+        "subname":"Musketeer",
+        "tags":["Dreamborn","Hero","Musketeer"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":6,"hp":7,"atk":2,"quest":2,
+        "inkable":true,
+        "actions": {
+            "BODYGUARD": true,
+            "ON_PLAY": [{
+                "optional": true,
+                "action_name": "BODYGUARD",
+                "artnb": "00",
+                "actionsequence": [
+                    {
+                        "function": "exert",
+                        "can_ready_next_turn": true
+                    }
+                ]
+            }]
+        }
+    } , {
+        "collectionnb": 187,
+        "name":"PRINCE ERIC",
+        "subname":"Dashing and Brave",
+        "tags":["Storyborn","Hero","Prince"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":2,"hp":3,"atk":1,"quest":1,
+        "inkable":true,
+        "actions": {
+            "CHALLENGER": 2
+        }
+    } , {
+        "collectionnb": 188,
+        "name":"SIMBA",
+        "subname":"Future King",
+        "tags":["Storyborn","Hero","Prince"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":1,"hp":2,"atk":1,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 189,
+        "name":"SIMBA",
+        "subname":"Returned Kind",
+        "tags":["Storyborn","Hero","King"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":7,"hp":6,"atk":4,"quest":2,
+        "inkable":true,
+        "actions": {
+            "CHALLENGER": 4
+        }
+    } , {
+        "collectionnb": 190,
+        "name":"SIMBA",
+        "subname":"Rightful Heir",
+        "tags":["Storyborn","Hero","Prince"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":5,"hp":5,"atk":3,"quest":2,
+        "inkable":false
+    } , {
+        "collectionnb": 191,
+        "name":"STARKEY",
+        "subname":"Hook's Henchman",
+        "tags":["Storyborn","Ally","Pirate"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":5,"hp":4,"atk":5,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 192,
+        "name":"TE KA",
+        "subname":"Heartless",
+        "tags":["Dreamborn","Villain","Deity"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":6,"hp":5,"atk":5,"quest":2,
+        "inkable":true
+    } , {
+        "collectionnb": 193,
+        "name":"TINKER BELL",
+        "subname":"Giant Fairy",
+        "tags":["Floodborn","Ally","Fairy"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":6,"hp":5,"atk":4,"quest":2,
+        "inkable":true,
+        "actions": {
+            "SHIFT": 4
+        }
+    } , {
+        "collectionnb": 194,
+        "name":"TINKER BELL",
+        "subname":"Tiny Tactician",
+        "tags":["Dreamborn","Ally","Fairy"],
+        "type":"CHARACTER",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":3,"hp":4,"atk":2,"quest":1,
+        "inkable":true
+    } , {
+        "collectionnb": 195,
+        "name":"A WHOLE NEW WORLD",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":5,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 196,
+        "name":"BREAK",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 197,
+        "name":"FIRE THE CANNONS!",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":1,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 198,
+        "name":"GRAB YOUR SWORD",
+        "subname":"",
+        "tags":[],
+        "type":"SONG",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":5,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 199,
+        "name":"RANSACK",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 200,
+        "name":"SMASH",
+        "subname":"",
+        "tags":[],
+        "type":"ACTION",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 201,
+        "name":"BEAST'S MIRROR",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 202,
+        "name":"FRYING PAN",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":2,"hp":0,"atk":0,"quest":0,
+        "inkable":true
+    } , {
+        "collectionnb": 203,
+        "name":"MUSKETEER TABARD",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":4,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    } , {
+        "collectionnb": 204,
+        "name":"PLASMA BLASTER",
+        "subname":"",
+        "tags":[],
+        "type":"ITEM",
+        "color":"STEEL",
+        "colorid": 6,
+        "cost":3,"hp":0,"atk":0,"quest":0,
+        "inkable":false
+    }
+]

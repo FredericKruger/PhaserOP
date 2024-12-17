@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "art": "OP01-001",
+        "name": "Roronoa Zoro",
+        "card": "LEADER",
+        "type": ["Supernovas", "Straw Hat Crew"],
+        "colors": ["RED"],
+        "life": 5,
+        "cost": 0,
+        "power": 5000,
+        "attribute": "SLASH"
+    },
+    {
+        "id": 2,
+        "art": "OP01-002",
+        "name": "Trafalgar Law",
+        "card": "LEADER",
+        "type": ["Supernovas", "Heart Pirates"],
+        "colors": ["RED", "GREEN"],
+        "life": 4,
+        "cost": 0,
+        "power": 5000,
+        "attribute": "SLASH"
+    },
+    {
+        "id": 3,
+        "art": "OP01-003",
+        "name": "Monkey.D.Luffy",
+        "card": "LEADER",
+        "type": ["Supernovas", "Straw Hat Crew"],
+        "colors": ["RED","GREEN"],
+        "life": 4,
+        "cost": 0,
+        "power": 5000,
+        "attribute": "STRIKE"
+    },
+    {
+        "id": 4,
+        "art":"OP01-004",
+        "name":"Usopp",
+        "card":"CHARACTER",
+        "type":["Straw Hat Crew"],
+        "colors":["RED"],
+        "life": "",
+        "cost": 2,
+        "power": 3000,
+        "attribute": "RANGED"
+    }
+]

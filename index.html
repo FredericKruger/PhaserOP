@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Cardgame Test</title>
+        <style>
+            * {margin: 0; padding: 0; box-sizing: border-box;}
+
+            @font-face {
+                font-family: Brandon;
+                src: url('assets/fonts/Brandon_light_it.otf');
+            }
+
+            body {
+                font: 13px Helvetica, Arial;
+                background-color: black;
+            }
+
+            .game {
+                float: left;
+                background-color: black;
+                padding: 0px;
+                top: 0;
+                left: 0;
+                border: none;
+            }
+
+            .fixedContainer {
+                position: fixed;
+                padding: 1em;                
+                right: 0%;
+                top: 0%;
+                width: 20%;
+                transform: translateX(0%);
+            }
+
+            .fixedContainer#opts {
+                position: fixed;
+                padding: 2em;
+                left: 100%;
+                top: 14%;
+                width: 100%;
+                transform: translate(-50%, -50%);
+            }
+
+            #optmenu {
+                font-size: 16px;
+                width: 240px;
+                background-color: #ddd;
+                padding: 10px;
+            }
+
+            #box-footer {
+                font-size: 16px;
+                height: 10%;
+                background-color: #ddd;
+                padding: 10px;
+            }
+        </style>
+        <script src="plugins/phaser.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            // Use the browser's built-in functionality to quickly and safely escape the string
+            function escapeHtml(str) {
+                return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+            }
+        </script>
+        <script src="scripts/client/client.js"></script>
+        <script src="scripts/client/scenes/loader.js"></script>
+        <script src="scripts/client/scenes/login.js"></script>
+        <script src="scripts/client/uielements/button.js"></script>
+        <script src="scripts/client/scenes/title.js"></script>
+        <script src="scripts/client/scenes/collectionmanager.js"></script>
+        <script>
+            $(function () {
+                $('button#options').click(function(){
+                    $('#opts').show();
+                    return false;
+                });
+                $('button#close-menu').click(function(){
+                    $('#opts').hide();
+                    return false;
+                });
+            })
+        </script>
+        <script src="scripts/client/game.js"></script>
+        <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <div class="game" id="game">
+            <div style="font-family: 'Brandon'; display: none;">TypeReg</div>
+            <script type="text/javascript" src="scripts/client/main.js"></script>
+        </div>
+    </body>
+</html>
