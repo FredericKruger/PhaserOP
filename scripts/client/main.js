@@ -22,6 +22,8 @@ const ON_ATTACK = 0x307EB2;
 const DON = 0x13111E;
 const TRIGGER = 0xFCED44;
 
+const CARD_COLORS = ["GREEN", "BLUE", "RED", "PURPLE", "BLACK", "YELLOW"];
+
 const GameClient = new Client();
 
 window.onload = function() {
@@ -44,7 +46,7 @@ window.onload = function() {
         },
         dom: {
             createContainer: true
-        },
+        }
     };
 
     let Game = new Phaser.Game(config);

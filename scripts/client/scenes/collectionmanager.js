@@ -23,21 +23,21 @@ class CollectionManager extends Phaser.Scene {
         this.collectionBook = null;
     }
 
-    /*init (data) {
+    init (data) {
         this.cardIndex = data.CardIndex;
-        this.cardIndex = this.cardIndex.sort(function (a, b) {
-            return a.colorid - b.colorid || a.cost - b.cost || a.collectionnb - b.collectionnb;
-        });
         
-        this.cardToCardi = new Array(this.cardIndex.length);
-        for(let i = 0; i<this.cardIndex.length; i++)
-            this.cardToCardi[this.cardIndex[i].collectionnb-1] = i;
-
         this.pageMax = 0;
         let startIndex = 0;
-        for(let i = 0; i<6; i++){
-            this.colorCardIndex[i] = this.cardIndex.filter(item => item.colorid === (i+1));
+        for(let i = 0; i<CARD_COLORS.length; i++) {
+            //First filter the cards
+            this.colorCardIndex[i] = this.cardIndex.filter(item => item.colors.includes(CARD_COLORS[i]));
 
+            //Then sort the cards
+            this.colorCardIndex[i] = this.colorCardIndex[i].sort(function (a, b) {
+                return b.isleader - a.isleader || a.cost - b.cost || a.id - b.id;
+            });
+
+            //Create page info
             this.colorCardInfo[i] = {
                 startPage: this.pageMax+1,
                 startIndex: startIndex,
@@ -46,6 +46,7 @@ class CollectionManager extends Phaser.Scene {
                 hidden: false
             };
 
+            //Increase variables
             if(this.colorCardIndex[i].length > 0) {
                 this.colorCardInfo[i].totalPages = Math.floor(this.colorCardIndex[i].length/maxCardsPerPage)+1;
                 this.pageMax +=this.colorCardInfo[i].totalPages;
@@ -53,7 +54,7 @@ class CollectionManager extends Phaser.Scene {
 
             startIndex += this.colorCardIndex[i].length;
         }
-    }*/
+    }
 
     preload () {
         this.add.image(0, 0, 'background3').setScale(2); //add background image
@@ -63,6 +64,7 @@ class CollectionManager extends Phaser.Scene {
             this.load.plugin('rexcirclemaskimageplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexcirclemaskimageplugin.min.js', true);
             this.load.plugin('rextexteditplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexteditplugin.min.js', true);
             this.load.plugin('rexbbcodetextplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexbbcodetextplugin.min.js', true);
+            this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', true);
             
             this.load.image('deletedeckicon', 'assets/elements/deletedeckicon.png');
 
@@ -73,10 +75,10 @@ class CollectionManager extends Phaser.Scene {
     create () {
         /** COLLECTION BOOK */
         this.collectionBook = new CollectionBook({
-            x: 660,
-            y: 470,
-            width: 1300,
-            height: 875
+            x: 20,
+            y: 40,
+            width: this.cameras.main.width - 300,
+            height: this.cameras.main.height - 150,
         }, this);
         this.add.existing(this.collectionBook.tabs);
         this.collectionBook.tabs.emitButtonClick('top',0);
@@ -121,6 +123,29 @@ class CollectionManager extends Phaser.Scene {
             selectAll: true,
         });*/
 
+        /* Back Button */
+        this.backButton = new Button({
+            scene: this,
+            x: this.cameras.main.width - 20 - 50, 
+            y: this.cameras.main.height - 20 - 20,
+            width: 100,
+            height: 40,
+            radius: 5,
+            backgroundcolor: OP_RED,
+            outlinecolor: OP_CREAM,
+            text: "Back",
+            fontsize: 18
+        });
+        this.backButton.on('pointerdown', () =>  {
+            this.backToTitle();
+        });
+        this.backButton.on('pointerover', () => {
+            this.backButton.setScale(1.1);
+        });
+        this.backButton.on('pointerout', () => {
+            this.backButton.setScale(1);
+        });
+
         /** DRAG HANDLER */
         /*this.input.on('dragstart', function (pointer, gameObject) {
             this.children.bringToTop(gameObject);
@@ -152,6 +177,28 @@ class CollectionManager extends Phaser.Scene {
             }
         }, this);*/
 
+    }
+
+    /** UPDATE FUNCTION */
+    update() {
+        for(let o of this.obj) {
+            o.update();
+        }
+        this.collectionBook.update();
+
+        /*
+        if(this.showingDeckList){
+            this.deckListContainer.update();
+        } else {
+            this.deckCardListContainer.update();
+        }
+        */
+    }
+
+    /** BACK TO TITLE FUNCTION */
+    backToTitle() {
+        GameClient.askSavePlayerDecks();
+        this.scene.switch('title');
     }
 
 }

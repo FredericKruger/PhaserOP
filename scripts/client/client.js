@@ -50,6 +50,11 @@ class Client {
         this.socket.emit('request_player_decklist', this.username);
     };
 
+    /** Function that sends the server the player decks to save */
+    askSavePlayerDecks = function() {
+        this.socket.emit('save_player_decklist', this.username, JSON.stringify(GameClient.decklist));
+    };
+
     /** Function that connects a new player to the server */
     playerConnect () {
         this.socket.emit('player_connect', this.username);
