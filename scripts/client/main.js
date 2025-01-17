@@ -1,5 +1,6 @@
-const DECK_LIMIT = 40;
+const DECK_LIMIT = 50;
 const CARD_LIMIT = 4;
+const CARD_LEADER_LIMIT = 1;
 
 const CARD_ART_WIDTH = 744;
 const CARD_ART_HEIGHT = 1004;
@@ -22,7 +23,7 @@ const ON_ATTACK = 0x307EB2;
 const DON = 0x13111E;
 const TRIGGER = 0xFCED44;
 
-const CARD_COLORS = ["GREEN", "BLUE", "RED", "PURPLE", "BLACK", "YELLOW"];
+const CARD_COLORS = ["RED", "GREEN", "BLUE", "PURPLE", "BLACK", "YELLOW"];
 
 const GameClient = new Client();
 
@@ -34,6 +35,7 @@ window.onload = function() {
         type: Phaser.AUTO,
         parent: 'game',
         scene: [ LoaderBackground, Loader, Login, Title, CollectionManager/*, DeckSelection, Duel, WaitingForMatch*/ ], //Builder
+        disableContextMenu: true,
         /*fps: {
             target: 60,
             forceSetTimeOut: true

@@ -77,13 +77,20 @@ class Loader extends Phaser.Scene {
         this.load.json('card_data', 'assets/data/opcards.json'); //Card Database
         this.load.json('icon_data', 'assets/data/playericons.json'); //icon list
         
-        this.load.image('lorcana_rightarrow', 'assets/elements/lorcana_rightarrow.png');
-        this.load.image('lorcana_leftarrow', 'assets/elements/lorcana_leftarrow.png');
+        this.load.image('rightarrow', 'assets/elements/rightarrow.png');
+        this.load.image('leftarrow', 'assets/elements/leftarrow.png');
 
         this.load.image('default_avatar', 'assets/icons/playericons/icon1.png');
         this.load.image('ai_avatar', 'assets/icons/playericons/icon1.png');
         
         this.load.image('card_back', 'assets/backart/sleeve-0.png');
+
+        this.load.image('op_red_symbol', 'assets/icons/colorsymbols/OP_RED.png');
+        this.load.image('op_green_symbol', 'assets/icons/colorsymbols/OP_GREEN.png');
+        this.load.image('op_blue_symbol', 'assets/icons/colorsymbols/OP_BLUE.png');
+        this.load.image('op_purple_symbol', 'assets/icons/colorsymbols/OP_PURPLE.png');
+        this.load.image('op_black_symbol', 'assets/icons/colorsymbols/OP_BLACK.png');
+        this.load.image('op_yellow_symbol', 'assets/icons/colorsymbols/OP_YELLOW.png');
         
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
         //this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', 'rexRoundRectangle', 'rexRoundRectangle');

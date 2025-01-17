@@ -8,7 +8,7 @@ class Client {
         this.username = ""; //Store the mainplayer username
         this.playerSettings = null; //Store the mainplayer settings
 
-        this.decklist = {}; //Store the player decks
+        this.decklist = []; //Store the player decks
         this.aidecklist = {}; //Store the ai decks
 
         //Connects to the server.
@@ -37,6 +37,13 @@ class Client {
         /** Listen to the signal from the server that the player has successfully disconnected */
         this.socket.on('player_disconnected', () => {
             this.titleScene.loadLoginScreen();
+        });
+
+        /** Listen to signal from the server containing the player decklist 
+         * decklist: JSON object containing the player decklist
+        */
+        this.socket.on('send_player_decklist', (deckList) => {
+            this.decklist = JSON.parse(deckList);
         });
 
     }

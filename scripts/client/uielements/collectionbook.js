@@ -32,12 +32,12 @@ class CollectionBook {
             panel: this.scene.add.rexRoundRectangle(0, 0, config.width, config.height, 20, OP_CREAM),
 
             topButtons: [
-                this.createCollectionBookTab(this.scene, 0, OP_GREEN),
-                this.createCollectionBookTab(this.scene, 0, OP_BLUE),
-                this.createCollectionBookTab(this.scene, 0, OP_RED),
-                this.createCollectionBookTab(this.scene, 0, OP_PURPLE),
-                this.createCollectionBookTab(this.scene, 0, OP_BLACK),
-                this.createCollectionBookTab(this.scene, 0, OP_YELLOW)
+                this.createCollectionBookTab(this.scene, 0, OP_RED, 'op_red_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_GREEN, 'op_green_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_BLUE, 'op_blue_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_PURPLE, 'op_purple_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_BLACK, 'op_black_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_YELLOW, 'op_yellow_symbol')
             ],
 
             space: {
@@ -96,7 +96,7 @@ class CollectionBook {
 
         let o = {
             x: this.tabs.x - bookCardAreaWidth - bookCardAreaWidth/2,
-            y: this.tabs.y - bookCardAreaHeight/2 - 30
+            y: this.tabs.y - bookCardAreaHeight/2
         };
         for(let i = 0; i<maxCardsPerPage; i++){
             let c = {
@@ -136,6 +136,29 @@ class CollectionBook {
             c.cardVisual.setVisible(false);
             c.cardPlaceholder.setVisible(false);
 
+            c.cardVisual.setInteractive();
+            c.cardVisual.on('pointerdown', function(pointer) {
+                if(pointer.rightButtonDown()) {
+                    console.log('Right click detected');
+                } else {
+                    if(!this.collectionBook.scene.showingDeckList){
+                        //if the firstClicktime is 0 then this we record the time and leave the function
+                        this.collectionBook.selectedCard = this.index;
+                        if (this.firstClickTime == 0) {
+                            this.firstClickTime = new Date().getTime();
+                            return;
+                        }
+                        let elapsed = new Date().getTime() - this.firstClickTime;
+    
+                        if (elapsed < 350) {
+                            this.collectionBook.scene.addCardToDeck(this.collectionBook.selectedCard);
+                        } 
+                        this.firstClickTime = 0;  
+                    }  
+                }
+            }, c);
+            c.collectionBook.scene.input.setDraggable(c.cardVisual);
+
             this.cardVisuals.push(c);
         }
 
@@ -150,8 +173,8 @@ class CollectionBook {
         /** NEXT PAGE BUTTON */
         this.nextPageButton = {
             obj:this.scene.add.image(
-                this.tabs.x + this.tabs.width/2 - 110, this.tabs.y - 30,
-                'lorcana_rightarrow',
+                this.tabs.x + this.tabs.width/2 - 194*0.2*0.4, this.tabs.y,
+                'rightarrow',
             ).setScale(0.4).setOrigin(0.5,0.5),
             collectionBook: this,
             update: function() {
@@ -166,13 +189,15 @@ class CollectionBook {
         }
         this.nextPageButton.obj.setInteractive();
         this.nextPageButton.obj.on('pointerdown', this.flipNextPage, this);
+        this.nextPageButton.obj.on('pointerover', () => {this.nextPageButton.obj.setScale(0.45);});
+        this.nextPageButton.obj.on('pointerout', () => {this.nextPageButton.obj.setScale(0.4);});
         this.objToUpdate.push(this.nextPageButton);
 
         /** PREVIOUS PAGE BUTTON */
         this.prevPageButton = {
             obj:this.scene.add.image(
-                this.tabs.x - this.tabs.width/2 + 110, this.tabs.y - 30,
-                'lorcana_leftarrow'
+                this.tabs.x - this.tabs.width/2 + 194*0.2*0.4, this.tabs.y,
+                'leftarrow'
             ).setScale(0.4).setOrigin(0.5,0.5),
             collectionBook: this,
             update: function() {
@@ -188,6 +213,8 @@ class CollectionBook {
         //this.prevPageButton.obj.setVisible(false);
         this.prevPageButton.obj.setInteractive();
         this.prevPageButton.obj.on('pointerdown', this.flipPreviousPage, this);
+        this.prevPageButton.obj.on('pointerover', () => {this.prevPageButton.obj.setScale(0.45);});
+        this.prevPageButton.obj.on('pointerout', () => {this.prevPageButton.obj.setScale(0.4);});
         this.objToUpdate.push(this.prevPageButton);
     }
 
@@ -246,7 +273,7 @@ class CollectionBook {
     }
 
     /** CREATE TAB FUNCTION */
-    createCollectionBookTab = function (scene, direction, frame) {
+    createCollectionBookTab = function (scene, direction, color, symbol) {
         let radius;
         switch (direction) {
             case 0:
@@ -256,15 +283,16 @@ class CollectionBook {
                 }
                 break;
         }
-        let backgroundColor = frame;
+        let backgroundColor = color;
 
         return scene.rexUI.add.label({
             width: 60,
             height: 50,
             background: scene.rexUI.add.roundRectangle(0, 0, 50, 50, radius, backgroundColor),
+            icon: scene.add.image(0, 0, symbol).setScale(0.3).setOrigin(0),
             space: {
                 bottom: 0,//-110,
-                left: 5
+                left: 12
             }
         });
     }

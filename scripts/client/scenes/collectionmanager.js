@@ -73,36 +73,42 @@ class CollectionManager extends Phaser.Scene {
     }
 
     create () {
+        let containerSeparatorWidth = 20;
+        let deckCardListContainerWidth = 300;
+        let deckCardListContainerHeight = this.cameras.main.height - 40 - containerSeparatorWidth*2;
+        let collectionBookContainerHeight = deckCardListContainerHeight;
+        let collectionBookContainerWidth = this.cameras.main.width - deckCardListContainerWidth - containerSeparatorWidth*3;
+
         /** COLLECTION BOOK */
         this.collectionBook = new CollectionBook({
-            x: 20,
-            y: 40,
-            width: this.cameras.main.width - 300,
-            height: this.cameras.main.height - 150,
+            x: containerSeparatorWidth,
+            y: containerSeparatorWidth*2,
+            width: collectionBookContainerWidth,
+            height: collectionBookContainerHeight,
         }, this);
         this.add.existing(this.collectionBook.tabs);
         this.collectionBook.tabs.emitButtonClick('top',0);
 
-        /**DECKS CONTAINER */
-        /*let listOfDecksContainerConfig = {
+        /**DECKS LIST CONTAINER */
+        let listOfDecksContainerConfig = {
             scene: this,
-            x: this.collectionBook.tabs.x + this.collectionBook.tabs.width/2 + 175,
-            y: this.collectionBook.tabs.y,
-            width: 300,
-            height: 875
+            x: this.cameras.main.width - containerSeparatorWidth - deckCardListContainerWidth,
+            y: containerSeparatorWidth*2 + 25, //25 is half the height of a tab
+            width: deckCardListContainerWidth,
+            height: deckCardListContainerHeight
         };
         this.deckListContainer = new DeckListContainer(listOfDecksContainerConfig);
-        this.deckListContainer.init();*/
+        this.deckListContainer.init();
 
-        /** DECKS LIST CONTAINER */
-        //this.deckCardListContainer = new DeckCardListContainer(listOfDecksContainerConfig, this);
+        /** DECK CARD LIST CONTAINER */
+        this.deckCardListContainer = new DeckCardListContainer(listOfDecksContainerConfig, this);
 
         /** DECK TITLE */
-        /*let deckTitle = this.add.text(listOfDecksContainerConfig.x+25, listOfDecksContainerConfig.y - listOfDecksContainerConfig.height/2 + 30, 'New Deck', 
-            {
+        let deckTitle = this.add.text(listOfDecksContainerConfig.x + listOfDecksContainerConfig.width/2 + 25, listOfDecksContainerConfig.y - 15, 'New Deck', 
+            { 
                 fontFamily: 'Brandon',
                 font: "20px monospace",
-                fill: "#d3ba84",
+                fill: "#E9E6CE",
                 fixedWidth: 220,
                 align: 'center',
                 maxLines: 1
@@ -121,33 +127,10 @@ class CollectionManager extends Phaser.Scene {
                 if(textObject.text === "") textObject.text = "New Deck";
             },
             selectAll: true,
-        });*/
-
-        /* Back Button */
-        this.backButton = new Button({
-            scene: this,
-            x: this.cameras.main.width - 20 - 50, 
-            y: this.cameras.main.height - 20 - 20,
-            width: 100,
-            height: 40,
-            radius: 5,
-            backgroundcolor: OP_RED,
-            outlinecolor: OP_CREAM,
-            text: "Back",
-            fontsize: 18
-        });
-        this.backButton.on('pointerdown', () =>  {
-            this.backToTitle();
-        });
-        this.backButton.on('pointerover', () => {
-            this.backButton.setScale(1.1);
-        });
-        this.backButton.on('pointerout', () => {
-            this.backButton.setScale(1);
         });
 
         /** DRAG HANDLER */
-        /*this.input.on('dragstart', function (pointer, gameObject) {
+        this.input.on('dragstart', function (pointer, gameObject) {
             this.children.bringToTop(gameObject);
             this.isDragging = true;
         }, this);
@@ -175,7 +158,7 @@ class CollectionManager extends Phaser.Scene {
 
                 this.isDragging = false;
             }
-        }, this);*/
+        }, this);
 
     }
 
@@ -186,13 +169,11 @@ class CollectionManager extends Phaser.Scene {
         }
         this.collectionBook.update();
 
-        /*
         if(this.showingDeckList){
             this.deckListContainer.update();
         } else {
             this.deckCardListContainer.update();
         }
-        */
     }
 
     /** BACK TO TITLE FUNCTION */
@@ -200,5 +181,165 @@ class CollectionManager extends Phaser.Scene {
         GameClient.askSavePlayerDecks();
         this.scene.switch('title');
     }
+
+    /** CREATE NEW DECK FROM DECKLIST */
+    newDeck() {
+        this.deckCardListContainer.currentDeck = new Deck(true);
+        this.deckCardListContainer.reset();
+
+        this.deckListContainer.setVisible(false);
+        this.deckCardListContainer.setVisible(true);
+        this.showingDeckList = false;
+    }
+
+    saveDeck() {
+        /*//2 cases
+        let currentDeck = this.deckCardListContainer.currentDeck;
+        if(currentDeck.deckSize > 0){
+            if(currentDeck.newDeck){ //1. Deck is a new deck
+                let deckId = GameClient.decklist.length;
+                let deckname = this.deckCardListContainer.getDeckName();
+                let cards = currentDeck.getCardListAsJSON();
+
+                GameClient.decklist.push({
+                    name: deckname,
+                    cards: cards
+                });
+                
+                let deckconfig = this.deckListContainer.processDeck(GameClient.decklist[deckId], deckId);
+                this.deckListContainer.addDeck(deckconfig);
+
+            } else { //2. Deck already exists
+                let deckname = this.deckCardListContainer.getDeckName();
+                let cards = currentDeck.getCardListAsJSON();
+                
+                GameClient.decklist[this.selectedDeck].name = deckname;
+                GameClient.decklist[this.selectedDeck].cards = cards;
+
+                //update deckentry
+                let deckconfig = this.deckListContainer.processDeck(GameClient.decklist[this.selectedDeck], this.selectedDeck);
+                this.deckListContainer.updateDeck(deckconfig);
+            }
+        } else {
+            //error message 
+        }*/
+
+        //Done 
+        this.deckListContainer.setVisible(true);
+        this.deckCardListContainer.setVisible(false);
+        this.showingDeckList = true;
+
+        this.deckCardListContainer.currentDeck = new Deck(true);
+        //this.updateDeckTypes();
+    }
+
+    /** ADD CARD TO DECK FUNCTION */
+    addCardToDeck (card) {
+        //adding card to deck
+        let cardi = (this.collectionBook.currentColorPage-1) * maxCardsPerPage + card;
+
+        let resultCode = this.deckCardListContainer.currentDeck.addCard(this.colorCardIndex[this.collectionBook.currentColorPage-1][cardi]);
+
+        const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+        const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
+
+        let showDialog = false;
+        let dialogMessage = "";
+
+        switch(resultCode) {
+            case ERRORCODES.ADDED_NEW_CARD:
+                this.deckCardListContainer.updateDeckCardEntries(cardi);
+                //this.updateDeckTypes();
+                break;
+            case ERRORCODES.CARD_LEADER_LIMIT_REACHED:
+                showDialog = true;
+                dialogMessage = 'Cant add more than 1 leader in your deck!';
+                break;
+            case ERRORCODES.FIRST_CARD_TO_BE_LEADER:
+                showDialog=true;
+                dialogMessage = 'First card to add has to be a leader!';
+                break;
+        }
+
+        if(showDialog) {
+            this.createDialog(this, 'Oops', dialogMessage)
+            .setPosition(screenCenterX, screenCenterY)
+            .layout()
+            .modalPromise({
+                manualClose: true,
+                duration: {
+                    in: 500,
+                    out: 500
+                }
+            })
+            .then(function (data) {});  
+        }
+    }
+
+    /** FUNCTION THAT CREATES A DIALOG */
+    createDialog (scene, title, message) {
+        let dialog = scene.rexUI.add.dialog({
+            background: scene.rexUI.add.roundRectangle(0, 0, 100, 100, 10, OP_CREAM),
+
+            title: scene.rexUI.add.label({
+                background: scene.add.rexRoundRectangleCanvas(0, 0, 100, 40, 5, OP_RED, OP_CREAM, 3),
+                text: scene.add.text(0, 0, title, {
+                    fontFamily: 'Brandon',
+                    font: "24px monospace",
+                    fill: "#ffffff"
+                }),
+                space: {
+                    left: 15,
+                    right: 15,
+                    top: 10,
+                    bottom: 10
+                }
+            }),
+
+            content: scene.add.text(0, 0, message, {
+                fontFamily: 'Brandon',
+                font: "18px monospace",
+                fill: "#000000"
+            }),
+
+            actions: [
+                scene.rexUI.add.label({
+                    background: scene.rexUI.add.roundRectangle(0, 0, 0, 0, 10, OP_RED),
+
+                    text: scene.add.text(0, 0, "OK", {
+                        fontFamily: 'Brandon',
+                        font: "18px monospace",
+                        fill: "#ffffff"
+                    }), 
+
+                    space: {
+                        left:10, right:10, top:10, bottom:10
+                    }
+                })
+            ],
+
+            space: {
+                title: 25,
+                content: 25,
+                action: 15,
+
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: 20,
+
+            },
+
+            align: {
+                actions: 'center', // 'center'|'left'|'right'
+            },
+
+            expand: {
+                content: false,  // Content is a pure text object
+            }
+        });
+
+        return dialog;
+    } 
 
 }

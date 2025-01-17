@@ -210,7 +210,7 @@ io.on('connection', function (socket) {
  */
 async function sendPlayerDeckList(username) {
     let fs = require('fs');
-    let playerDeck = {}; //Create empty decklist in case of error
+    let playerDeck = []; //Create empty decklist in case of error
     let playerDeckName = 'decks_' + username + '.json'; //Create file name
     let filepath = __dirname + '/server_assets/player_decks/' + playerDeckName; //Get path to file
 
