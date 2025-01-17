@@ -150,7 +150,29 @@ class DeckCardListContainer {
     /** CREATE A DECK CARD ENTRY */
     createDeckCardEntry(card, position, cardi, isPlaceholder, amount) {
         let cardname = card.name;
-        
+
+        let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
+        let currentY = startY + (position * DECKCARD_ENTRY_HEIGHT) + (Math.max(position-1, 0) * DECKCARD_ENTRY_INTERSPACE);
+
+        let color = getCardColor(card.colors[0])
+
+        let deckEntry = new DeckCardEntry({
+            entryindex: position,
+            cardi: cardi,
+            x: this.deckDropZone.x,
+            y: currentY,
+            width: DECKCARD_ENTRY_WIDTH,
+            height: DECKCARD_ENTRY_HEIGHT,
+            backgroundcolor: OP_CREAM,
+            bordercolor: color,
+            name: cardname,
+            amount: amount,
+            art: card.art,
+            type: getCardSymbol(card.colors[0]),
+            cost: card.cost
+        }, this);
+
+        return deckEntry;
     }
 
     /** UPDATE THE DECK CARD ENTRIES IN THE DECK LIST */

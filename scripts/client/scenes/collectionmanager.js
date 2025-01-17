@@ -238,7 +238,7 @@ class CollectionManager extends Phaser.Scene {
         //adding card to deck
         let cardi = (this.collectionBook.currentColorPage-1) * maxCardsPerPage + card;
 
-        let resultCode = this.deckCardListContainer.currentDeck.addCard(this.colorCardIndex[this.collectionBook.currentColorPage-1][cardi]);
+        let resultCode = this.deckCardListContainer.currentDeck.addCard(this.colorCardIndex[this.collectionBook.selectedColor-1][cardi]);
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;

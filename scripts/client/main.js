@@ -58,3 +58,37 @@ window.onload = function() {
 window.onclose = function () {
     GameClient.askDisconnect();
 }
+
+getCardColor = function(color) {
+    switch(color) {
+        case "RED":
+            return OP_RED;
+        case "GREEN":
+            return OP_GREEN;
+        case "BLUE":
+            return OP_BLUE;
+        case "PURPLE":
+            return OP_PURPLE;
+        case "BLACK":
+            return OP_BLACK;
+        case "YELLOW":
+            return OP_YELLOW;
+    }
+}
+
+getCardSymbol = function(color) {
+    switch(color) {
+        case "RED":
+            return 'op_red_symbol';
+        case "GREEN":
+            return 'op_green_symbol';
+        case "BLUE":
+            return 'op_blue_symbol';
+        case "PURPLE":
+            return 'op_purple_symbol';
+        case "BLACK":
+            return 'op_black_symbol';
+        case "YELLOW":
+            return 'op_yellow_symbol';
+    }
+}
