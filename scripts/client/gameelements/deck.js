@@ -6,7 +6,8 @@ const ERRORCODES = {
     CARD_LEADER_LIMIT_REACHED: 4,
     DECREASED_CARD_AMOUNT: 5,
     REMOVED_CARD: 6,
-    FIRST_CARD_TO_BE_LEADER: 7
+    FIRST_CARD_TO_BE_LEADER: 7,
+    CANNOT_REMOVE_LEADER: 8
 };
 
 class Deck {
@@ -75,10 +76,37 @@ class Deck {
         }
     }
 
+    //Removes a card from the deck
+    removeCardAt(index) {
+        if(this.cards[index].cardInfo.isleader === 1 && this.deckSize>1) { //If trying to remove the leader before the other cards
+            return ERRORCODES.CANNOT_REMOVE_LEADER;
+        } else {
+            this.cards[index].amount--;
+            this.deckSize--;
+    
+            //if 0 left remove entry
+            if(this.cards[index].amount <= 0){
+                let isleader = this.cards[index].cardInfo.isleader;
+                
+                //remove entry and object
+                this.cards[index].destroy_entries();
+                this.cards.splice(index, 1);
+    
+               //If removing the leader we can remove the colors
+               if(isleader === 1) this.colors = [];
+                
+                return ERRORCODES.REMOVED_CARD;
+            } else {
+                this.cards[index].set_amount(this.cards[index].amount);
+                return ERRORCODES.DECREASED_CARD_AMOUNT;
+            }
+        }
+    }
+
     /** FUNCTION TO SORT THE CARDS */
     sortEntries() {
         this.cards = this.cards.sort(function (a, b) {
-            return b.isleader - a.isleader || a.cost - b.cost || a.name - b.name;
+            return b.cardInfo.isleader - a.cardInfo.isleader || a.cardInfo.cost - b.cardInfo.cost || b.cardInfo.name - a.cardInfo.name;
         });
     }
 }

@@ -1,6 +1,6 @@
 const DECKCARD_ENTRY_HEIGHT = 30;
 const DECKCARD_ENTRY_WIDTH = 275;
-const DECKCARD_ENTRY_INTERSPACE = 1;
+const DECKCARD_ENTRY_INTERSPACE = 2;
 
 class DeckCardEntry extends Phaser.GameObjects.Container {
 
@@ -18,26 +18,27 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
 
         this.amount = this.scene.add.text(-config.width/2 + 7, 0, config.amount + 'x', {
             fontFamily: 'Brandon',
-            font: "14px monospace",
+            font: "bold 20px monospace",
             fill: "#000000",
             backgroundColor: "rgba(255, 255, 255, 0.8)"//,
         });
         this.amount.setOrigin(0., 0.5);
 
-        this.type = this.scene.add.image(config.width/2 - 23, 0, config.type).setDisplaySize(23, 23);
+        this.type = this.scene.add.image(config.width/2 - 42, 0, config.type).setDisplaySize(23, 23); //config.width/2 - 18
         this.type.setOrigin(0.5, 0.5);
 
-        this.cost = this.scene.add.text(-config.width/2 + 50, 0, config.cost, {
-            fontFamily: 'Brandon',
-            font: "14px monospace",
-            fill: "#000000",
-            backgroundColor: "rgba(255, 255, 255, 0.8)"//,
-        });
-        this.cost.setOrigin(0.5, 0.5);
+        this.cost = null;
+        if(config.isleader===0) {
+            this.cost = this.scene.add.image(config.width/2 - 18, 0, config.cost).setDisplaySize(23, 23); //-config.width/2 + 45
+            this.cost.setOrigin(0.5, 0.5);
+        }
+
+        this.attribute = this.scene.add.image(-config.width/2 + 45, 0, config.attribute).setDisplaySize(23, 23); //config.width/2 - 42
+        this.attribute.setOrigin(0.5);
 
         this.name = this.scene.add.text(-70, 0, config.name, {
             fontFamily: 'Brandon',
-            font: "16px monospace",
+            font: "bold 16px monospace",
             fill: "#000000",
             backgroundColor: "rgba(255, 255, 255, 0.8)"//,
             //fixedWidth: 70 + config.width/2 - 5
@@ -57,46 +58,30 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         if(this.name.text !== config.name)
             this.name.text = this.name.text.slice(0, -3) + '...';
 
-        this.backgroundimage = this.scene.add.image(0, 0, '');
+        this.backgroundimage = this.scene.add.image(0, 0, 'deckentry_' + config.art);
 
-        let cardArtKey = 'deckentry_' + config.art;
-        let assetToLoad = false;
+        this.add([this.backgroundimage, this.background, this.amount, this.name, this.type, this.attribute]);
+        if(this.cost !== null) this.add(this.cost);
 
-        if (!this.scene.textures.exists(cardArtKey)) {
-            let loader = new Phaser.Loader.LoaderPlugin(this.scene); // create a loader
-            loader.image(cardArtKey, 'assets/deckentryart/' + cardArtKey + '.png'); // load image
-            assetToLoad = true;
+        this.setSize(config.width, config.height);
 
-            loader.once(Phaser.Loader.Events.COMPLETE, () => {
-                this.backgroundimage.setTexture(cardArtKey);
-
-                this.add([this.backgroundimage, this.background, this.amount, this.name, this.cost, this.type]);
-
-                this.setSize(config.width, config.height);
-
-                this.scene.add.existing(this);
-            });
-
-            try {
-                loader.start();
-            } catch (error) {
-                console.error("Error loading texture:", error);
-            }
-        } else {
-            this.backgroundimage.setTexture(cardArtKey);
-
-            this.add([this.backgroundimage, this.background, this.amount, this.name, this.cost, this.type]);
-
-            this.setSize(config.width, config.height);
-
-            this.scene.add.existing(this);
-        }
+        this.scene.add.existing(this);
 
     }
 
     /** FUNCTION TO UPDATE THE CARD AMOUNT */
     updateAmount (amount) {
         this.amount.setText(amount + 'x');
+    }
+
+    /** FUNCTION TO UPDATE THE NEW POSITION */
+    updatePosition (newY) {
+        this.setPosition(this.x, newY);
+    }
+
+    /** FUNCTION TO UPDATE THE NEW INDEX */
+    updateEntryIndex (entryIndex) {
+        this.entryIndex = entryIndex;
     }
 
 }

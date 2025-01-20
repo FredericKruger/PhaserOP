@@ -30,7 +30,7 @@ class DeckCardListContainer {
             width: this.width,
             height: 70,
             radius: 5,
-            backgroundcolor: OP_RED,
+            backgroundcolor: OP_ORANGE,
             outlinecolor: OP_CREAM,
             text: "",
             fontsize: 32
@@ -117,6 +117,9 @@ class DeckCardListContainer {
         }
     }
 
+    /** GETTERS  */
+    getNameBackground() {return this.decknameBackground;}
+
     /**SET VISIBLE FUNCTION */
     setVisible(visible){
         for(let o of this.obj){
@@ -125,12 +128,12 @@ class DeckCardListContainer {
         }
 
         //destroy all deck entries
-        /*if(!visible){
+        if(!visible){
             for(let i = 0; i<this.currentDeck.cards.length; i++){
                 this.currentDeck.cards[i].deckBuilderEntry.destroy();
                 this.currentDeck.cards[i].placeholderEntry.destroy();
             }
-        }*/      
+        }    
     }
 
     /** RESET FUNCTION */
@@ -139,6 +142,38 @@ class DeckCardListContainer {
         this.scrollMax = 0;
         this.scrollingEnabled = false;
         this.deckTitle.text = 'New Deck';
+    }
+
+    /** FUNCTION TO UPDATE THE DECK TYPE */
+    updateDeckColors() {
+        //Update icons
+        this.hideTypeImages();
+        if(this.currentDeck.colors.length === 0){
+            this.decknameBackground.setBackgroundColor(OP_ORANGE);
+        } else {
+            this.setTypeImage(getCardSymbol(this.currentDeck.colors, 1));
+
+            if(this.currentDeck.colors.length === 1) {
+                this.decknameBackground.setBackgroundColor(getCardColor(this.currentDeck.colors[0]));
+            } else {
+                this.getNameBackground().setDoubleBackgroundColor(getCardColor(this.currentDeck.colors[0]), getCardColor(this.currentDeck.colors[1]));
+            }
+        }
+    }
+
+    /** HIDE TYPE IMAGE */
+    hideTypeImages() {
+        if(this.typeImage !== null) this.typeImage.setVisible(false);
+    }
+
+    /** SET TYPE IMAGE */
+    setTypeImage(type) {
+        if(this.typeImage === null){
+            this.typeImage = this.scene.add.image(this.deckDropZone.x-this.deckDropZone.width/2 + 30, this.deckTitle.y, type).setScale(0.8).setOrigin(0.5,0.5);
+        } else {
+            this.typeImage.setTexture(type).setScale(0.8).setOrigin(0.5,0.5);
+        }
+        this.typeImage.setVisible(true);
     }
 
     /** SET THE DECK TITLE ENTRIES */
@@ -154,8 +189,6 @@ class DeckCardListContainer {
         let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
         let currentY = startY + (position * DECKCARD_ENTRY_HEIGHT) + (Math.max(position-1, 0) * DECKCARD_ENTRY_INTERSPACE);
 
-        let color = getCardColor(card.colors[0])
-
         let deckEntry = new DeckCardEntry({
             entryindex: position,
             cardi: cardi,
@@ -164,19 +197,91 @@ class DeckCardListContainer {
             width: DECKCARD_ENTRY_WIDTH,
             height: DECKCARD_ENTRY_HEIGHT,
             backgroundcolor: OP_CREAM,
-            bordercolor: color,
+            bordercolor: getCardColor(card.colors[0]),
             name: cardname,
             amount: amount,
             art: card.art,
-            type: getCardSymbol(card.colors[0]),
-            cost: card.cost
+            type: getCardSymbol(card.colors, card.isleader),
+            cost: getCardCost(card.colors[0], card.cost),
+            attribute: getCardAttributeSymbol(card.attribute),
+            isleader: card.isleader
         }, this);
+
+        if(!isPlaceholder) {
+            deckEntry.setInteractive();
+            deckEntry.on('pointerdown', function(pointer) {
+                if (this.firstClickTime == 0) {
+                    this.firstClickTime = new Date().getTime();
+                    return;
+                }
+                let elapsed = new Date().getTime() - this.firstClickTime;
+    
+                if (elapsed < 350) {
+                    this.deckCardListContainer.removeCardFromDeck(this.entryIndex);
+                } 
+                this.firstClickTime = 0;     
+            }, deckEntry);
+
+            this.scene.input.setDraggable(deckEntry);
+            deckEntry.on('dragend', function (pointer, dragX, dragY) {
+                if (!this.deckCardListContainer.deckDropZone.getBounds().contains(dragX, dragY)) {
+                    this.deckCardListContainer.removeCardFromDeck(this.entryIndex);
+                }
+            }); 
+
+            deckEntry.on('pointerout', function(pointer) {
+                //this.scene.updateTooltip({visible: false});
+            }, deckEntry);
+            deckEntry.on('pointerover', function (pointer) {
+                /*let cardToolTipConfig = {};
+                if(!this.scene.isDragging){
+                    let positionx = this.x - this.width - (this.width*0.5/2);
+
+                    cardToolTipConfig.index = this.cardi;
+                    cardToolTipConfig.positionx = positionx;
+                    cardToolTipConfig.positiony = this.y;
+                    cardToolTipConfig.rightside = -1;
+                    cardToolTipConfig.visible = true;
+                } else {
+                    cardToolTipConfig.visible = false;
+                }
+                this.scene.updateTooltip(cardToolTipConfig);*/
+            }, deckEntry);
+        }
 
         return deckEntry;
     }
 
+    /** REMOVE CARD FROM DECK FUNCTION */
+    removeCardFromDeck = function(entryIndex) {
+        let resultCode = this.currentDeck.removeCardAt(entryIndex);
+
+        switch(resultCode) {
+            case ERRORCODES.REMOVED_CARD:
+                //self.decklist_container.decreaseMaxScroll();
+                this.updateDeckCardEntries(-1); //-1 because no cardi required when removing
+                this.scene.updateDeckColors();
+                break;
+            case ERRORCODES.CANNOT_REMOVE_LEADER:
+                this.scene.createDialog(this.scene, 'Oops', 'Can only remove Leader last!')
+                .setPosition(this.scene.cameras.main.worldView.x + this.scene.cameras.main.width / 2, this.scene.cameras.main.worldView.y + this.scene.cameras.main.height / 2)
+                .layout()
+                .modalPromise({
+                    manualClose: true,
+                    duration: {
+                        in: 500,
+                        out: 500
+                    }
+                })
+                .then(function (data) {});  
+                break;
+        }
+    }
+
     /** UPDATE THE DECK CARD ENTRIES IN THE DECK LIST */
     updateDeckCardEntries(cardi) {
+        let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
+
         let addedEntry = null;
 
         //reorder visual card entries
@@ -188,6 +293,10 @@ class DeckCardListContainer {
 
                 addedEntry = card;
             }
+
+            let currentY = startY + (i * DECKCARD_ENTRY_HEIGHT) + (Math.max(i-1, 0) * DECKCARD_ENTRY_INTERSPACE);
+
+            card.update_entryPosition(currentY, i);
         }
     }
 }

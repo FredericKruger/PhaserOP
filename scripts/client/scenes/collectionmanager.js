@@ -182,6 +182,12 @@ class CollectionManager extends Phaser.Scene {
         this.scene.switch('title');
     }
 
+    /** FUNCTION TO UPDATE DECK TYPES */
+    updateDeckColors() {
+        this.collectionBook.updateDeckColors(this.deckCardListContainer.currentDeck.colors);
+        this.deckCardListContainer.updateDeckColors();
+    }
+
     /** CREATE NEW DECK FROM DECKLIST */
     newDeck() {
         this.deckCardListContainer.currentDeck = new Deck(true);
@@ -230,7 +236,7 @@ class CollectionManager extends Phaser.Scene {
         this.showingDeckList = true;
 
         this.deckCardListContainer.currentDeck = new Deck(true);
-        //this.updateDeckTypes();
+        this.updateDeckColors();
     }
 
     /** ADD CARD TO DECK FUNCTION */
@@ -249,7 +255,7 @@ class CollectionManager extends Phaser.Scene {
         switch(resultCode) {
             case ERRORCODES.ADDED_NEW_CARD:
                 this.deckCardListContainer.updateDeckCardEntries(cardi);
-                //this.updateDeckTypes();
+                this.updateDeckColors();
                 break;
             case ERRORCODES.CARD_LEADER_LIMIT_REACHED:
                 showDialog = true;

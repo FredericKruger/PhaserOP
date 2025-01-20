@@ -76,19 +76,31 @@ getCardColor = function(color) {
     }
 }
 
-getCardSymbol = function(color) {
-    switch(color) {
-        case "RED":
-            return 'op_red_symbol';
-        case "GREEN":
-            return 'op_green_symbol';
-        case "BLUE":
-            return 'op_blue_symbol';
-        case "PURPLE":
-            return 'op_purple_symbol';
-        case "BLACK":
-            return 'op_black_symbol';
-        case "YELLOW":
-            return 'op_yellow_symbol';
+getCardSymbol = function(color, isleader) {
+    if(isleader === 0) {
+        return 'op_' + color[0] + '_symbol';
+    } else {
+        let colorString = 'op_leader_' + color[0];
+        if(color.length>1) colorString = colorString + '_' + color[1];
+        return colorString;
+    }
+}
+
+getCardCost = function(color, cost) {
+    return 'op_cost_' + color + '_' + cost;
+}
+
+getCardAttributeSymbol = function(attribute) {
+    switch(attribute) {
+        case "RANGED":
+            return 'op_attribute_RANGED';
+        case "SLASH":
+            return 'op_attribute_SLASH';
+        case "SPECIAL":
+            return 'op_attribute_SPECIAL';
+        case "STRIKE":
+            return 'op_attribute_STRIKE';
+        case "WISDOM":
+            return 'op_attribute_WISDOM';
     }
 }

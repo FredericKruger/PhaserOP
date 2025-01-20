@@ -32,12 +32,12 @@ class CollectionBook {
             panel: this.scene.add.rexRoundRectangle(0, 0, config.width, config.height, 20, OP_CREAM),
 
             topButtons: [
-                this.createCollectionBookTab(this.scene, 0, OP_RED, 'op_red_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_GREEN, 'op_green_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_BLUE, 'op_blue_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_PURPLE, 'op_purple_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_BLACK, 'op_black_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_YELLOW, 'op_yellow_symbol')
+                this.createCollectionBookTab(this.scene, 0, OP_RED, 'op_RED_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_GREEN, 'op_GREEN_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_BLUE, 'op_BLUE_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_PURPLE, 'op_PURPLE_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_BLACK, 'op_BLACK_symbol'),
+                this.createCollectionBookTab(this.scene, 0, OP_YELLOW, 'op_YELLOW_symbol')
             ],
 
             space: {
@@ -239,6 +239,7 @@ class CollectionBook {
                 if(!this.scene.cache.game.textures.list[cardArtKey]){
                     numberOfArtLoads++;
                     loader.image(cardArtKey, 'assets/cardart/' + cardArtKey + '.png'); //load image
+                    loader.image('deckentry_' + cardArtKey, 'assets/deckentryart/deckentry_' + cardArtKey + '.png'); //load deck entry preemtiveley to avvoid errors later
                 }
                 
             }
@@ -296,6 +297,30 @@ class CollectionBook {
             }
         });
     }
+
+    /** UPDATE DECK TYPE ARRAY */
+    updateDeckColors(colors) {
+        if(colors.length > 0) {
+            for(let i=0; i<CARD_COLORS.length; i++) {
+                if(!colors.includes(CARD_COLORS[i])) {
+                    this.tabs.hideButton('top', i);
+                    this.colorCardInfo[i].hidden = true;
+                }
+            }
+        } else {
+            for(let i=0; i<this.colorCardInfo.length; i++) {
+                if(this.colorCardInfo[i].numberCards === 0) {
+                    this.tabs.hideButton('top', i);
+                    this.colorCardInfo[i].hidden = true;
+                } else {
+                    this.tabs.showButton('top', i);
+                    this.colorCardInfo[i].hidden = false;
+                }
+            }
+        }
+        this.tabs.layout();
+        this.updateMinMaxPage();
+    } 
 
     /** NEXT PAGE FUNCTION */
     flipNextPage() {
