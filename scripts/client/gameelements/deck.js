@@ -106,7 +106,7 @@ class Deck {
     /** FUNCTION TO SORT THE CARDS */
     sortEntries() {
         this.cards = this.cards.sort(function (a, b) {
-            return b.cardInfo.isleader - a.cardInfo.isleader || a.cardInfo.cost - b.cardInfo.cost || b.cardInfo.name - a.cardInfo.name;
+            return b.cardInfo.isleader - a.cardInfo.isleader || a.cardInfo.cost - b.cardInfo.cost || a.cardInfo.name.localeCompare(b.cardInfo.name);
         });
     }
 }
