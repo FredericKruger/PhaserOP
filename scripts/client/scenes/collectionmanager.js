@@ -138,7 +138,7 @@ class CollectionManager extends Phaser.Scene {
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             gameObject.x = dragX;
             gameObject.y = dragY;
-        });
+        }, this);
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             if(gameObject.input !== undefined){//in case the element was destroyed before
@@ -148,15 +148,19 @@ class CollectionManager extends Phaser.Scene {
                 }
             }
             this.isDragging = false;
-        })
+        }, this);
 
         this.input.on('drop', function (pointer, gameObject, zone) {
-            if(zone.getData('name') === 'deckDropZone'){
-                gameObject.x = gameObject.input.dragStartX;
-                gameObject.y = gameObject.input.dragStartY;
-                this.addCardToDeck(this.collectionBook.selectedCard); //self.selected
-
-                this.isDragging = false;
+            if(gameObject instanceof CardVisual) {
+                if(zone.getData('name') === 'deckDropZone'){
+                    gameObject.x = gameObject.input.dragStartX;
+                    gameObject.y = gameObject.input.dragStartY;
+                    this.addCardToDeck(this.collectionBook.selectedCard); //self.selected
+    
+                    this.isDragging = false;
+                }
+            } else {
+                this.input.emit('dragend', pointer, gameObject, false);
             }
         }, this);
 
@@ -279,6 +283,40 @@ class CollectionManager extends Phaser.Scene {
                 }
             })
             .then(function (data) {});  
+        }
+    }
+
+    /** UPDATE TOOLTIP */
+    updateTooltip(cardToolTipConfig) {
+        if(cardToolTipConfig.visible && !this.isDragging){
+            if(this.cardTooltipContainer === null){
+                let cardi = cardToolTipConfig.index;
+                let config = {
+                    scene: this,
+                    x: cardToolTipConfig.positionx,
+                    y: cardToolTipConfig.positiony,
+                    cardindex: cardi,
+                    scale: 0.5
+                };
+                this.cardTooltipContainer = new CardVisual(this, config);
+                this.cardTooltipContainer.setUpdate(cardToolTipConfig.cardInfo);  
+            }
+            
+            //check if tooltip out of screen
+            if(cardToolTipConfig.positiony - this.cardTooltipContainer.height/2*this.cardTooltipContainer.scale < 20){
+                cardToolTipConfig.positiony = 20 + this.cardTooltipContainer.height/2*this.cardTooltipContainer.scale;
+            }
+            if(cardToolTipConfig.positiony + this.cardTooltipContainer.height/2*this.cardTooltipContainer.scale > (this.cameras.main.height-20)) {
+                cardToolTipConfig.positiony = (this.cameras.main.height-20) - this.cardTooltipContainer.height/2*this.cardTooltipContainer.scale;
+            }
+
+            this.cardTooltipContainer.setPosition(cardToolTipConfig.positionx, cardToolTipConfig.positiony);
+            
+        } else {
+            if(this.cardTooltipContainer !== null){
+                this.cardTooltipContainer.destroy();
+                this.cardTooltipContainer = null;
+            }
         }
     }
 

@@ -11,6 +11,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         this.scene = this.deckCardListContainer.scene;
         this.entryIndex = config.entryindex;
         this.cardi = config.cardi;
+        this.cardInfo = config.cardInfo;
         this.firstClickTime = 0;
 
         this.background = this.scene.add.rexRoundRectangleCanvas(0, 0, config.width, config.height, 0, 'rgba(0,0,0,0)', config.bordercolor, 3);

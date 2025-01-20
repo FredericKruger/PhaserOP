@@ -192,6 +192,7 @@ class DeckCardListContainer {
         let deckEntry = new DeckCardEntry({
             entryindex: position,
             cardi: cardi,
+            cardInfo: card,
             x: this.deckDropZone.x,
             y: currentY,
             width: DECKCARD_ENTRY_WIDTH,
@@ -210,34 +211,28 @@ class DeckCardListContainer {
         if(!isPlaceholder) {
             deckEntry.setInteractive();
             deckEntry.on('pointerdown', function(pointer) {
-                if (this.firstClickTime == 0) {
-                    this.firstClickTime = new Date().getTime();
-                    return;
-                }
-                let elapsed = new Date().getTime() - this.firstClickTime;
-    
-                if (elapsed < 350) {
+                if(pointer.rightButtonDown()) {
                     this.deckCardListContainer.removeCardFromDeck(this.entryIndex);
-                } 
-                this.firstClickTime = 0;     
+                }
             }, deckEntry);
 
             this.scene.input.setDraggable(deckEntry);
             deckEntry.on('dragend', function (pointer, dragX, dragY) {
-                if (!this.deckCardListContainer.deckDropZone.getBounds().contains(dragX, dragY)) {
+                if (!this.deckCardListContainer.deckDropZone.getBounds().contains(pointer.upX, pointer.upY)) {
                     this.deckCardListContainer.removeCardFromDeck(this.entryIndex);
                 }
-            }); 
+            }, deckEntry); 
 
             deckEntry.on('pointerout', function(pointer) {
-                //this.scene.updateTooltip({visible: false});
+                this.scene.updateTooltip({visible: false});
             }, deckEntry);
             deckEntry.on('pointerover', function (pointer) {
-                /*let cardToolTipConfig = {};
+                let cardToolTipConfig = {};
                 if(!this.scene.isDragging){
                     let positionx = this.x - this.width - (this.width*0.5/2);
 
                     cardToolTipConfig.index = this.cardi;
+                    cardToolTipConfig.cardInfo = this.cardInfo;
                     cardToolTipConfig.positionx = positionx;
                     cardToolTipConfig.positiony = this.y;
                     cardToolTipConfig.rightside = -1;
@@ -245,7 +240,7 @@ class DeckCardListContainer {
                 } else {
                     cardToolTipConfig.visible = false;
                 }
-                this.scene.updateTooltip(cardToolTipConfig);*/
+                this.scene.updateTooltip(cardToolTipConfig);
             }, deckEntry);
         }
 
@@ -253,7 +248,7 @@ class DeckCardListContainer {
     }
 
     /** REMOVE CARD FROM DECK FUNCTION */
-    removeCardFromDeck = function(entryIndex) {
+    removeCardFromDeck(entryIndex) {
         let resultCode = this.currentDeck.removeCardAt(entryIndex);
 
         switch(resultCode) {
@@ -283,6 +278,9 @@ class DeckCardListContainer {
         let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
 
         let addedEntry = null;
+
+        //First remove the tooltip
+        this.scene.updateTooltip({visible: false});
 
         //reorder visual card entries
         for(let i=0; i<this.currentDeck.cards.length; i++) {

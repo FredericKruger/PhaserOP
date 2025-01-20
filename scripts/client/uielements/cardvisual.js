@@ -25,11 +25,15 @@ class CardVisual extends Phaser.GameObjects.Container {
     setUpdate (card) {
         let cardArtKey = card.art;
         let loader = new Phaser.Loader.LoaderPlugin(this.scene); //create a loader 
-        if(!this.scene.textures.exists(cardArtKey)) loader.image(cardArtKey, 'assets/cardart/' + cardArtKey + '.png'); //load image
-        loader.once(Phaser.Loader.Events.COMPLETE, () => {
+        if(!this.scene.textures.exists(cardArtKey)) {
+            loader.image(cardArtKey, 'assets/cardart/' + cardArtKey + '.png'); //load image
+            loader.once(Phaser.Loader.Events.COMPLETE, () => {
+                this.art.setTexture(cardArtKey);
+            });
+            loader.start();
+        } else {
             this.art.setTexture(cardArtKey);
-        });
-        loader.start();
+        }
     }
 
     getWidth () {
