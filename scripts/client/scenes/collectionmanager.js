@@ -272,7 +272,7 @@ class CollectionManager extends Phaser.Scene {
 
         switch(resultCode) {
             case ERRORCODES.ADDED_NEW_CARD:
-                this.deckCardListContainer.updateDeckCardEntries(cardi);
+                this.deckCardListContainer.updateDeckCardEntries(/*cardi*/);
                 this.updateDeckColors();
                 break;
             case ERRORCODES.CARD_LEADER_LIMIT_REACHED:
@@ -308,9 +308,9 @@ class CollectionManager extends Phaser.Scene {
 
         this.deckCardListContainer.reset();
         this.deckCardListContainer.loadDeck(deck);
-        this.deckCardListContainer.updateDeckCardEntries(-1);
+        //this.deckCardListContainer.updateDeckCardEntries(-1);
 
-        this.updateDeckTypes();
+        //this.updateDeckColors();
         
         this.deckListContainer.setVisible(false);
         this.deckCardListContainer.setVisible(true);

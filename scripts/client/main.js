@@ -106,6 +106,5 @@ getCardAttributeSymbol = function(attribute) {
 }
 
 getLeaderArt = function(leaderArt) {
-    console.log('op_leader_' + leaderArt);
     return 'op_leader_' + leaderArt;
 }

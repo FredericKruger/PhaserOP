@@ -149,18 +149,31 @@ class DeckCardListContainer {
     }
 
     /** FUNCTION TO LOAD A DECK */
-    loadDeck = function(deck) {
+    loadDeck(deck) {
         for(let i = 0; i<deck.cards.length; i++){
             this.currentDeck.addCard(this.scene.cardIndex[deck.cards[i]-1]);
         }
         this.setDeckName(deck.name);
-        this.updateDeckTypes();
+        this.updateDeckColors();
 
-        for(let i=0; i<this.currentDeck.cards.length; i++){
-            let ci = this.currentDeck.cards[i].cardInfo;
-            this.currentDeck.cards[i].set_placeholderEntry(this.createCardEntry(ci, i, this.scene.cardToCardi[ci.collectionnb-1], true, this.currentDeck.cards[i].amount));
-            this.currentDeck.cards[i].set_deckBuilderEntry(this.createCardEntry(ci, i, this.scene.cardToCardi[ci.collectionnb-1], false, this.currentDeck.cards[i].amount));
+        /** Preload Card Art if not loaded yet */
+        let loader = new Phaser.Loader.LoaderPlugin(this.scene); // create a loader
+        for(let i=0; i<this.currentDeck.cards.length; i++) {
+            let cardArtKey = 'deckentry_' + this.currentDeck.cards[i].cardInfo.art;
+            let nbLoads = 0;
+            if(!this.scene.textures.exists(cardArtKey)) {
+                loader.image(cardArtKey, 'assets/deckentryart/' + cardArtKey + '.png'); // load image
+                nbLoads++;
+            } 
         }
+        loader.once(Phaser.Loader.Events.COMPLETE, () => {
+            for(let i=0; i<this.currentDeck.cards.length; i++){
+                let ci = this.currentDeck.cards[i].cardInfo;
+                this.currentDeck.cards[i].setPlaceholderEntry(this.createDeckCardEntry(ci, i, /*this.scene.cardToCardi[ci.collectionnb-1],*/ true, this.currentDeck.cards[i].amount));
+                this.currentDeck.cards[i].setDeckbuilderEntry(this.createDeckCardEntry(ci, i, /*this.scene.cardToCardi[ci.collectionnb-1],*/ false, this.currentDeck.cards[i].amount));
+            }
+        });
+        loader.start();
     }
 
     /** FUNCTION TO UPDATE THE DECK TYPE */
@@ -202,7 +215,7 @@ class DeckCardListContainer {
     }
 
     /** CREATE A DECK CARD ENTRY */
-    createDeckCardEntry(card, position, cardi, isPlaceholder, amount) {
+    createDeckCardEntry(card, position, /*cardi, */isPlaceholder, amount) {
         let cardname = card.name;
 
         let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
@@ -210,7 +223,7 @@ class DeckCardListContainer {
 
         let deckEntry = new DeckCardEntry({
             entryindex: position,
-            cardi: cardi,
+            //cardi: cardi,
             cardInfo: card,
             x: this.deckDropZone.x,
             y: currentY,
@@ -250,7 +263,7 @@ class DeckCardListContainer {
                 if(!this.scene.isDragging){
                     let positionx = this.x - this.width - (this.width*0.5/2);
 
-                    cardToolTipConfig.index = this.cardi;
+                    //cardToolTipConfig.index = this.cardi;
                     cardToolTipConfig.cardInfo = this.cardInfo;
                     cardToolTipConfig.positionx = positionx;
                     cardToolTipConfig.positiony = this.y;
@@ -293,7 +306,7 @@ class DeckCardListContainer {
     }
 
     /** UPDATE THE DECK CARD ENTRIES IN THE DECK LIST */
-    updateDeckCardEntries(cardi) {
+    updateDeckCardEntries(/*cardi*/) {
         let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
 
         let addedEntry = null;
@@ -305,8 +318,8 @@ class DeckCardListContainer {
         for(let i=0; i<this.currentDeck.cards.length; i++) {
             let card = this.currentDeck.cards[i];
             if(card.deckBuilderEntry === null) { //if no visual entry exists for the card
-                card.setPlaceholderEntry(this.createDeckCardEntry(card.cardInfo, i, cardi, true, card.amount));
-                card.setDeckbuilderEntry(this.createDeckCardEntry(card.cardInfo, i, cardi, false, card.amount));
+                card.setPlaceholderEntry(this.createDeckCardEntry(card.cardInfo, i, /*cardi,*/ true, card.amount));
+                card.setDeckbuilderEntry(this.createDeckCardEntry(card.cardInfo, i, /*cardi,*/ false, card.amount));
 
                 addedEntry = card;
             }

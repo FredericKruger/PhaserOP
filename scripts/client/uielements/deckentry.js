@@ -114,11 +114,11 @@ class DeckEntry extends Phaser.GameObjects.Container {
         this.color1 = getCardColor(newInfo.colors[0]);
         this.color2 = newInfo.colors.length > 1? getCardColor(newInfo.colors[1]) : null;
 
-        if(this.color2 !== null) this.background.setFillStyle(this.color1.back, this.color2.back, true);
-        else this.background.setFillStyle(this.color1.back);
+        if(this.color2 !== null) this.background.setFillStyle(this.color1, this.color2, true);
+        else this.background.setFillStyle(this.color1);
 
-        this.typeImage.setTexture(getCardSymbol(config.colors));
-        this.leaderImage.setTexture(getLeaderArt(config.leaderArt));
+        this.typeImage.setTexture(getCardSymbol(newInfo.colors));
+        this.leaderImage.setTexture(getLeaderArt(newInfo.leader));
 
         this.deckname.text = newInfo.name;
 
