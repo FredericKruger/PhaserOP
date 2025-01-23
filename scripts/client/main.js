@@ -104,3 +104,8 @@ getCardAttributeSymbol = function(attribute) {
             return 'op_attribute_WISDOM';
     }
 }
+
+getLeaderArt = function(leaderArt) {
+    console.log('op_leader_' + leaderArt);
+    return 'op_leader_' + leaderArt;
+}

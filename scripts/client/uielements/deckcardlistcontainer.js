@@ -119,6 +119,10 @@ class DeckCardListContainer {
 
     /** GETTERS  */
     getNameBackground() {return this.decknameBackground;}
+    getDeckName() {return this.deckTitle.text;}
+
+    /** SETTERS */
+    setDeckName(deckname) {this.deckTitle.text = deckname;}
 
     /**SET VISIBLE FUNCTION */
     setVisible(visible){

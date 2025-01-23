@@ -98,7 +98,7 @@ class DeckListContainer {
                     width: DECK_ENTRY_WIDTH,
                     height: DECK_ENTRY_HEIGHT,
                     radius: 3,
-                    backgroundcolor: OP_RED,
+                    backgroundcolor: OP_ORANGE,
                     outlinecolor: OP_WHITE,
                     text: "New Deck",
                     fontsize: 30
@@ -130,8 +130,8 @@ class DeckListContainer {
     /** FUNCTION INITIALISING THE DECK LIST */
     init() {
         for(let i = 0; i<GameClient.decklist.length; i++){
-            //let deckConfig = this.processDeck(GameClient.decklist[i], i);
-            //this.addDeck(deckConfig);
+            let deckConfig = this.processDeck(GameClient.decklist[i], i);
+            this.addDeck(deckConfig);
         }
     }
 
@@ -162,4 +162,51 @@ class DeckListContainer {
             currentButtomY = currentButtomY + DECK_ENTRY_HEIGHT + DECK_ENTRY_INTERSPACE;
         }
     }
+
+    /** PROCESS DECK FROM DECKLIST */
+    processDeck = function(deck, id) {
+        let name = deck.name;
+        let colors = this.scene.cardIndex[deck.cards[0]-1].colors;
+        let leader = this.scene.cardIndex[deck.cards[0]-1].art;
+        let deckid = id;
+
+        return {
+            name: name,
+            leader: leader,
+            colors: colors,
+            deckid: deckid,
+            numbercards: deck.cards.length
+        };
+    }
+
+    /** ADD A DECK ENTRY */
+    addDeck = function (deckconfig) {
+        let name  = deckconfig.name;
+        let leaderArt = deckconfig.leader;
+        let colors = deckconfig.colors;
+        let deckid = deckconfig.deckid;
+        let numbercards = deckconfig.numbercards;
+
+        let currentY = this.startY + this.deckEntries.length * DECK_ENTRY_HEIGHT + this.deckEntries.length * DECK_ENTRY_INTERSPACE;
+
+        let deckEntry = new DeckEntry({
+            x: this.x + this.width/2,
+            y: currentY,
+            width: DECK_ENTRY_WIDTH,
+            height: DECK_ENTRY_HEIGHT,
+            deckid: deckid,
+            colors: colors,
+            leaderArt: leaderArt,
+            name: name
+        }, this.scene);
+        deckEntry.updateValidDeck(numbercards);
+        this.deckEntries.push(deckEntry);
+    }
+
+    /** UPDATE DECK INFORMATION usually after a save */
+    updateDeck(deckconfig) {
+        let deckEntry = this.deckEntries.find((deckentry) => deckentry.deckid === deckconfig.deckid);
+        deckEntry.updateInfo(deckconfig);
+    }
+    
 }

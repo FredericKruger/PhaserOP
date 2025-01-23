@@ -109,4 +109,15 @@ class Deck {
             return b.cardInfo.isleader - a.cardInfo.isleader || a.cardInfo.cost - b.cardInfo.cost || a.cardInfo.name.localeCompare(b.cardInfo.name);
         });
     }
+
+    /** FUNCTION TO GET THE CARD LIST AS A JSON STRING */
+    getCardListAsJSON() {
+        let cards = [];
+        for(let i = 0; i<this.cards.length; i++){
+            for(let j = 0; j<this.cards[i].amount; j++){
+                cards.push(this.cards[i].cardInfo.id);
+            }
+        }
+        return cards;
+    }
 }

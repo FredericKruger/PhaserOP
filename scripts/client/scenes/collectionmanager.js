@@ -203,10 +203,10 @@ class CollectionManager extends Phaser.Scene {
     }
 
     saveDeck() {
-        /*//2 cases
+        //2 cases
         let currentDeck = this.deckCardListContainer.currentDeck;
         if(currentDeck.deckSize > 0){
-            if(currentDeck.newDeck){ //1. Deck is a new deck
+            if(currentDeck.isNewDeck){ //1. Deck is a new deck
                 let deckId = GameClient.decklist.length;
                 let deckname = this.deckCardListContainer.getDeckName();
                 let cards = currentDeck.getCardListAsJSON();
@@ -232,7 +232,7 @@ class CollectionManager extends Phaser.Scene {
             }
         } else {
             //error message 
-        }*/
+        }
 
         //Done 
         this.deckListContainer.setVisible(true);

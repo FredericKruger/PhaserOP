@@ -3,7 +3,7 @@ library(magick)
 folder_path <- "c:/Users/Kruger_F1/Pictures/tmp/"
 files <- list.files(folder_path)
 
-file <- "OP03-099.png"
+file <- "OP03-076.png"
 
 img <- image_read(paste0("c:/Users/Kruger_F1/Pictures/tmp/", file))
 
@@ -38,4 +38,4 @@ geom <- paste0(x_radius*2, "x", y_radius*2, "+", x_center-x_radius, "+", y_cente
 circular_image <- image_crop(img_cropped, geometry = geom)
 print(circular_image)
 
-image_write(circular_image, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/LEADER_YELLOW.png"))
+image_write(circular_image, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/LEADER_BLACK.png"))
