@@ -208,5 +208,22 @@ class DeckListContainer {
         let deckEntry = this.deckEntries.find((deckentry) => deckentry.deckid === deckconfig.deckid);
         deckEntry.updateInfo(deckconfig);
     }
+
+    /** UPDATE DECKENTRY LAYOUTS */
+    updateEntryLayout() {
+        for(let i=0; i<this.deckEntries.length; i++){
+            let currentY = this.startY + i * DECK_ENTRY_HEIGHT + i * DECK_ENTRY_INTERSPACE;
+            this.deckEntries[i].setPosition(this.deckEntries[i].x, currentY);
+            this.deckEntries.deckid = i;
+        }
+    }
+
+    /** DELETE DECKENTRY */
+    deleteDeck(deckid) {
+        let deckEntry = this.deckEntries[deckid];
+        this.deckEntries.splice(deckid, 1);
+        deckEntry.destroy();
+        deckEntry = null;
+    }
     
 }

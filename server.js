@@ -190,10 +190,10 @@ io.on('connection', function (socket) {
      * Will write into file. Overwrite default
     */
     socket.on('save_player_decklist', function (username, decklist) {
-        /*let fs = require('fs');
+        let fs = require('fs');
         let playerDeckName = 'decks_' + username + '.json'; //Create the filename
         let filename = __dirname + '/server_assets/player_decks/'+playerDeckName; //Get folder to be save
-        fs.writeFileSync(filename, decklist); //Write to new file*/
+        fs.writeFileSync(filename, decklist); //Write to new file
     });
 
     /** update player settings */

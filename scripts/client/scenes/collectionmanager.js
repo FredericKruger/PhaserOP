@@ -202,6 +202,7 @@ class CollectionManager extends Phaser.Scene {
         this.showingDeckList = false;
     }
 
+    /** FUNCTION TO SAVE DECK */
     saveDeck() {
         //2 cases
         let currentDeck = this.deckCardListContainer.currentDeck;
@@ -241,6 +242,19 @@ class CollectionManager extends Phaser.Scene {
 
         this.deckCardListContainer.currentDeck = new Deck(true);
         this.updateDeckColors();
+
+        //Send to Server
+        GameClient.askSavePlayerDecks();
+    }
+
+    /** DELETE DECK FUNCTION */
+    deleteDeck(deckid) {
+        this.deckListContainer.deleteDeck(deckid);
+        GameClient.decklist.splice(deckid, 1); //remove the deck from the client as well
+        this.deckListContainer.updateEntryLayout();
+
+        //Send to Server
+        GameClient.askSavePlayerDecks();
     }
 
     /** ADD CARD TO DECK FUNCTION */
@@ -284,6 +298,23 @@ class CollectionManager extends Phaser.Scene {
             })
             .then(function (data) {});  
         }
+    }
+
+    /** LOAD DECK FROM DECKLIST */
+    loadDeck(decki) {
+        let deck = GameClient.decklist[decki];
+        this.deckCardListContainer.currentDeck = new Deck(false);
+        this.selectedDeck = decki;
+
+        this.deckCardListContainer.reset();
+        this.deckCardListContainer.loadDeck(deck);
+        this.deckCardListContainer.updateDeckCardEntries(-1);
+
+        this.updateDeckTypes();
+        
+        this.deckListContainer.setVisible(false);
+        this.deckCardListContainer.setVisible(true);
+        this.showingDeckList = false;
     }
 
     /** UPDATE TOOLTIP */

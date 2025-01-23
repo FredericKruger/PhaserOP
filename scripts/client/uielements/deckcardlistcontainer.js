@@ -148,6 +148,21 @@ class DeckCardListContainer {
         this.deckTitle.text = 'New Deck';
     }
 
+    /** FUNCTION TO LOAD A DECK */
+    loadDeck = function(deck) {
+        for(let i = 0; i<deck.cards.length; i++){
+            this.currentDeck.addCard(this.scene.cardIndex[deck.cards[i]-1]);
+        }
+        this.setDeckName(deck.name);
+        this.updateDeckTypes();
+
+        for(let i=0; i<this.currentDeck.cards.length; i++){
+            let ci = this.currentDeck.cards[i].cardInfo;
+            this.currentDeck.cards[i].set_placeholderEntry(this.createCardEntry(ci, i, this.scene.cardToCardi[ci.collectionnb-1], true, this.currentDeck.cards[i].amount));
+            this.currentDeck.cards[i].set_deckBuilderEntry(this.createCardEntry(ci, i, this.scene.cardToCardi[ci.collectionnb-1], false, this.currentDeck.cards[i].amount));
+        }
+    }
+
     /** FUNCTION TO UPDATE THE DECK TYPE */
     updateDeckColors() {
         //Update icons
