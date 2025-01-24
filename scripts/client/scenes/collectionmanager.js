@@ -332,7 +332,7 @@ class CollectionManager extends Phaser.Scene {
         this.deckCardListContainer.loadDeck(deck);
         //this.deckCardListContainer.updateDeckCardEntries(-1);
 
-        //this.updateDeckColors();
+        this.updateDeckColors();
         
         this.deckListContainer.setVisible(false);
         this.deckCardListContainer.setVisible(true);

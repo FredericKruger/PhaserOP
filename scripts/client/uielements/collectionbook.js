@@ -300,11 +300,20 @@ class CollectionBook {
 
     /** UPDATE DECK TYPE ARRAY */
     updateDeckColors(colors) {
+        let pageChanged = false;
         if(colors.length > 0) {
             for(let i=0; i<CARD_COLORS.length; i++) {
                 if(!colors.includes(CARD_COLORS[i])) {
                     this.tabs.hideButton('top', i);
                     this.colorCardInfo[i].hidden = true;
+                }
+                else {
+                    if(!pageChanged) {
+                        pageChanged = true;
+                        this.currentColorPage = 1;
+                        this.currentPage = this.colorCardInfo[i].startPage;
+                        this.selectedColor = i+1;
+                    }
                 }
             }
         } else {
@@ -320,6 +329,7 @@ class CollectionBook {
         }
         this.tabs.layout();
         this.updateMinMaxPage();
+        this.updateCardVisuals();
     } 
 
     /** NEXT PAGE FUNCTION */
