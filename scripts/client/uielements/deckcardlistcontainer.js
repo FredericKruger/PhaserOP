@@ -101,10 +101,30 @@ class DeckCardListContainer {
         this.obj.push(this.dropzoneOutline);
 
         /** CREATE A SCROLL PANEL */
-        this.scrollContainer = this.scene.add.container(this.deckDropZone.x,this.deckDropZone.y);
+        this.scrollContainer = this.scene.add.container(this.x,this.y+20 + 5);
+        this.scrollContainerPosition = {x: this.scrollContainer.x, y:this.scrollContainer.y};
+        this.scrollContainerHeight = this.height-35-30;
+        this.scrollContainer.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.width * 2 - 10, this.height - 35 - 30 - 10), Phaser.Geom.Rectangle.Contains);
+        this.obj.push(this.scrollContainer);
         //Create the maskshape
         this.maskShape = this.scene.add.graphics();
-        this.maskShape.fillRect(this.scrollContainer.x, this.scrollContainer.y, this.width-10, this.height-35-30);
+        this.maskShape.fillRect(this.scrollContainer.x, this.scrollContainer.y, this.width*2-10, this.height-35-30-10);
+        this.obj.push(this.maskShape);
+
+        this.mask = new Phaser.Display.Masks.GeometryMask(this, this.maskShape)
+;       //this.mask.setInvertAlpha(true); // Ensure the mask does not block input events
+        //Set mask to the container
+        this.scrollContainer.setMask(this.mask);
+
+        //What happens on scrolling
+        this.scene.input.on('wheel', (pointer, gameObject, deltaX, deltaY) => {
+            this.scrollContainer.y += deltaY/3;
+            this.updateScrollcontainer();
+            //console.log(this.scrollContainer.y + ' ' + (scrollContainerPosition.y-this.scrollContainer.height) + ' ' + scrollContainerPosition.y + ' ' + this.scrollContainer.height);
+             //this.scrollContainer.height
+                //let scrollPercent = (this.avatarSelectionPanelY-this.scrollContainer.y) / this.maxContainerHeight;
+                //this.scrollbar.y = scrollPercent*(300 - 100 - 5 - 5);
+        });
 
         //Hide at init
         this.setVisible(false);
@@ -140,6 +160,35 @@ class DeckCardListContainer {
         }    
     }
 
+    /** UPDATE SCROLLCONTAINER POSITION */
+    updateScrollcontainer() {
+        this.scrollContainer.y = Phaser.Math.Clamp(this.scrollContainer.y, this.scrollContainerPosition.y-Math.max((this.scrollContainerMaxHeight - this.scrollContainerHeight), 0), this.scrollContainerPosition.y);
+    
+        //Update interactivity of objects in maskbound
+        let maskBounds = {
+            top: this.scrollContainerPosition.y,
+            bottom: this.scrollContainerPosition.y + this.height - 35 - 30 + 2
+        }
+
+        // Check if the card is within the mask bounds
+        for(let i=0; i<this.currentDeck.cards.length; i++) {
+            let card = this.currentDeck.cards[i];
+            //Need to get the worldposition
+            let cardEntryBounds = card.deckBuilderEntry.convertToWorldPosition(card.deckBuilderEntry.x, card.deckBuilderEntry.y);
+            cardEntryBounds = {
+                top: cardEntryBounds.y,
+                bottom: cardEntryBounds.y + card.deckBuilderEntry.height
+            };
+            
+            //Check if in bounds
+            if (maskBounds.top > cardEntryBounds.top || maskBounds.bottom < cardEntryBounds.bottom) {
+                card.deckBuilderEntry.disableInteractive();
+            } else {
+                card.deckBuilderEntry.setInteractive();
+            }
+        }
+    }
+
     /** RESET FUNCTION */
     reset() {
         this.scrollDelta = 0;
@@ -169,9 +218,10 @@ class DeckCardListContainer {
         loader.once(Phaser.Loader.Events.COMPLETE, () => {
             for(let i=0; i<this.currentDeck.cards.length; i++){
                 let ci = this.currentDeck.cards[i].cardInfo;
-                this.currentDeck.cards[i].setPlaceholderEntry(this.createDeckCardEntry(ci, i, /*this.scene.cardToCardi[ci.collectionnb-1],*/ true, this.currentDeck.cards[i].amount));
-                this.currentDeck.cards[i].setDeckbuilderEntry(this.createDeckCardEntry(ci, i, /*this.scene.cardToCardi[ci.collectionnb-1],*/ false, this.currentDeck.cards[i].amount));
+                this.currentDeck.cards[i].setPlaceholderEntry(this.createDeckCardEntry(ci, i, true, this.currentDeck.cards[i].amount));
+                this.currentDeck.cards[i].setDeckbuilderEntry(this.createDeckCardEntry(ci, i, false, this.currentDeck.cards[i].amount));
             }
+            this.updateDeckCardEntries();
         });
         loader.start();
     }
@@ -191,6 +241,20 @@ class DeckCardListContainer {
                 this.getNameBackground().setDoubleBackgroundColor(getCardColor(this.currentDeck.colors[0]), getCardColor(this.currentDeck.colors[1]));
             }
         }
+    }
+
+    /** FUNCTION TO DETERMINE MAX HIGHT OF SCROLLCONTAINER */
+    calculateScrollContainerHeight() {
+        let maxHeight = 0;
+    
+        this.scrollContainer.each(function (child) {
+            let childBottom = child.y + (child.height || 0) * child.scaleY;
+            if (childBottom > maxHeight) {
+                maxHeight = childBottom;
+            }
+        });
+    
+        return maxHeight;
     }
 
     /** HIDE TYPE IMAGE */
@@ -218,14 +282,14 @@ class DeckCardListContainer {
     createDeckCardEntry(card, position, /*cardi, */isPlaceholder, amount) {
         let cardname = card.name;
 
-        let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
+        //let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
+        let startY = DECKCARD_ENTRY_HEIGHT/2;
         let currentY = startY + (position * DECKCARD_ENTRY_HEIGHT) + (Math.max(position-1, 0) * DECKCARD_ENTRY_INTERSPACE);
 
         let deckEntry = new DeckCardEntry({
             entryindex: position,
-            //cardi: cardi,
             cardInfo: card,
-            x: this.deckDropZone.x,
+            x: this.width/2,
             y: currentY,
             width: DECKCARD_ENTRY_WIDTH,
             height: DECKCARD_ENTRY_HEIGHT,
@@ -239,8 +303,16 @@ class DeckCardListContainer {
             attribute: getCardAttributeSymbol(card.attribute),
             isleader: card.isleader
         }, this);
+        this.scrollContainer.add(deckEntry);
 
         if(!isPlaceholder) {
+            let maskBounds = new Phaser.Geom.Rectangle(
+                this.scrollContainer.x,
+                this.scrollContainer.y,
+                this.width * 2 - 10,
+                this.height - 35 - 30 - 10
+            );
+
             deckEntry.setInteractive();
             deckEntry.on('pointerdown', function(pointer) {
                 if(pointer.rightButtonDown()) {
@@ -249,24 +321,18 @@ class DeckCardListContainer {
             }, deckEntry);
 
             this.scene.input.setDraggable(deckEntry);
-            deckEntry.on('dragend', function (pointer, dragX, dragY) {
-                if (!this.deckCardListContainer.deckDropZone.getBounds().contains(pointer.upX, pointer.upY)) {
-                    this.deckCardListContainer.removeCardFromDeck(this.entryIndex);
-                }
-            }, deckEntry); 
 
             deckEntry.on('pointerout', function(pointer) {
                 this.scene.updateTooltip({visible: false});
             }, deckEntry);
-            deckEntry.on('pointerover', function (pointer) {
+            deckEntry.on('pointerover', function (pointer) { 
                 let cardToolTipConfig = {};
                 if(!this.scene.isDragging){
-                    let positionx = this.x - this.width - (this.width*0.5/2);
+                    let positionx = this.worldX - this.width - (this.width*0.5/2);
 
-                    //cardToolTipConfig.index = this.cardi;
                     cardToolTipConfig.cardInfo = this.cardInfo;
                     cardToolTipConfig.positionx = positionx;
-                    cardToolTipConfig.positiony = this.y;
+                    cardToolTipConfig.positiony = this.worldY;
                     cardToolTipConfig.rightside = -1;
                     cardToolTipConfig.visible = true;
                 } else {
@@ -274,6 +340,15 @@ class DeckCardListContainer {
                 }
                 this.scene.updateTooltip(cardToolTipConfig);
             }, deckEntry);
+
+            // Check if the card is within the mask bounds
+            let cardEntryBounds = deckEntry.getBounds();
+            if (maskBounds.contains(cardEntryBounds.left, cardEntryBounds.top) &&
+                    maskBounds.contains(cardEntryBounds.right, cardEntryBounds.bottom)) {
+                        deckEntry.setInteractive();
+            } else {
+                deckEntry.disableInteractive();
+            }
         }
 
         return deckEntry;
@@ -285,8 +360,7 @@ class DeckCardListContainer {
 
         switch(resultCode) {
             case ERRORCODES.REMOVED_CARD:
-                //self.decklist_container.decreaseMaxScroll();
-                this.updateDeckCardEntries(-1); //-1 because no cardi required when removing
+                this.updateDeckCardEntries(); //-1 because no cardi required when removing
                 this.scene.updateDeckColors();
                 break;
             case ERRORCODES.CANNOT_REMOVE_LEADER:
@@ -306,8 +380,14 @@ class DeckCardListContainer {
     }
 
     /** UPDATE THE DECK CARD ENTRIES IN THE DECK LIST */
-    updateDeckCardEntries(/*cardi*/) {
-        let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
+    updateDeckCardEntries() {
+        let startY = DECKCARD_ENTRY_HEIGHT/2;
+        let maskBounds = new Phaser.Geom.Rectangle(
+            this.scrollContainer.x,
+            this.scrollContainer.y,
+            this.width * 2 - 10,
+            this.height - 35 - 30 - 10
+        );
 
         let addedEntry = null;
 
@@ -318,8 +398,8 @@ class DeckCardListContainer {
         for(let i=0; i<this.currentDeck.cards.length; i++) {
             let card = this.currentDeck.cards[i];
             if(card.deckBuilderEntry === null) { //if no visual entry exists for the card
-                card.setPlaceholderEntry(this.createDeckCardEntry(card.cardInfo, i, /*cardi,*/ true, card.amount));
-                card.setDeckbuilderEntry(this.createDeckCardEntry(card.cardInfo, i, /*cardi,*/ false, card.amount));
+                card.setPlaceholderEntry(this.createDeckCardEntry(card.cardInfo, i, true, card.amount));
+                card.setDeckbuilderEntry(this.createDeckCardEntry(card.cardInfo, i, false, card.amount));
 
                 addedEntry = card;
             }
@@ -327,6 +407,17 @@ class DeckCardListContainer {
             let currentY = startY + (i * DECKCARD_ENTRY_HEIGHT) + (Math.max(i-1, 0) * DECKCARD_ENTRY_INTERSPACE);
 
             card.update_entryPosition(currentY, i);
+
+            // Check if the card is within the mask bounds
+            let cardEntryBounds = card.deckBuilderEntry.getBounds();
+            if (maskBounds.contains(cardEntryBounds.left, cardEntryBounds.top) &&
+                    maskBounds.contains(cardEntryBounds.right, cardEntryBounds.bottom)) {
+                card.deckBuilderEntry.setInteractive();
+            } else {
+                card.deckBuilderEntry.disableInteractive();
+            }
         }
+        this.scrollContainerMaxHeight = this.calculateScrollContainerHeight();
+        this.updateScrollcontainer();
     }
 }

@@ -133,18 +133,40 @@ class CollectionManager extends Phaser.Scene {
         this.input.on('dragstart', function (pointer, gameObject) {
             this.children.bringToTop(gameObject);
             this.isDragging = true;
+
+            if(gameObject instanceof DeckCardEntry) {
+                gameObject.deckCardListContainer.scrollContainer.remove(gameObject);
+                gameObject.setToWorldPosition();
+                this.updateTooltip({visible: false});
+            }
         }, this);
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
+            if(gameObject instanceof DeckCardEntry) {
+                let worldCoord = gameObject.convertToWorldPosition(dragX, dragY);
+                gameObject.x = worldCoord.x;
+                gameObject.y = worldCoord.y;
+            } else {
+                gameObject.x = dragX;
+                gameObject.y = dragY;
+            }
+
         }, this);
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             if(gameObject.input !== undefined){//in case the element was destroyed before
-                if (!dropped) { 
-                    gameObject.x = gameObject.input.dragStartX;
-                    gameObject.y = gameObject.input.dragStartY;
+                if(gameObject instanceof DeckCardEntry) {
+                    if (!gameObject.deckCardListContainer.deckDropZone.getBounds().contains(pointer.upX, pointer.upY)) {
+                        gameObject.deckCardListContainer.removeCardFromDeck(gameObject.entryIndex);
+                    } else {
+                        gameObject.deckCardListContainer.scrollContainer.add(gameObject);
+                        gameObject.setToLocalPosition();
+                    }
+                } else {
+                    if (!dropped) { 
+                        gameObject.x = gameObject.input.dragStartX;
+                        gameObject.y = gameObject.input.dragStartY;
+                    }
                 }
             }
             this.isDragging = false;

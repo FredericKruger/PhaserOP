@@ -68,6 +68,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
 
         this.scene.add.existing(this);
 
+        this.updateWorldPosition();
     }
 
     /** FUNCTION TO UPDATE THE CARD AMOUNT */
@@ -78,11 +79,46 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
     /** FUNCTION TO UPDATE THE NEW POSITION */
     updatePosition (newY) {
         this.setPosition(this.x, newY);
+        this.updateWorldPosition();
     }
 
     /** FUNCTION TO UPDATE THE NEW INDEX */
     updateEntryIndex (entryIndex) {
         this.entryIndex = entryIndex;
+    }
+
+    /** SET WORLD POSITION */
+    updateWorldPosition() {
+        let transformMatrix = this.deckCardListContainer.scrollContainer.getWorldTransformMatrix();
+
+        this.localX = this.x;
+        this.localY = this.y;
+
+        // Apply the transform matrix to get the actual screen coordinates
+        this.worldX = transformMatrix.tx + this.localX * transformMatrix.a + this.localY * transformMatrix.c;
+        this.worldY = transformMatrix.ty + this.localX * transformMatrix.b + this.localY * transformMatrix.d;
+    }
+
+    /** FUNCTION NECESSARY WHEN DRAGGING */
+    convertToWorldPosition(x, y) {
+        let transformMatrix = this.deckCardListContainer.scrollContainer.getWorldTransformMatrix();
+
+        // Apply the transform matrix to get the actual screen coordinates
+        let newX = transformMatrix.tx + x * transformMatrix.a + y * transformMatrix.c;
+        let newY = transformMatrix.ty + x * transformMatrix.b + y * transformMatrix.d;
+
+        return {x:newX, y:newY};
+    }
+
+    /** SET TO WORL POSITION */
+    setToWorldPosition() {
+        this.updateWorldPosition();
+        this.setPosition(this.worldX, this.worldY);
+    }
+
+    /** SET TO LOCAL POSITION */
+    setToLocalPosition() {
+        this.setPosition(this.localX, this.localY);
     }
 
 }
