@@ -89,6 +89,9 @@ class CollectionManager extends Phaser.Scene {
         this.add.existing(this.collectionBook.tabs);
         this.collectionBook.tabs.emitButtonClick('top',0);
 
+        /** CARD CRAFTING PANEL */
+        this.cardCraftingPanel = new CardCraftingPanel(this, this.cameras.main.width/2, this.cameras.main.height/2);
+
         /**DECKS LIST CONTAINER */
         let listOfDecksContainerConfig = {
             scene: this,
@@ -138,6 +141,8 @@ class CollectionManager extends Phaser.Scene {
                 gameObject.deckCardListContainer.scrollContainer.remove(gameObject);
                 gameObject.setToWorldPosition();
                 this.updateTooltip({visible: false});
+            } else if(gameObject instanceof CardVisual) {
+                gameObject.showBorder(false);
             }
         }, this);
 

@@ -83,7 +83,12 @@ class Loader extends Phaser.Scene {
         this.load.image('default_avatar', 'assets/icons/playericons/icon1.png');
         this.load.image('ai_avatar', 'assets/icons/playericons/icon1.png');
         
-        this.load.image('card_back', 'assets/backart/sleeve-0.png');
+        this.load.image('card_back1', 'assets/backart/sleeve-0.png');
+        this.load.image('card_back2', 'assets/backart/don-sleeve-0.png');
+
+        this.load.image('packart_1', 'assets/packart/OP01.png');
+        this.load.image('packart_2', 'assets/packart/OP02.png');
+        this.load.image('packart_3', 'assets/packart/OP03.png');
 
         this.load.image('op_RED_symbol', 'assets/icons/colorsymbols/OP_RED.png');
         this.load.image('op_GREEN_symbol', 'assets/icons/colorsymbols/OP_GREEN.png');

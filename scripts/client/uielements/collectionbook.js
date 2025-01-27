@@ -96,7 +96,7 @@ class CollectionBook {
 
         let o = {
             x: this.tabs.x - bookCardAreaWidth - bookCardAreaWidth/2,
-            y: this.tabs.y - bookCardAreaHeight/2
+            y: this.tabs.y - bookCardAreaHeight/2 - 25
         };
         for(let i = 0; i<maxCardsPerPage; i++){
             let c = {
@@ -105,6 +105,7 @@ class CollectionBook {
                 cardVisual: null,
                 cardPlaceholder: null,
                 collectionBook: this,
+                cardInfo: null,
                 update: function() {
                     if(((this.collectionBook.currentColorPage-1) * maxCardsPerPage + this.index) >= this.collectionBook.colorCardInfo[this.collectionBook.selectedColor-1].numberCards) {
                         this.cardVisual.setVisible(false);
@@ -118,7 +119,8 @@ class CollectionBook {
                     
                     if(cardi < this.collectionBook.colorCardIndex[this.collectionBook.selectedColor-1].length) {
                         let cardInfo = this.collectionBook.colorCardIndex[this.collectionBook.selectedColor-1][cardi];
-                    
+
+                        this.cardInfo = cardInfo;
                         this.cardVisual.setUpdate(cardInfo);
                         this.cardPlaceholder.setUpdate(cardInfo);  
                     }
@@ -127,11 +129,24 @@ class CollectionBook {
 
             let config = {
                 x: o.x + (bookCardAreaWidth * (i % (maxCardsPerPage/maxCardsPerCol))),
-                y: o.y + (bookCardAreaHeight * Math.floor(i / (maxCardsPerPage/maxCardsPerCol))),
+                y: o.y + ((bookCardAreaHeight + 75) * Math.floor(i / (maxCardsPerPage/maxCardsPerCol))),
                 scale: 0.35
             }
-            c.cardVisual = new CardVisual(this.scene, config);
+            c.cardAmountBox = this.scene.add.graphics();
+            c.cardAmountBox.fillStyle(OP_CREAM, 1);
+            c.cardAmountBox.fillRoundedRect(config.x - 30, config.y + bookCardAreaHeight/2 - 5, 60, 40, 5);
+            c.cardAmountBox.lineStyle(4, OP_WHITE, 1); // Border color (orange) with 2px thickness
+            c.cardAmountBox.strokeRoundedRect(config.x - 30, config.y + bookCardAreaHeight/2 - 5, 60, 40, 5); // Draw the border
+
+            c.cardAmountText = this.scene.add.text(config.x, config.y + bookCardAreaHeight/2 + 12, 'x4', {
+                fontFamily: 'Arial',
+                fontSize: '20px',
+                color: '#0xD6AA44'
+            });
+            c.cardAmountText.setOrigin(0.5, 0.5);
+
             c.cardPlaceholder = new CardVisual(this.scene, config);
+            c.cardVisual = new CardVisual(this.scene, config);
 
             c.cardVisual.setVisible(false);
             c.cardPlaceholder.setVisible(false);
@@ -139,7 +154,8 @@ class CollectionBook {
             c.cardVisual.setInteractive();
             c.cardVisual.on('pointerdown', function(pointer) {
                 if(pointer.rightButtonDown()) {
-                    console.log('Right click detected');
+                    this.collectionBook.scene.cardCraftingPanel.updateArt(c.cardInfo);
+                    this.collectionBook.scene.cardCraftingPanel.setVisible(true);
                 } else {
                     if(!this.collectionBook.scene.showingDeckList){
                         //if the firstClicktime is 0 then this we record the time and leave the function
@@ -157,6 +173,12 @@ class CollectionBook {
                     }  
                 }
             }, c);
+            c.cardVisual.on('pointerover', function(pointer) {
+                c.cardVisual.showBorder(true && !this.collectionBook.scene.isDragging);
+            }, c);
+            c.cardVisual.on('pointerout', function(pointer) {
+                c.cardVisual.showBorder(false);
+            });
             c.collectionBook.scene.input.setDraggable(c.cardVisual);
 
             this.cardVisuals.push(c);
