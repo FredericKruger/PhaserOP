@@ -80,6 +80,13 @@ class Loader extends Phaser.Scene {
         this.load.image('rightarrow', 'assets/elements/rightarrow.png');
         this.load.image('leftarrow', 'assets/elements/leftarrow.png');
 
+        this.load.image('storeIcon', 'assets/icons/menuicons/storeIcon.png');
+        this.load.image('openPackIcon', 'assets/icons/menuicons/openPackIcon.png');
+        this.load.image('logoutIcon', 'assets/icons/menuicons/logoutIcon.png');
+        this.load.image('randomMatchIcon', 'assets/icons/menuicons/randomMatchIcon.png');
+        this.load.image('vsAIIcon', 'assets/icons/menuIcons/vsAIIcon.png');
+        this.load.image('collectionIcon', 'assets/icons/menuIcons/collectionIcon.png');
+
         this.load.image('default_avatar', 'assets/icons/playericons/icon1.png');
         this.load.image('ai_avatar', 'assets/icons/playericons/icon1.png');
         
@@ -96,6 +103,13 @@ class Loader extends Phaser.Scene {
         this.load.image('op_PURPLE_symbol', 'assets/icons/colorsymbols/OP_PURPLE.png');
         this.load.image('op_BLACK_symbol', 'assets/icons/colorsymbols/OP_BLACK.png');
         this.load.image('op_YELLOW_symbol', 'assets/icons/colorsymbols/OP_YELLOW.png');
+
+        this.load.image('op_font_RED', 'assets/icons/colorsymbols/OP_FONT_RED.png');
+        this.load.image('op_font_GREEN', 'assets/icons/colorsymbols/OP_FONT_GREEN.png');
+        this.load.image('op_font_BLUE', 'assets/icons/colorsymbols/OP_FONT_BLUE.png');
+        this.load.image('op_font_PURPLE', 'assets/icons/colorsymbols/OP_FONT_PURPLE.png');
+        this.load.image('op_font_BLACK', 'assets/icons/colorsymbols/OP_FONT_BLACK.png');
+        this.load.image('op_font_YELLOW', 'assets/icons/colorsymbols/OP_FONT_YELLOW.png');
 
         this.load.image('op_cost_BLACK_0', 'assets/icons/costicons/BLACK_0.png');
         this.load.image('op_cost_BLACK_1', 'assets/icons/costicons/BLACK_1.png');

@@ -33,69 +33,47 @@ class Title extends Phaser.Scene {
             fill: "#E9E6CE"
         });
 
-        let bFM = new Button({
-            scene: this,
-            x: screenCenterX,
-            y: screenCenterY+225,
-            width: 300,
-            height: 50,
-            radius: 10,
-            backgroundcolor: OP_RED,
-            outlinecolor: OP_CREAM,
-            text: "RANDOM MATCH",
-            fontsize: 32
-        });
+        let bFM = this.add.image(screenCenterX, screenCenterY+225, 'randomMatchIcon').setOrigin(0.5);
+        bFM.setScale(0.25);
+        bFM.setInteractive();
         bFM.on('pointerdown', () => {this.startDeckSelection(false);});
-        bFM.on('pointerout', () => bFM.setScale(1));
-        bFM.on('pointerover', () => bFM.setScale(1.1));
+        bFM.on('pointerout', () => bFM.setScale(0.25));
+        bFM.on('pointerover', () => bFM.setScale(0.26));
 
-        let bVSAI = new Button({
-            scene: this,
-            x: screenCenterX,
-            y: screenCenterY+295,
-            width: 300,
-            height: 50,
-            radius: 10,
-            backgroundcolor: OP_BLUE,
-            outlinecolor: OP_CREAM,
-            text: "VS AI",
-            fontsize: 32
-        });
+        let bVSAI = this.add.image(screenCenterX, screenCenterY+295, 'vsAIIcon').setOrigin(0.5);
+        bVSAI.setScale(0.25);
+        bVSAI.setInteractive();
         bVSAI.on('pointerdown', () => {this.startDeckSelection(true);});
-        bVSAI.on('pointerout', () => bVSAI.setScale(1));
-        bVSAI.on('pointerover', () => bVSAI.setScale(1.1));
+        bVSAI.on('pointerout', () => bVSAI.setScale(0.25));
+        bVSAI.on('pointerover', () => bVSAI.setScale(0.26));
 
-        let bDB = new Button({
-            scene: this,
-            x: screenCenterX,
-            y: screenCenterY+365,
-            width: 300,
-            height: 50,
-            radius: 10,
-            backgroundcolor: OP_ORANGE,
-            outlinecolor: OP_CREAM,
-            text: "Collection",
-            fontsize: 32
-        });
+        let bDB = this.add.image(screenCenterX, screenCenterY+365, 'collectionIcon').setOrigin(0.5);
+        bDB.setScale(0.26);
+        bDB.setInteractive();
         bDB.on('pointerdown', this.startDeckBuilder, this);
-        bDB.on('pointerout', () => bDB.setScale(1));
-        bDB.on('pointerover', () => bDB.setScale(1.1));
+        bDB.on('pointerout', () => bDB.setScale(0.26));
+        bDB.on('pointerover', () => bDB.setScale(0.27));
 
-        let logOutB = new Button({
-            scene: this,
-            x: this.cameras.main.width - 50,
-            y: 50,
-            width: 30,
-            height: 30,
-            backgroundcolor: OP_BLACK,
-            outlinecolor: OP_CREAM,
-            text: "Logout",
-            fontsize: 10,
-            round : true
-        });
+        let logOutB = this.add.image(this.cameras.main.width - 75, 75, 'logoutIcon').setOrigin(0.5);
+        logOutB.setScale(0.2);
+        logOutB.setInteractive();
         logOutB.on('pointerdown', this.logout, this);
-        logOutB.on('pointerout', () => logOutB.setScale(1));
-        logOutB.on('pointerover', () => logOutB.setScale(1.1));
+        logOutB.on('pointerout', () => logOutB.setScale(0.2));
+        logOutB.on('pointerover', () => logOutB.setScale(0.21));
+
+        let shopButton = this.add.image(150, this.cameras.main.height - 75, 'storeIcon').setOrigin(0.5);
+        shopButton.setScale(0.2);
+        shopButton.setInteractive();
+        //shopButton.on('pointerdown', this.openStore, this);
+        shopButton.on('pointerout', () => shopButton.setScale(0.2));
+        shopButton.on('pointerover', () => shopButton.setScale(0.21));
+
+        let openPackButton = this.add.image(this.cameras.main.width - 150, this.cameras.main.height - 120, 'openPackIcon').setOrigin(0.5);
+        openPackButton.setScale(0.15);
+        openPackButton.setInteractive();
+        //shopButton.on('pointerdown', this.openStore, this);
+        openPackButton.on('pointerout', () => openPackButton.setScale(0.15));
+        openPackButton.on('pointerover', () => openPackButton.setScale(0.16));
 
         let avatarX = 20 + this.avatarPortraitWidth/2;
         let avatarY = 20 + this.avatarPortraitWidth/2;

@@ -75,14 +75,14 @@ class CollectionBook {
             collectionBook.updateCardVisuals();
 
             if(collectionBook.pageTitle !== null && collectionBook.colorCardIndex[index].length>0) {
-                collectionBook.pageTitle.setText(CARD_COLORS[index]);
+                collectionBook.pageTitle.setTexture('op_font_' + CARD_COLORS[index]);
             }
 
             //handle coloring of the tabs
-            /*if (this._prevTypeButton) {
+            if (this._prevTypeButton) {
                 this._prevTypeButton.getElement('icon').setTint(OP_WHITE, OP_WHITE, OP_WHITE);
             }
-            button.getElement('icon').setTint();*/
+            button.getElement('icon').setTint();
             
             this._prevTypeButton = button;
             if (this._prevSortButton === undefined) {
@@ -185,11 +185,12 @@ class CollectionBook {
         }
 
         /** PAGE TITLE */
-        this.pageTitle = this.scene.add.text(this.tabs.x, 80, 'GREEN', {
+        this.pageTitle = this.scene.add.image(this.tabs.x, 80, 'op_font_GREEN').setOrigin(0.5, 0).setScale(0.5);
+        /*this.scene.add.text(this.tabs.x, 80, 'GREEN', {
             fontFamily: 'Brandon',
             font: "55px monospace",
             fill: "#000000"
-        });
+        });*/
         this.pageTitle.setOrigin(0.5, 0);
 
         /** NEXT PAGE BUTTON */
@@ -312,7 +313,7 @@ class CollectionBook {
             width: 60,
             height: 50,
             background: scene.rexUI.add.roundRectangle(0, 0, 50, 50, radius, backgroundColor),
-            icon: scene.add.image(0, 0, symbol).setScale(0.3).setOrigin(0),
+            icon: scene.add.image(0, 0, symbol).setScale(0.3).setOrigin(0).setTint(OP_WHITE, OP_WHITE, OP_WHITE),
             space: {
                 bottom: 0,//-110,
                 left: 12
