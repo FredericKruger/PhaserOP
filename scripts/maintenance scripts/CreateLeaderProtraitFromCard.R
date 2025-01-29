@@ -3,7 +3,7 @@ library(magick)
 folder_path <- "c:/Users/Kruger_F1/Pictures/tmp/"
 files <- list.files(folder_path)
 
-file <- "OP03-099.png"
+file <- "ST01-001.png"
 
 img <- image_read(paste0("c:/Users/Kruger_F1/Pictures/tmp/", file))
 
@@ -11,9 +11,9 @@ img_info <- image_info(img)
 width <- img_info$width
 height <- img_info$height
 
-x_center <- width/2 +100# X-coordinate of the circle center
+x_center <- width/2 - 25# X-coordinate of the circle center
 y_center <- 140  # Y-coordinate of the circle center
-radius <- 100
+radius <- 120
 
 resize_radius <- 100
 
@@ -33,4 +33,4 @@ circular_image <- image_crop(img_cropped, geometry = geom)
 resized_img <- image_scale(circular_image, paste0("x", resize_radius))
 print(resized_img)
 
-image_write(resized_img, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/leaderart_OP03-099.png"))
+image_write(resized_img, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/leaderart_ST01-001.png"))

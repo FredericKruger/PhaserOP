@@ -93,9 +93,13 @@ class Loader extends Phaser.Scene {
         this.load.image('card_back1', 'assets/backart/sleeve-0.png');
         this.load.image('card_back2', 'assets/backart/don-sleeve-0.png');
 
-        this.load.image('packart_1', 'assets/packart/OP01.png');
-        this.load.image('packart_2', 'assets/packart/OP02.png');
-        this.load.image('packart_3', 'assets/packart/OP03.png');
+        this.load.image('packart_OP01', 'assets/packart/OP01.png');
+        this.load.image('packart_OP02', 'assets/packart/OP02.png');
+        this.load.image('packart_OP02', 'assets/packart/OP03.png');
+        this.load.image('packart_ST01', 'assets/packart/ST01.png');
+        this.load.image('packart_ST02', 'assets/packart/ST02.png');
+        this.load.image('packart_ST03', 'assets/packart/ST03.png');
+        this.load.image('packart_ST04', 'assets/packart/ST04.png');
 
         this.load.image('op_RED_symbol', 'assets/icons/colorsymbols/OP_RED.png');
         this.load.image('op_GREEN_symbol', 'assets/icons/colorsymbols/OP_GREEN.png');
@@ -206,6 +210,13 @@ class Loader extends Phaser.Scene {
         this.load.image('op_attribute_SPECIAL', 'assets/icons/attributesymbols/SPECIAL.png');
         this.load.image('op_attribute_STRIKE', 'assets/icons/attributesymbols/STRIKE.png');
         this.load.image('op_attribute_WISDOM', 'assets/icons/attributesymbols/WISDOM.png');
+
+        this.load.image('luffy_intro', 'assets/images/luffy_intro.png');
+        this.load.image('starter_message', 'assets/images/starter_message.png');
+        this.load.image('description_ST01', 'assets/images/description_ST01.png');
+        this.load.image('description_ST02', 'assets/images/description_ST02.png');
+        this.load.image('description_ST03', 'assets/images/description_ST03.png');
+        this.load.image('description_ST04', 'assets/images/description_ST04.png');
         
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
         //this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', 'rexRoundRectangle', 'rexRoundRectangle');

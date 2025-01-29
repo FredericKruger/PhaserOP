@@ -147,6 +147,8 @@ io.on('connection', function (socket) {
     socket.on('player_connect', async (username) => {
         let connectSuccess = !serverInstance.isUsernameUsed(username);
         let playerSetting = null;
+        let playerCollection = [];
+        let newPlayer = true;
         if(connectSuccess) {
             console.log('A user connected: ' + socket.id);
             socket.player = new Player(socket, serverInstance, username); //Create a new player instance
@@ -154,18 +156,30 @@ io.on('connection', function (socket) {
             console.log("New player connected! " + socket.player.id + ", " + socket.player.name);
 
             playerSetting = await getPlayerSettings(username);
+            playerCollection = await getPlayerCollection(username);
             //create playerseetings
             if(playerSetting === null) {
                 console.log("This is a new Player ! Need to create the settings file");
+                newPlayer = true;
                 let defaultSettings = {
-                    "avatar": "walle"
+                    "avatar": "default_avatar",
+                    "firstLogin": true
                 };
                 defaultSettings = JSON.stringify(defaultSettings);
                 await savePlayerSettings(username, defaultSettings);
+                await savePlayerCollection(username, JSON.stringify(playerCollection));
                 playerSetting = await getPlayerSettings(username);
+                playerCollection = await getPlayerCollection(username);
+            }
+
+            socket.emit('player_connected', connectSuccess, playerSetting, playerCollection, newPlayer);
+
+            //Save new settings
+            if(newPlayer){
+                //playerSetting.firstLogin = false;
+                //await savePlayerSettings(username, playerSetting);
             }
         } 
-        socket.emit('player_connected', connectSuccess, playerSetting);
     });
 
     /** When a player disconnects */
@@ -283,6 +297,25 @@ async function getPlayerSettings (username) {
     return null; //If there is an error return nothing
 }
 
+/** Asynchronous function that creates a promise to send the user collection
+ * 
+ */
+async function getPlayerCollection (username) {
+    let fs = require('fs');
+    let collection = [];
+    let playerCollectionName = 'collection_' + username + '.json'; //Get file name
+    let filepath = __dirname + '/server_assets/player_collections/' + playerCollectionName; //get file path
+
+    try {
+        const data = await fs.promises.readFile(filepath);
+        collection = JSON.parse(data);
+        return collection;
+    } catch(err) {
+
+    }
+    return [];
+}
+
 /** Asynchronous function that creates a promise to save the user settings
  * @param {string} username - player username
  * @param {object} settings - player settings
@@ -293,6 +326,20 @@ async function savePlayerSettings (username, settings) {
     let filepath = __dirname + '/server_assets/player_settings/' + playerSettingsName; //Get file path
     try {
         await fs.writeFileSync(filepath, settings); //Write to new file
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+/** Asynchronous function that creates a promise to save the user collection
+ * 
+ */
+async function savePlayerCollection (username, collection) {
+    let fs = require('fs');
+    let playerCollectionName = 'collection_' + username + '.json'; //Get file name
+    let filepath = __dirname + '/server_assets/player_collections/' + playerCollectionName; //Get file path
+    try {
+        await fs.writeFileSync(filepath, collection); //Write to new file
     } catch (err) {
         console.log(err);
     }

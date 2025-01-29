@@ -8,8 +8,11 @@ class Client {
         this.username = ""; //Store the mainplayer username
         this.playerSettings = null; //Store the mainplayer settings
 
+        this.playerCollection = []; //Store the player collection
         this.decklist = []; //Store the player decks
         this.aidecklist = {}; //Store the ai decks
+
+        this.firstLogin = false;
 
         //Connects to the server.
         this.socket = io.connect();
@@ -24,9 +27,11 @@ class Client {
         this.player2NumberCards = null;
 
         /** Listen to the signal from the server that the player has successfully connected */
-        this.socket.on('player_connected', (success, playerSetting) => {
+        this.socket.on('player_connected', (success, playerSetting, playerCollection, newPlayer) => {
             if(success) {
                 this.playerSettings = playerSetting;
+                this.playerCollection = playerCollection;
+                this.firstLogin = newPlayer;
                 this.loginScene.loadTitleScene();
             } else {
                 this.username = null;

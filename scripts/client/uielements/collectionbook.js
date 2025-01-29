@@ -10,10 +10,6 @@ class CollectionBook {
         this.colorCardInfo = this.scene.colorCardInfo;
         this.colorCardIndex = this.scene.colorCardIndex;
 
-        /*const screenCenterX = this.scene.cameras.main.worldView.x + this.scene.cameras.main.width / 2;
-        const screenCenterY = this.scene.cameras.main.worldView.y + this.scene.cameras.main.height / 2;
-        const screenWidth = this.scene.cameras.main.width;*/
-
         this.selectedCard = 0;
 
         this.pageMax = 1;
@@ -23,7 +19,7 @@ class CollectionBook {
         this.selectedColor = 1;
 
         this.objToUpdate = [];
-        this.cardVisuals = [];
+        this.collectionBookCardEntries = [];
 
         this.tabs = new RexPlugins.UI.Tabs( this.scene, {
             x: config.x + config.width/2, //900
@@ -94,103 +90,23 @@ class CollectionBook {
         let bookCardAreaWidth = 260;
         let bookCardAreaHeight = 300;
 
-        let o = {
-            x: this.tabs.x - bookCardAreaWidth - bookCardAreaWidth/2,
-            y: this.tabs.y - bookCardAreaHeight/2 - 25
-        };
+        let startX = this.tabs.x - bookCardAreaWidth - bookCardAreaWidth/2;
+        let startY = this.tabs.y - bookCardAreaHeight/2 - 25;
+
         for(let i = 0; i<maxCardsPerPage; i++){
-            let c = {
-                index: i,
-                firstClickTime: 0,
-                cardVisual: null,
-                cardPlaceholder: null,
-                collectionBook: this,
-                cardInfo: null,
-                update: function() {
-                    if(((this.collectionBook.currentColorPage-1) * maxCardsPerPage + this.index) >= this.collectionBook.colorCardInfo[this.collectionBook.selectedColor-1].numberCards) {
-                        this.cardVisual.setVisible(false);
-                        this.cardPlaceholder.setVisible(false);
-                    } else {
-                        this.cardVisual.setVisible(true);
-                        this.cardPlaceholder.setVisible(true);
-                    }
-                    let cardi = (this.collectionBook.currentColorPage-1) * maxCardsPerPage + this.index;
-                    cardi = Math.max(cardi, 0);
-                    
-                    if(cardi < this.collectionBook.colorCardIndex[this.collectionBook.selectedColor-1].length) {
-                        let cardInfo = this.collectionBook.colorCardIndex[this.collectionBook.selectedColor-1][cardi];
-
-                        this.cardInfo = cardInfo;
-                        this.cardVisual.setUpdate(cardInfo);
-                        this.cardPlaceholder.setUpdate(cardInfo);  
-                    }
-                }
-            };
-
             let config = {
-                x: o.x + (bookCardAreaWidth * (i % (maxCardsPerPage/maxCardsPerCol))),
-                y: o.y + ((bookCardAreaHeight + 75) * Math.floor(i / (maxCardsPerPage/maxCardsPerCol))),
-                scale: 0.35
-            }
-            c.cardAmountBox = this.scene.add.graphics();
-            c.cardAmountBox.fillStyle(OP_CREAM, 1);
-            c.cardAmountBox.fillRoundedRect(config.x - 30, config.y + bookCardAreaHeight/2 - 5, 60, 40, 5);
-            c.cardAmountBox.lineStyle(4, OP_WHITE, 1); // Border color (orange) with 2px thickness
-            c.cardAmountBox.strokeRoundedRect(config.x - 30, config.y + bookCardAreaHeight/2 - 5, 60, 40, 5); // Draw the border
-
-            c.cardAmountText = this.scene.add.text(config.x, config.y + bookCardAreaHeight/2 + 12, 'x4', {
-                fontFamily: 'Arial',
-                fontSize: '20px',
-                color: '#0xD6AA44'
-            });
-            c.cardAmountText.setOrigin(0.5, 0.5);
-
-            c.cardPlaceholder = new CardVisual(this.scene, config);
-            c.cardVisual = new CardVisual(this.scene, config);
-
-            c.cardVisual.setVisible(false);
-            c.cardPlaceholder.setVisible(false);
-
-            c.cardVisual.setInteractive();
-            c.cardVisual.on('pointerdown', function(pointer) {
-                if(pointer.rightButtonDown()) {
-                    this.collectionBook.scene.cardCraftingPanel.updateArt(c.cardInfo);
-                    this.collectionBook.scene.cardCraftingPanel.setVisible(true);
-                } else {
-                    if(!this.collectionBook.scene.showingDeckList){
-                        //if the firstClicktime is 0 then this we record the time and leave the function
-                        this.collectionBook.selectedCard = this.index;
-                        if (this.firstClickTime == 0) {
-                            this.firstClickTime = new Date().getTime();
-                            return;
-                        }
-                        let elapsed = new Date().getTime() - this.firstClickTime;
-    
-                        if (elapsed < 350) {
-                            this.collectionBook.scene.addCardToDeck(this.collectionBook.selectedCard);
-                        } 
-                        this.firstClickTime = 0;  
-                    }  
-                }
-            }, c);
-            c.cardVisual.on('pointerover', function(pointer) {
-                c.cardVisual.showBorder(true && !this.collectionBook.scene.isDragging);
-            }, c);
-            c.cardVisual.on('pointerout', function(pointer) {
-                c.cardVisual.showBorder(false);
-            });
-            c.collectionBook.scene.input.setDraggable(c.cardVisual);
-
-            this.cardVisuals.push(c);
+                x: startX + (bookCardAreaWidth * (i % (maxCardsPerPage/maxCardsPerCol))),
+                y: startY + ((bookCardAreaHeight + 75) * Math.floor(i / (maxCardsPerPage/maxCardsPerCol))),
+                scale: 0.35,
+                bookCardAreaWidth: bookCardAreaWidth,
+                bookCardAreaHeight: bookCardAreaHeight
+            };
+            let c = new CollectionBookCardEntry(this, i, config);
+            this.collectionBookCardEntries.push(c);
         }
 
         /** PAGE TITLE */
-        this.pageTitle = this.scene.add.image(this.tabs.x, 80, 'op_font_GREEN').setOrigin(0.5, 0).setScale(0.5);
-        /*this.scene.add.text(this.tabs.x, 80, 'GREEN', {
-            fontFamily: 'Brandon',
-            font: "55px monospace",
-            fill: "#000000"
-        });*/
+        this.pageTitle = this.scene.add.image(this.tabs.x, 80, '').setOrigin(0.5, 0).setScale(0.5);
         this.pageTitle.setOrigin(0.5, 0);
 
         /** NEXT PAGE BUTTON */
@@ -258,25 +174,22 @@ class CollectionBook {
             cardi = Math.max(cardi, 0);
             if(cardi<this.colorCardIndex[this.selectedColor-1].length) {
                 let cardInfo = this.colorCardIndex[this.selectedColor-1][cardi];
+                this.collectionBookCardEntries[i].updateCardInfo(cardInfo);
+                
                 let cardArtKey = cardInfo.art
                 if(!this.scene.cache.game.textures.list[cardArtKey]){
                     numberOfArtLoads++;
                     loader.image(cardArtKey, 'assets/cardart/' + cardArtKey + '.png'); //load image
                     loader.image('deckentry_' + cardArtKey, 'assets/deckentryart/deckentry_' + cardArtKey + '.png'); //load deck entry preemtiveley to avvoid errors later
-                }
-                
+                }  
+            } else {
+                this.collectionBookCardEntries[i].updateCardInfo(null);
             }
-        }
-
-        if(numberOfArtLoads>0) {
             loader.once(Phaser.Loader.Events.COMPLETE, () => {
-                for(let visual of this.cardVisuals) visual.update();
+                for(let bookEntry of this.collectionBookCardEntries) bookEntry.update();
             });
             loader.start();
-        } else {
-            for(let visual of this.cardVisuals) visual.update();
         }
-
     }
 
     /** UPDATE THE TRACKER FOR WHAT THE BOTTOM AND TOP PAGE OF THE TAB WILL BE */

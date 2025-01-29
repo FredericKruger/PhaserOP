@@ -8,7 +8,7 @@ class CardCraftingPanel extends Phaser.GameObjects.Container{
         
         // Create a semi-transparent overlay that takes up the whole window
         this.overlay = this.scene.add.graphics();
-        this.overlay.fillStyle(0x000000, 0.55); // Black color with 50% opacity
+        this.overlay.fillStyle(0x000000, 0.7); // Black color with 50% opacity
         this.overlay.fillRect(-this.scene.scale.width/2, -this.scene.scale.height/2, this.scene.scale.width, this.scene.scale.height);
         this.obj.push(this.overlay);
 
@@ -27,9 +27,8 @@ class CardCraftingPanel extends Phaser.GameObjects.Container{
         this.backart.angle = 20;
         this.obj.push(this.backart);
 
-        this.packart = this.scene.add.image(-110, -150, 'packart_1').setOrigin(0.5);
-        this.packart.setScale(0.8);
-        this.packart.angle = -20;
+        this.packart = this.scene.add.image(-275, -125, 'packart_1').setOrigin(0.5);
+        this.packart.setScale(0.35);
         this.obj.push(this.packart);
 
         this.cardAmountBox = this.scene.add.graphics();
@@ -65,7 +64,15 @@ class CardCraftingPanel extends Phaser.GameObjects.Container{
     /** UPDATE THE INFORMATION IUN THE PANEL */
     updateArt(cardInfo) {
         this.art.setTexture(cardInfo.art);
+        this.cardAmountText.text = 'x' + cardInfo.amount;
         this.packart.setTexture('packart_' + cardInfo.set);
+
+        // Apply greyscale shader if the amount is 0, otherwise remove the shader
+        if (cardInfo.amount === 0) {
+            this.art.setPipeline('GreyscalePipeline');
+        } else {
+            this.art.resetPipeline();
+        }
     }
 
     /** FUNCTION TO SET THE PANEL VISIBLE */
