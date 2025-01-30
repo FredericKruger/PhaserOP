@@ -25,6 +25,8 @@ class CollectionManager extends Phaser.Scene {
         this.firstLoad = true;
 
         this.collectionBook = null;
+
+        this.inDeckBuildingMode = false;
     }
 
     init () {
@@ -140,7 +142,12 @@ class CollectionManager extends Phaser.Scene {
             if(gameObject.input !== undefined){//in case the element was destroyed before
                 if(gameObject instanceof DeckCardEntry) {
                     if (!gameObject.deckCardListContainer.deckDropZone.getBounds().contains(pointer.upX, pointer.upY)) {
-                        gameObject.deckCardListContainer.removeCardFromDeck(gameObject.entryIndex);
+                        let result = gameObject.deckCardListContainer.removeCardFromDeck(gameObject.entryIndex);
+                        
+                        if(result !== ERRORCODES.REMOVED_CARD) {
+                            gameObject.deckCardListContainer.scrollContainer.add(gameObject);
+                            gameObject.setToLocalPosition();
+                        } 
                     } else {
                         gameObject.deckCardListContainer.scrollContainer.add(gameObject);
                         gameObject.setToLocalPosition();
@@ -205,6 +212,9 @@ class CollectionManager extends Phaser.Scene {
         this.deckListContainer.setVisible(false);
         this.deckCardListContainer.setVisible(true);
         this.showingDeckList = false;
+        this.inDeckBuildingMode = true;
+
+        this.collectionBook.updateCardVisuals();
     }
 
     /** FUNCTION TO SAVE DECK */
@@ -244,6 +254,7 @@ class CollectionManager extends Phaser.Scene {
         this.deckListContainer.setVisible(true);
         this.deckCardListContainer.setVisible(false);
         this.showingDeckList = true;
+        this.inDeckBuildingMode = false;
 
         this.deckCardListContainer.currentDeck = new Deck(true);
         this.updateDeckColors();
@@ -278,6 +289,9 @@ class CollectionManager extends Phaser.Scene {
         let dialogMessage = "";
 
         switch(resultCode) {
+            case ERRORCODES.INCREASED_CARD_AMOUNT:
+                this.updateDeckColors();
+                break;
             case ERRORCODES.ADDED_NEW_CARD:
                 this.deckCardListContainer.updateDeckCardEntries();
                 this.updateDeckColors();
@@ -316,11 +330,18 @@ class CollectionManager extends Phaser.Scene {
         this.deckCardListContainer.reset();
         this.deckCardListContainer.loadDeck(deck);
 
+        this.inDeckBuildingMode = true;
         this.updateDeckColors();
         
         this.deckListContainer.setVisible(false);
         this.deckCardListContainer.setVisible(true);
         this.showingDeckList = false;
+    }
+
+    /** GET AMOUNT OF CARDS IN DECK BEING BUILT */
+    getAmountOfCardInDeck(cardid) {
+        let amount = this.deckCardListContainer.currentDeck.amountInDeck(cardid);
+        return amount;
     }
 
     /** UPDATE TOOLTIP */

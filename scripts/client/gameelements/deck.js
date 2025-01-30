@@ -120,4 +120,15 @@ class Deck {
         }
         return cards;
     }
+
+    /** FUNCTION THAT RETURNS THE AMOUNT OF CARD IN THE DECK */
+    amountInDeck(cardid) {
+        let amount = 0;
+        let card = this.cards.filter(item => item.cardInfo.id === cardid);
+
+        if(card.length > 0) {
+            amount = card[0].amount;
+        }
+        return amount;
+    }
 }

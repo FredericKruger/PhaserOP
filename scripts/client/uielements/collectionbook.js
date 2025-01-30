@@ -152,7 +152,6 @@ class CollectionBook {
 
         this.initSelectedColor();
         this.updatePageTitle();
-        console.log("Init");
         this.updateCardVisuals();
     }
 

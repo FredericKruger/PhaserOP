@@ -359,6 +359,9 @@ class DeckCardListContainer {
         let resultCode = this.currentDeck.removeCardAt(entryIndex);
 
         switch(resultCode) {
+            case ERRORCODES.DECREASED_CARD_AMOUNT:
+                this.scene.updateDeckColors();
+                break;
             case ERRORCODES.REMOVED_CARD:
                 this.updateDeckCardEntries(); //-1 because no cardi required when removing
                 this.scene.updateDeckColors();
@@ -377,6 +380,7 @@ class DeckCardListContainer {
                 .then(function (data) {});  
                 break;
         }
+        return resultCode;
     }
 
     /** UPDATE THE DECK CARD ENTRIES IN THE DECK LIST */

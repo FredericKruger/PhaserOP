@@ -13,17 +13,18 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         this.cardi = config.cardi;
         this.cardInfo = config.cardInfo;
         this.firstClickTime = 0;
+        this.amount = 0;
 
         this.background = this.scene.add.rexRoundRectangleCanvas(0, 0, config.width, config.height, 0, 'rgba(0,0,0,0)', config.bordercolor, 3);
         this.background.setOrigin(0.5, 0.5);
 
-        this.amount = this.scene.add.text(-config.width/2 + 7, 0, config.amount + 'x', {
+        this.amountText = this.scene.add.text(-config.width/2 + 7, 0, config.amount + 'x', {
             fontFamily: 'Brandon',
             font: "bold 20px monospace",
             fill: "#000000",
             backgroundColor: "rgba(255, 255, 255, 0.8)"//,
         });
-        this.amount.setOrigin(0., 0.5);
+        this.amountText.setOrigin(0., 0.5);
 
         this.type = this.scene.add.image(config.width/2 - 42, 0, config.type).setDisplaySize(23, 23); //config.width/2 - 18
         this.type.setOrigin(0.5, 0.5);
@@ -61,7 +62,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
 
         this.backgroundimage = this.scene.add.image(0, 0, 'deckentry_' + config.art);
 
-        this.add([this.backgroundimage, this.background, this.amount, this.name, this.type, this.attribute]);
+        this.add([this.backgroundimage, this.background, this.amountText, this.name, this.type, this.attribute]);
         if(this.cost !== null) this.add(this.cost);
 
         this.setSize(config.width, config.height);
@@ -73,7 +74,8 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
 
     /** FUNCTION TO UPDATE THE CARD AMOUNT */
     updateAmount (amount) {
-        this.amount.setText(amount + 'x');
+        this.amount = amount;
+        this.amountText.setText(this.amount + 'x');
     }
 
     /** FUNCTION TO UPDATE THE NEW POSITION */

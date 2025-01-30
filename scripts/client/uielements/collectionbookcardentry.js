@@ -72,11 +72,22 @@ class CollectionBookCardEntry {
         } else {
             this.setVisible(true);
             
-            this.cardAmountText.text = 'x' + this.cardInfo.amount;
+            let availableAmount = this.cardInfo.amount;
+            if(this.collectionBook.scene.inDeckBuildingMode) { 
+                let amountInDeck = this.collectionBook.scene.getAmountOfCardInDeck(this.cardInfo.id);
+                if(this.cardInfo.isleader === 1) {
+                    availableAmount = Math.min(CARD_LEADER_LIMIT, this.cardInfo.amount)-amountInDeck;
+                } else {
+                    availableAmount = Math.min(CARD_LIMIT, this.cardInfo.amount)-amountInDeck;
+                }
+            } 
+            this.cardAmountText.text = 'x' + availableAmount;
+                
             this.cardVisual.setUpdate(this.cardInfo);
             this.cardPlaceholder.setUpdate(this.cardInfo);
 
-            if (this.cardInfo.amount === 0) {
+            availableAmount = Math.min(availableAmount, this.cardInfo.amount);
+            if (availableAmount === 0) {
                 this.cardVisual.art.setPipeline('GreyscalePipeline');
                 this.collectionBook.scene.input.setDraggable(this.cardVisual, false); // Disable dragging
             } else {
