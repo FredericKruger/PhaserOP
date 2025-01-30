@@ -166,8 +166,8 @@ class DeckListContainer {
     /** PROCESS DECK FROM DECKLIST */
     processDeck = function(deck, id) {
         let name = deck.name;
-        let colors = this.scene.cardIndex[deck.cards[0]-1].colors;
-        let leader = this.scene.cardIndex[deck.cards[0]-1].art;
+        let colors = GameClient.playerCollection.cardCollection[deck.cards[0]-1].colors;
+        let leader = GameClient.playerCollection.cardCollection[deck.cards[0]-1].art;
         let deckid = id;
 
         return {

@@ -7,9 +7,6 @@ class CollectionBook {
 
         this.scene = scene;
 
-        this.colorCardInfo = this.scene.colorCardInfo;
-        this.colorCardIndex = this.scene.colorCardIndex;
-
         this.selectedCard = 0;
 
         this.pageMax = 1;
@@ -44,10 +41,10 @@ class CollectionBook {
         });
 
         /** INITIALIZE TABS */
-        for(let i=0; i<this.colorCardInfo.length; i++) {
-            if(this.colorCardInfo[i].totalPages === 0) {
+        for(let i=0; i<GameClient.playerCollection.colorCardInfo.length; i++) {
+            if(GameClient.playerCollection.colorCardInfo[i].totalPages === 0) {
                 this.tabs.hideButton('top', i);
-                this.colorCardInfo[i].hidden = true;
+                GameClient.playerCollection.colorCardInfo[i].hidden = true;
             }
         }
 
@@ -62,15 +59,15 @@ class CollectionBook {
 
             //this means we got here by pressing the backPage button
             if(collectionBook.currentColorPage<1) {
-                collectionBook.currentColorPage = collectionBook.colorCardInfo[index].totalPages;
+                collectionBook.currentColorPage = GameClient.playerCollection.colorCardInfo[index].totalPages;
             } else {
-                collectionBook.currentPage = collectionBook.colorCardInfo[index].startPage;
+                collectionBook.currentPage = GameClient.playerCollection.colorCardInfo[index].startPage;
                 collectionBook.currentColorPage = 1;
             }
 
             collectionBook.updateCardVisuals();
 
-            if(collectionBook.pageTitle !== null && collectionBook.colorCardIndex[index].length>0) {
+            if(collectionBook.pageTitle !== null && GameClient.playerCollection.colorCardIndex[index].length>0) {
                 collectionBook.pageTitle.setTexture('op_font_' + CARD_COLORS[index]);
             }
 
@@ -172,8 +169,8 @@ class CollectionBook {
         for(let i = 0; i<maxCardsPerPage; i++) {
             let cardi = (this.currentColorPage-1) * maxCardsPerPage + i;
             cardi = Math.max(cardi, 0);
-            if(cardi<this.colorCardIndex[this.selectedColor-1].length) {
-                let cardInfo = this.colorCardIndex[this.selectedColor-1][cardi];
+            if(cardi<GameClient.playerCollection.colorCardIndex[this.selectedColor-1].length) {
+                let cardInfo = GameClient.playerCollection.getCardFromPage(this.selectedColor-1, cardi);
                 this.collectionBookCardEntries[i].updateCardInfo(cardInfo);
                 
                 let cardArtKey = cardInfo.art
@@ -194,16 +191,16 @@ class CollectionBook {
 
     /** UPDATE THE TRACKER FOR WHAT THE BOTTOM AND TOP PAGE OF THE TAB WILL BE */
     updateMinMaxPage () {
-        for(let i = 0; i<this.colorCardInfo.length; i++){
-            if(!this.colorCardInfo[i].hidden) {
-                this.pageMin = this.colorCardInfo[i].startPage;
+        for(let i = 0; i<GameClient.playerCollection.colorCardInfo.length; i++){
+            if(!GameClient.playerCollection.colorCardInfo[i].hidden) {
+                this.pageMin = GameClient.playerCollection.colorCardInfo[i].startPage;
                 break;
             }
         }
 
-        for(let i = this.colorCardInfo.length-1; i>=0; i--){
-            if(!this.colorCardInfo[i].hidden) {
-                this.pageMax = this.colorCardInfo[i].startPage + this.colorCardInfo[i].totalPages-1;
+        for(let i = GameClient.playerCollection.colorCardInfo.length-1; i>=0; i--){
+            if(!GameClient.playerCollection.colorCardInfo[i].hidden) {
+                this.pageMax = GameClient.playerCollection.colorCardInfo[i].startPage + GameClient.playerCollection.colorCardInfo[i].totalPages-1;
                 break;
             }
         }
@@ -241,25 +238,25 @@ class CollectionBook {
             for(let i=0; i<CARD_COLORS.length; i++) {
                 if(!colors.includes(CARD_COLORS[i])) {
                     this.tabs.hideButton('top', i);
-                    this.colorCardInfo[i].hidden = true;
+                    GameClient.playerCollection.colorCardInfo[i].hidden = true;
                 }
                 else {
                     if(!pageChanged) {
                         pageChanged = true;
                         this.currentColorPage = 1;
-                        this.currentPage = this.colorCardInfo[i].startPage;
+                        this.currentPage = GameClient.playerCollection.colorCardInfo[i].startPage;
                         this.selectedColor = i+1;
                     }
                 }
             }
         } else {
-            for(let i=0; i<this.colorCardInfo.length; i++) {
-                if(this.colorCardInfo[i].numberCards === 0) {
+            for(let i=0; i<GameClient.playerCollection.colorCardInfo.length; i++) {
+                if(GameClient.playerCollection.colorCardInfo[i].numberCards === 0) {
                     this.tabs.hideButton('top', i);
-                    this.colorCardInfo[i].hidden = true;
+                    GameClient.playerCollection.colorCardInfo[i].hidden = true;
                 } else {
                     this.tabs.showButton('top', i);
-                    this.colorCardInfo[i].hidden = false;
+                    GameClient.playerCollection.colorCardInfo[i].hidden = false;
                 }
             }
         }
@@ -275,11 +272,11 @@ class CollectionBook {
             this.currentPage++;
 
             //if reached the total pages, we need to change page
-            if(this.currentColorPage > this.colorCardInfo[this.selectedColor-1].totalPages){
+            if(this.currentColorPage > GameClient.playerCollection.colorCardInfo[this.selectedColor-1].totalPages){
                 //find the next non empty color
                 let nextcolor = this.selectedColor-1;
-                for(let i = this.selectedColor; i<(this.colorCardInfo.length); i++) {
-                    if(this.colorCardInfo[i].totalPages>0 && !this.colorCardInfo[i].hidden){
+                for(let i = this.selectedColor; i<(GameClient.playerCollection.colorCardInfo.length); i++) {
+                    if(GameClient.playerCollection.colorCardInfo[i].totalPages>0 && !GameClient.playerCollection.colorCardInfo[i].hidden){
                         nextcolor = i;
                         break;
                     }
@@ -288,7 +285,7 @@ class CollectionBook {
                 //if found new color
                 if(nextcolor !== this.selectedColor-1){
                     this.currentColorPage = 1;
-                    this.currentPage = this.colorCardInfo[nextcolor].startPage;
+                    this.currentPage = GameClient.playerCollection.colorCardInfo[nextcolor].startPage;
                     this.tabs.emitButtonClick('top', nextcolor);
                 }
             }
@@ -308,7 +305,7 @@ class CollectionBook {
                 let prevcolor = this.selectedColor-1; //-1 because index are skewed by 1
 
                 for(let i = prevcolor-1; i>=0; i--) {
-                    if(this.colorCardInfo[i].totalPages>0 && !this.colorCardInfo[i].hidden){
+                    if(GameClient.playerCollection.colorCardInfo[i].totalPages>0 && !GameClient.playerCollection.colorCardInfo[i].hidden){
                         prevcolor = i;
                         break;
                     }
@@ -316,7 +313,7 @@ class CollectionBook {
 
                 //if found new color
                 if(prevcolor !== this.selectedColor-1){
-                    this.currentPage = this.colorCardInfo[prevcolor].startPage + this.colorCardInfo[prevcolor].totalPages - 1
+                    this.currentPage = GameClient.playerCollection.colorCardInfo[prevcolor].startPage + GameClient.playerCollection.colorCardInfo[prevcolor].totalPages - 1
                     this.tabs.emitButtonClick('top', prevcolor);
                 }
             }

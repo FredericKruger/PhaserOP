@@ -111,7 +111,7 @@ class ServerInstance {
 //On start create a new server instance
 var serverInstance = new ServerInstance();
 //Created promise to read the card database
-getCardIndex().then((result) => {
+getCardList().then((result) => {
     serverInstance.cardIndex = result;
 });
 serverInstance.io = io; //to allow communication inside the objects
@@ -172,7 +172,7 @@ io.on('connection', function (socket) {
                 playerCollection = await getPlayerCollection(username);
             }
 
-            socket.emit('player_connected', connectSuccess, playerSetting, playerCollection, newPlayer);
+            socket.emit('player_connected', connectSuccess, playerSetting, serverInstance.cardIndex, playerCollection, newPlayer);
 
             //Save new settings
             if(newPlayer){
@@ -367,7 +367,7 @@ async function getSelectedBotDeck (selectedDeck) {
 /** Asynchronous function that creates a promise to send the card database
  * @return {object} Returns the card database
  */
-async function getCardIndex () {
+async function getCardList () {
     let fs = require('fs');
     let cardIndex = {};
     let filepath = __dirname + '/assets/data/opcards.json'; //Get path of the card database

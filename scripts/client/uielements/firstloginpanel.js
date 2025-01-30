@@ -77,6 +77,7 @@ class FirstLoginPanel extends Phaser.GameObjects.Container{
     deckSelected(index) {
         this.setVisible(false);
         this.destroy();
+        GameClient.addDeckToCollection("ST0" + (index+1));
     }
 
 }

@@ -11,11 +11,6 @@ class CollectionManager extends Phaser.Scene {
     constructor () {
         super({key: 'collectionmanager'});
 
-        this.cardIndex = null;
-        this.colorCardIndex = [];
-        this.colorCardInfo = [];
-        this.cardToCardi = [];
-
         this.pageMax = 1;
  
         this.obj = [];
@@ -32,37 +27,8 @@ class CollectionManager extends Phaser.Scene {
         this.collectionBook = null;
     }
 
-    init (data) {
-        this.cardIndex = data.CardIndex;
-        
-        this.pageMax = 0;
-        let startIndex = 0;
-        for(let i = 0; i<CARD_COLORS.length; i++) {
-            //First filter the cards
-            this.colorCardIndex[i] = this.cardIndex.filter(item => item.colors.includes(CARD_COLORS[i]) && item.amount > 0);
-
-            //Then sort the cards
-            this.colorCardIndex[i] = this.colorCardIndex[i].sort(function (a, b) {
-                return b.isleader - a.isleader || a.cost - b.cost || a.id - b.id;
-            });
-
-            //Create page info
-            this.colorCardInfo[i] = {
-                startPage: this.pageMax+1,
-                startIndex: startIndex,
-                totalPages: 0,
-                numberCards: this.colorCardIndex[i].length,
-                hidden: false
-            };
-
-            //Increase variables
-            if(this.colorCardIndex[i].length > 0) {
-                this.colorCardInfo[i].totalPages = Math.floor(this.colorCardIndex[i].length/maxCardsPerPage)+1;
-                this.pageMax +=this.colorCardInfo[i].totalPages;
-            }
-
-            startIndex += this.colorCardIndex[i].length;
-        }
+    init () {
+        this.pageMax = GameClient.playerCollection.filterCollection();
     }
 
     preload () {
@@ -302,7 +268,9 @@ class CollectionManager extends Phaser.Scene {
         //adding card to deck
         let cardi = (this.collectionBook.currentColorPage-1) * maxCardsPerPage + card;
 
-        let resultCode = this.deckCardListContainer.currentDeck.addCard(this.colorCardIndex[this.collectionBook.selectedColor-1][cardi]);
+        let resultCode = this.deckCardListContainer.currentDeck.addCard(
+            GameClient.playerCollection.getCardFromPage(this.collectionBook.selectedColor-1, cardi)
+        );
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -312,7 +280,7 @@ class CollectionManager extends Phaser.Scene {
 
         switch(resultCode) {
             case ERRORCODES.ADDED_NEW_CARD:
-                this.deckCardListContainer.updateDeckCardEntries(/*cardi*/);
+                this.deckCardListContainer.updateDeckCardEntries();
                 this.updateDeckColors();
                 break;
             case ERRORCODES.CARD_LEADER_LIMIT_REACHED:
@@ -348,7 +316,6 @@ class CollectionManager extends Phaser.Scene {
 
         this.deckCardListContainer.reset();
         this.deckCardListContainer.loadDeck(deck);
-        //this.deckCardListContainer.updateDeckCardEntries(-1);
 
         this.updateDeckColors();
         

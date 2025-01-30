@@ -74,7 +74,6 @@ class Loader extends Phaser.Scene {
             percentText.destroy();
         });
 
-        this.load.json('card_data', 'assets/data/opcards.json'); //Card Database
         this.load.json('icon_data', 'assets/data/playericons.json'); //icon list
         
         this.load.image('rightarrow', 'assets/elements/rightarrow.png');

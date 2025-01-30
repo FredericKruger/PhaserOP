@@ -200,7 +200,7 @@ class DeckCardListContainer {
     /** FUNCTION TO LOAD A DECK */
     loadDeck(deck) {
         for(let i = 0; i<deck.cards.length; i++){
-            this.currentDeck.addCard(this.scene.cardIndex[deck.cards[i]-1]);
+            this.currentDeck.addCard(GameClient.playerCollection.cardCollection[deck.cards[i]-1]);
         }
         this.setDeckName(deck.name);
         this.updateDeckColors();

@@ -18,17 +18,6 @@ class Title extends Phaser.Scene {
     }
 
     create () {
-        this.CardIndex = this.cache.json.get('card_data');
-
-        for(let card of this.CardIndex) {
-            card.amount = 0;
-        }
-        for(let i = 0; i<GameClient.playerCollection.length; i++) {
-            let index = GameClient.playerCollection[i][0];
-            let amount = GameClient.playerCollection[i][1];
-            this.CardIndex[index-1].amount = amount;
-        }
-
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
         this.avatarPortraitWidth = 150/2;
