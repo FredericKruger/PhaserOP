@@ -8,6 +8,7 @@ const io = require('socket.io')(http);
 //const Match = require('./scripts/server/match.js');
 //const MatchState = require('./scripts/server/matchstate.js');
 const Player = require('./scripts/server/player.js');
+const Utils = require('./scripts/server/util.js');
 //const Bot = require('./scripts/server/bot.js');
 
 /** Object to store Server information */
@@ -24,6 +25,8 @@ class ServerInstance {
         this.usedMatchIDS = []; //Keep track of the matchIDS currents in use
 
         this.cardIndex = {}; //Store the card database
+
+        this.util = new Utils(this, __dirname);
     }
 
     /** Function that returns a random integer between min and max
@@ -111,7 +114,7 @@ class ServerInstance {
 //On start create a new server instance
 var serverInstance = new ServerInstance();
 //Created promise to read the card database
-getCardList().then((result) => {
+serverInstance.util.getCardList().then((result) => {
     serverInstance.cardIndex = result;
 });
 serverInstance.io = io; //to allow communication inside the objects
@@ -148,43 +151,56 @@ io.on('connection', function (socket) {
         let connectSuccess = !serverInstance.isUsernameUsed(username);
         let playerSetting = null;
         let playerCollection = [];
-        let newPlayer = true;
+        let playerDecklist = [];
+        let newPlayer = false;
         if(connectSuccess) {
             console.log('A user connected: ' + socket.id);
             socket.player = new Player(socket, serverInstance, username); //Create a new player instance
             serverInstance.players.push(socket.player); //Push player in player list
             console.log("New player connected! " + socket.player.id + ", " + socket.player.name);
 
-            playerSetting = await getPlayerSettings(username);
-            playerCollection = await getPlayerCollection(username);
+            playerSetting = await serverInstance.util.getPlayerSettings(username);
+            playerCollection = await serverInstance.util.getPlayerCollection(username);
+            playerDecklist = await serverInstance.util.getPlayerDecklist(username);
+
             //create playerseetings
             if(playerSetting === null) {
                 console.log("This is a new Player ! Need to create the settings file");
                 newPlayer = true;
-                let defaultSettings = {
+                playerSetting = {
                     "avatar": "default_avatar",
                     "firstLogin": true
                 };
-                defaultSettings = JSON.stringify(defaultSettings);
-                await savePlayerSettings(username, defaultSettings);
-                await savePlayerCollection(username, JSON.stringify(playerCollection));
-                playerSetting = await getPlayerSettings(username);
-                playerCollection = await getPlayerCollection(username);
+                await serverInstance.util.savePlayerSettings(username, playerSetting);
+                await serverInstance.util.savePlayerCollection(username, playerCollection);
+                await serverInstance.util.savePlayerDecklist(username, playerDecklist);
             }
 
+            /** Update serverside information */
+            socket.player.loadCollection(serverInstance.cardIndex, playerCollection);
+            socket.player.setDeckList(playerDecklist);
+            socket.player.setSettings(playerSetting);
+
+            // Send message to the client that everything is ready
             socket.emit('player_connected', connectSuccess, playerSetting, serverInstance.cardIndex, playerCollection, newPlayer);
 
             //Save new settings
             if(newPlayer){
-                //playerSetting.firstLogin = false;
-                //await savePlayerSettings(username, playerSetting);
+                playerSetting.firstLogin = false;
+                await serverInstance.util.savePlayerSettings(username, playerSetting);
             }
         } 
     });
 
     /** When a player disconnects */
     socket.on('player_disconnect', () => {
+        //save all data
+        serverInstance.util.savePlayerCollection(socket.player.username, socket.player.collectionToJSON());
+        serverInstance.util.savePlayerSettings(socket.player.username, socket.player.settings);
+        serverInstance.util.savePlayerDecklist(socket.player.username, socket.player.decklist);
+
         serverInstance.players = serverInstance.players.filter(player => player.name !== socket.player.name); //Remove the player from the player list
+        
         socket.emit('player_disconnected');
     });
 
@@ -197,46 +213,44 @@ io.on('connection', function (socket) {
      * Requires the player's username
      * Call the sendPlayerDecklist - Might need to be adjusted with promises
      */
-    socket.on('request_player_decklist', (username) => { sendPlayerDeckList(username); });
+    socket.on('request_player_decklist', () => { io.emit('update_player_decklist', JSON.stringify(socket.player.decklist)); });
 
     /** When a player sends its decklist to be saved on the server 
      * Requires the player's username and decklist as JSON
      * Will write into file. Overwrite default
     */
-    socket.on('save_player_decklist', function (username, decklist) {
-        let fs = require('fs');
-        let playerDeckName = 'decks_' + username + '.json'; //Create the filename
-        let filename = __dirname + '/server_assets/player_decks/'+playerDeckName; //Get folder to be save
-        fs.writeFileSync(filename, decklist); //Write to new file
+    socket.on('save_player_decklist', function (decklist) {
+        socket.player.decklist = JSON.parse(decklist);
+        serverInstance.util.savePlayerDecklist(socket.player.username, socket.player.decklist);
+    });
+
+    /** When a player unlocks a new deck */
+    socket.on('unlock_deck', async (deckName) => {
+        //First Read preconstructed decks
+        try {
+            const preconstructedDeck = await serverInstance.util.getPreconstructedDecks(deckName);
+             
+            //Add cards to player collection
+            socket.player.addToCollection(preconstructedDeck.cards);
+    
+            //Add deck to decklist if possible
+            let addedToDecklist = socket.player.addToDecklist(preconstructedDeck);
+    
+            //update client side data
+            if(addedToDecklist) io.emit('update_player_decklist', JSON.stringify(socket.player.decklist));
+            io.emit('update_player_collection', JSON.stringify(socket.player.collectionToJSON()));
+            io.emit('first_login_complete');
+        } catch (error) {
+            console.error('Error unlocking deck:', error);
+        }
     });
 
     /** update player settings */
     socket.on('update_player_settings', (playerSettings) => {
-        let username = socket.player.name;
-        let settings = JSON.stringify(playerSettings);
-        savePlayerSettings(username, settings);
+        socket.player.settings = playerSettings;
+        serverInstance.util.savePlayerSettings(socket.player.username, playerSettings);
     });
 });
-
-/** Asynchronous function that creates a promise to send the player decklist
- * @param {string} username - user name of the player needed for file name
- * Emits signals to the player with the decklist
- */
-async function sendPlayerDeckList(username) {
-    let fs = require('fs');
-    let playerDeck = []; //Create empty decklist in case of error
-    let playerDeckName = 'decks_' + username + '.json'; //Create file name
-    let filepath = __dirname + '/server_assets/player_decks/' + playerDeckName; //Get path to file
-
-    try {
-        const data = await fs.promises.readFile(filepath); //Read the file as a promise
-        playerDeck = JSON.parse(data); //Turn file into JSON object
-        io.emit('send_player_decklist', JSON.stringify(playerDeck)); //Send the player his decklist
-    } catch (err) { //In case of error
-        //console.log(err);
-        io.emit('send_player_decklist', JSON.stringify(playerDeck)); //Send an empty decklist
-    }
-}
 
 /** Asynchronous function that creates a promise to send the player the ai decklist
  * Emits signals to the player with the ai decklists
@@ -254,132 +268,6 @@ async function sendAIDeckList () {
         //console.log(err);
         io.emit('send_ai_decklist', aiDeck); //Send an empty decklist
     }
-}
-
-/** Asynchonous function that creates a promise to send the payer the request deck
- * @param {number} selectedDeck - id of the selected deck
- * @param {string} username - player username
- * @returns {object} Return the deck object with the card list and name
- */
-async function getSelectedPlayerDeck (username, selectedDeck) {
-    let fs = require('fs');
-    let deck = [];
-    let playerDeckName = 'decks_' + username + '.json'; //Get file name
-    let filepath = __dirname + '/server_assets/player_decks/' + playerDeckName; //Get file path
-
-    try {
-        const data = await fs.promises.readFile(filepath); //Read the file as a promise
-        deck = JSON.parse(data); //Turn file into JSON object 
-        return deck[selectedDeck]; //Return the selected deck from the list
-    } catch(err) {
-        console.log(err);
-    }
-    return null; //If there is an error, return nothing
-}
-
-/** Asynchronous function that created a promise to send the user settings
- * @param {string} username - player username
- * @returns {object} Return the user setting object
- */
-async function getPlayerSettings (username) {
-    let fs = require('fs');
-    let settings = null;
-    let playerSettingsName = 'settings_' + username + '.json'; //Get file name
-    let filepath = __dirname + '/server_assets/player_settings/' + playerSettingsName; //Get file path
-
-    try {
-        const data = await fs.promises.readFile(filepath);
-        settings = JSON.parse(data);
-        return settings;
-    } catch(err) {
-        //console.log(err);
-    }
-    return null; //If there is an error return nothing
-}
-
-/** Asynchronous function that creates a promise to send the user collection
- * 
- */
-async function getPlayerCollection (username) {
-    let fs = require('fs');
-    let collection = [];
-    let playerCollectionName = 'collection_' + username + '.json'; //Get file name
-    let filepath = __dirname + '/server_assets/player_collections/' + playerCollectionName; //get file path
-
-    try {
-        const data = await fs.promises.readFile(filepath);
-        collection = JSON.parse(data);
-        return collection;
-    } catch(err) {
-
-    }
-    return [];
-}
-
-/** Asynchronous function that creates a promise to save the user settings
- * @param {string} username - player username
- * @param {object} settings - player settings
- */
-async function savePlayerSettings (username, settings) {
-    let fs = require('fs');
-    let playerSettingsName = 'settings_' + username + '.json'; //Get file name
-    let filepath = __dirname + '/server_assets/player_settings/' + playerSettingsName; //Get file path
-    try {
-        await fs.writeFileSync(filepath, settings); //Write to new file
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-/** Asynchronous function that creates a promise to save the user collection
- * 
- */
-async function savePlayerCollection (username, collection) {
-    let fs = require('fs');
-    let playerCollectionName = 'collection_' + username + '.json'; //Get file name
-    let filepath = __dirname + '/server_assets/player_collections/' + playerCollectionName; //Get file path
-    try {
-        await fs.writeFileSync(filepath, collection); //Write to new file
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-/** Asynchronous function that creates a promise to send the player the request bot deck
- * @param {number} selectedDeck - id of the selected bot deck
- * @returns {object} Return the deck object with card list and name
- */
-async function getSelectedBotDeck (selectedDeck) {
-    let fs = require('fs');
-    let aiDeck = {}; //Create emoty object
-    let filepath = __dirname + '/server_assets/ai_decks/decks_ai.json'; //Get file npath
-
-    try {
-        const data = await fs.promises.readFile(filepath); //Read the file
-        aiDeck = JSON.parse(data); //Turn file into JSON object
-        return aiDeck[selectedDeck]; //Return the selected deck from the list
-    } catch(err) {
-        console.log(err);
-    }  
-    return null; //If there is an error, return nothing
-}
-
-/** Asynchronous function that creates a promise to send the card database
- * @return {object} Returns the card database
- */
-async function getCardList () {
-    let fs = require('fs');
-    let cardIndex = {};
-    let filepath = __dirname + '/assets/data/opcards.json'; //Get path of the card database
-
-    try {
-        const data = await fs.promises.readFile(filepath); //Read the json file
-        cardIndex = JSON.parse(data); //Turn file into JSON object
-        return cardIndex; //Return the database
-    } catch (err) {
-        console.log(err);
-    }
-    return null; //Return nothing in case of error
 }
 
 //START LISTENING

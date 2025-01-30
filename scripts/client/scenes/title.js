@@ -87,8 +87,10 @@ class Title extends Phaser.Scene {
 
         GameClient.titleScene = this;
 
+        this.firstLoginPanel = null;
         if(GameClient.firstLogin) {
-            new FirstLoginPanel(this, this.cameras.main.width/2, this.cameras.main.height/2).launch();
+            this.firstLoginPanel = new FirstLoginPanel(this, this.cameras.main.width/2, this.cameras.main.height/2);
+            this.firstLoginPanel.launch();
         }
     }
 

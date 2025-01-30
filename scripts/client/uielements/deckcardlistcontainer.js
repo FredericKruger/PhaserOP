@@ -67,14 +67,14 @@ class DeckCardListContainer {
         /** CARD AMOUNT TEXT */
         this.cardAmountTextRectangle = this.scene.add.rexRoundRectangleCanvas(this.x  + this.width/2 - 58, this.y + this.height - 23,  170, 35, 5, OP_BLUE, OP_CREAM, 2);
         this.cardAmountText = { 
-            obj: this.scene.add.text(this.cardAmountTextRectangle.x, this.cardAmountTextRectangle.y-5, '0/40', {
+            obj: this.scene.add.text(this.cardAmountTextRectangle.x, this.cardAmountTextRectangle.y-5, '0/' + DECK_LIMIT, {
                 fontFamily: 'Brandon',
                 font: "20px monospace",
                 fill: "#E9E6CE"
             }).setOrigin(0.5, 0.5),
             deckCardListContainer: this,
             update: function () { 
-                this.obj.setText(this.deckCardListContainer.currentDeck.deckSize + "/40");
+                this.obj.setText(this.deckCardListContainer.currentDeck.deckSize + "/" + DECK_LIMIT);
             }
         }
         this.objToUpdate.push(this.cardAmountText);

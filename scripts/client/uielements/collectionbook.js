@@ -66,10 +66,7 @@ class CollectionBook {
             }
 
             collectionBook.updateCardVisuals();
-
-            if(collectionBook.pageTitle !== null && GameClient.playerCollection.colorCardIndex[index].length>0) {
-                collectionBook.pageTitle.setTexture('op_font_' + CARD_COLORS[index]);
-            }
+            collectionBook.updatePageTitle();
 
             //handle coloring of the tabs
             if (this._prevTypeButton) {
@@ -152,6 +149,11 @@ class CollectionBook {
         this.prevPageButton.obj.on('pointerover', () => {this.prevPageButton.obj.setScale(0.45);});
         this.prevPageButton.obj.on('pointerout', () => {this.prevPageButton.obj.setScale(0.4);});
         this.objToUpdate.push(this.prevPageButton);
+
+        this.initSelectedColor();
+        this.updatePageTitle();
+        console.log("Init");
+        this.updateCardVisuals();
     }
 
     /** UPDATE FUNCTION */
@@ -189,6 +191,13 @@ class CollectionBook {
         }
     }
 
+    /** FUNCTION TO UPDATE THE PAGE TITLE */
+    updatePageTitle() {
+        if(this.pageTitle !== null && GameClient.playerCollection.colorCardIndex[this.selectedColor-1].length>0) {
+            this.pageTitle.setTexture('op_font_' + CARD_COLORS[this.selectedColor-1]);
+        }
+    }
+
     /** UPDATE THE TRACKER FOR WHAT THE BOTTOM AND TOP PAGE OF THE TAB WILL BE */
     updateMinMaxPage () {
         for(let i = 0; i<GameClient.playerCollection.colorCardInfo.length; i++){
@@ -201,6 +210,16 @@ class CollectionBook {
         for(let i = GameClient.playerCollection.colorCardInfo.length-1; i>=0; i--){
             if(!GameClient.playerCollection.colorCardInfo[i].hidden) {
                 this.pageMax = GameClient.playerCollection.colorCardInfo[i].startPage + GameClient.playerCollection.colorCardInfo[i].totalPages-1;
+                break;
+            }
+        }
+    }
+
+    /** INITI SELECTED COLOR */
+    initSelectedColor () {
+        for(let i = 0; i<GameClient.playerCollection.colorCardInfo.length; i++){
+            if(!GameClient.playerCollection.colorCardInfo[i].hidden) {
+                this.selectedColor = i+1;
                 break;
             }
         }

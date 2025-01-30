@@ -148,6 +148,7 @@ class Loader extends Phaser.Scene {
         this.load.image('op_cost_PURPLE_6', 'assets/icons/costicons/PURPLE_6.png');
         this.load.image('op_cost_PURPLE_7', 'assets/icons/costicons/PURPLE_7.png');
         this.load.image('op_cost_PURPLE_8', 'assets/icons/costicons/PURPLE_8.png');
+        this.load.image('op_cost_PURPLE_9', 'assets/icons/costicons/PURPLE_9.png');
         this.load.image('op_cost_PURPLE_10', 'assets/icons/costicons/PURPLE_10.png');
         this.load.image('op_cost_RED_1', 'assets/icons/costicons/RED_1.png');
         this.load.image('op_cost_RED_2', 'assets/icons/costicons/RED_2.png');
@@ -203,6 +204,10 @@ class Loader extends Phaser.Scene {
         this.load.image('op_leader_OP03-076', 'assets/icons/leaderportraits/rleaderart_OP03-076.png');
         this.load.image('op_leader_OP03-077', 'assets/icons/leaderportraits/rleaderart_OP03-077.png');
         this.load.image('op_leader_OP03-099', 'assets/icons/leaderportraits/rleaderart_OP03-099.png');
+        this.load.image('op_leader_ST01-001', 'assets/icons/leaderportraits/rleaderart_ST01-001.png');
+        this.load.image('op_leader_ST02-001', 'assets/icons/leaderportraits/rleaderart_ST02-001.png');
+        this.load.image('op_leader_ST03-001', 'assets/icons/leaderportraits/rleaderart_ST03-001.png');
+        this.load.image('op_leader_ST04-001', 'assets/icons/leaderportraits/rleaderart_ST04-001.png');
 
         this.load.image('op_attribute_RANGED', 'assets/icons/attributesymbols/RANGED.png');
         this.load.image('op_attribute_SLASH', 'assets/icons/attributesymbols/SLASH.png');

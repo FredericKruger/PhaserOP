@@ -66,7 +66,6 @@ class CollectionManager extends Phaser.Scene {
             height: collectionBookContainerHeight,
         }, this);
         this.add.existing(this.collectionBook.tabs);
-        this.collectionBook.tabs.emitButtonClick('top',0);
 
         /** CARD CRAFTING PANEL */
         this.cardCraftingPanel = new CardCraftingPanel(this, this.cameras.main.width/2, this.cameras.main.height/2);

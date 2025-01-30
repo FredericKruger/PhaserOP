@@ -1,4 +1,4 @@
-const DECK_LIMIT = 50;
+const DECK_LIMIT = 51;
 const CARD_LIMIT = 4;
 const CARD_LEADER_LIMIT = 1;
 

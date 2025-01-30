@@ -39,37 +39,41 @@ class Client {
         });
 
         /** Listen to the signal from the server that the player has successfully disconnected */
-        this.socket.on('player_disconnected', () => {
-            this.titleScene.loadLoginScreen();
+        this.socket.on('player_disconnected', () => {this.titleScene.loadLoginScreen();});
+
+        /** Listen to the signal when the first login screen is complete */
+        this.socket.on('first_login_complete', () => {
+            this.firstLogin = false;
+            this.titleScene.firstLoginPanel.closePanel();
         });
 
         /** Listen to signal from the server containing the player decklist 
          * decklist: JSON object containing the player decklist
         */
-        this.socket.on('send_player_decklist', (deckList) => {
-            this.decklist = JSON.parse(deckList);
-        });
+        this.socket.on('update_player_decklist', (deckList) => {this.decklist = JSON.parse(deckList);});
 
+        /** Signal to update collection */
+        this.socket.on('update_player_collection', (collection) => {
+            collection = JSON.parse(collection);
+            this.playerCollection.updateCollection(collection);
+            this.playerCollection.filterCollection();
+        });
     }
+
+    /** Function that tells the server a new deck was chosen */
+    addDeckToCollection (deckName) {this.socket.emit('unlock_deck', deckName);}
+
     /** Function that tells the server the main player disconnected */
-    askDisconnect () {
-        this.socket.emit('disconnect');
-    }; 
+    askDisconnect () {this.socket.emit('disconnect');}; 
     
     /** Function that asks the server for the player decklists */
-    askPlayerDeckList () {
-        this.socket.emit('request_player_decklist', this.username);
-    };
+    askPlayerDeckList () {this.socket.emit('request_player_decklist');};
 
     /** Function that sends the server the player decks to save */
-    askSavePlayerDecks = function() {
-        this.socket.emit('save_player_decklist', this.username, JSON.stringify(GameClient.decklist));
-    };
+    askSavePlayerDecks () {this.socket.emit('save_player_decklist', JSON.stringify(GameClient.decklist));};
 
     /** Function that connects a new player to the server */
-    playerConnect () {
-        this.socket.emit('player_connect', this.username);
-    }
+    playerConnect () {this.socket.emit('player_connect', this.username);}
 
     /** Function that disconnects a player from the server */
     playerDisconnect () {
@@ -78,8 +82,6 @@ class Client {
     }
 
     /** Function that tells the server to update the player settings */
-    updatePlayerSettings() {
-        this.socket.emit('update_player_settings', this.playerSettings);
-    }
+    updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}
     
 }
