@@ -58,6 +58,8 @@ class CardCollection {
                             return values.includes(item.cost);
                         case 'attribute':                     
                             return values.includes(item.attribute);
+                        case 'set':
+                            return values.includes(item.set);
                         case 'text':
                             return (
                                 item.name.toLowerCase().includes(values[0].toLowerCase())

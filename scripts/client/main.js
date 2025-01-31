@@ -26,6 +26,7 @@ const TRIGGER = 0xFCED44;
 
 const CARD_COLORS = ["RED", "GREEN", "BLUE", "PURPLE", "BLACK", "YELLOW"];
 const CARD_ATTRIBUTES = ["RANGED", "SLASH", "SPECIAL", "STRIKE", "WISDOM"];
+const CARD_SETS = ["OP01", "OP02", "OP03", "ST01", "ST02", "ST03", "ST04"];
 
 const GameClient = new Client();
 

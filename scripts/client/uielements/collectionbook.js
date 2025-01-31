@@ -20,6 +20,7 @@ class CollectionBook {
 
         this.costFilterImages = [];
         this.attributeFilterImages = [];
+        this.setFilterImages = [];
 
         this.tabs = new RexPlugins.UI.Tabs( this.scene, {
             x: config.x + config.width/2, //900
@@ -103,8 +104,25 @@ class CollectionBook {
         }
 
         /** PAGE TITLE */
+        let roundedRect = this.scene.add.graphics();
+        roundedRect.fillStyle(OP_CREAM_DARKER, 1); // Black color with 50% opacity
+        roundedRect.fillRoundedRect(this.tabs.x-100, 75, 200, 50, 10); // 10 is padding, 15 is corner radius
         this.pageTitle = this.scene.add.image(this.tabs.x, 80, '').setOrigin(0.5, 0).setScale(0.5);
         this.pageTitle.setOrigin(0.5, 0);
+
+        /** PAGE NUMBER */
+        this.pageNumber = {
+            obj: this.scene.add.text(this.tabs.x, this.tabs.y + this.tabs.height / 2 - 80, '', {
+                fontSize: '25px',
+                color: '#000000',
+                fontWeight: 'bold' // Make the text bold
+            }).setOrigin(0.5),
+            collectionBook: this,
+            update: function() {
+                this.obj.setText('Page ' + this.collectionBook.currentPage);
+            }
+        };
+        this.objToUpdate.push(this.pageNumber);
 
         /** SEPARATION LINES */
         this.fileSeparatorLine = this.scene.add.graphics();
@@ -285,13 +303,48 @@ class CollectionBook {
     createFilterPanel() {
         //Add set Icon
         let setIcon = this.scene.add.image(this.tabs.x - this.tabs.width/2 + 50, this.tabs.y + this.tabs.height / 2 - 30, 'collectionSetIcon').setOrigin(0.5).setScale(0.6);
+        //Create the set scrollpanel
+        let setFilterScrollPanel = new ScrollPanel(this.scene, this.tabs.x - this.tabs.width/2 + 50 - setIcon.width/2*0.6, this.tabs.y + this.tabs.height / 2 - 65 - 200, 150, 200);
+        
         setIcon.setInteractive();
         setIcon.on('pointerover', () => {setIcon.setScale(0.65)});
         setIcon.on('pointerout', () => {setIcon.setScale(0.6)});
+        setIcon.on('pointerdown', () => {setFilterScrollPanel.setVisible(!setFilterScrollPanel.isVisible)});
+
+        //Add set images
+        let startY = 22;
+        for(let i=0; i<CARD_SETS.length; i++) {
+            let setImage = this.scene.add.image(75, startY, 'setFilter' + CARD_SETS[i]).setScale(0.45);
+            setFilterScrollPanel.addElement(setImage);
+
+            this.setFilterImages.push({
+                id: CARD_SETS[i],
+                image: setImage,
+                isPressed: false   
+            });
+            setImage.setInteractive();
+            setImage.on('pointerover', () => {setImage.setScale(0.47)});
+            setImage.on('pointerout', () => {setImage.setScale(0.45)});
+            setImage.on('pointerdown', () => {
+                if(this.setFilterImages[i].isPressed) {
+                    this.setFilterImages[i].isPressed = false;
+                    this.setFilterImages[i].image.resetPipeline();
+                    GameClient.playerCollection.removeFilter({type:'set',value:CARD_SETS[i]});
+                } else {
+                    this.setFilterImages[i].isPressed = true;
+                    this.setFilterImages[i].image.setPipeline('GreyscalePipeline');
+                    GameClient.playerCollection.addFilter({type:'set',value:CARD_SETS[i]});
+                }
+                this.updateMinMaxPage();
+                this.updateCardVisuals();
+            });
+
+            startY += 44
+        }
 
         //Add cost images
         let startX = this.tabs.x - this.tabs.width/2 + 120;
-        let startY = this.tabs.y + this.tabs.height / 2 - 30;
+        startY = this.tabs.y + this.tabs.height / 2 - 30;
         let separatorWidth = 5;
         for(let i=0; i<10; i++) {
             let costImage = this.scene.add.image(startX, startY, 'op_cost_PURPLE_' + i).setOrigin(0.5).setScale(0.45);

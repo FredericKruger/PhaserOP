@@ -89,6 +89,15 @@ class Loader extends Phaser.Scene {
         this.load.image('collectionSetIcon', 'assets/icons/menuIcons/collectionSetIcon.png');
         this.load.image('searchIcon', 'assets/icons/menuIcons/searchIcon.png');
 
+        this.load.image('setFilterAll', 'assets/icons/setfiltericons/setFilterAll.png');
+        this.load.image('setFilterOP01', 'assets/icons/setfiltericons/setFilterOP01.png');
+        this.load.image('setFilterOP02', 'assets/icons/setfiltericons/setFilterOP02.png'); 
+        this.load.image('setFilterOP03', 'assets/icons/setfiltericons/setFilterOP03.png');
+        this.load.image('setFilterST01', 'assets/icons/setfiltericons/setFilterST01.png');
+        this.load.image('setFilterST02', 'assets/icons/setfiltericons/setFilterST02.png');
+        this.load.image('setFilterST03', 'assets/icons/setfiltericons/setFilterST03.png');
+        this.load.image('setFilterST04', 'assets/icons/setfiltericons/setFilterST04.png');
+
         this.load.image('default_avatar', 'assets/icons/playericons/icon1.png');
         this.load.image('ai_avatar', 'assets/icons/playericons/icon1.png');
         
