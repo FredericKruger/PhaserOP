@@ -19,6 +19,7 @@ class CollectionBook {
         this.collectionBookCardEntries = [];
 
         this.costFilterImages = [];
+        this.attributeFilterImages = [];
 
         this.tabs = new RexPlugins.UI.Tabs( this.scene, {
             x: config.x + config.width/2, //900
@@ -281,12 +282,19 @@ class CollectionBook {
 
     /** CREATE FILTER PANEL */
     createFilterPanel() {
+        //Add set Icon
+        let setIcon = this.scene.add.image(this.tabs.x - this.tabs.width/2 + 50, this.tabs.y + this.tabs.height / 2 - 30, 'collectionSetIcon').setOrigin(0.5).setScale(0.6);
+        setIcon.setInteractive();
+        setIcon.on('pointerover', () => {setIcon.setScale(0.65)});
+        setIcon.on('pointerout', () => {setIcon.setScale(0.6)});
+
         //Add cost images
-        let startX = this.tabs.x - this.tabs.width/2 + 300;
+        let startX = this.tabs.x - this.tabs.width/2 + 120;
         let startY = this.tabs.y + this.tabs.height / 2 - 30;
-        let separatorWidth = 10;
+        let separatorWidth = 5;
         for(let i=0; i<10; i++) {
-            let costImage = this.scene.add.image(startX, startY, 'op_cost_PURPLE_' + i).setOrigin(0.5).setScale(0.5);
+            let costImage = this.scene.add.image(startX, startY, 'op_cost_PURPLE_' + i).setOrigin(0.5).setScale(0.45);
+            costImage.setDepth(1);
             this.objToUpdate.push(costImage);
 
             this.costFilterImages.push({
@@ -296,8 +304,8 @@ class CollectionBook {
             });
 
             costImage.setInteractive();
-            costImage.on('pointerover', () => {costImage.setScale(0.55)});
-            costImage.on('pointerout', () => {costImage.setScale(0.5)});
+            costImage.on('pointerover', () => {costImage.setScale(0.5)});
+            costImage.on('pointerout', () => {costImage.setScale(0.45)});
             costImage.on('pointerdown', () => {
                 if(this.costFilterImages[i].isPressed) {
                     this.costFilterImages[i].isPressed = false;
@@ -312,8 +320,62 @@ class CollectionBook {
                 this.updateCardVisuals();
             });
 
-            startX = startX + costImage.width*0.5 + separatorWidth;
+            startX = startX + costImage.width*0.45 + separatorWidth;
         }
+
+        //Create the wrapper for the cost images
+        // Create the rounded rectangle
+        let roundedRect = this.scene.add.graphics();
+        let rectX = this.costFilterImages[0].image.x - this.costFilterImages[0].image.width/2*0.45 - 5;
+        let rectY = this.costFilterImages[0].image.y - this.costFilterImages[0].image.height/2*0.45 - 5;
+        let rectWidth = this.costFilterImages[9].image.x + this.costFilterImages[9].image.width/2*0.45 + 5 - rectX;
+        let rectHeight = this.costFilterImages[0].image.height*0.45 + 10;
+        roundedRect.fillStyle(OP_CREAM_DARKER, 1); // Black color with 50% opacity
+        roundedRect.fillRoundedRect(rectX, rectY, rectWidth, rectHeight, 15); // 10 is padding, 15 is corner radius
+        roundedRect.setDepth(0);
+
+        //Add attribute images
+        startX = startX + 10;
+        for(let i = 0; i<CARD_ATTRIBUTES.length; i++) {
+            let attribute = CARD_ATTRIBUTES[i];
+            let attributeImage = this.scene.add.image(startX, startY, 'op_attribute_' + attribute).setOrigin(0.5).setScale(0.8);
+            attributeImage.setDepth(1);
+            this.objToUpdate.push(attributeImage);
+
+            this.attributeFilterImages.push({
+                id: attribute,
+                image: attributeImage,
+                isPressed: false   
+            });
+
+            attributeImage.setInteractive();
+            attributeImage.on('pointerover', () => {attributeImage.setScale(0.85)});
+            attributeImage.on('pointerout', () => {attributeImage.setScale(0.8)});
+            attributeImage.on('pointerdown', () => {
+                if(this.attributeFilterImages[i].isPressed) {
+                    this.attributeFilterImages[i].isPressed = false;
+                    this.attributeFilterImages[i].image.resetPipeline();
+                    GameClient.playerCollection.removeFilter({type:'attribute',value:attribute});
+                } else {
+                    this.attributeFilterImages[i].isPressed = true;
+                    this.attributeFilterImages[i].image.setPipeline('GreyscalePipeline');
+                    GameClient.playerCollection.addFilter({type:'attribute',value:attribute});
+                }
+                this.updateMinMaxPage();
+                this.updateCardVisuals();
+            });
+
+            startX = startX + attributeImage.width*0.8 + separatorWidth;
+        }
+
+        //Create the wrapper for the cost images
+        // Create the rounded rectangle
+        roundedRect = this.scene.add.graphics();
+        rectX = this.attributeFilterImages[0].image.x - this.attributeFilterImages[0].image.width/2*0.8 - 5;
+        rectWidth = this.attributeFilterImages[this.attributeFilterImages.length-1].image.x + this.attributeFilterImages[0].image.width/2*0.8 + 5 - rectX;
+        roundedRect.fillStyle(OP_CREAM_DARKER, 1); // Black color with 50% opacity
+        roundedRect.fillRoundedRect(rectX, rectY, rectWidth, rectHeight, 15); // 10 is padding, 15 is corner radius
+        roundedRect.setDepth(0);
     }
 
     /** UPDATE DECK TYPE ARRAY */

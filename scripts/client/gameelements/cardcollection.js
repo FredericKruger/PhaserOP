@@ -56,6 +56,8 @@ class CardCollection {
                     switch (type) {
                         case 'cost':
                             return values.includes(item.cost);
+                        case 'attribute':                     
+                            return values.includes(item.attribute);
                         default:
                             return true;
                     }

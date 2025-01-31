@@ -86,6 +86,7 @@ class Loader extends Phaser.Scene {
         this.load.image('vsAIIcon', 'assets/icons/menuIcons/vsAIIcon.png');
         this.load.image('collectionIcon', 'assets/icons/menuIcons/collectionIcon.png');
         this.load.image('costIcon', 'assets/icons/menuIcons/costIcon.png');
+        this.load.image('collectionSetIcon', 'assets/icons/menuIcons/collectionSetIcon.png');
 
         this.load.image('default_avatar', 'assets/icons/playericons/icon1.png');
         this.load.image('ai_avatar', 'assets/icons/playericons/icon1.png');
