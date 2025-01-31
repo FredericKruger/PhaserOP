@@ -85,6 +85,7 @@ class Loader extends Phaser.Scene {
         this.load.image('randomMatchIcon', 'assets/icons/menuicons/randomMatchIcon.png');
         this.load.image('vsAIIcon', 'assets/icons/menuIcons/vsAIIcon.png');
         this.load.image('collectionIcon', 'assets/icons/menuIcons/collectionIcon.png');
+        this.load.image('costIcon', 'assets/icons/menuIcons/costIcon.png');
 
         this.load.image('default_avatar', 'assets/icons/playericons/icon1.png');
         this.load.image('ai_avatar', 'assets/icons/playericons/icon1.png');
@@ -221,6 +222,9 @@ class Loader extends Phaser.Scene {
         this.load.image('description_ST02', 'assets/images/description_ST02.png');
         this.load.image('description_ST03', 'assets/images/description_ST03.png');
         this.load.image('description_ST04', 'assets/images/description_ST04.png');
+
+        this.load.glsl('greyscale', 'assets/shaders/greyscale.frag');
+        this.load.glsl('purpleToOrange', 'assets/shaders/purpleToOrange.frag');
         
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
         //this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', 'rexRoundRectangle', 'rexRoundRectangle');
@@ -230,6 +234,9 @@ class Loader extends Phaser.Scene {
     create() {
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
+
+        this.renderer.pipelines.add('GreyscalePipeline', new GreyscalePipeline(this.game));
+        this.renderer.pipelines.add('PurpleToOrangePipeline', new OrangeToPurplePipeline(this.game));
 
         let welcomeText = this.make.text({
             x : screenCenterX,

@@ -94,6 +94,11 @@ class CollectionBookCardEntry {
                 this.cardVisual.art.resetPipeline();
                 this.collectionBook.scene.input.setDraggable(this.cardVisual, true); // Enable dragging
             }
+            if (availableAmount === 1) {
+                this.cardPlaceholder.art.setPipeline('GreyscalePipeline');
+            } else {
+                this.cardPlaceholder.art.resetPipeline();
+            }
         }
     }
 

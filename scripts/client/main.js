@@ -10,6 +10,7 @@ const CARD_HEIGHT = 984;
 
 const OP_BLACK = 0x272424;
 const OP_CREAM = 0xE9E6CE;
+const OP_CREAM_DARKER = 0xb7ad5e;
 const OP_RED = 0xDD2129;
 const OP_GREEN = 0x019E79;
 const OP_BLUE = 0x0088BA;

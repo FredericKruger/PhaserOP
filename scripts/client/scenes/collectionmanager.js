@@ -1,11 +1,4 @@
-class GreyscalePipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
-    constructor(game) {
-        super({
-            game: game,
-            fragShader: game.cache.shader.get('greyscale').fragmentSrc
-        });
-    }
-}
+
 
 class CollectionManager extends Phaser.Scene {
     constructor () {
@@ -36,8 +29,6 @@ class CollectionManager extends Phaser.Scene {
     preload () {
         this.add.image(0, 0, 'background3').setScale(2); //add background image
 
-        this.load.glsl('greyscale', 'assets/shaders/greyscale.frag');
-
         if(this.firstLoad){
             this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
             this.load.plugin('rexcirclemaskimageplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexcirclemaskimageplugin.min.js', true);
@@ -57,8 +48,6 @@ class CollectionManager extends Phaser.Scene {
         let deckCardListContainerHeight = this.cameras.main.height - 40 - containerSeparatorWidth*2;
         let collectionBookContainerHeight = deckCardListContainerHeight;
         let collectionBookContainerWidth = this.cameras.main.width - deckCardListContainerWidth - containerSeparatorWidth*3;
-
-        this.renderer.pipelines.add('GreyscalePipeline', new GreyscalePipeline(this.game));
 
         /** COLLECTION BOOK */
         this.collectionBook = new CollectionBook({

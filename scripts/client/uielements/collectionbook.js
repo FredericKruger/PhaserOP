@@ -18,6 +18,8 @@ class CollectionBook {
         this.objToUpdate = [];
         this.collectionBookCardEntries = [];
 
+        this.costFilterImages = [];
+
         this.tabs = new RexPlugins.UI.Tabs( this.scene, {
             x: config.x + config.width/2, //900
             y: config.y + config.height/2,
@@ -41,12 +43,12 @@ class CollectionBook {
         });
 
         /** INITIALIZE TABS */
-        for(let i=0; i<GameClient.playerCollection.colorCardInfo.length; i++) {
+        /*for(let i=0; i<GameClient.playerCollection.colorCardInfo.length; i++) {
             if(GameClient.playerCollection.colorCardInfo[i].totalPages === 0) {
                 this.tabs.hideButton('top', i);
                 GameClient.playerCollection.colorCardInfo[i].hidden = true;
             }
-        }
+        }*/
 
         this.updateMinMaxPage();
         this.tabs.layout();
@@ -103,6 +105,31 @@ class CollectionBook {
         this.pageTitle = this.scene.add.image(this.tabs.x, 80, '').setOrigin(0.5, 0).setScale(0.5);
         this.pageTitle.setOrigin(0.5, 0);
 
+        /** SEPARATION LINES */
+        this.fileSeparatorLine = this.scene.add.graphics();
+        this.fileSeparatorLine.lineStyle(4, OP_CREAM_DARKER, 8);
+        this.fileSeparatorLine.beginPath();
+        this.fileSeparatorLine.moveTo(0, 0);
+        this.fileSeparatorLine.lineTo(this.tabs.width, 0);
+        this.fileSeparatorLine.closePath();
+        this.fileSeparatorLine.strokePath();
+
+        // Position the line at the bottom of the panel
+        this.fileSeparatorLine.setPosition(this.tabs.x - this.tabs.width / 2, this.tabs.y + this.tabs.height / 2 - 60); // Adjust the y position as needed
+        this.objToUpdate.push(this.fileSeparatorLine);
+
+        this.titleSeparatorLine = this.scene.add.graphics();
+        this.titleSeparatorLine.lineStyle(4, OP_CREAM_DARKER, 8);
+        this.titleSeparatorLine.beginPath();
+        this.titleSeparatorLine.moveTo(0, 0);
+        this.titleSeparatorLine.lineTo(this.tabs.width, 0);
+        this.titleSeparatorLine.closePath();
+        this.titleSeparatorLine.strokePath();
+
+        // Position the line at the bottom of the panel
+        this.titleSeparatorLine.setPosition(this.tabs.x - this.tabs.width / 2, this.pageTitle.y + this.pageTitle.height + 15); // Adjust the y position as needed
+        this.objToUpdate.push(this.titleSeparatorLine);
+
         /** NEXT PAGE BUTTON */
         this.nextPageButton = {
             obj:this.scene.add.image(
@@ -150,6 +177,9 @@ class CollectionBook {
         this.prevPageButton.obj.on('pointerout', () => {this.prevPageButton.obj.setScale(0.4);});
         this.objToUpdate.push(this.prevPageButton);
 
+        //Create filter panel
+        this.createFilterPanel();
+
         this.initSelectedColor();
         this.updatePageTitle();
         this.updateCardVisuals();
@@ -192,7 +222,7 @@ class CollectionBook {
 
     /** FUNCTION TO UPDATE THE PAGE TITLE */
     updatePageTitle() {
-        if(this.pageTitle !== null && GameClient.playerCollection.colorCardIndex[this.selectedColor-1].length>0) {
+        if(this.pageTitle !== null) {
             this.pageTitle.setTexture('op_font_' + CARD_COLORS[this.selectedColor-1]);
         }
     }
@@ -225,7 +255,7 @@ class CollectionBook {
     }
 
     /** CREATE TAB FUNCTION */
-    createCollectionBookTab = function (scene, direction, color, symbol) {
+    createCollectionBookTab (scene, direction, color, symbol) {
         let radius;
         switch (direction) {
             case 0:
@@ -247,6 +277,43 @@ class CollectionBook {
                 left: 12
             }
         });
+    }
+
+    /** CREATE FILTER PANEL */
+    createFilterPanel() {
+        //Add cost images
+        let startX = this.tabs.x - this.tabs.width/2 + 300;
+        let startY = this.tabs.y + this.tabs.height / 2 - 30;
+        let separatorWidth = 10;
+        for(let i=0; i<10; i++) {
+            let costImage = this.scene.add.image(startX, startY, 'op_cost_PURPLE_' + i).setOrigin(0.5).setScale(0.5);
+            this.objToUpdate.push(costImage);
+
+            this.costFilterImages.push({
+                id: i,
+                image: costImage,
+                isPressed: false   
+            });
+
+            costImage.setInteractive();
+            costImage.on('pointerover', () => {costImage.setScale(0.55)});
+            costImage.on('pointerout', () => {costImage.setScale(0.5)});
+            costImage.on('pointerdown', () => {
+                if(this.costFilterImages[i].isPressed) {
+                    this.costFilterImages[i].isPressed = false;
+                    this.costFilterImages[i].image.resetPipeline();
+                    GameClient.playerCollection.removeFilter({type:'cost',value:i});
+                } else {
+                    this.costFilterImages[i].isPressed = true;
+                    this.costFilterImages[i].image.setPipeline('PurpleToOrangePipeline');
+                    GameClient.playerCollection.addFilter({type:'cost',value:i});
+                }
+                this.updateMinMaxPage();
+                this.updateCardVisuals();
+            });
+
+            startX = startX + costImage.width*0.5 + separatorWidth;
+        }
     }
 
     /** UPDATE DECK TYPE ARRAY */

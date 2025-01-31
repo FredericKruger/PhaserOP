@@ -169,7 +169,8 @@ io.on('connection', function (socket) {
                 newPlayer = true;
                 playerSetting = {
                     "avatar": "default_avatar",
-                    "firstLogin": true
+                    "firstLogin": true,
+                    "berries": 10000
                 };
                 await serverInstance.util.savePlayerSettings(username, playerSetting);
                 await serverInstance.util.savePlayerCollection(username, playerCollection);
