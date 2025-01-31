@@ -304,7 +304,7 @@ class CollectionBook {
         //Add set Icon
         let setIcon = this.scene.add.image(this.tabs.x - this.tabs.width/2 + 50, this.tabs.y + this.tabs.height / 2 - 30, 'collectionSetIcon').setOrigin(0.5).setScale(0.6);
         //Create the set scrollpanel
-        let setFilterScrollPanel = new ScrollPanel(this.scene, this.tabs.x - this.tabs.width/2 + 50 - setIcon.width/2*0.6, this.tabs.y + this.tabs.height / 2 - 65 - 200, 150, 200);
+        let setFilterScrollPanel = new ScrollPanel(this.scene, this.tabs.x - this.tabs.width/2 + 50 - setIcon.width/2*0.6, this.tabs.y + this.tabs.height / 2 - 65 - 200, 150, 200, true);
         
         setIcon.setInteractive();
         setIcon.on('pointerover', () => {setIcon.setScale(0.65)});
@@ -464,36 +464,31 @@ class CollectionBook {
 
     /** UPDATE DECK TYPE ARRAY */
     updateDeckColors(colors) {
-        let pageChanged = false;
+        let firstColorIndex = -1;
+
         if(colors.length > 0) {
             for(let i=0; i<CARD_COLORS.length; i++) {
                 if(!colors.includes(CARD_COLORS[i])) {
                     this.tabs.hideButton('top', i);
                     GameClient.playerCollection.colorCardInfo[i].hidden = true;
-                }
-                else {
-                    if(!pageChanged) {
-                        pageChanged = true;
-                        this.currentColorPage = 1;
-                        this.currentPage = GameClient.playerCollection.colorCardInfo[i].startPage;
-                        this.selectedColor = i+1;
-                    }
-                }
+                } else if (firstColorIndex === -1) firstColorIndex = i;
+            }
+            if(!colors.includes(CARD_COLORS[this.selectedColor-1])) {
+                this.currentColorPage = 1;
+                this.currentPage = GameClient.playerCollection.colorCardInfo[firstColorIndex].startPage;
+                this.selectedColor = firstColorIndex+1;
+
             }
         } else {
             for(let i=0; i<GameClient.playerCollection.colorCardInfo.length; i++) {
-                if(GameClient.playerCollection.colorCardInfo[i].numberCards === 0) {
-                    this.tabs.hideButton('top', i);
-                    GameClient.playerCollection.colorCardInfo[i].hidden = true;
-                } else {
-                    this.tabs.showButton('top', i);
-                    GameClient.playerCollection.colorCardInfo[i].hidden = false;
-                }
+                this.tabs.showButton('top', i);
+                GameClient.playerCollection.colorCardInfo[i].hidden = false;
             }
         }
         this.tabs.layout();
         this.updateMinMaxPage();
         this.updateCardVisuals();
+        this.updatePageTitle();
     } 
 
     /** NEXT PAGE FUNCTION */

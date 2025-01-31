@@ -101,31 +101,9 @@ class DeckCardListContainer {
         this.obj.push(this.dropzoneOutline);
 
         /** CREATE A SCROLL PANEL */
-        this.scrollContainer = this.scene.add.container(this.x,this.y+20 + 5);
-        this.scrollContainerPosition = {x: this.scrollContainer.x, y:this.scrollContainer.y};
-        this.scrollContainerHeight = this.height-35-30;
-        this.scrollContainer.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.width * 2 - 10, this.height - 35 - 30 - 10), Phaser.Geom.Rectangle.Contains);
+        this.scrollContainer = new ScrollPanel(this.scene, this.x, this.y+20+5, this.width*2-10, this.height-35-30-10,false);
         this.obj.push(this.scrollContainer);
-        //Create the maskshape
-        this.maskShape = this.scene.add.graphics();
-        this.maskShape.fillRect(this.scrollContainer.x, this.scrollContainer.y, this.width*2-10, this.height-35-30-10);
-        this.obj.push(this.maskShape);
-
-        this.mask = new Phaser.Display.Masks.GeometryMask(this, this.maskShape)
-;       //this.mask.setInvertAlpha(true); // Ensure the mask does not block input events
-        //Set mask to the container
-        this.scrollContainer.setMask(this.mask);
-
-        //What happens on scrolling
-        this.scene.input.on('wheel', (pointer, gameObject, deltaX, deltaY) => {
-            this.scrollContainer.y += deltaY/3;
-            this.updateScrollcontainer();
-            //console.log(this.scrollContainer.y + ' ' + (scrollContainerPosition.y-this.scrollContainer.height) + ' ' + scrollContainerPosition.y + ' ' + this.scrollContainer.height);
-             //this.scrollContainer.height
-                //let scrollPercent = (this.avatarSelectionPanelY-this.scrollContainer.y) / this.maxContainerHeight;
-                //this.scrollbar.y = scrollPercent*(300 - 100 - 5 - 5);
-        });
-
+    
         //Hide at init
         this.setVisible(false);
     }
@@ -160,39 +138,10 @@ class DeckCardListContainer {
         }    
     }
 
-    /** UPDATE SCROLLCONTAINER POSITION */
-    updateScrollcontainer() {
-        this.scrollContainer.y = Phaser.Math.Clamp(this.scrollContainer.y, this.scrollContainerPosition.y-Math.max((this.scrollContainerMaxHeight - this.scrollContainerHeight), 0), this.scrollContainerPosition.y);
-    
-        //Update interactivity of objects in maskbound
-        let maskBounds = {
-            top: this.scrollContainerPosition.y,
-            bottom: this.scrollContainerPosition.y + this.height - 35 - 30 + 2
-        }
-
-        // Check if the card is within the mask bounds
-        for(let i=0; i<this.currentDeck.cards.length; i++) {
-            let card = this.currentDeck.cards[i];
-            //Need to get the worldposition
-            let cardEntryBounds = card.deckBuilderEntry.convertToWorldPosition(card.deckBuilderEntry.x, card.deckBuilderEntry.y);
-            cardEntryBounds = {
-                top: cardEntryBounds.y,
-                bottom: cardEntryBounds.y + card.deckBuilderEntry.height
-            };
-            
-            //Check if in bounds
-            if (maskBounds.top > cardEntryBounds.top || maskBounds.bottom < cardEntryBounds.bottom) {
-                card.deckBuilderEntry.disableInteractive();
-            } else {
-                card.deckBuilderEntry.setInteractive();
-            }
-        }
-    }
-
     /** RESET FUNCTION */
     reset() {
-        this.scrollDelta = 0;
-        this.scrollMax = 0;
+        //this.scrollDelta = 0;
+        //this.scrollMax = 0;
         this.scrollingEnabled = false;
         this.deckTitle.text = 'New Deck';
     }
@@ -243,20 +192,6 @@ class DeckCardListContainer {
         }
     }
 
-    /** FUNCTION TO DETERMINE MAX HIGHT OF SCROLLCONTAINER */
-    calculateScrollContainerHeight() {
-        let maxHeight = 0;
-    
-        this.scrollContainer.each(function (child) {
-            let childBottom = child.y + (child.height || 0) * child.scaleY;
-            if (childBottom > maxHeight) {
-                maxHeight = childBottom;
-            }
-        });
-    
-        return maxHeight;
-    }
-
     /** HIDE TYPE IMAGE */
     hideTypeImages() {
         if(this.typeImage !== null) this.typeImage.setVisible(false);
@@ -303,7 +238,8 @@ class DeckCardListContainer {
             attribute: getCardAttributeSymbol(card.attribute),
             isleader: card.isleader
         }, this);
-        this.scrollContainer.add(deckEntry);
+        //this.scrollContainer.add(deckEntry);
+        this.scrollContainer.addElement(deckEntry);
 
         if(!isPlaceholder) {
             let maskBounds = new Phaser.Geom.Rectangle(
@@ -340,15 +276,6 @@ class DeckCardListContainer {
                 }
                 this.scene.updateTooltip(cardToolTipConfig);
             }, deckEntry);
-
-            // Check if the card is within the mask bounds
-            let cardEntryBounds = deckEntry.getBounds();
-            if (maskBounds.contains(cardEntryBounds.left, cardEntryBounds.top) &&
-                    maskBounds.contains(cardEntryBounds.right, cardEntryBounds.bottom)) {
-                        deckEntry.setInteractive();
-            } else {
-                deckEntry.disableInteractive();
-            }
         }
 
         return deckEntry;
@@ -411,17 +338,7 @@ class DeckCardListContainer {
             let currentY = startY + (i * DECKCARD_ENTRY_HEIGHT) + (Math.max(i-1, 0) * DECKCARD_ENTRY_INTERSPACE);
 
             card.update_entryPosition(currentY, i);
-
-            // Check if the card is within the mask bounds
-            let cardEntryBounds = card.deckBuilderEntry.getBounds();
-            if (maskBounds.contains(cardEntryBounds.left, cardEntryBounds.top) &&
-                    maskBounds.contains(cardEntryBounds.right, cardEntryBounds.bottom)) {
-                card.deckBuilderEntry.setInteractive();
-            } else {
-                card.deckBuilderEntry.disableInteractive();
-            }
         }
-        this.scrollContainerMaxHeight = this.calculateScrollContainerHeight();
-        this.updateScrollcontainer();
+        this.scrollContainer.updateScrollcontainer();
     }
 }

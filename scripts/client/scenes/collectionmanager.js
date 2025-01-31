@@ -128,8 +128,10 @@ class CollectionManager extends Phaser.Scene {
             this.isDragging = true;
 
             if(gameObject instanceof DeckCardEntry) {
-                gameObject.deckCardListContainer.scrollContainer.remove(gameObject);
-                gameObject.setToWorldPosition();
+                gameObject.deckCardListContainer.scrollContainer.removeElement(gameObject);
+                let worldCoord = gameObject.deckCardListContainer.scrollContainer.convertToWorldPosition(gameObject.x, gameObject.y);
+                gameObject.x = worldCoord.x;
+                gameObject.y = worldCoord.y;
                 this.updateTooltip({visible: false});
             } else if(gameObject instanceof CardVisual) {
                 gameObject.showBorder(false);
@@ -138,7 +140,7 @@ class CollectionManager extends Phaser.Scene {
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             if(gameObject instanceof DeckCardEntry) {
-                let worldCoord = gameObject.convertToWorldPosition(dragX, dragY);
+                let worldCoord = gameObject.deckCardListContainer.scrollContainer.convertToWorldPosition(dragX, dragY);
                 gameObject.x = worldCoord.x;
                 gameObject.y = worldCoord.y;
             } else {
@@ -155,11 +157,11 @@ class CollectionManager extends Phaser.Scene {
                         let result = gameObject.deckCardListContainer.removeCardFromDeck(gameObject.entryIndex);
                         
                         if(result !== ERRORCODES.REMOVED_CARD) {
-                            gameObject.deckCardListContainer.scrollContainer.add(gameObject);
+                            gameObject.deckCardListContainer.scrollContainer.addElement(gameObject);
                             gameObject.setToLocalPosition();
                         } 
                     } else {
-                        gameObject.deckCardListContainer.scrollContainer.add(gameObject);
+                        gameObject.deckCardListContainer.scrollContainer.addElement(gameObject);
                         gameObject.setToLocalPosition();
                     }
                 } else {

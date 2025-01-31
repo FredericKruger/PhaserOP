@@ -1,6 +1,6 @@
 class ScrollPanel{
 
-    constructor(scene, x, y, width, height) {
+    constructor(scene, x, y, width, height, showBackground) {
         this.obj = [];
         this.scene = scene;
         this.isVisible = false;
@@ -8,10 +8,12 @@ class ScrollPanel{
         this.height = height;
 
         // Create the background for the scroll container
-        let background = this.scene.add.graphics();
-        background.fillStyle(OP_CREAM_DARKER, 0.8); // Set the background color to OP_CREAM_DARKER
-        background.fillRect(x, y, width, height);
-        this.obj.push(background);
+        if(showBackground) {
+            let background = this.scene.add.graphics();
+            background.fillStyle(OP_CREAM_DARKER, 0.8); // Set the background color to OP_CREAM_DARKER
+            background.fillRect(x, y, width, height);
+            this.obj.push(background);
+        }
 
         this.scrollContainer = this.scene.add.container(x, y);
         this.scrollContainerPosition = {x: this.scrollContainer.x, y:this.scrollContainer.y};
@@ -36,9 +38,9 @@ class ScrollPanel{
         this.setVisible(this.isVisible);
 
         this.scrollContainer.setInteractive();
-        this.scrollContainer.on('pointerover', () => {
+        /*this.scrollContainer.on('pointerover', () => {
             this.obj.forEach(o => o.setDepth(1)); // Set a higher depth value
-        });
+        });*/
     }
 
     setVisible(visible) {
@@ -50,6 +52,12 @@ class ScrollPanel{
 
     addElement(element) {
         this.scrollContainer.add(element);
+        this.updateScrollcontainer();
+    }
+
+    removeElement(element) {
+        this.scrollContainer.remove(element);
+        this.updateScrollcontainer();  
     }
 
     updateScrollcontainer() {
