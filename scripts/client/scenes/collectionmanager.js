@@ -101,6 +101,27 @@ class CollectionManager extends Phaser.Scene {
             selectAll: true,
         });
 
+        this.plugins.get('rextexteditplugin').add(this.collectionBook.searchInput.getElement('text'), {
+            type: 'text',
+            enterClose: true,
+            
+            onOpen: function (textObject) {},
+            onTextChanged: function (textObject, text) {
+                textObject.text = text;
+            },
+            onClose: function (textObject) {
+                GameClient.playerCollection.removeFilter({type:'text',value:textObject.text});
+                if(textObject.text === "") {
+                    textObject.text = "Search";
+                } else {
+                    GameClient.playerCollection.addFilter({type:'text',value:textObject.text});
+                } 
+                this.scene.collectionBook.updateMinMaxPage();
+                this.scene.collectionBook.updateCardVisuals(); 
+            },
+            selectAll: true,
+        });
+
         /** DRAG HANDLER */
         this.input.on('dragstart', function (pointer, gameObject) {
             this.children.bringToTop(gameObject);

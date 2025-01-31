@@ -179,6 +179,7 @@ class CollectionBook {
         this.objToUpdate.push(this.prevPageButton);
 
         //Create filter panel
+        this.searchInput = null;
         this.createFilterPanel();
 
         this.initSelectedColor();
@@ -376,6 +377,36 @@ class CollectionBook {
         roundedRect.fillStyle(OP_CREAM_DARKER, 1); // Black color with 50% opacity
         roundedRect.fillRoundedRect(rectX, rectY, rectWidth, rectHeight, 15); // 10 is padding, 15 is corner radius
         roundedRect.setDepth(0);
+
+        rectX = rectX + rectWidth + 10;
+        rectY = rectY + rectHeight/2;
+        rectWidth = this.tabs.x + this.tabs.width/2 - rectX - 10;
+        rectX = rectX + rectWidth/2;
+        //Create the search bar 
+        this.searchInput = this.scene.rexUI.add.textBox({
+            x: rectX,
+            y: rectY,
+            width: rectWidth,
+            height: rectHeight, 
+            background: this.scene.rexUI.add.roundRectangle(0, 0, 0, 0, 15, OP_CREAM_DARKER),
+            icon: this.scene.add.image(0, 0, 'searchIcon').setScale(0.5),
+            text: this.scene.rexUI.add.BBCodeText(50, 0, 'Search', {
+                fontSize: '20px',
+                fixedWidth: rectWidth-60,
+                fixedHeight: rectHeight-20,
+                valign: 'center',
+                color: '#ffffff' 
+            }),
+            space: {
+                icon: 10, // Space between icon and text
+                left: 10,
+                right: 0,
+                top: 0,
+                bottom: 0
+            },
+            type: 'textArea',
+            editable: true
+        }).layout();
     }
 
     /** UPDATE DECK TYPE ARRAY */

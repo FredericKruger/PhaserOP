@@ -58,6 +58,12 @@ class CardCollection {
                             return values.includes(item.cost);
                         case 'attribute':                     
                             return values.includes(item.attribute);
+                        case 'text':
+                            return (
+                                item.name.toLowerCase().includes(values[0].toLowerCase())
+                                || item.rarity.toLowerCase().includes(values[0].toLowerCase())
+                                || item.type.some(type => type.toLowerCase().includes(values[0].toLowerCase()))
+                            );
                         default:
                             return true;
                     }
@@ -104,7 +110,13 @@ class CardCollection {
     /** Remove a filter */
     removeFilter(filter) {
         //locate the filter
-        const index = this.collectionFilters.findIndex(f => f.type === filter.type && f.value === filter.value);
+        let index = -1;
+        if(filter.type === 'text') {
+            index = this.collectionFilters.findIndex(f => f.type === filter.type);
+        } else {
+            index = this.collectionFilters.findIndex(f => f.type === filter.type && f.value === filter.value);
+        }
+
         if(index !== -1) {
             this.collectionFilters.splice(index, 1);
             this.filterCollection();
