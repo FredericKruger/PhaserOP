@@ -1,6 +1,6 @@
 class ScrollPanel{
 
-    constructor(scene, x, y, width, height, showBackground) {
+    constructor(scene, x, y, width, height, showBackground, backgroundConfig) {
         this.obj = [];
         this.scene = scene;
         this.isVisible = false;
@@ -10,8 +10,8 @@ class ScrollPanel{
         // Create the background for the scroll container
         if(showBackground) {
             let background = this.scene.add.graphics();
-            background.fillStyle(OP_CREAM_DARKER, 0.8); // Set the background color to OP_CREAM_DARKER
-            background.fillRect(x, y, width, height);
+            background.fillStyle(backgroundConfig.backgroundColor, backgroundConfig.alpha); // Set the background color to OP_CREAM_DARKER
+            background.fillRoundedRect(x, y, width, height, backgroundConfig.round);
             this.obj.push(background);
         }
 

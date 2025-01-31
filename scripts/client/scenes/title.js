@@ -78,12 +78,12 @@ class Title extends Phaser.Scene {
         this.add.circle(avatarX, avatarY, this.avatarPortraitWidth/2+1, OP_WHITE, 1).setStrokeStyle(3, OP_CREAM).setOrigin(0.5);
         this.playerAvatar = this.add.image(avatarX, avatarY, GameClient.playerSettings.avatar).setOrigin(0.5).setScale(0.5);
 
+        this.createAvatarSelectionPanel();
+
         this.playerAvatar.setInteractive();
         this.playerAvatar.on('pointerover', () => this.playerAvatar.setScale(0.54));
         this.playerAvatar.on('pointerout', () => this.playerAvatar.setScale(0.5));
-        this.playerAvatar.on('pointerdown', this.showAvatarSelectionPanel, this);
-
-        this.createAvatarSelectionPanel();
+        this.playerAvatar.on('pointerdown', () => {this.scrollContainer.setVisible(!this.scrollContainer.isVisible)});
 
         GameClient.titleScene = this;
 
@@ -124,14 +124,15 @@ class Title extends Phaser.Scene {
     createAvatarSelectionPanel() {
         this.avatarSelectionPanelX = this.playerAvatar.x  - this.playerAvatar.width/2*this.playerAvatar.scale;
         this.avatarSelectionPanelY = this.playerAvatar.y + this.playerAvatar.height*this.playerAvatar.scale;
-        this.scrollContainer = this.add.container(this.avatarSelectionPanelX,this.avatarSelectionPanelY);
-
-        //Create the maskshape
-        this.maskShape = this.add.graphics();
-        this.maskShape.fillRect(this.scrollContainer.x, this.scrollContainer.y, 400, 300);
+        
+        
+        //this.scrollContainer = this.add.container(this.avatarSelectionPanelX,this.avatarSelectionPanelY);
+        let backgroundConfig = {backgroundColor: OP_WHITE, alpha: 1.0, round: 15};
+        this.scrollContainer = new ScrollPanel(this, this.avatarSelectionPanelX, this.avatarSelectionPanelY, 325, 250, true, backgroundConfig);
 
         //Get the icon data
         let iconData = this.cache.json.get('icon_data');
+        
         let separatorSize = this.avatarPortraitWidth*2*0.4+10; //create standard image separator size
 
         //Load all thge images if they haven't been loaded yet
@@ -143,76 +144,21 @@ class Title extends Phaser.Scene {
         //Once all the images where loaded
         let iconList = [];
         loader.once(Phaser.Loader.Events.COMPLETE, () => {
-            let containerBounds = new Phaser.Geom.Rectangle(this.avatarSelectionPanelX,this.avatarSelectionPanelY, 400, 300); //create container bounds for image handling
-
             for(let i = 0; i<iconData.length; i++) {
-                let image = this.add.image(25 + i%5*separatorSize, 10 + Math.floor(i/5)*separatorSize, iconData[i]).setOrigin(0, 0).setScale(0.8);
+                let image = this.add.image(10 + i%4*separatorSize, 10 + Math.floor(i/4)*separatorSize, iconData[i]).setOrigin(0, 0).setScale(0.8);
                 iconList[i] = image;
                 image.setInteractive();
 
                 //Event for when an image is selected
                 image.on('pointerdown', (pointer) => {
-                    let pointerInMask = Phaser.Geom.Rectangle.Contains(containerBounds, pointer.x, pointer.y);
-                    if(pointerInMask) { //Only react is pointer is in the container
-                        GameClient.playerSettings.avatar = image.texture.key;
+                    GameClient.playerSettings.avatar = image.texture.key;
                         this.playerAvatar.setTexture(image.texture.key);
                         GameClient.updatePlayerSettings();
-                    }
                 });
-                this.scrollContainer.add(image);
+                this.scrollContainer.addElement(image);
             }
-            this.maxContainerHeight = 10 + (Math.floor(iconData.length/5)-3)*separatorSize;
-
-            this.scrollContainer.setVisible(false);
-
-            //add a backgorund to the container
-            this.containerBackground = this.add.graphics();
-            this.children.moveBelow(this.scrollContainer, this.containerBackground);
-            this.updateScrollpanelBackground();
-
-            //Set mask to the container
-            this.scrollContainer.setMask(new Phaser.Display.Masks.GeometryMask(this, this.maskShape));
-
-            //Adding interactivity to the shape
-            this.maskShape.setInteractive(new Phaser.Geom.Rectangle(this.scrollContainer.x, this.scrollContainer.y, 400, 300), Phaser.Geom.Rectangle.Contains);
-            this.input.on('wheel', (pointer, gameObject, deltaX, deltaY) => {
-                if(this.scrollContainer.visible) {
-                    this.scrollContainer.y += deltaY/3;
-                    this.scrollContainer.y = Phaser.Math.Clamp(this.scrollContainer.y, this.avatarSelectionPanelY-this.maxContainerHeight, this.avatarSelectionPanelY);
-                }
-            });
-
-            this.maskShape.scaleY = 1;
         });
         loader.start();
-    }
-
-    updateContentPosition() {
-        let scrollPercent = (this.scrollbar.y)  / (300 - 100 - 5 - 5);
-        this.scrollContainer.y = this.avatarSelectionPanelY - scrollPercent * this.maxContainerHeight;
-    }
-
-    updateScrollpanelBackground() {
-        this.containerBackground.clear();
-        if(this.scrollContainer.visible) {
-            this.containerBackground.fillStyle(OP_WHITE, 1);
-            this.containerBackground.fillRect(this.scrollContainer.x, this.scrollContainer.y, 400, 300);
-            this.containerBackground.lineStyle(5, OP_CREAM);
-            this.containerBackground.strokeRect(this.scrollContainer.x, this.scrollContainer.y, 400, 300);
-        }
-        this.children.moveBelow( this.containerBackground, this.scrollContainer,);
-    }
-
-    showAvatarSelectionPanel() {
-        //closing the container
-        this.scrollContainer.y = this.avatarSelectionPanelY;
-        if(this.scrollContainer.visible) {
-            this.scrollContainer.setVisible(false);
-            this.updateScrollpanelBackground();
-        } else {
-            this.scrollContainer.setVisible(true);
-            this.updateScrollpanelBackground();
-        }
     }
 
     update () {}
