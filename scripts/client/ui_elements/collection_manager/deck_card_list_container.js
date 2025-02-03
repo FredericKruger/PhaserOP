@@ -271,7 +271,7 @@ class DeckCardListContainer {
                     let worldPosition = this.scrollContainer.convertToWorldPosition(deckEntry.x, deckEntry.y);
                     let positionx = worldPosition.x - deckEntry.width - (deckEntry.width*0.5/2);
 
-                    cardToolTipConfig.cardInfo = deckEntry.cardInfo;
+                    cardToolTipConfig.cardData = deckEntry.cardData;
                     cardToolTipConfig.positionx = positionx;
                     cardToolTipConfig.positiony = worldPosition.y;
                     cardToolTipConfig.rightside = -1;

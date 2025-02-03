@@ -1,4 +1,7 @@
 class Deck {
+    /**
+     * @param {boolean} isNewDeck
+     */
     constructor(isNewDeck) {
         this.cards = [];
         this.colors = [];
@@ -8,17 +11,20 @@ class Deck {
         this.hasLeader = false;
     }
 
-    /** FUNCTION TO ADD A CARD TO THE DECK */
-    addCard(card) {
+    /**
+     * FUNCTION TO ADD A CARD TO THE DECK
+     * @param {CardData} cardData
+     */
+    addCard(cardData) {
         //First card to be added has to be the leader
         if(this.deckSize === 0) {
-            if(card.isleader === 1) {
+            if(cardData.isleader === 1) {
                 this.deckSize++;
                 this.cards.push(new Card(
-                    card, 1
+                    cardData, 1
                 ));
 
-                for(let cardColor of card.colors) {
+                for(let cardColor of cardData.colors) {
                     if(!this.colors.includes(cardColor)) this.colors.push(cardColor);    
                 }
 
@@ -31,10 +37,10 @@ class Deck {
             }
         } else {
             if(this.deckSize < GAME_ENUMS.DECK_LIMIT) {
-                let i = this.cards.findIndex(e => e.cardInfo.id === card.id);
+                let i = this.cards.findIndex(e => e.cardData.id === cardData.id);
                 //card alread in deck
                 if ( i > -1 ) {
-                    if(card.isleader === 1 && this.hasLeader) { //only accept 1 leader per deck
+                    if(cardData.isleader === 1 && this.hasLeader) { //only accept 1 leader per deck
                         return ERROR_CODES.CARD_LEADER_LIMIT_REACHED;
                     } else {
                         if(this.cards[i].amount<GAME_ENUMS.CARD_LIMIT) { //only accept 4 of each card
@@ -46,12 +52,12 @@ class Deck {
                         }
                     }   
                 } else {
-                    if(card.isleader === 1) { //only accept one leader per deck
+                    if(cardData.isleader === 1) { //only accept one leader per deck
                         return ERROR_CODES.CARD_LEADER_LIMIT_REACHED; 
                     } else {
                         this.deckSize++;
                         this.cards.push(new Card(
-                            card, 1
+                            cardData, 1
                         ));
 
                         this.sortEntries();
@@ -64,9 +70,11 @@ class Deck {
         }
     }
 
-    //Removes a card from the deck
+    /** Removes a card from the deck 
+     * @param {number} index - The index of the card to remove
+    */
     removeCardAt(index) {
-        if(this.cards[index].cardInfo.isleader === 1 && this.deckSize>1) { //If trying to remove the leader before the other cards
+        if(this.cards[index].cardData.isleader === 1 && this.deckSize>1) { //If trying to remove the leader before the other cards
             return ERROR_CODES.CANNOT_REMOVE_LEADER;
         } else {
             this.cards[index].amount--;
@@ -74,7 +82,7 @@ class Deck {
     
             //if 0 left remove entry
             if(this.cards[index].amount <= 0){
-                let isleader = this.cards[index].cardInfo.isleader;
+                let isleader = this.cards[index].cardData.isleader;
                 
                 //remove entry and object
                 this.cards[index].destroy_entries();
@@ -94,7 +102,7 @@ class Deck {
     /** FUNCTION TO SORT THE CARDS */
     sortEntries() {
         this.cards = this.cards.sort(function (a, b) {
-            return b.cardInfo.isleader - a.cardInfo.isleader || a.cardInfo.cost - b.cardInfo.cost || a.cardInfo.name.localeCompare(b.cardInfo.name);
+            return b.cardData.isleader - a.cardData.isleader || a.cardData.cost - b.cardData.cost || a.cardData.name.localeCompare(b.cardData.name);
         });
     }
 
@@ -103,16 +111,18 @@ class Deck {
         let cards = [];
         for(let i = 0; i<this.cards.length; i++){
             for(let j = 0; j<this.cards[i].amount; j++){
-                cards.push(this.cards[i].cardInfo.id);
+                cards.push(this.cards[i].cardData.id);
             }
         }
         return cards;
     }
 
-    /** FUNCTION THAT RETURNS THE AMOUNT OF CARD IN THE DECK */
+    /** FUNCTION THAT RETURNS THE AMOUNT OF CARD IN THE DECK 
+     * @param {number} cardid - The id of the card to check
+    */
     amountInDeck(cardid) {
         let amount = 0;
-        let card = this.cards.filter(item => item.cardInfo.id === cardid);
+        let card = this.cards.filter(item => item.cardData.id === cardid);
 
         if(card.length > 0) {
             amount = card[0].amount;

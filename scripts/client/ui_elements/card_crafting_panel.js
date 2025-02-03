@@ -62,13 +62,13 @@ class CardCraftingPanel extends Phaser.GameObjects.Container{
     }
 
     /** UPDATE THE INFORMATION IUN THE PANEL */
-    updateArt(cardInfo) {
-        this.art.setTexture(cardInfo.art);
-        this.cardAmountText.text = 'x' + cardInfo.amount;
-        this.packart.setTexture(`PACK_ART_${cardInfo.set}`);
+    updateArt(cardData) {
+        this.art.setTexture(cardData.art);
+        this.cardAmountText.text = 'x' + cardData.amount;
+        this.packart.setTexture(`PACK_ART_${cardData.set}`);
 
         // Apply greyscale shader if the amount is 0, otherwise remove the shader
-        if (cardInfo.amount === 0) {
+        if (cardData.amount === 0) {
             this.art.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
         } else {
             this.art.resetPipeline();
