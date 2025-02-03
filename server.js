@@ -74,6 +74,8 @@ io.on('connection', function (socket) {
                     "firstLogin": true,
                     "berries": 10000
                 };
+
+                await serverInstance.util.createPlayerFolder(username);
                 await serverInstance.util.savePlayerSettings(username, playerSetting);
                 await serverInstance.util.savePlayerCollection(username, playerCollection);
                 await serverInstance.util.savePlayerDecklist(username, playerDecklist);

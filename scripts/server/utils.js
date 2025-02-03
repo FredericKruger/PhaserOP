@@ -50,7 +50,7 @@ class Utils {
     async getPlayerDecklist (username) {
         let deck = [];
         let playerDeckName = 'decks_' + username + '.json'; //Get file name
-        let filepath = this.serverPath + '/server_assets/player_decks/' + playerDeckName; //Get file path
+        let filepath = this.serverPath + '/server_assets/player_folders/' + username + '/' + playerDeckName; //Get file path
 
         try {
             const data = await fs.promises.readFile(filepath); //Read the file as a promise
@@ -68,7 +68,7 @@ class Utils {
     async getPlayerCollection (username) {
         let collection = [];
         let playerCollectionName = 'collection_' + username + '.json'; //Get file name
-        let filepath = this.serverPath + '/server_assets/player_collections/' + playerCollectionName; //get file path
+        let filepath = this.serverPath + '/server_assets/player_folders/' + username + '/' + playerCollectionName; //get file path
 
         try {
             const data = await fs.promises.readFile(filepath);
@@ -86,7 +86,7 @@ class Utils {
     async getPlayerSettings (username) {
         let settings = null;
         let playerSettingsName = 'settings_' + username + '.json'; //Get file name
-        let filepath = this.serverPath + '/server_assets/player_settings/' + playerSettingsName; //Get file path
+        let filepath = this.serverPath + '/server_assets/player_folders/' + username + '/' + playerSettingsName; //Get file path
 
         try {
             const data = await fs.promises.readFile(filepath);
@@ -118,7 +118,7 @@ class Utils {
      */
     async savePlayerCollection (username, collection) {
         let playerCollectionName = 'collection_' + username + '.json'; //Get file name
-        let filepath = this.serverPath + '/server_assets/player_collections/' + playerCollectionName; //Get file path
+        let filepath = this.serverPath + '/server_assets/player_folders/' + username + '/' + playerCollectionName; //Get file path
         try {
             await fs.writeFileSync(filepath, JSON.stringify(collection)); //Write to new file
         } catch (err) {
@@ -129,7 +129,7 @@ class Utils {
     /** Function to save decklists */
     async savePlayerDecklist (username, decklist) {
         let playerDeckName = 'decks_' + username + '.json'; //Create the filename
-        let filename = this.serverPath + '/server_assets/player_decks/'+playerDeckName; //Get folder to be save
+        let filename = this.serverPath + '/server_assets/player_folders/' + username + '/' + playerDeckName; //Get folder to be save
         try {
             await fs.writeFileSync(filename, JSON.stringify(decklist)); //Write to new file
         } catch (err) {
@@ -143,11 +143,17 @@ class Utils {
      */
     async savePlayerSettings (username, settings) {
         let playerSettingsName = 'settings_' + username + '.json'; //Get file name
-        let filepath = this.serverPath + '/server_assets/player_settings/' + playerSettingsName; //Get file path
+        let filepath = this.serverPath + '/server_assets/player_folders/' + username + '/' + playerSettingsName; //Get file path
         try {
             await fs.writeFileSync(filepath, JSON.stringify(settings)); //Write to new file
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    async createPlayerFolder(username) {
+        if(!fs.existsSync(this.serverPath + '/server_assets/player_folders/' + username)) {
+            fs.mkdirSync(this.serverPath + '/server_assets/player_folders/' + username);
         }
     }
 }
