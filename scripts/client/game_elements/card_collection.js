@@ -46,9 +46,9 @@ class CardCollection {
             return acc;
         }, {});
 
-        for(let i = 0; i<CARD_COLORS.length; i++) {
+        for(let i = 0; i<GAME_ENUMS.CARD_COLORS.length; i++) {
             //First filter the cards
-            this.colorCardIndex[i] = this.cardCollection.filter(item => item.colors.includes(CARD_COLORS[i]) && item.amount > 0);
+            this.colorCardIndex[i] = this.cardCollection.filter(item => item.colors.includes(GAME_ENUMS.CARD_COLORS[i]) && item.amount > 0);
 
             // Apply custom filters
             for (const [type, values] of Object.entries(groupedFilters)) {
@@ -88,7 +88,7 @@ class CardCollection {
 
             //Increase variables
             if(this.colorCardIndex[i].length > 0) {
-                this.colorCardInfo[i].totalPages = Math.floor(this.colorCardIndex[i].length/maxCardsPerPage)+1;
+                this.colorCardInfo[i].totalPages = Math.floor(this.colorCardIndex[i].length/GAME_ENUMS.MAX_CARDS_PER_PAGE)+1;
             }
             pageMax +=this.colorCardInfo[i].totalPages;
 

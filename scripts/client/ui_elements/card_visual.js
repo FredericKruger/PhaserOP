@@ -13,7 +13,7 @@ class CardVisual extends Phaser.GameObjects.Container {
         this.showingBack = false;
 
         this.border = this.scene.add.graphics();
-        this.border.lineStyle(15, OP_GOLD, 1); // Orange color with 5px thickness
+        this.border.lineStyle(15, COLOR_ENUMS.OP_GOLD, 1); // Orange color with 5px thickness
         this.border.strokeRoundedRect(-300, -419, 600, 838, 20); // Adjust the rectangle to match the image size and add rounded corners
         this.border.setVisible(false);  
 
@@ -32,7 +32,7 @@ class CardVisual extends Phaser.GameObjects.Container {
         let cardArtKey = card.art;
         let loader = new Phaser.Loader.LoaderPlugin(this.scene); //create a loader 
         if(!this.scene.textures.exists(cardArtKey)) {
-            loader.image(cardArtKey, 'assets/cardart/' + cardArtKey + '.png'); //load image
+            loader.image(cardArtKey, `assets/cardart/${cardArtKey}.png`); //load image
             loader.once(Phaser.Loader.Events.COMPLETE, () => {
                 this.art.setTexture(cardArtKey);
             });
@@ -50,6 +50,9 @@ class CardVisual extends Phaser.GameObjects.Container {
         return this.height * this.scale;
     }
 
-    /** FUNCTION TO SHOW THE BORDER */
+    /**
+     * FUNCTION TO SHOW THE BORDER
+     * @param {boolean} show
+     */
     showBorder(show) {this.border.setVisible(show);}
 }

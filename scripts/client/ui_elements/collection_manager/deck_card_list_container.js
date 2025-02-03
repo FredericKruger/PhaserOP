@@ -19,7 +19,7 @@ class DeckCardListContainer {
         this.scrollingEnabled = false;
 
         /** PREPARE UI */
-        this.background = this.scene.add.rexRoundRectangle(this.x + this.width/2, this.y + this.height/2, this.width, this.height, 20, OP_CREAM, 1);
+        this.background = this.scene.add.rexRoundRectangle(this.x + this.width/2, this.y + this.height/2, this.width, this.height, 20, COLOR_ENUMS.OP_CREAM, 1);
         this.obj.push(this.background);
 
         /** DECK NAME */
@@ -30,14 +30,14 @@ class DeckCardListContainer {
             width: this.width,
             height: 70,
             radius: 5,
-            backgroundcolor: OP_ORANGE,
-            outlinecolor: OP_CREAM,
+            backgroundcolor: COLOR_ENUMS.OP_ORANGE,
+            outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "",
             fontsize: 32
         });
         this.obj.push(this.decknameBackground);
 
-        this.deckTitleOutline = this.scene.add.rectangle(this.decknameBackground.x+25, this.decknameBackground.y,  220, 45, OP_BLACK, 0).setStrokeStyle(3, OP_BLACK);
+        this.deckTitleOutline = this.scene.add.rectangle(this.decknameBackground.x+25, this.decknameBackground.y,  220, 45, COLOR_ENUMS.OP_BLACK, 0).setStrokeStyle(3, COLOR_ENUMS.OP_BLACK);
         this.obj.push(this.deckTitleOutline);
 
         /** SAVE DECK */
@@ -48,8 +48,8 @@ class DeckCardListContainer {
             width: 100,
             height: 40, //self.deckDropZone.height/2,
             radius: 5,
-            backgroundcolor: OP_RED,
-            outlinecolor: OP_CREAM,
+            backgroundcolor: COLOR_ENUMS.OP_RED,
+            outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "Done",
             fontsize: 18
         });
@@ -65,23 +65,23 @@ class DeckCardListContainer {
         this.obj.push(this.saveDeckButton);
 
         /** CARD AMOUNT TEXT */
-        this.cardAmountTextRectangle = this.scene.add.rexRoundRectangleCanvas(this.x  + this.width/2 - 58, this.y + this.height - 23,  170, 35, 5, OP_BLUE, OP_CREAM, 2);
+        this.cardAmountTextRectangle = this.scene.add.rexRoundRectangleCanvas(this.x  + this.width/2 - 58, this.y + this.height - 23,  170, 35, 5, COLOR_ENUMS.OP_BLUE, COLOR_ENUMS.OP_CREAM, 2);
         this.cardAmountText = { 
-            obj: this.scene.add.text(this.cardAmountTextRectangle.x, this.cardAmountTextRectangle.y-5, '0/' + DECK_LIMIT, {
+            obj: this.scene.add.text(this.cardAmountTextRectangle.x, this.cardAmountTextRectangle.y-5, '0/' + GAME_ENUMS.DECK_LIMIT, {
                 fontFamily: 'Brandon',
                 font: "20px monospace",
-                fill: "#E9E6CE"
+                color: COLOR_ENUMS_CSS.OP_CREAM
             }).setOrigin(0.5, 0.5),
             deckCardListContainer: this,
             update: function () { 
-                this.obj.setText(this.deckCardListContainer.currentDeck.deckSize + "/" + DECK_LIMIT);
+                this.obj.setText(this.deckCardListContainer.currentDeck.deckSize + "/" + GAME_ENUMS.DECK_LIMIT);
             }
         }
         this.objToUpdate.push(this.cardAmountText);
         this.cardAmountText2 = this.scene.add.text(this.cardAmountTextRectangle.x, this.cardAmountTextRectangle.y+7, 'cards', {
             fontFamily: 'Brandon',
             font: "14px monospace",
-            fill: "#E9E6CE"
+            color: COLOR_ENUMS_CSS.OP_CREAM
         }).setOrigin(0.5, 0.5);
         this.obj.push(this.cardAmountTextRectangle);
         this.obj.push(this.cardAmountText.obj);
@@ -96,7 +96,7 @@ class DeckCardListContainer {
         let dropZoneHeight = this.height-35-30;
         this.deckDropZone = this.scene.add.zone(this.x+5+dropZoneWidth/2, this.y+20+dropZoneHeight/2,  dropZoneWidth, dropZoneHeight).setRectangleDropZone(dropZoneWidth, dropZoneHeight);
         this.deckDropZone.setData({ name: 'deckDropZone'});
-        this.dropzoneOutline = this.scene.add.rectangle(this.x+5, this.y+20,  dropZoneWidth, dropZoneHeight, OP_BLACK, 0).setStrokeStyle(3, OP_BLACK).setOrigin(0);
+        this.dropzoneOutline = this.scene.add.rectangle(this.x+5, this.y+20,  dropZoneWidth, dropZoneHeight, COLOR_ENUMS.OP_BLACK, 0).setStrokeStyle(3, COLOR_ENUMS.OP_BLACK).setOrigin(0);
         this.obj.push(this.deckDropZone);
         this.obj.push(this.dropzoneOutline);
 
@@ -157,10 +157,10 @@ class DeckCardListContainer {
         /** Preload Card Art if not loaded yet */
         let loader = new Phaser.Loader.LoaderPlugin(this.scene); // create a loader
         for(let i=0; i<this.currentDeck.cards.length; i++) {
-            let cardArtKey = 'deckentry_' + this.currentDeck.cards[i].cardInfo.art;
+            let cardArtKey = `deckentry_${this.currentDeck.cards[i].cardInfo.art}`;
             let nbLoads = 0;
             if(!this.scene.textures.exists(cardArtKey)) {
-                loader.image(cardArtKey, 'assets/deckentryart/' + cardArtKey + '.png'); // load image
+                loader.image(cardArtKey, `assets/deckentryart/${cardArtKey}.png`); // load image
                 nbLoads++;
             } 
         }
@@ -180,14 +180,14 @@ class DeckCardListContainer {
         //Update icons
         this.hideTypeImages();
         if(this.currentDeck.colors.length === 0){
-            this.decknameBackground.setBackgroundColor(OP_ORANGE);
+            this.decknameBackground.setBackgroundColor(COLOR_ENUMS.OP_ORANGE);
         } else {
-            this.setTypeImage(getCardSymbol(this.currentDeck.colors, 1));
+            this.setTypeImage(GameClient.utils.getCardSymbol(this.currentDeck.colors, 1));
 
             if(this.currentDeck.colors.length === 1) {
-                this.decknameBackground.setBackgroundColor(getCardColor(this.currentDeck.colors[0]));
+                this.decknameBackground.setBackgroundColor(GameClient.utils.getCardColor(this.currentDeck.colors[0]));
             } else {
-                this.getNameBackground().setDoubleBackgroundColor(getCardColor(this.currentDeck.colors[0]), getCardColor(this.currentDeck.colors[1]));
+                this.getNameBackground().setDoubleBackgroundColor(GameClient.utils.getCardColor(this.currentDeck.colors[0]), GameClient.utils.getCardColor(this.currentDeck.colors[1]));
             }
         }
     }
@@ -197,7 +197,9 @@ class DeckCardListContainer {
         if(this.typeImage !== null) this.typeImage.setVisible(false);
     }
 
-    /** SET TYPE IMAGE */
+    /** SET TYPE IMAGE 
+     * @param {String} type
+    */
     setTypeImage(type) {
         if(this.typeImage === null){
             this.typeImage = this.scene.add.image(this.deckDropZone.x-this.deckDropZone.width/2 + 30, this.deckTitle.y, type).setScale(0.8).setOrigin(0.5,0.5);
@@ -207,14 +209,15 @@ class DeckCardListContainer {
         this.typeImage.setVisible(true);
     }
 
-    /** SET THE DECK TITLE ENTRIES */
+    /** SET THE DECK TITLE ENTRIES 
+    */
     setDeckTitle (deckTitle) {
         this.deckTitle = deckTitle;
         this.obj.push(this.deckTitle);
     }
 
     /** CREATE A DECK CARD ENTRY */
-    createDeckCardEntry(card, position, /*cardi, */isPlaceholder, amount) {
+    createDeckCardEntry(card, position, isPlaceholder, amount) {
         let cardname = card.name;
 
         //let startY = this.deckDropZone.y - this.deckDropZone.height/2 + DECKCARD_ENTRY_HEIGHT/2 + 5;
@@ -228,14 +231,15 @@ class DeckCardListContainer {
             y: currentY,
             width: DECKCARD_ENTRY_WIDTH,
             height: DECKCARD_ENTRY_HEIGHT,
-            backgroundcolor: OP_CREAM,
-            bordercolor: getCardColor(card.colors[0]),
+            backgroundcolor: COLOR_ENUMS.OP_CREAM,
+            bordercolor: GameClient.utils.getCardColor(card.colors[0]),
             name: cardname,
             amount: amount,
             art: card.art,
-            type: getCardSymbol(card.colors, card.isleader),
-            cost: getCardCost(card.colors[0], card.cost),
-            attribute: getCardAttributeSymbol(card.attribute),
+            cardtype: card.card,
+            type: GameClient.utils.getCardSymbol(card.colors, false),
+            cost: GameClient.utils.getCardCost(card.colors[0], card.cost),
+            attribute: GameClient.utils.getCardAttributeSymbol(card.attribute),
             isleader: card.isleader
         }, this);
         //this.scrollContainer.add(deckEntry);
@@ -250,32 +254,33 @@ class DeckCardListContainer {
             );
 
             deckEntry.setInteractive();
-            deckEntry.on('pointerdown', function(pointer) {
+            deckEntry.on('pointerdown', (pointer) => {
                 if(pointer.rightButtonDown()) {
-                    this.deckCardListContainer.removeCardFromDeck(this.entryIndex);
+                    deckEntry.deckCardListContainer.removeCardFromDeck(deckEntry.entryIndex);
                 }
-            }, deckEntry);
+            });
 
             this.scene.input.setDraggable(deckEntry);
 
-            deckEntry.on('pointerout', function(pointer) {
+            deckEntry.on('pointerout', (pointer) =>  {
                 this.scene.updateTooltip({visible: false});
-            }, deckEntry);
-            deckEntry.on('pointerover', function (pointer) { 
+            });
+            deckEntry.on('pointerover', (pointer) => { 
                 let cardToolTipConfig = {};
                 if(!this.scene.isDragging){
-                    let positionx = this.worldX - this.width - (this.width*0.5/2);
+                    let worldPosition = this.scrollContainer.convertToWorldPosition(deckEntry.x, deckEntry.y);
+                    let positionx = worldPosition.x - deckEntry.width - (deckEntry.width*0.5/2);
 
-                    cardToolTipConfig.cardInfo = this.cardInfo;
+                    cardToolTipConfig.cardInfo = deckEntry.cardInfo;
                     cardToolTipConfig.positionx = positionx;
-                    cardToolTipConfig.positiony = this.worldY;
+                    cardToolTipConfig.positiony = worldPosition.y;
                     cardToolTipConfig.rightside = -1;
                     cardToolTipConfig.visible = true;
                 } else {
                     cardToolTipConfig.visible = false;
                 }
                 this.scene.updateTooltip(cardToolTipConfig);
-            }, deckEntry);
+            });
         }
 
         return deckEntry;
@@ -286,14 +291,14 @@ class DeckCardListContainer {
         let resultCode = this.currentDeck.removeCardAt(entryIndex);
 
         switch(resultCode) {
-            case ERRORCODES.DECREASED_CARD_AMOUNT:
+            case ERROR_CODES.DECREASED_CARD_AMOUNT:
                 this.scene.updateDeckColors();
                 break;
-            case ERRORCODES.REMOVED_CARD:
+            case ERROR_CODES.REMOVED_CARD:
                 this.updateDeckCardEntries(); //-1 because no cardi required when removing
                 this.scene.updateDeckColors();
                 break;
-            case ERRORCODES.CANNOT_REMOVE_LEADER:
+            case ERROR_CODES.CANNOT_REMOVE_LEADER:
                 this.scene.createDialog(this.scene, 'Oops', 'Can only remove Leader last!')
                 .setPosition(this.scene.cameras.main.worldView.x + this.scene.cameras.main.width / 2, this.scene.cameras.main.worldView.y + this.scene.cameras.main.height / 2)
                 .layout()

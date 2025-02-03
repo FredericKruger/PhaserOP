@@ -21,7 +21,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         this.amountText = this.scene.add.text(-config.width/2 + 7, 0, config.amount + 'x', {
             fontFamily: 'Brandon',
             font: "bold 20px monospace",
-            fill: "#000000",
+            fill: COLOR_ENUMS_CSS.OP_BLACK,
             backgroundColor: "rgba(255, 255, 255, 0.8)"//,
         });
         this.amountText.setOrigin(0., 0.5);
@@ -35,13 +35,19 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
             this.cost.setOrigin(0.5, 0.5);
         }
 
-        this.attribute = this.scene.add.image(-config.width/2 + 45, 0, config.attribute).setDisplaySize(23, 23); //config.width/2 - 42
+        this.attribute = this.scene.add.image(-config.width/2 + 45, 0, '').setDisplaySize(23, 23);
         this.attribute.setOrigin(0.5);
+        if(config.cardtype === 'CHARACTER' || config.cardtype === 'LEADER') {
+            this.attribute.setTexture(config.attribute);   
+        } else {
+            this.attribute.setVisible(false);
+        }
+        
 
         this.name = this.scene.add.text(-70, 0, config.name, {
             fontFamily: 'Brandon',
             font: "bold 16px monospace",
-            fill: "#000000",
+            fill: COLOR_ENUMS_CSS.OP_BLACK,
             backgroundColor: "rgba(255, 255, 255, 0.8)"//,
             //fixedWidth: 70 + config.width/2 - 5
         });

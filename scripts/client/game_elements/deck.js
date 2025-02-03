@@ -1,15 +1,3 @@
-const ERRORCODES = {
-    INCREASED_CARD_AMOUNT : 0,
-    ADDED_NEW_CARD: 1,
-    DECK_LIMIT_REACHED: 2,
-    CARD_LIMIT_REACHED: 3,
-    CARD_LEADER_LIMIT_REACHED: 4,
-    DECREASED_CARD_AMOUNT: 5,
-    REMOVED_CARD: 6,
-    FIRST_CARD_TO_BE_LEADER: 7,
-    CANNOT_REMOVE_LEADER: 8
-};
-
 class Deck {
     constructor(isNewDeck) {
         this.cards = [];
@@ -37,29 +25,29 @@ class Deck {
                 this.hasLeader = true;
                 
                 this.sortEntries();
-                return ERRORCODES.ADDED_NEW_CARD;
+                return ERROR_CODES.ADDED_NEW_CARD;
             } else {
-                return ERRORCODES.FIRST_CARD_TO_BE_LEADER;
+                return ERROR_CODES.FIRST_CARD_TO_BE_LEADER;
             }
         } else {
-            if(this.deckSize < DECK_LIMIT) {
+            if(this.deckSize < GAME_ENUMS.DECK_LIMIT) {
                 let i = this.cards.findIndex(e => e.cardInfo.id === card.id);
                 //card alread in deck
                 if ( i > -1 ) {
                     if(card.isleader === 1 && this.hasLeader) { //only accept 1 leader per deck
-                        return ERRORCODES.CARD_LEADER_LIMIT_REACHED;
+                        return ERROR_CODES.CARD_LEADER_LIMIT_REACHED;
                     } else {
-                        if(this.cards[i].amount<CARD_LIMIT) { //only accept 4 of each card
+                        if(this.cards[i].amount<GAME_ENUMS.CARD_LIMIT) { //only accept 4 of each card
                             this.cards[i].set_amount(this.cards[i].amount+1)
                             this.deckSize++;
-                            return ERRORCODES.INCREASED_CARD_AMOUNT;
+                            return ERROR_CODES.INCREASED_CARD_AMOUNT;
                         } else {
-                            return ERRORCODES.CARD_LIMIT_REACHED;
+                            return ERROR_CODES.CARD_LIMIT_REACHED;
                         }
                     }   
                 } else {
                     if(card.isleader === 1) { //only accept one leader per deck
-                        return ERRORCODES.CARD_LEADER_LIMIT_REACHED; 
+                        return ERROR_CODES.CARD_LEADER_LIMIT_REACHED; 
                     } else {
                         this.deckSize++;
                         this.cards.push(new Card(
@@ -67,11 +55,11 @@ class Deck {
                         ));
 
                         this.sortEntries();
-                        return ERRORCODES.ADDED_NEW_CARD;
+                        return ERROR_CODES.ADDED_NEW_CARD;
                     }
                 }
             } else {
-                return ERRORCODES.DECK_LIMIT_REACHED; //return er
+                return ERROR_CODES.DECK_LIMIT_REACHED; //return er
             }
         }
     }
@@ -79,7 +67,7 @@ class Deck {
     //Removes a card from the deck
     removeCardAt(index) {
         if(this.cards[index].cardInfo.isleader === 1 && this.deckSize>1) { //If trying to remove the leader before the other cards
-            return ERRORCODES.CANNOT_REMOVE_LEADER;
+            return ERROR_CODES.CANNOT_REMOVE_LEADER;
         } else {
             this.cards[index].amount--;
             this.deckSize--;
@@ -95,10 +83,10 @@ class Deck {
                //If removing the leader we can remove the colors
                if(isleader === 1) this.colors = [];
                 
-                return ERRORCODES.REMOVED_CARD;
+                return ERROR_CODES.REMOVED_CARD;
             } else {
                 this.cards[index].set_amount(this.cards[index].amount);
-                return ERRORCODES.DECREASED_CARD_AMOUNT;
+                return ERROR_CODES.DECREASED_CARD_AMOUNT;
             }
         }
     }

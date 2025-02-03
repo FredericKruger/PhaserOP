@@ -1,5 +1,10 @@
 class Utils {
 
+    /**
+     * 
+     * @param {string} color 
+     * @returns COLOR_ENUMS
+     */
     getCardColor = function(color) {
         switch(color) {
             case "RED":
@@ -17,37 +22,48 @@ class Utils {
         }
     }
     
-    getCardSymbol = function(color, isleader) {
-        if(isleader === 0) {
-            return 'op_' + color[0] + '_symbol';
+    /**
+     * 
+     * @param {string[]} color 
+     * @returns string
+     */
+    getCardSymbol = function(color, forDeck) {
+        if(!forDeck) {
+            return `ICON_SYMBOL_${color[0]}`;
         } else {
-            let colorString = 'op_leader_' + color[0];
-            if(color.length>1) colorString = colorString + '_' + color[1];
+            let colorString = `ICON_SYMBOL_LEADER_${color[0]}`;
+            if(color.length>1) colorString = `${colorString}_${color[1]}`;
             return colorString;
         }
     }
     
+    /**
+     * 
+     * @param {string} color 
+     * @param {number} cost 
+     * @returns string
+     */
     getCardCost = function(color, cost) {
-        return 'op_cost_' + color + '_' + cost;
+        return `COST_${color}_${cost}`;
     }
     
+    /**
+     * 
+     * @param {string} attribute 
+     * @returns string
+     */
     getCardAttributeSymbol = function(attribute) {
-        switch(attribute) {
-            case "RANGED":
-                return 'op_attribute_RANGED';
-            case "SLASH":
-                return 'op_attribute_SLASH';
-            case "SPECIAL":
-                return 'op_attribute_SPECIAL';
-            case "STRIKE":
-                return 'op_attribute_STRIKE';
-            case "WISDOM":
-                return 'op_attribute_WISDOM';
-        }
+        if(attribute === '') return null;
+        return `ICON_ATTRIBUTE_SYMBOL_${attribute}`;
     }
     
+    /**
+     * 
+     * @param {string} leaderArt 
+     * @returns string
+     */
     getLeaderArt = function(leaderArt) {
-        return 'op_leader_' + leaderArt;
+        return `LEADER_${leaderArt}`;
     }
 
 }

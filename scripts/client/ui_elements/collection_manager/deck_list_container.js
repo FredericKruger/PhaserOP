@@ -19,7 +19,7 @@ class DeckListContainer {
         this.scrollingEnabled = false;
 
         /** PREPARE UI ELEMENTS */
-        this.background = this.scene.add.rexRoundRectangle(this.x + this.width/2, this.y + this.height/2, this.width, this.height, 20, OP_CREAM, 1);
+        this.background = this.scene.add.rexRoundRectangle(this.x + this.width/2, this.y + this.height/2, this.width, this.height, 20, COLOR_ENUMS.OP_CREAM, 1);
         this.obj.push(this.background);
 
         this.title = new Button({
@@ -29,8 +29,8 @@ class DeckListContainer {
             width: this.width,
             height: 70,
             radius: 5,
-            backgroundcolor: OP_RED,
-            outlinecolor: OP_CREAM,
+            backgroundcolor: COLOR_ENUMS.OP_RED,
+            outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "My Decks",
             fontsize: 36
         });
@@ -44,8 +44,8 @@ class DeckListContainer {
             width: 100,
             height: 40,
             radius: 5,
-            backgroundcolor: OP_RED,
-            outlinecolor: OP_CREAM,
+            backgroundcolor: COLOR_ENUMS.OP_RED,
+            outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "Back",
             fontsize: 18
         });
@@ -60,15 +60,15 @@ class DeckListContainer {
         });
 
         /** DECK ZONE */
-        this.deckZoneOutline = this.scene.add.rectangle(this.x+5, this.y+20,  this.width-10, this.height-35-30, OP_BLACK, 0).setStrokeStyle(3, OP_BLACK).setOrigin(0);
+        this.deckZoneOutline = this.scene.add.rectangle(this.x+5, this.y+20,  this.width-10, this.height-35-30, COLOR_ENUMS.OP_BLACK, 0).setStrokeStyle(3, COLOR_ENUMS.OP_BLACK).setOrigin(0);
         this.obj.push(this.deckZoneOutline);
 
-        this.deckAmountTextRectangle = this.scene.add.rexRoundRectangleCanvas(this.x + this.width/2 - 58, this.y + this.height - 23,  170, 35, 5, OP_RED, OP_WHITE, 2);
+        this.deckAmountTextRectangle = this.scene.add.rexRoundRectangleCanvas(this.x + this.width/2 - 58, this.y + this.height - 23,  170, 35, 5, COLOR_ENUMS.OP_RED, COLOR_ENUMS.OP_WHITE, 2);
         this.deckAmountText = {
             obj: this.scene.add.text(this.deckAmountTextRectangle.x, this.deckAmountTextRectangle.y-5, '0/9', {
                 fontFamily: 'Brandon',
                 font: "20px monospace",
-                fill: "#E9E6CE"
+                color: COLOR_ENUMS_CSS.OP_CREAM
             }).setOrigin(0.5, 0.5),
             deckContainer: this,
             update: function () { 
@@ -79,13 +79,13 @@ class DeckListContainer {
         this.deckAmountText2 = this.scene.add.text(this.deckAmountTextRectangle.x, this.deckAmountTextRectangle.y+7, 'decks', {
             fontFamily: 'Brandon',
             font: "14px monospace",
-            fill: "#E9E6CE"
+            color: COLOR_ENUMS_CSS.OP_CREAM
         }).setOrigin(0.5, 0.5);
         this.obj.push(this.deckAmountTextRectangle);
         this.obj.push(this.deckAmountText.obj);
         this.obj.push(this.deckAmountText2);
 
-        this.startY = this.deckZoneOutline.y + DECK_ENTRY_HEIGHT/2 + DECK_ENTRY_INTERSPACE;
+        this.startY = this.deckZoneOutline.y + GAME_ENUMS.DECK_ENTRY_HEIGHT/2 + GAME_ENUMS.DECK_ENTRY_INTERSPACE;
         //add placeholders (purely decorative)
         this.addPlaceHolder();
 
@@ -95,11 +95,11 @@ class DeckListContainer {
                     scene: this.scene,
                     x: this.x + this.width/2, 
                     y: this.startY,
-                    width: DECK_ENTRY_WIDTH,
-                    height: DECK_ENTRY_HEIGHT,
+                    width: GAME_ENUMS.DECK_ENTRY_WIDTH,
+                    height: GAME_ENUMS.DECK_ENTRY_HEIGHT,
                     radius: 3,
-                    backgroundcolor: OP_ORANGE,
-                    outlinecolor: OP_WHITE,
+                    backgroundcolor: COLOR_ENUMS.OP_ORANGE,
+                    outlinecolor: COLOR_ENUMS.OP_WHITE,
                     text: "New Deck",
                     fontsize: 30
                 })
@@ -117,7 +117,7 @@ class DeckListContainer {
                 this.obj.setVisible(GameClient.decklist.length<9);
                 
                 let numberdeck = this.deckListContainer.deckEntries.length;
-                let newY = this.deckListContainer.startY + numberdeck * DECK_ENTRY_HEIGHT + Math.max(numberdeck, 0) * DECK_ENTRY_INTERSPACE;
+                let newY = this.deckListContainer.startY + numberdeck * GAME_ENUMS.DECK_ENTRY_HEIGHT + Math.max(numberdeck, 0) * GAME_ENUMS.DECK_ENTRY_INTERSPACE;
                 this.obj.setPosition(this.obj.x, newY);
             }
         };
@@ -154,12 +154,12 @@ class DeckListContainer {
     /** ADD A PLACEHOLDER */
     addPlaceHolder = function () {
         let currentTopY = this.startY;
-        let currentButtomY = this.startY + DECK_ENTRY_HEIGHT;
+        let currentButtomY = this.startY + GAME_ENUMS.DECK_ENTRY_HEIGHT;
         while(currentButtomY < (this.deckZoneOutline.y + this.deckZoneOutline.height)){
-            this.scene.rexUI.add.roundRectangle(this.x + this.width/2, currentTopY,  DECK_ENTRY_WIDTH-25, DECK_ENTRY_HEIGHT-20, 5, OP_BLACK, 0).setStrokeStyle(3, OP_BLACK)
+            this.scene.rexUI.add.roundRectangle(this.x + this.width/2, currentTopY,  GAME_ENUMS.DECK_ENTRY_WIDTH-25, GAME_ENUMS.DECK_ENTRY_HEIGHT-20, 5, COLOR_ENUMS.OP_BLACK, 0).setStrokeStyle(3, COLOR_ENUMS.OP_BLACK)
 
-            currentTopY = currentTopY + DECK_ENTRY_HEIGHT + DECK_ENTRY_INTERSPACE;
-            currentButtomY = currentButtomY + DECK_ENTRY_HEIGHT + DECK_ENTRY_INTERSPACE;
+            currentTopY = currentTopY + GAME_ENUMS.DECK_ENTRY_HEIGHT + GAME_ENUMS.DECK_ENTRY_INTERSPACE;
+            currentButtomY = currentButtomY + GAME_ENUMS.DECK_ENTRY_HEIGHT + GAME_ENUMS.DECK_ENTRY_INTERSPACE;
         }
     }
 
@@ -187,13 +187,13 @@ class DeckListContainer {
         let deckid = deckconfig.deckid;
         let numbercards = deckconfig.numbercards;
 
-        let currentY = this.startY + this.deckEntries.length * DECK_ENTRY_HEIGHT + this.deckEntries.length * DECK_ENTRY_INTERSPACE;
+        let currentY = this.startY + this.deckEntries.length * GAME_ENUMS.DECK_ENTRY_HEIGHT + this.deckEntries.length * GAME_ENUMS.DECK_ENTRY_INTERSPACE;
 
         let deckEntry = new DeckEntry({
             x: this.x + this.width/2,
             y: currentY,
-            width: DECK_ENTRY_WIDTH,
-            height: DECK_ENTRY_HEIGHT,
+            width: GAME_ENUMS.DECK_ENTRY_WIDTH,
+            height: GAME_ENUMS.DECK_ENTRY_HEIGHT,
             deckid: deckid,
             colors: colors,
             leaderArt: leaderArt,
@@ -212,9 +212,9 @@ class DeckListContainer {
     /** UPDATE DECKENTRY LAYOUTS */
     updateEntryLayout() {
         for(let i=0; i<this.deckEntries.length; i++){
-            let currentY = this.startY + i * DECK_ENTRY_HEIGHT + i * DECK_ENTRY_INTERSPACE;
+            let currentY = this.startY + i * GAME_ENUMS.DECK_ENTRY_HEIGHT + i * GAME_ENUMS.DECK_ENTRY_INTERSPACE;
             this.deckEntries[i].setPosition(this.deckEntries[i].x, currentY);
-            this.deckEntries.deckid = i;
+            this.deckEntries[i].deckid = i;
         }
     }
 

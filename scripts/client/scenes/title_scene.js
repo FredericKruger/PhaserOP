@@ -15,8 +15,7 @@ class TitleScene extends Phaser.Scene {
 
     preload () {
         let assetPath = 'assets/icons/playericons';
-        this.load.image(GameClient.playerSettings.avatar, `${assetPath}/${GameClient.playerSettings.avatar}.png`);
-        
+        this.load.image(GameClient.playerSettings.avatar, `${assetPath}/${GameClient.playerSettings.avatar}.png`);   
     }
 
     create () {
@@ -95,7 +94,6 @@ class TitleScene extends Phaser.Scene {
             this.firstLoginPanel.launch();
         }
     }
-
 
     startDeckBuilder () {
         let status = this.scene.manager.scenes[3].sys.getStatus();

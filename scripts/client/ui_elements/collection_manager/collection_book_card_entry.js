@@ -17,15 +17,15 @@ class CollectionBookCardEntry {
         this.cardInfo = null;
 
         this.cardAmountBox = this.collectionBook.scene.add.graphics();
-        this.cardAmountBox.fillStyle(OP_CREAM, 1);
+        this.cardAmountBox.fillStyle(COLOR_ENUMS.OP_CREAM, 1);
         this.cardAmountBox.fillRoundedRect(this.x - 30, this.y + this.bookCardAreaHeight/2 - 5, 60, 40, 5);
-        this.cardAmountBox.lineStyle(4, OP_WHITE, 1); // Border color (orange) with 2px thickness
+        this.cardAmountBox.lineStyle(4, COLOR_ENUMS.OP_WHITE, 1); // Border color (orange) with 2px thickness
         this.cardAmountBox.strokeRoundedRect(this.x - 30, this.y + this.bookCardAreaHeight/2 - 5, 60, 40, 5); // Draw the border
 
         this.cardAmountText = this.collectionBook.scene.add.text(this.x, this.y + this.bookCardAreaHeight/2 + 12, 'x', {
             fontFamily: 'Arial',
             fontSize: '20px',
-            color: '#0xD6AA44'
+            color: COLOR_ENUMS_CSS.OP_RED
         });
         this.cardAmountText.setOrigin(0.5, 0.5);
 
@@ -76,9 +76,9 @@ class CollectionBookCardEntry {
             if(this.collectionBook.scene.inDeckBuildingMode) { 
                 let amountInDeck = this.collectionBook.scene.getAmountOfCardInDeck(this.cardInfo.id);
                 if(this.cardInfo.isleader === 1) {
-                    availableAmount = Math.min(CARD_LEADER_LIMIT, this.cardInfo.amount)-amountInDeck;
+                    availableAmount = Math.min(GAME_ENUMS.CARD_LEADER_LIMIT, this.cardInfo.amount)-amountInDeck;
                 } else {
-                    availableAmount = Math.min(CARD_LIMIT, this.cardInfo.amount)-amountInDeck;
+                    availableAmount = Math.min(GAME_ENUMS.CARD_LIMIT, this.cardInfo.amount)-amountInDeck;
                 }
             } 
             this.cardAmountText.text = 'x' + availableAmount;
@@ -88,14 +88,14 @@ class CollectionBookCardEntry {
 
             availableAmount = Math.min(availableAmount, this.cardInfo.amount);
             if (availableAmount === 0) {
-                this.cardVisual.art.setPipeline('GreyscalePipeline');
+                this.cardVisual.art.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
                 this.collectionBook.scene.input.setDraggable(this.cardVisual, false); // Disable dragging
             } else {
                 this.cardVisual.art.resetPipeline();
                 this.collectionBook.scene.input.setDraggable(this.cardVisual, true); // Enable dragging
             }
             if (availableAmount === 1) {
-                this.cardPlaceholder.art.setPipeline('GreyscalePipeline');
+                this.cardPlaceholder.art.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
             } else {
                 this.cardPlaceholder.art.resetPipeline();
             }

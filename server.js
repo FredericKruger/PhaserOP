@@ -70,7 +70,7 @@ io.on('connection', function (socket) {
                 console.log("This is a new Player ! Need to create the settings file");
                 newPlayer = true;
                 playerSetting = {
-                    "avatar": "default_avatar",
+                    "avatar": "icon1",
                     "firstLogin": true,
                     "berries": 10000
                 };

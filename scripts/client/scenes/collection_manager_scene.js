@@ -1,8 +1,8 @@
 
 
-class CollectionManager extends Phaser.Scene {
+class CollectionManagerScene extends Phaser.Scene {
     constructor () {
-        super({key: 'collectionmanager'});
+        super({key: SCENE_ENUMS.COLLECTION_MANAGER});
 
         this.pageMax = 1;
  
@@ -27,17 +27,10 @@ class CollectionManager extends Phaser.Scene {
     }
 
     preload () {
-        this.add.image(0, 0, 'background3').setScale(2); //add background image
+        this.add.image(0, 0, ASSET_ENUMS.BACKGROUND3).setScale(2); //add background image
 
         if(this.firstLoad){
             this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
-            this.load.plugin('rexcirclemaskimageplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexcirclemaskimageplugin.min.js', true);
-            this.load.plugin('rextexteditplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexteditplugin.min.js', true);
-            this.load.plugin('rexbbcodetextplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexbbcodetextplugin.min.js', true);
-            this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', true);
-            
-            this.load.image('deletedeckicon', 'assets/elements/deletedeckicon.png');
-
             this.firstLoad = false;
         }
     }
@@ -80,36 +73,38 @@ class CollectionManager extends Phaser.Scene {
             { 
                 fontFamily: 'Brandon',
                 font: "20px monospace",
-                fill: "#E9E6CE",
+                color: COLOR_ENUMS_CSS.OP_CREAM,
                 fixedWidth: 220,
                 align: 'center',
                 maxLines: 1
             }
         ).setOrigin(0.5).setVisible(false);
         this.deckCardListContainer.setDeckTitle(deckTitle);
+        // @ts-ignore
         this.plugins.get('rextexteditplugin').add(deckTitle, {
             type: 'text',
             enterClose: true,
             
-            onOpen: function (textObject) {},
-            onTextChanged: function (textObject, text) {
+            onOpen: function (/** @type {any} */ textObject) {},
+            onTextChanged: function (/** @type {{ text: any; }} */ textObject, /** @type {any} */ text) {
                 textObject.text = text;
             },
-            onClose: function (textObject) {
+            onClose: function (/** @type {{ text: string; }} */ textObject) {
                 if(textObject.text === "") textObject.text = "New Deck";
             },
             selectAll: true,
         });
 
+        // @ts-ignore
         this.plugins.get('rextexteditplugin').add(this.collectionBook.searchInput.getElement('text'), {
             type: 'text',
             enterClose: true,
             
-            onOpen: function (textObject) {},
-            onTextChanged: function (textObject, text) {
+            onOpen: function (/** @type {any} */ textObject) {},
+            onTextChanged: function (/** @type {{ text: any; }} */ textObject, /** @type {any} */ text) {
                 textObject.text = text;
             },
-            onClose: function (textObject) {
+            onClose: function (/** @type {{ text: string; }} */ textObject) {
                 GameClient.playerCollection.removeFilter({type:'text',value:textObject.text});
                 if(textObject.text === "") {
                     textObject.text = "Search";
@@ -123,7 +118,7 @@ class CollectionManager extends Phaser.Scene {
         });
 
         /** DRAG HANDLER */
-        this.input.on('dragstart', function (pointer, gameObject) {
+        this.input.on('dragstart', (/** @type {any} */ pointer, /** @type {Phaser.GameObjects.GameObject} */ gameObject) => {
             this.children.bringToTop(gameObject);
             this.isDragging = true;
 
@@ -136,9 +131,9 @@ class CollectionManager extends Phaser.Scene {
             } else if(gameObject instanceof CardVisual) {
                 gameObject.showBorder(false);
             }
-        }, this);
+        });
 
-        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+        this.input.on('drag', (/** @type {any} */ pointer, /** @type {{ deckCardListContainer: { scrollContainer: { convertToWorldPosition: (arg0: any, arg1: any) => any; }; }; x: any; y: any; }} */ gameObject, /** @type {any} */ dragX, /** @type {any} */ dragY) => {
             if(gameObject instanceof DeckCardEntry) {
                 let worldCoord = gameObject.deckCardListContainer.scrollContainer.convertToWorldPosition(dragX, dragY);
                 gameObject.x = worldCoord.x;
@@ -148,15 +143,15 @@ class CollectionManager extends Phaser.Scene {
                 gameObject.y = dragY;
             }
 
-        }, this);
+        });
 
-        this.input.on('dragend', function (pointer, gameObject, dropped) {
+        this.input.on('dragend', (/** @type {{ upX: any; upY: any; }} */ pointer, /** @type {{ input: { dragStartX: any; dragStartY: any; }; deckCardListContainer: { deckDropZone: { getBounds: () => { (): any; new (): any; contains: { (arg0: any, arg1: any): any; new (): any; }; }; }; removeCardFromDeck: (arg0: any) => any; scrollContainer: { addElement: (arg0: DeckCardEntry) => void; }; }; entryIndex: any; setToLocalPosition: () => void; x: any; y: any; }} */ gameObject, /** @type {any} */ dropped) => {
             if(gameObject.input !== undefined){//in case the element was destroyed before
                 if(gameObject instanceof DeckCardEntry) {
                     if (!gameObject.deckCardListContainer.deckDropZone.getBounds().contains(pointer.upX, pointer.upY)) {
                         let result = gameObject.deckCardListContainer.removeCardFromDeck(gameObject.entryIndex);
                         
-                        if(result !== ERRORCODES.REMOVED_CARD) {
+                        if(result !== ERROR_CODES.REMOVED_CARD) {
                             gameObject.deckCardListContainer.scrollContainer.addElement(gameObject);
                             gameObject.setToLocalPosition();
                         } 
@@ -172,9 +167,9 @@ class CollectionManager extends Phaser.Scene {
                 }
             }
             this.isDragging = false;
-        }, this);
+        });
 
-        this.input.on('drop', function (pointer, gameObject, zone) {
+        this.input.on('drop', (/** @type {any} */ pointer, /** @type {{ x: number; input: { dragStartX: number; dragStartY: number; }; y: number; }} */ gameObject, /** @type {{ getData: (arg0: string) => string; }} */ zone) => {
             if(gameObject instanceof CardVisual) {
                 if(zone.getData('name') === 'deckDropZone'){
                     gameObject.x = gameObject.input.dragStartX;
@@ -186,7 +181,7 @@ class CollectionManager extends Phaser.Scene {
             } else {
                 this.input.emit('dragend', pointer, gameObject, false);
             }
-        }, this);
+        });
 
     }
 
@@ -207,7 +202,7 @@ class CollectionManager extends Phaser.Scene {
     /** BACK TO TITLE FUNCTION */
     backToTitle() {
         GameClient.askSavePlayerDecks();
-        this.scene.switch('title');
+        this.scene.switch(SCENE_ENUMS.TITLE);
     }
 
     /** FUNCTION TO UPDATE DECK TYPES */
@@ -275,7 +270,10 @@ class CollectionManager extends Phaser.Scene {
         GameClient.askSavePlayerDecks();
     }
 
-    /** DELETE DECK FUNCTION */
+    /**
+     * DELETE DECK FUNCTION
+     * @param {number} deckid
+     */
     deleteDeck(deckid) {
         this.deckListContainer.deleteDeck(deckid);
         GameClient.decklist.splice(deckid, 1); //remove the deck from the client as well
@@ -285,10 +283,13 @@ class CollectionManager extends Phaser.Scene {
         GameClient.askSavePlayerDecks();
     }
 
-    /** ADD CARD TO DECK FUNCTION */
+    /**
+     * ADD CARD TO DECK FUNCTION
+     * @param {number} card
+     */
     addCardToDeck (card) {
         //adding card to deck
-        let cardi = (this.collectionBook.currentColorPage-1) * maxCardsPerPage + card;
+        let cardi = (this.collectionBook.currentColorPage-1) * GAME_ENUMS.MAX_CARDS_PER_PAGE + card;
 
         let resultCode = this.deckCardListContainer.currentDeck.addCard(
             GameClient.playerCollection.getCardFromPage(this.collectionBook.selectedColor-1, cardi)
@@ -301,18 +302,18 @@ class CollectionManager extends Phaser.Scene {
         let dialogMessage = "";
 
         switch(resultCode) {
-            case ERRORCODES.INCREASED_CARD_AMOUNT:
+            case ERROR_CODES.INCREASED_CARD_AMOUNT:
                 this.updateDeckColors();
                 break;
-            case ERRORCODES.ADDED_NEW_CARD:
+            case ERROR_CODES.ADDED_NEW_CARD:
                 this.deckCardListContainer.updateDeckCardEntries();
                 this.updateDeckColors();
                 break;
-            case ERRORCODES.CARD_LEADER_LIMIT_REACHED:
+            case ERROR_CODES.CARD_LEADER_LIMIT_REACHED:
                 showDialog = true;
                 dialogMessage = 'Cant add more than 1 leader in your deck!';
                 break;
-            case ERRORCODES.FIRST_CARD_TO_BE_LEADER:
+            case ERROR_CODES.FIRST_CARD_TO_BE_LEADER:
                 showDialog=true;
                 dialogMessage = 'First card to add has to be a leader!';
                 break;
@@ -329,11 +330,14 @@ class CollectionManager extends Phaser.Scene {
                     out: 500
                 }
             })
-            .then(function (data) {});  
+            .then(function (/** @type {any} */ data) {});  
         }
     }
 
-    /** LOAD DECK FROM DECKLIST */
+    /**
+     * LOAD DECK FROM DECKLIST
+     * @param {number} decki
+     */
     loadDeck(decki) {
         let deck = GameClient.decklist[decki];
         this.deckCardListContainer.currentDeck = new Deck(false);
@@ -350,13 +354,19 @@ class CollectionManager extends Phaser.Scene {
         this.showingDeckList = false;
     }
 
-    /** GET AMOUNT OF CARDS IN DECK BEING BUILT */
+    /**
+     * GET AMOUNT OF CARDS IN DECK BEING BUILT
+     * @param {number} cardid
+     */
     getAmountOfCardInDeck(cardid) {
         let amount = this.deckCardListContainer.currentDeck.amountInDeck(cardid);
         return amount;
     }
 
-    /** UPDATE TOOLTIP */
+    /**
+     * UPDATE TOOLTIP
+     * @param {{ visible: boolean; index?: number; positionx?: number; positiony?: number; cardInfo?: any; }} cardToolTipConfig
+     */
     updateTooltip(cardToolTipConfig) {
         if(cardToolTipConfig.visible && !this.isDragging){
             if(this.cardTooltipContainer === null){
@@ -390,17 +400,22 @@ class CollectionManager extends Phaser.Scene {
         }
     }
 
-    /** FUNCTION THAT CREATES A DIALOG */
+    /**
+     * FUNCTION THAT CREATES A DIALOG
+     * @param {any} scene
+     * @param {string} title
+     * @param {string} message
+     */
     createDialog (scene, title, message) {
         let dialog = scene.rexUI.add.dialog({
-            background: scene.rexUI.add.roundRectangle(0, 0, 100, 100, 10, OP_CREAM),
+            background: scene.rexUI.add.roundRectangle(0, 0, 100, 100, 10, COLOR_ENUMS.OP_CREAM),
 
             title: scene.rexUI.add.label({
-                background: scene.add.rexRoundRectangleCanvas(0, 0, 100, 40, 5, OP_RED, OP_CREAM, 3),
+                background: scene.add.rexRoundRectangleCanvas(0, 0, 100, 40, 5, COLOR_ENUMS.OP_RED, COLOR_ENUMS.OP_CREAM, 3),
                 text: scene.add.text(0, 0, title, {
                     fontFamily: 'Brandon',
                     font: "24px monospace",
-                    fill: "#ffffff"
+                    color: COLOR_ENUMS_CSS.OP_WHITE
                 }),
                 space: {
                     left: 15,
@@ -413,17 +428,17 @@ class CollectionManager extends Phaser.Scene {
             content: scene.add.text(0, 0, message, {
                 fontFamily: 'Brandon',
                 font: "18px monospace",
-                fill: "#000000"
+                color: COLOR_ENUMS_CSS.OP_BLACK
             }),
 
             actions: [
                 scene.rexUI.add.label({
-                    background: scene.rexUI.add.roundRectangle(0, 0, 0, 0, 10, OP_RED),
+                    background: scene.rexUI.add.roundRectangle(0, 0, 0, 0, 10, COLOR_ENUMS.OP_RED),
 
                     text: scene.add.text(0, 0, "OK", {
                         fontFamily: 'Brandon',
                         font: "18px monospace",
-                        fill: "#ffffff"
+                        color: COLOR_ENUMS_CSS.OP_BLACK
                     }), 
 
                     space: {

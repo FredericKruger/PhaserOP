@@ -5,6 +5,9 @@ class ScrollPanel{
         this.scene = scene;
         this.isVisible = false;
 
+        this.x = x;
+        this.y = y;
+
         this.height = height;
 
         // Create the background for the scroll container
@@ -26,7 +29,7 @@ class ScrollPanel{
         this.maskShape.fillRect(this.scrollContainer.x, this.scrollContainer.y, width, height);
         this.obj.push(this.maskShape);
 
-        this.mask = new Phaser.Display.Masks.GeometryMask(this, this.maskShape);
+        this.mask = new Phaser.Display.Masks.GeometryMask(this.scene, this.maskShape);
         //Set mask to the container
         this.scrollContainer.setMask(this.mask);
 
@@ -72,10 +75,10 @@ class ScrollPanel{
 
         // Check if the card is within the mask bounds
         this.scrollContainer.each((child) => {
-            let childBounds = this.convertToWorldPosition(child.y, child.y);
-            childBounds = {
-                top: childBounds.y,
-                bottom: childBounds.y + child.height
+            let initBounds = this.convertToWorldPosition(child.y, child.y);
+            let childBounds = {
+                top: initBounds.y,
+                bottom: initBounds.y + child.height
             };
 
             //Check if in bounds

@@ -1,7 +1,3 @@
-const DECK_ENTRY_HEIGHT = 70;
-const DECK_ENTRY_WIDTH = 275;
-const DECK_ENTRY_INTERSPACE = 10;
-
 class DeckEntry extends Phaser.GameObjects.Container {
 
     constructor(config, scene) {
@@ -13,13 +9,13 @@ class DeckEntry extends Phaser.GameObjects.Container {
         this.width = config.width;
         this.height = config.height;
 
-        this.color1 = getCardColor(config.colors[0]);
-        this.color2 = config.colors.length > 1? getCardColor(config.colors[1]) : null;
+        this.color1 = GameClient.utils.getCardColor(config.colors[0]);
+        this.color2 = config.colors.length > 1? GameClient.utils.getCardColor(config.colors[1]) : null;
 
         this.numberCards = 0;
 
         /** Background */
-        this.background = this.scene.add.rexRoundRectangleCanvas(0, 0, this.width, this.height, 5, this.color1, OP_WHITE, 3);
+        this.background = this.scene.add.rexRoundRectangleCanvas(0, 0, this.width, this.height, 5, this.color1, COLOR_ENUMS.OP_WHITE, 3);
         if(this.color2 !== null) this.background.setFillStyle(this.color1, this.color2, true);
         this.background.setOrigin(0.5, 0.5);
 
@@ -27,14 +23,14 @@ class DeckEntry extends Phaser.GameObjects.Container {
         this.deckname = this.scene.add.text(this.background.x, this.background.y, config.name, {
             fontFamily: 'Brandon',
             font: "20px monospace",
-            fill: "#E9E6CE"
+            color: COLOR_ENUMS_CSS.OP_CREAM
 
         }).setOrigin(0.5)
 
         /** Type icons */
-        this.typeImage = this.scene.add.image(this.background.x+this.background.width/2 - 30, this.background.y, getCardSymbol(config.colors)).setScale(0.6).setOrigin(0.5);
+        this.typeImage = this.scene.add.image(this.background.x+this.background.width/2 - 30, this.background.y, GameClient.utils.getCardSymbol(config.colors, true)).setScale(0.6).setOrigin(0.5);
         
-        this.leaderImage = this.scene.add.image(this.background.x-this.background.width/2 + 40, this.background.y, getLeaderArt(config.leaderArt)).setScale(0.5).setOrigin(0.5);
+        this.leaderImage = this.scene.add.image(this.background.x-this.background.width/2 + 40, this.background.y, GameClient.utils.getLeaderArt(config.leaderArt)).setScale(0.5).setOrigin(0.5);
 
         /** Text if there are missing cards */
         this.missingCardsText = this.scene.add.text(
@@ -43,7 +39,7 @@ class DeckEntry extends Phaser.GameObjects.Container {
             "Missing cards", {
                 fontFamily: 'Brandon',
                 font: "14px monospace",
-                fill: "#ffffff"
+                color: COLOR_ENUMS_CSS.OP_WHITE
             });
         this.missingCardsText.setVisible(false);
         this.missingCardsText.setOrigin(0.5);
@@ -55,8 +51,8 @@ class DeckEntry extends Phaser.GameObjects.Container {
                                         40, 
                                         25, 
                                         5, 
-                                        OP_RED, 
-                                        OP_WHITE, 3);
+                                        COLOR_ENUMS.OP_RED, 
+                                        COLOR_ENUMS.OP_WHITE, 3);
         this.missingCardsBox.setVisible(true);
         this.missingCardsBox.setOrigin(0.5);
         
@@ -74,7 +70,7 @@ class DeckEntry extends Phaser.GameObjects.Container {
         this.deleteCircleButton = this.scene.add.image(
             this.background.x - this.background.width/2 + 10,
             this.background.y - this.background.height/2 + 10, 
-            'deletedeckicon');
+            ASSET_ENUMS.DELETE_ICON);
         this.deleteCircleButton.setOrigin(0.5);
         this.deleteCircleButton.setDisplaySize(25, 25);
         this.deleteCircleButton.setVisible(false);
@@ -100,9 +96,9 @@ class DeckEntry extends Phaser.GameObjects.Container {
     /** FUNCTION TO UPDATE THE VISUALS FOR THE DECK ENTRY */
     updateValidDeck(numberCards) {
         this.numberCards = numberCards;
-        let isvalid = this.numberCards!==DECK_LIMIT;
+        let isvalid = this.numberCards!==GAME_ENUMS.DECK_LIMIT;
 
-        this.missingCardsBoxText.text = numberCards + "/" + DECK_LIMIT;
+        this.missingCardsBoxText.text = numberCards + "/" + GAME_ENUMS.DECK_LIMIT;
 
         this.missingCardsText.setVisible(isvalid);
         this.missingCardsBox.setVisible(isvalid);
@@ -111,14 +107,14 @@ class DeckEntry extends Phaser.GameObjects.Container {
 
     /** FUNCTION TO UPDATE THE DECK ENTRY INFORMATION */
     updateInfo(newInfo) {
-        this.color1 = getCardColor(newInfo.colors[0]);
-        this.color2 = newInfo.colors.length > 1? getCardColor(newInfo.colors[1]) : null;
+        this.color1 = GameClient.utils.getCardColor(newInfo.colors[0]);
+        this.color2 = newInfo.colors.length > 1? GameClient.utils.getCardColor(newInfo.colors[1]) : null;
 
         if(this.color2 !== null) this.background.setFillStyle(this.color1, this.color2, true);
         else this.background.setFillStyle(this.color1);
 
-        this.typeImage.setTexture(getCardSymbol(newInfo.colors));
-        this.leaderImage.setTexture(getLeaderArt(newInfo.leader));
+        this.typeImage.setTexture(GameClient.utils.getCardSymbol(newInfo.colors, true));
+        this.leaderImage.setTexture(GameClient.utils.getLeaderArt(newInfo.leader));
 
         this.deckname.text = newInfo.name;
 
@@ -149,7 +145,7 @@ class DeckEntry extends Phaser.GameObjects.Container {
     hideDeleteCircleButton() {
         this.deleteCircleButton.setVisible(false);
 
-        let isvalid = this.numberCards!==DECK_LIMIT;
+        let isvalid = this.numberCards!==GAME_ENUMS.DECK_LIMIT;
         this.missingCardsBox.setVisible(isvalid);
         this.missingCardsBoxText.setVisible(isvalid);
     }

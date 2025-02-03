@@ -16,6 +16,7 @@ class Client {
         // @ts-ignore
         this.socket = io.connect();
         this.game = null; //No game initially
+        this.utils = new Utils();
 
         this.matchScene = null; //Store pointer for matchscene
         this.loginScene = null; //Store pointer to loginScene

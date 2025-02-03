@@ -1,5 +1,3 @@
-const maxCardsPerPage =  8;
-const maxCardsPerCol = 2;
 
 class CollectionBook {
 
@@ -22,19 +20,20 @@ class CollectionBook {
         this.attributeFilterImages = [];
         this.setFilterImages = [];
 
+        // @ts-ignore
         this.tabs = new RexPlugins.UI.Tabs( this.scene, {
             x: config.x + config.width/2, //900
             y: config.y + config.height/2,
 
-            panel: this.scene.add.rexRoundRectangle(0, 0, config.width, config.height, 20, OP_CREAM),
+            panel: this.scene.add.rexRoundRectangle(0, 0, config.width, config.height, 20, COLOR_ENUMS.OP_CREAM),
 
             topButtons: [
-                this.createCollectionBookTab(this.scene, 0, OP_RED, 'op_RED_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_GREEN, 'op_GREEN_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_BLUE, 'op_BLUE_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_PURPLE, 'op_PURPLE_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_BLACK, 'op_BLACK_symbol'),
-                this.createCollectionBookTab(this.scene, 0, OP_YELLOW, 'op_YELLOW_symbol')
+                this.createCollectionBookTab(this.scene, 0, COLOR_ENUMS.OP_RED, ASSET_ENUMS.ICON_SYMBOL_RED),
+                this.createCollectionBookTab(this.scene, 0, COLOR_ENUMS.OP_GREEN, ASSET_ENUMS.ICON_SYMBOL_GREEN),
+                this.createCollectionBookTab(this.scene, 0, COLOR_ENUMS.OP_BLUE, ASSET_ENUMS.ICON_SYMBOL_BLUE),
+                this.createCollectionBookTab(this.scene, 0, COLOR_ENUMS.OP_PURPLE, ASSET_ENUMS.ICON_SYMBOL_PURPLE),
+                this.createCollectionBookTab(this.scene, 0, COLOR_ENUMS.OP_BLACK, ASSET_ENUMS.ICON_SYMBOL_BLACK),
+                this.createCollectionBookTab(this.scene, 0, COLOR_ENUMS.OP_YELLOW, ASSET_ENUMS.ICON_SYMBOL_YELLOW)
             ],
 
             space: {
@@ -44,60 +43,49 @@ class CollectionBook {
             }
         });
 
-        /** INITIALIZE TABS */
-        /*for(let i=0; i<GameClient.playerCollection.colorCardInfo.length; i++) {
-            if(GameClient.playerCollection.colorCardInfo[i].totalPages === 0) {
-                this.tabs.hideButton('top', i);
-                GameClient.playerCollection.colorCardInfo[i].hidden = true;
-            }
-        }*/
+        this.updateMinMaxPage(); //Update min max values
+        this.tabs.layout(); //Layout the tabs
+        this.tabs.setOrigin(0.5, 0.5); //Set the origin of the tabs
 
-        this.updateMinMaxPage();
-        this.tabs.layout();
-        this.tabs.setOrigin(0.5, 0.5);
-
-        this.tabs.on('button.click', function (button, groupName, index) {
-            let collectionBook = this.scene.collectionBook;
+        //Handle the button click event
+        this.tabs.on('button.click', (button, groupName, index) => {
             //set color, and page and text
-            collectionBook.selectedColor = index+1;
+            this.selectedColor = index+1;
 
             //this means we got here by pressing the backPage button
-            if(collectionBook.currentColorPage<1) {
-                collectionBook.currentColorPage = GameClient.playerCollection.colorCardInfo[index].totalPages;
+            if(this.currentColorPage<1) {
+                this.currentColorPage = GameClient.playerCollection.colorCardInfo[index].totalPages;
             } else {
-                collectionBook.currentPage = GameClient.playerCollection.colorCardInfo[index].startPage;
-                collectionBook.currentColorPage = 1;
+                this.currentPage = GameClient.playerCollection.colorCardInfo[index].startPage;
+                this.currentColorPage = 1;
             }
 
-            collectionBook.updateCardVisuals();
-            collectionBook.updatePageTitle();
+            this.updateCardVisuals(); //update the visuals
+            this.updatePageTitle();
 
             //handle coloring of the tabs
-            if (this._prevTypeButton) {
-                this._prevTypeButton.getElement('icon').setTint(OP_WHITE, OP_WHITE, OP_WHITE);
+            if (this.tabs._prevTypeButton) {
+                this.tabs._prevTypeButton.getElement('icon').setTint(COLOR_ENUMS.OP_WHITE, COLOR_ENUMS.OP_WHITE, COLOR_ENUMS.OP_WHITE);
             }
             button.getElement('icon').setTint();
             
-            this._prevTypeButton = button;
-            if (this._prevSortButton === undefined) {
+            this.tabs._prevTypeButton = button;
+            if (this.tabs._prevSortButton === undefined) {
                 return;
             }
-        }, this.tabs);
+        });
 
         /** ADD CARD PLACEHOLDERS */
-        let bookCardAreaWidth = 260;
-        let bookCardAreaHeight = 300;
+        let startX = this.tabs.x - GAME_ENUMS.BOOK_CARD_WIDTH - GAME_ENUMS.BOOK_CARD_WIDTH/2;
+        let startY = this.tabs.y - GAME_ENUMS.BOOK_CARD_HEIGHT/2 - 25;
 
-        let startX = this.tabs.x - bookCardAreaWidth - bookCardAreaWidth/2;
-        let startY = this.tabs.y - bookCardAreaHeight/2 - 25;
-
-        for(let i = 0; i<maxCardsPerPage; i++){
+        for(let i = 0; i<GAME_ENUMS.MAX_CARDS_PER_PAGE; i++){
             let config = {
-                x: startX + (bookCardAreaWidth * (i % (maxCardsPerPage/maxCardsPerCol))),
-                y: startY + ((bookCardAreaHeight + 75) * Math.floor(i / (maxCardsPerPage/maxCardsPerCol))),
+                x: startX + (GAME_ENUMS.BOOK_CARD_WIDTH * (i % (GAME_ENUMS.MAX_CARDS_PER_PAGE/GAME_ENUMS.MAX_CARDS_PER_COL))),
+                y: startY + ((GAME_ENUMS.BOOK_CARD_HEIGHT + 75) * Math.floor(i / (GAME_ENUMS.MAX_CARDS_PER_PAGE/GAME_ENUMS.MAX_CARDS_PER_COL))),
                 scale: 0.35,
-                bookCardAreaWidth: bookCardAreaWidth,
-                bookCardAreaHeight: bookCardAreaHeight
+                bookCardAreaWidth: GAME_ENUMS.BOOK_CARD_WIDTH,
+                bookCardAreaHeight: GAME_ENUMS.BOOK_CARD_HEIGHT
             };
             let c = new CollectionBookCardEntry(this, i, config);
             this.collectionBookCardEntries.push(c);
@@ -105,7 +93,7 @@ class CollectionBook {
 
         /** PAGE TITLE */
         let roundedRect = this.scene.add.graphics();
-        roundedRect.fillStyle(OP_CREAM_DARKER, 1); // Black color with 50% opacity
+        roundedRect.fillStyle(COLOR_ENUMS.OP_CREAM_DARKER, 1); // Black color with 50% opacity
         roundedRect.fillRoundedRect(this.tabs.x-100, 75, 200, 50, 10); // 10 is padding, 15 is corner radius
         this.pageTitle = this.scene.add.image(this.tabs.x, 80, '').setOrigin(0.5, 0).setScale(0.5);
         this.pageTitle.setOrigin(0.5, 0);
@@ -114,7 +102,7 @@ class CollectionBook {
         this.pageNumber = {
             obj: this.scene.add.text(this.tabs.x, this.tabs.y + this.tabs.height / 2 - 80, '', {
                 fontSize: '25px',
-                color: '#000000',
+                color: COLOR_ENUMS_CSS.OP_BLACK,
                 fontWeight: 'bold' // Make the text bold
             }).setOrigin(0.5),
             collectionBook: this,
@@ -126,7 +114,7 @@ class CollectionBook {
 
         /** SEPARATION LINES */
         this.fileSeparatorLine = this.scene.add.graphics();
-        this.fileSeparatorLine.lineStyle(4, OP_CREAM_DARKER, 8);
+        this.fileSeparatorLine.lineStyle(4, COLOR_ENUMS.OP_CREAM_DARKER, 8);
         this.fileSeparatorLine.beginPath();
         this.fileSeparatorLine.moveTo(0, 0);
         this.fileSeparatorLine.lineTo(this.tabs.width, 0);
@@ -138,7 +126,7 @@ class CollectionBook {
         this.objToUpdate.push(this.fileSeparatorLine);
 
         this.titleSeparatorLine = this.scene.add.graphics();
-        this.titleSeparatorLine.lineStyle(4, OP_CREAM_DARKER, 8);
+        this.titleSeparatorLine.lineStyle(4, COLOR_ENUMS.OP_CREAM_DARKER, 8);
         this.titleSeparatorLine.beginPath();
         this.titleSeparatorLine.moveTo(0, 0);
         this.titleSeparatorLine.lineTo(this.tabs.width, 0);
@@ -153,7 +141,7 @@ class CollectionBook {
         this.nextPageButton = {
             obj:this.scene.add.image(
                 this.tabs.x + this.tabs.width/2 - 194*0.2*0.4, this.tabs.y,
-                'rightarrow',
+                ASSET_ENUMS.ARROW_RIGHT,
             ).setScale(0.4).setOrigin(0.5,0.5),
             collectionBook: this,
             update: function() {
@@ -176,7 +164,7 @@ class CollectionBook {
         this.prevPageButton = {
             obj:this.scene.add.image(
                 this.tabs.x - this.tabs.width/2 + 194*0.2*0.4, this.tabs.y,
-                'leftarrow'
+                ASSET_ENUMS.ARROW_LEFT
             ).setScale(0.4).setOrigin(0.5,0.5),
             collectionBook: this,
             update: function() {
@@ -217,8 +205,8 @@ class CollectionBook {
         /** preload new art */
         let numberOfArtLoads = 0;
         let loader = new Phaser.Loader.LoaderPlugin(this.scene); //create a loader 
-        for(let i = 0; i<maxCardsPerPage; i++) {
-            let cardi = (this.currentColorPage-1) * maxCardsPerPage + i;
+        for(let i = 0; i<GAME_ENUMS.MAX_CARDS_PER_PAGE; i++) {
+            let cardi = (this.currentColorPage-1) * GAME_ENUMS.MAX_CARDS_PER_PAGE + i;
             cardi = Math.max(cardi, 0);
             if(cardi<GameClient.playerCollection.colorCardIndex[this.selectedColor-1].length) {
                 let cardInfo = GameClient.playerCollection.getCardFromPage(this.selectedColor-1, cardi);
@@ -227,8 +215,8 @@ class CollectionBook {
                 let cardArtKey = cardInfo.art
                 if(!this.scene.cache.game.textures.list[cardArtKey]){
                     numberOfArtLoads++;
-                    loader.image(cardArtKey, 'assets/cardart/' + cardArtKey + '.png'); //load image
-                    loader.image('deckentry_' + cardArtKey, 'assets/deckentryart/deckentry_' + cardArtKey + '.png'); //load deck entry preemtiveley to avvoid errors later
+                    loader.image(cardArtKey, `assets/cardart/${cardArtKey}.png`); //load image
+                    loader.image(`deckentry_${cardArtKey}`, `assets/deckentryart/deckentry_${cardArtKey}.png`); //load deck entry preemtiveley to avvoid errors later
                 }  
             } else {
                 this.collectionBookCardEntries[i].updateCardInfo(null);
@@ -243,7 +231,7 @@ class CollectionBook {
     /** FUNCTION TO UPDATE THE PAGE TITLE */
     updatePageTitle() {
         if(this.pageTitle !== null) {
-            this.pageTitle.setTexture('op_font_' + CARD_COLORS[this.selectedColor-1]);
+            this.pageTitle.setTexture(`ICON_FONT_${GAME_ENUMS.CARD_COLORS[this.selectedColor-1]}`);
         }
     }
 
@@ -291,7 +279,7 @@ class CollectionBook {
             width: 60,
             height: 50,
             background: scene.rexUI.add.roundRectangle(0, 0, 50, 50, radius, backgroundColor),
-            icon: scene.add.image(0, 0, symbol).setScale(0.3).setOrigin(0).setTint(OP_WHITE, OP_WHITE, OP_WHITE),
+            icon: scene.add.image(0, 0, symbol).setScale(0.3).setOrigin(0).setTint(COLOR_ENUMS.OP_WHITE, COLOR_ENUMS.OP_WHITE, COLOR_ENUMS.OP_WHITE),
             space: {
                 bottom: 0,//-110,
                 left: 12
@@ -302,9 +290,9 @@ class CollectionBook {
     /** CREATE FILTER PANEL */
     createFilterPanel() {
         //Add set Icon
-        let setIcon = this.scene.add.image(this.tabs.x - this.tabs.width/2 + 50, this.tabs.y + this.tabs.height / 2 - 30, 'collectionSetIcon').setOrigin(0.5).setScale(0.6);
+        let setIcon = this.scene.add.image(this.tabs.x - this.tabs.width/2 + 50, this.tabs.y + this.tabs.height / 2 - 30, ASSET_ENUMS.ICON_COLLECTION_SET).setOrigin(0.5).setScale(0.6);
         //Create the set scrollpanel
-        let backgroundConfig = {backgroundColor: OP_CREAM_DARKER, alpha: 0.8, round:0};
+        let backgroundConfig = {backgroundColor: COLOR_ENUMS.OP_CREAM_DARKER, alpha: 0.8, round:0};
         let setFilterScrollPanel = new ScrollPanel(this.scene, this.tabs.x - this.tabs.width/2 + 50 - setIcon.width/2*0.6, this.tabs.y + this.tabs.height / 2 - 65 - 200, 150, 200, true, backgroundConfig);
         
         setIcon.setInteractive();
@@ -314,12 +302,12 @@ class CollectionBook {
 
         //Add set images
         let startY = 22;
-        for(let i=0; i<CARD_SETS.length; i++) {
-            let setImage = this.scene.add.image(75, startY, 'setFilter' + CARD_SETS[i]).setScale(0.45);
+        for(let i=0; i<GAME_ENUMS.CARD_SETS.length; i++) {
+            let setImage = this.scene.add.image(75, startY, `SET_FILTER_${GAME_ENUMS.CARD_SETS[i]}`).setScale(0.45);
             setFilterScrollPanel.addElement(setImage);
 
             this.setFilterImages.push({
-                id: CARD_SETS[i],
+                id: GAME_ENUMS.CARD_SETS[i],
                 image: setImage,
                 isPressed: false   
             });
@@ -330,11 +318,11 @@ class CollectionBook {
                 if(this.setFilterImages[i].isPressed) {
                     this.setFilterImages[i].isPressed = false;
                     this.setFilterImages[i].image.resetPipeline();
-                    GameClient.playerCollection.removeFilter({type:'set',value:CARD_SETS[i]});
+                    GameClient.playerCollection.removeFilter({type:'set',value:GAME_ENUMS.CARD_SETS[i]});
                 } else {
                     this.setFilterImages[i].isPressed = true;
-                    this.setFilterImages[i].image.setPipeline('GreyscalePipeline');
-                    GameClient.playerCollection.addFilter({type:'set',value:CARD_SETS[i]});
+                    this.setFilterImages[i].image.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
+                    GameClient.playerCollection.addFilter({type:'set',value:GAME_ENUMS.CARD_SETS[i]});
                 }
                 this.updateMinMaxPage();
                 this.updateCardVisuals();
@@ -348,7 +336,7 @@ class CollectionBook {
         startY = this.tabs.y + this.tabs.height / 2 - 30;
         let separatorWidth = 5;
         for(let i=0; i<10; i++) {
-            let costImage = this.scene.add.image(startX, startY, 'op_cost_PURPLE_' + i).setOrigin(0.5).setScale(0.45);
+            let costImage = this.scene.add.image(startX, startY, `COST_PURPLE_${i}`).setOrigin(0.5).setScale(0.45);
             costImage.setDepth(1);
             this.objToUpdate.push(costImage);
 
@@ -368,7 +356,7 @@ class CollectionBook {
                     GameClient.playerCollection.removeFilter({type:'cost',value:i});
                 } else {
                     this.costFilterImages[i].isPressed = true;
-                    this.costFilterImages[i].image.setPipeline('PurpleToOrangePipeline');
+                    this.costFilterImages[i].image.setPipeline(PIPELINE_ENUMS.PURPLE_TO_ORANGE_PIPELINE);
                     GameClient.playerCollection.addFilter({type:'cost',value:i});
                 }
                 this.updateMinMaxPage();
@@ -385,15 +373,15 @@ class CollectionBook {
         let rectY = this.costFilterImages[0].image.y - this.costFilterImages[0].image.height/2*0.45 - 5;
         let rectWidth = this.costFilterImages[9].image.x + this.costFilterImages[9].image.width/2*0.45 + 5 - rectX;
         let rectHeight = this.costFilterImages[0].image.height*0.45 + 10;
-        roundedRect.fillStyle(OP_CREAM_DARKER, 1); // Black color with 50% opacity
+        roundedRect.fillStyle(COLOR_ENUMS.OP_CREAM_DARKER, 1); // Black color with 50% opacity
         roundedRect.fillRoundedRect(rectX, rectY, rectWidth, rectHeight, 15); // 10 is padding, 15 is corner radius
         roundedRect.setDepth(0);
 
         //Add attribute images
         startX = startX + 10;
-        for(let i = 0; i<CARD_ATTRIBUTES.length; i++) {
-            let attribute = CARD_ATTRIBUTES[i];
-            let attributeImage = this.scene.add.image(startX, startY, 'op_attribute_' + attribute).setOrigin(0.5).setScale(0.8);
+        for(let i = 0; i<GAME_ENUMS.CARD_ATTRIBUTES.length; i++) {
+            let attribute = GAME_ENUMS.CARD_ATTRIBUTES[i];
+            let attributeImage = this.scene.add.image(startX, startY, `ICON_ATTRIBUTE_SYMBOL_${attribute}`).setOrigin(0.5).setScale(0.8);
             attributeImage.setDepth(1);
             this.objToUpdate.push(attributeImage);
 
@@ -413,7 +401,7 @@ class CollectionBook {
                     GameClient.playerCollection.removeFilter({type:'attribute',value:attribute});
                 } else {
                     this.attributeFilterImages[i].isPressed = true;
-                    this.attributeFilterImages[i].image.setPipeline('GreyscalePipeline');
+                    this.attributeFilterImages[i].image.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
                     GameClient.playerCollection.addFilter({type:'attribute',value:attribute});
                 }
                 this.updateMinMaxPage();
@@ -428,7 +416,7 @@ class CollectionBook {
         roundedRect = this.scene.add.graphics();
         rectX = this.attributeFilterImages[0].image.x - this.attributeFilterImages[0].image.width/2*0.8 - 5;
         rectWidth = this.attributeFilterImages[this.attributeFilterImages.length-1].image.x + this.attributeFilterImages[0].image.width/2*0.8 + 5 - rectX;
-        roundedRect.fillStyle(OP_CREAM_DARKER, 1); // Black color with 50% opacity
+        roundedRect.fillStyle(COLOR_ENUMS.OP_CREAM_DARKER, 1); // Black color with 50% opacity
         roundedRect.fillRoundedRect(rectX, rectY, rectWidth, rectHeight, 15); // 10 is padding, 15 is corner radius
         roundedRect.setDepth(0);
 
@@ -442,14 +430,14 @@ class CollectionBook {
             y: rectY,
             width: rectWidth,
             height: rectHeight, 
-            background: this.scene.rexUI.add.roundRectangle(0, 0, 0, 0, 15, OP_CREAM_DARKER),
-            icon: this.scene.add.image(0, 0, 'searchIcon').setScale(0.5),
+            background: this.scene.rexUI.add.roundRectangle(0, 0, 0, 0, 15, COLOR_ENUMS.OP_CREAM_DARKER),
+            icon: this.scene.add.image(0, 0, ASSET_ENUMS.ICON_SEARCH).setScale(0.5),
             text: this.scene.rexUI.add.BBCodeText(50, 0, 'Search', {
                 fontSize: '20px',
                 fixedWidth: rectWidth-60,
                 fixedHeight: rectHeight-20,
                 valign: 'center',
-                color: '#ffffff' 
+                color: COLOR_ENUMS_CSS.OP_BLACK
             }),
             space: {
                 icon: 10, // Space between icon and text
@@ -468,13 +456,13 @@ class CollectionBook {
         let firstColorIndex = -1;
 
         if(colors.length > 0) {
-            for(let i=0; i<CARD_COLORS.length; i++) {
-                if(!colors.includes(CARD_COLORS[i])) {
+            for(let i=0; i<GAME_ENUMS.CARD_COLORS.length; i++) {
+                if(!colors.includes(GAME_ENUMS.CARD_COLORS[i])) {
                     this.tabs.hideButton('top', i);
                     GameClient.playerCollection.colorCardInfo[i].hidden = true;
                 } else if (firstColorIndex === -1) firstColorIndex = i;
             }
-            if(!colors.includes(CARD_COLORS[this.selectedColor-1])) {
+            if(!colors.includes(GAME_ENUMS.CARD_COLORS[this.selectedColor-1])) {
                 this.currentColorPage = 1;
                 this.currentPage = GameClient.playerCollection.colorCardInfo[firstColorIndex].startPage;
                 this.selectedColor = firstColorIndex+1;

@@ -28,6 +28,7 @@ window.onload = function() {
     Game.scene.add(SCENE_ENUMS.LOADER, LoaderScene, false);
     Game.scene.add(SCENE_ENUMS.LOGIN, LoginScene, false);
     Game.scene.add(SCENE_ENUMS.TITLE, TitleScene, false);
+    Game.scene.add(SCENE_ENUMS.COLLECTION_MANAGER, CollectionManagerScene, false);
     Game.scene.start(SCENE_ENUMS.BACKGROUND_LOADER);
 
     GameClient.game = Game;

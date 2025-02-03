@@ -47,7 +47,7 @@ class Button extends Phaser.GameObjects.Container {
         this.text = config.scene.add.text(0, 0, config.text, {
             fontFamily: 'Brandon',
             font: config.fontsize + "px monospace",
-            fill: "#E9E6CE"
+            color: COLOR_ENUMS_CSS.OP_CREAM
         });
         this.text.setOrigin(0.5, 0.5);
         this.obj.push(this.text);
@@ -66,16 +66,26 @@ class Button extends Phaser.GameObjects.Container {
     }
 
     /* Function to set the background color only */
+    /**
+     * @param {any} color
+     */
     setBackgroundColor (color) {
         this.background.setFillStyle(color); //setStrokeStyle
     }
 
     /* Function to set the background color and the outline */
+    /**
+     * @param {any} color1
+     * @param {any} color2
+     */
     setDoubleBackgroundColor (color1, color2) {
         this.background.setFillStyle(color1, color2, true);
     }
 
     /* Function to set the text */
+    /**
+     * @param {string} t
+     */
     setText(t) {
         this.text.setText(t);
     }

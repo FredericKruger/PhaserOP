@@ -64,6 +64,7 @@ class LoaderScene extends Phaser.Scene {
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
         this.load.image(ASSET_ENUMS.ARROW_LEFT, `${assetPath}/leftarrow.png`);
+        this.load.image(ASSET_ENUMS.DELETE_ICON, `${assetPath}/deletedeckicon.png`);
 
         assetPath = "assets/icons/menuicons";
         this.load.image(ASSET_ENUMS.ICON_STORE, `${assetPath}/storeIcon.png`);
@@ -238,8 +239,12 @@ class LoaderScene extends Phaser.Scene {
         this.load.html('nameform', `${assetPath}/loginform.html`);
 
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
-        //this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', 'rexRoundRectangle', 'rexRoundRectangle');
-        this.load.plugin('rexroundrectanglecanvasplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectanglecanvasplugin.min.js', false);
+        
+        this.load.plugin('rexcirclemaskimageplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexcirclemaskimageplugin.min.js', true);
+        this.load.plugin('rextexteditplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexteditplugin.min.js', true);
+        this.load.plugin('rexbbcodetextplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexbbcodetextplugin.min.js', true);
+        this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', true);
+        this.load.plugin('rexroundrectanglecanvasplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectanglecanvasplugin.min.js', true);
     }
 
     create() {
