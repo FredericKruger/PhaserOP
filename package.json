@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "description": "A simple card game server using Node.js, socket.io, and Phaser.",
     "main": "server.ts",
+    "type": "commonjs",
     "dependencies": {
         "express": "^4.19.2",
         "socket.io": "^2.0.3"

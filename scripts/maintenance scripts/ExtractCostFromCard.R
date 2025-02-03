@@ -3,7 +3,7 @@ library(magick)
 folder_path <- "c:/Users/Kruger_F1/Pictures/tmp/"
 files <- list.files(folder_path)
 
-file <- "OP03-123.png"
+file <- "ST04-003.png"
 
 #for(file in  files) {
   img <- image_read(paste0("c:/Users/Kruger_F1/Pictures/tmp/", file))
@@ -29,5 +29,5 @@ file <- "OP03-123.png"
   circular_image <- image_crop(img_cropped, geometry = "80x80+15+14")
   print(circular_image)
 
-  image_write(circular_image, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/YELLOW_8.png"))
+  image_write(circular_image, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/PURPLE_9.png"))
 #}

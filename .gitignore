@@ -1,1 +1,3 @@
-server_assets/player_decks/decks_Fred.json
+server_assets/player_decks/*
+server_assets/player_settings/*
+server_assets/player_collections/*

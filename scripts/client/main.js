@@ -1,33 +1,3 @@
-const DECK_LIMIT = 51;
-const CARD_LIMIT = 4;
-const CARD_LEADER_LIMIT = 1;
-
-const CARD_ART_WIDTH = 744;
-const CARD_ART_HEIGHT = 1004;
-
-const CARD_WIDTH = 704;
-const CARD_HEIGHT = 984;
-
-const OP_BLACK = 0x272424;
-const OP_CREAM = 0xE9E6CE;
-const OP_CREAM_DARKER = 0xb7ad5e;
-const OP_RED = 0xDD2129;
-const OP_GREEN = 0x019E79;
-const OP_BLUE = 0x0088BA;
-const OP_PURPLE = 0x7A3983;
-const OP_YELLOW = 0xEFE75A;
-const OP_GOLD = 0xD6AA44;
-const OP_ORANGE = 0xEA6929;
-const OP_WHITE = 0xffffff;
-
-const ON_ATTACK = 0x307EB2;
-const DON = 0x13111E;
-const TRIGGER = 0xFCED44;
-
-const CARD_COLORS = ["RED", "GREEN", "BLUE", "PURPLE", "BLACK", "YELLOW"];
-const CARD_ATTRIBUTES = ["RANGED", "SLASH", "SPECIAL", "STRIKE", "WISDOM"];
-const CARD_SETS = ["OP01", "OP02", "OP03", "ST01", "ST02", "ST03", "ST04"];
-
 const GameClient = new Client();
 
 window.onload = function() {
@@ -37,7 +7,6 @@ window.onload = function() {
     let config = {
         type: Phaser.AUTO,
         parent: 'game',
-        scene: [ LoaderBackground, Loader, Login, Title, CollectionManager/*, DeckSelection, Duel, WaitingForMatch*/ ], //Builder
         disableContextMenu: true,
         /*fps: {
             target: 60,
@@ -55,59 +24,15 @@ window.onload = function() {
     };
 
     let Game = new Phaser.Game(config);
+    Game.scene.add(SCENE_ENUMS.BACKGROUND_LOADER, BackgroundLoaderScene, false);
+    Game.scene.add(SCENE_ENUMS.LOADER, LoaderScene, false);
+    Game.scene.add(SCENE_ENUMS.LOGIN, LoginScene, false);
+    Game.scene.add(SCENE_ENUMS.TITLE, TitleScene, false);
+    Game.scene.start(SCENE_ENUMS.BACKGROUND_LOADER);
+
     GameClient.game = Game;
 }
 
 window.onclose = function () {
     GameClient.askDisconnect();
-}
-
-getCardColor = function(color) {
-    switch(color) {
-        case "RED":
-            return OP_RED;
-        case "GREEN":
-            return OP_GREEN;
-        case "BLUE":
-            return OP_BLUE;
-        case "PURPLE":
-            return OP_PURPLE;
-        case "BLACK":
-            return OP_BLACK;
-        case "YELLOW":
-            return OP_YELLOW;
-    }
-}
-
-getCardSymbol = function(color, isleader) {
-    if(isleader === 0) {
-        return 'op_' + color[0] + '_symbol';
-    } else {
-        let colorString = 'op_leader_' + color[0];
-        if(color.length>1) colorString = colorString + '_' + color[1];
-        return colorString;
-    }
-}
-
-getCardCost = function(color, cost) {
-    return 'op_cost_' + color + '_' + cost;
-}
-
-getCardAttributeSymbol = function(attribute) {
-    switch(attribute) {
-        case "RANGED":
-            return 'op_attribute_RANGED';
-        case "SLASH":
-            return 'op_attribute_SLASH';
-        case "SPECIAL":
-            return 'op_attribute_SPECIAL';
-        case "STRIKE":
-            return 'op_attribute_STRIKE';
-        case "WISDOM":
-            return 'op_attribute_WISDOM';
-    }
-}
-
-getLeaderArt = function(leaderArt) {
-    return 'op_leader_' + leaderArt;
 }

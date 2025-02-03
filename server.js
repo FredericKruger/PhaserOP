@@ -1,5 +1,6 @@
 const server = require('express');
 const app = server();
+// @ts-ignore
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -7,112 +8,12 @@ const io = require('socket.io')(http);
 //const Deck = require('./scripts/server/deck.js');
 //const Match = require('./scripts/server/match.js');
 //const MatchState = require('./scripts/server/matchstate.js');
+const ServerInstance = require('./scripts/server/server_instance.js');
 const Player = require('./scripts/server/player.js');
-const Utils = require('./scripts/server/util.js');
 //const Bot = require('./scripts/server/bot.js');
 
-/** Object to store Server information */
-class ServerInstance {
-    constructor(){
-        this.players = []; //List of currently connected players
-        this.matches = []; //List of currently started matches
-        this.bots = []; //List of currently active bots
-        
-        this.lastPlayerID = 0; //keep track of the last assigned id to a new player
-        this.lastMatchID = 0; //Keep track of the last assigned matchid
-        this.lastBotID = 0; //Keep track of the last assigned bot id
-        this.ai = null;
-        this.usedMatchIDS = []; //Keep track of the matchIDS currents in use
-
-        this.cardIndex = {}; //Store the card database
-
-        this.util = new Utils(this, __dirname);
-    }
-
-    /** Function that returns a random integer between min and max
-     * @param {number} max - max boundary for random integer
-     * @param {number} min - min boudary for random integer  
-     * @returns {number} random number generated
-     */
-    getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-    }
-
-    /** Returns true if the given matchID is already in use, false otherwise
-     * @param {number} id - Match ID
-     * @returns {boolean} 
-     */
-    isMatchIDUsed(id) {
-        for(let i of this.usedMatchIDS) {
-            if(id === i) return true;
-        }
-        return false;
-    }
-
-    /** Returns true ifthe username is already in use, fales otherwise
-     * @param {string} username - Username
-     * @returns {boolean}
-     */
-    isUsernameUsed(username) {
-        for(let p of this.players) {
-            if(p.name === username) return true;
-        }
-        return false;
-    }
-
-    /** Release the match id for when the match is over
-     * @param {number} id - match id
-     * @returns {boolean} True if the match ID was removed, false otherwise 
-     */
-    releaseMatchID(id) {
-        for(let i = (this.usedMatchIDS.length-1); i>=0; i--) {
-            if(this.usedMatchIDS[i] === id){
-                this.usedMatchIDS.splice(i, 1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** Function that determines the owner of a card */
-    getOwnerOfCard(socket, playerOwned) {
-        //First determine the player
-        let player = 'a';
-        if(socket.player === socket.match.b) player = 'b';
-
-        let p = socket.match.state.a;
-        if(player === 'b') p = socket.match.state.b;
-
-        if(!playerOwned) {
-            if(player === 'a') p = socket.match.state.b;
-            else p = socket.match.state.a;
-        }
-
-        return p;
-    }
-
-    getPlayerOpponentSocket(socket) {
-        if(socket.match.a.socket === socket) return socket.match.b.socket;
-        else return socket.match.a.socket;
-    }
-
-    /** Function to get a list of all players currentlzy waiting to be connected to a match */
-    getAllWaitingPlayers() {
-        let players = [];
-        Object.keys(io.sockets.connected).forEach(function(socketID) {
-            let player = io.sockets.connected[socketID].player;
-            if(player) {
-                if(player.waitingForMatch) players.push(player);
-            }
-        })
-        return players;
-    }
-}
-
 //On start create a new server instance
-var serverInstance = new ServerInstance();
+const serverInstance = new ServerInstance(__dirname);
 //Created promise to read the card database
 serverInstance.util.getCardList().then((result) => {
     serverInstance.cardIndex = result;
@@ -133,6 +34,7 @@ app.get('/',function(req,res){
 });
 
 /** On connection of a player, start socket listenere */
+// @ts-ignore
 io.on('connection', function (socket) {
     socket.player = null;
     
@@ -208,13 +110,13 @@ io.on('connection', function (socket) {
     /** When the players request the AI deck lists 
      * Call the sendAIDecklist - Might need to be adjusted with promises
     */
-    socket.on('request_ai_decklist', () => { sendAIDeckList(); });
+    socket.on('request_ai_decklist', () => { /*sendAIDeckList();*/ });
 
     /** When the players request their decklists
      * Requires the player's username
      * Call the sendPlayerDecklist - Might need to be adjusted with promises
      */
-    socket.on('request_player_decklist', () => { io.emit('update_player_decklist', JSON.stringify(socket.player.decklist)); });
+    socket.on('request_player_decklist', () => { socket.emit('update_player_decklist', JSON.stringify(socket.player.decklist)); });
 
     /** When a player sends its decklist to be saved on the server 
      * Requires the player's username and decklist as JSON
@@ -238,9 +140,9 @@ io.on('connection', function (socket) {
             let addedToDecklist = socket.player.addToDecklist(preconstructedDeck);
     
             //update client side data
-            if(addedToDecklist) io.emit('update_player_decklist', JSON.stringify(socket.player.decklist));
-            io.emit('update_player_collection', JSON.stringify(socket.player.collectionToJSON()));
-            io.emit('first_login_complete');
+            if(addedToDecklist) socket.emit('update_player_decklist', JSON.stringify(socket.player.decklist));
+            socket.emit('update_player_collection', JSON.stringify(socket.player.collectionToJSON()));
+            socket.emit('first_login_complete');
         } catch (error) {
             console.error('Error unlocking deck:', error);
         }
@@ -256,20 +158,20 @@ io.on('connection', function (socket) {
 /** Asynchronous function that creates a promise to send the player the ai decklist
  * Emits signals to the player with the ai decklists
  */
-async function sendAIDeckList () {
+/*async function sendAIDeckList () {
     let fs = require('fs');
     let aiDeck = {}; //Creat empty decklist in case of error
     let filepath = __dirname + '/server_assets/ai_decks/decks_ai.json'; //Get file
     
     try {
         const data = await fs.promises.readFile(filepath); //Read the file as a promise
-        aiDeck = JSON.parse(data); //Turn file into JSON object
+        aiDeck = JSON.parse(data.toString()); //Turn file into JSON object
         io.emit('send_ai_decklist', JSON.stringify(aiDeck)); //Send the player the ai decklist
     } catch (err) { //In case of an error
         //console.log(err);
         io.emit('send_ai_decklist', aiDeck); //Send an empty decklist
     }
-}
+}*/
 
 //START LISTENING
 http.listen(8081,function(){ //Listens to port 8081

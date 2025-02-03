@@ -13,6 +13,7 @@ class Client {
         this.firstLogin = false;
 
         //Connects to the server.
+        // @ts-ignore
         this.socket = io.connect();
         this.game = null; //No game initially
 

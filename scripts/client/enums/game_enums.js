@@ -1,0 +1,47 @@
+const GAME_ENUMS = Object.freeze({
+    DECK_LIMIT: 51,
+    CARD_LIMIT: 4,
+    CARD_LEADER_LIMIT: 1,
+    
+    CARD_ART_WIDTH: 744,
+    CARD_ART_HEIGHT: 1004,
+    
+    CARD_WIDTH: 704,
+    CARD_HEIGHT: 984,
+
+    MAX_CARDS_PER_PAGE: 8,
+    
+    CARD_COLORS: ["RED", "GREEN", "BLUE", "PURPLE", "BLACK", "YELLOW"],
+    CARD_ATTRIBUTES: ["RANGED", "SLASH", "SPECIAL", "STRIKE", "WISDOM"],
+    CARD_SETS: ["OP01", "OP02", "OP03", "ST01", "ST02", "ST03", "ST04"],
+});
+
+const SCENE_ENUMS = Object.freeze({
+    LOADER: 'LOADER',
+    BACKGROUND_LOADER: 'BACKGROUND_LOADER',
+    LOGIN: 'LOGIN',
+    TITLE: 'TITLE', 
+    COLLECTION_MANAGER: 'COLLECTION_MANAGER',
+});
+
+const COLOR_ENUMS = Object.freeze({
+    OP_BLACK: 0x272424,
+    OP_CREAM: 0xE9E6CE,
+    OP_CREAM_DARKER: 0xb7ad5e,
+    OP_RED: 0xDD2129,
+    OP_GREEN: 0x019E79,
+    OP_BLUE: 0x0088BA,
+    OP_PURPLE: 0x7A3983,
+    OP_YELLOW: 0xEFE75A,
+    OP_GOLD: 0xD6AA44,
+    OP_ORANGE: 0xEA6929,
+    OP_WHITE: 0xffffff,
+
+    ON_ATTACK: 0x307EB2,
+    DON: 0x13111E,
+    TRIGGER: 0xFCED44,
+});
+
+const COLOR_ENUMS_CSS = Object.freeze({
+    OP_CREAM: "#E9E6CE",
+});
