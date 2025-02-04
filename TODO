@@ -1,11 +1,11 @@
 # REFACTOR code
-    - REFACTOR CLIENT
-    - REFACTOR SERVER
+    [x] REFACTOR CLIENT
+    [x] REFACTOR SERVER
 
 # WRITE OPEN PACK PANEL
-    - Design ui
-    - Write Server logic
+    [ ] Design ui
+    [ ] Write Server logic
 
 # WRITE SHOP PANEL
-    - Design ui
-    - Write Server logic
+    [ ] Design ui
+    [ ] Write Server logic
