@@ -14,7 +14,7 @@ class CollectionBookCardEntry {
         this.cardPlaceholder = null;
         
         this.index = index;
-        this.cardInfo = null;
+        this.cardData = null;
 
         this.cardAmountBox = this.collectionBook.scene.add.graphics();
         this.cardAmountBox.fillStyle(COLOR_ENUMS.OP_CREAM, 1);
@@ -38,7 +38,7 @@ class CollectionBookCardEntry {
         this.cardVisual.setInteractive();
         this.cardVisual.on('pointerdown', (pointer) => {
             if(pointer.rightButtonDown()) {
-                this.collectionBook.scene.cardCraftingPanel.updateArt(this.cardInfo);
+                this.collectionBook.scene.cardCraftingPanel.updateArt(this.cardData);
                 this.collectionBook.scene.cardCraftingPanel.setVisible(true);
             } else {
                 if(!this.collectionBook.scene.showingDeckList){
@@ -67,26 +67,26 @@ class CollectionBookCardEntry {
     }
 
     update() {
-        if(this.cardInfo === null) {
+        if(this.cardData === null) {
             this.setVisible(false);
         } else {
             this.setVisible(true);
             
-            let availableAmount = this.cardInfo.amount;
+            let availableAmount = this.cardData.amount;
             if(this.collectionBook.scene.inDeckBuildingMode) { 
-                let amountInDeck = this.collectionBook.scene.getAmountOfCardInDeck(this.cardInfo.id);
-                if(this.cardInfo.isleader === 1) {
-                    availableAmount = Math.min(GAME_ENUMS.CARD_LEADER_LIMIT, this.cardInfo.amount)-amountInDeck;
+                let amountInDeck = this.collectionBook.scene.getAmountOfCardInDeck(this.cardData.id);
+                if(this.cardData.isleader === 1) {
+                    availableAmount = Math.min(GAME_ENUMS.CARD_LEADER_LIMIT, this.cardData.amount)-amountInDeck;
                 } else {
-                    availableAmount = Math.min(GAME_ENUMS.CARD_LIMIT, this.cardInfo.amount)-amountInDeck;
+                    availableAmount = Math.min(GAME_ENUMS.CARD_LIMIT, this.cardData.amount)-amountInDeck;
                 }
             } 
             this.cardAmountText.text = 'x' + availableAmount;
                 
-            this.cardVisual.setUpdate(this.cardInfo);
-            this.cardPlaceholder.setUpdate(this.cardInfo);
+            this.cardVisual.setUpdate(this.cardData);
+            this.cardPlaceholder.setUpdate(this.cardData);
 
-            availableAmount = Math.min(availableAmount, this.cardInfo.amount);
+            availableAmount = Math.min(availableAmount, this.cardData.amount);
             if (availableAmount === 0) {
                 this.cardVisual.art.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
                 this.collectionBook.scene.input.setDraggable(this.cardVisual, false); // Disable dragging
@@ -102,8 +102,8 @@ class CollectionBookCardEntry {
         }
     }
 
-    updateCardInfo(cardInfo) {
-        this.cardInfo = cardInfo;
+    updateCardData(cardData) {
+        this.cardData = cardData;
     }
 
     setVisible(visible) {

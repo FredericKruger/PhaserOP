@@ -365,7 +365,7 @@ class CollectionManagerScene extends Phaser.Scene {
 
     /**
      * UPDATE TOOLTIP
-     * @param {{ visible: boolean; index?: number; positionx?: number; positiony?: number; cardInfo?: any; }} cardToolTipConfig
+     * @param {{ visible: boolean; index?: number; positionx?: number; positiony?: number; cardData?: any; }} cardToolTipConfig
      */
     updateTooltip(cardToolTipConfig) {
         if(cardToolTipConfig.visible && !this.isDragging){
@@ -379,7 +379,7 @@ class CollectionManagerScene extends Phaser.Scene {
                     scale: 0.5
                 };
                 this.cardTooltipContainer = new CardVisual(this, config);
-                this.cardTooltipContainer.setUpdate(cardToolTipConfig.cardInfo);  
+                this.cardTooltipContainer.setUpdate(cardToolTipConfig.cardData);  
             }
             
             //check if tooltip out of screen

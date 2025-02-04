@@ -11,7 +11,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         this.scene = this.deckCardListContainer.scene;
         this.entryIndex = config.entryindex;
         this.cardi = config.cardi;
-        this.cardInfo = config.cardInfo;
+        this.cardData = config.cardData;
         this.firstClickTime = 0;
         this.amount = 0;
 
@@ -66,7 +66,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         if(this.name.text !== config.name)
             this.name.text = this.name.text.slice(0, -3) + '...';
 
-        this.backgroundimage = this.scene.add.image(0, 0, 'deckentry_' + config.art);
+        this.backgroundimage = this.scene.add.image(0, 0, 'deckentry_' + this.cardData.art);
 
         this.add([this.backgroundimage, this.background, this.amountText, this.name, this.type, this.attribute]);
         if(this.cost !== null) this.add(this.cost);

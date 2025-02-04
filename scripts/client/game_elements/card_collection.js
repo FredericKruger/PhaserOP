@@ -5,28 +5,32 @@ class CardCollection {
 
         /** this data is necessary for the  */
         this.colorCardIndex = [];
-        this.colorCardInfo = [];
+        this.colorCardData = [];
         this.cardToCardi = [];
 
         /** List of filters */
         this.collectionFilters = [];
     }
 
-    /** Initial load of the cards list */
+    /** Initial load of the cards list 
+     * @param {Array} cardList - Array of card objects
+    */
     loadCards(cardList) {
-        this.cardCollection = cardList;
-
-        for(let card of this.cardCollection) {
-            card.amount = 0;
+        for(let card of cardList) {
+            let cardData = new CardData();
+            cardData.setCardData(card);
+            this.cardCollection.push(cardData);
         }
     }
 
-    /** Update the player collection  */
+    /** Update the player collection  
+     * @param {Array} playerCollection - Array of arrays with the card index and the amount
+    */
     updateCollection (playerCollection) {
         for(let i = 0; i<playerCollection.length; i++) {
             let index = playerCollection[i][0];
             let amount = playerCollection[i][1];
-            this.cardCollection[index-1].amount = amount;
+            this.cardCollection[index-1].setAmount(amount);
         }
     }
 
@@ -78,7 +82,7 @@ class CardCollection {
             });
 
             //Create page info
-            this.colorCardInfo[i] = {
+            this.colorCardData[i] = {
                 startPage: pageMax+1,
                 startIndex: startIndex,
                 totalPages: 1,
@@ -88,9 +92,9 @@ class CardCollection {
 
             //Increase variables
             if(this.colorCardIndex[i].length > 0) {
-                this.colorCardInfo[i].totalPages = Math.floor(this.colorCardIndex[i].length/GAME_ENUMS.MAX_CARDS_PER_PAGE)+1;
+                this.colorCardData[i].totalPages = Math.floor(this.colorCardIndex[i].length/GAME_ENUMS.MAX_CARDS_PER_PAGE)+1;
             }
-            pageMax +=this.colorCardInfo[i].totalPages;
+            pageMax +=this.colorCardData[i].totalPages;
 
             startIndex += this.colorCardIndex[i].length;
         }
@@ -98,18 +102,25 @@ class CardCollection {
         return pageMax;
     }
 
-    /** Get Cards */
+    /** Get Cards 
+     * @param {number} color - Color index
+     * @param {number} index - Page index
+    */
     getCardFromPage(color, index) {
         return this.colorCardIndex[color][index];
     }
 
-    /** Add a filter */
+    /** Add a filter 
+     * @param {Object} filter - Filter object
+    */
     addFilter(filter) {
         this.collectionFilters.push(filter);
         this.filterCollection();
     }
 
-    /** Remove a filter */
+    /** Remove a filter 
+     * @param {Object} filter - Filter object
+    */
     removeFilter(filter) {
         //locate the filter
         let index = -1;

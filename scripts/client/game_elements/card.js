@@ -1,19 +1,31 @@
 class Card {
 
-    /** CONSTRUCTOR */
-    constructor(cardInfo, amount) {
-        this.cardInfo = cardInfo;
+    /** CONSTRUCTOR 
+     * @param {CardData} cardData - Card data object
+     * @param {number} amount - Card amount in the deck
+    */
+    constructor(cardData, amount) {
+        this.cardData = cardData;
         this.amount = amount;
 
         this.deckBuilderEntry = null;
         this.placeholderEntry = null;
     }
 
-    /** CARD DECK ENTRY FUNCTIONS */
+    /**
+     * CARD DECK ENTRY FUNCTIONS
+     * @param {DeckCardEntry} placeholderEntry
+     */
     setPlaceholderEntry(placeholderEntry) {this.placeholderEntry = placeholderEntry;}
+    /**
+     * @param {DeckCardEntry} deckbuilderEntry
+     */
     setDeckbuilderEntry(deckbuilderEntry) {this.deckBuilderEntry = deckbuilderEntry;}
 
-    /** FUNCTION TO UPDATE THE ENTRY POSITION IN THE CARD LIST CONTAINER */
+    /** FUNCTION TO UPDATE THE ENTRY POSITION IN THE CARD LIST CONTAINER 
+     * @param {number} newY - New Y position
+     * @param {number} index - New index in the list
+    */
     update_entryPosition(newY, index){
         if(this.deckBuilderEntry !== null) {
             this.deckBuilderEntry.updatePosition(newY);
@@ -25,7 +37,9 @@ class Card {
         }
     }
 
-    /** FUNCTION TO SET THE CARD AMOUNT IN THE DECK */
+    /** FUNCTION TO SET THE CARD AMOUNT IN THE DECK 
+     * @param {number} amount - New amount
+    */
     set_amount(amount){
         this.amount = amount;
         if(this.deckBuilderEntry !== null) this.deckBuilderEntry.updateAmount(this.amount);
