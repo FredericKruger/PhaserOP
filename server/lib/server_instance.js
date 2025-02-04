@@ -1,4 +1,4 @@
-const Utils = require('./utils.js');
+const Utils = require('./utils/utils.js');
 
 /** Object to store Server information */
 class ServerInstance {

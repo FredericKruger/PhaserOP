@@ -7,8 +7,8 @@ class LoginScene extends Phaser.Scene {
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
-        this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND1).setScale(1);
-        this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND2).setScale(2);
+        this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND1).setOrigin(0.5).setScale(1);
+        this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND2).setOrigin(0.5).setScale(2);
         this.add.image(screenCenterX, screenCenterY-320, ASSET_ENUMS.LOGO).setOrigin(0.5, 0.5).setScale(1);
 
         this.domElement = this.add.dom(screenCenterX, screenCenterY+20).createFromCache('nameform');

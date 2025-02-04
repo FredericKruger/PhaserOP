@@ -25,11 +25,13 @@ const GAME_ENUMS = Object.freeze({
 });
 
 const SCENE_ENUMS = Object.freeze({
+    SCENE_HANDLER: 'SCENE_HANDLER',
     LOADER: 'LOADER',
     BACKGROUND_LOADER: 'BACKGROUND_LOADER',
     LOGIN: 'LOGIN',
     TITLE: 'TITLE', 
     COLLECTION_MANAGER: 'COLLECTION_MANAGER',
+    PACK_OPENING: 'PACK_OPENING',
 });
 
 const COLOR_ENUMS = Object.freeze({

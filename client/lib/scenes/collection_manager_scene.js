@@ -27,8 +27,6 @@ class CollectionManagerScene extends Phaser.Scene {
     }
 
     preload () {
-        this.add.image(0, 0, ASSET_ENUMS.BACKGROUND3).setScale(2); //add background image
-
         if(this.firstLoad){
             this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
             this.firstLoad = false;
@@ -36,11 +34,16 @@ class CollectionManagerScene extends Phaser.Scene {
     }
 
     create () {
+        const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+        const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
+
         let containerSeparatorWidth = 20;
         let deckCardListContainerWidth = 300;
         let deckCardListContainerHeight = this.cameras.main.height - 40 - containerSeparatorWidth*2;
         let collectionBookContainerHeight = deckCardListContainerHeight;
         let collectionBookContainerWidth = this.cameras.main.width - deckCardListContainerWidth - containerSeparatorWidth*3;
+
+        this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND1).setScale(1); //add background image
 
         /** COLLECTION BOOK */
         this.collectionBook = new CollectionBook({

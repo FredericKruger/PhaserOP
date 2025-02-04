@@ -1,7 +1,9 @@
+/** @enum {AssetEnum} */
 const ASSET_ENUMS = Object.freeze({
     BACKGROUND1: 'BACKGROUND1',
     BACKGROUND2: 'BACKGROUND2',
     BACKGROUND3: 'BACKGROUND3',
+    LEATHER_BACKGROUND: 'LEATHER_BACKGROUND',
 
     AVATAR_DEFAULT: 'AVATAR_DEFAULT',
     AVATAR_AI: 'AVATAR_AI',
@@ -163,15 +165,18 @@ const ASSET_ENUMS = Object.freeze({
     LEADER_ST04_001: 'LEADER_ST04-001',
 });
 
+/** @enum {DataEnums} */
 const DATA_ENUMS = Object.freeze({
     PLAYER_ICONS: 'PLAYER_ICONS',
 });
 
+/** @enum {ShaderEnums} */
 const SHADER_ENUMS = Object.freeze({
     GREYSCALE_SHADER: 'GREYSCALE_SHADER',
     ORANGE_TO_PURPLE_SHADER: 'ORANGE_TO_PURPLE_SHADER'
 });
 
+/** @enum {PipelineEnums} */
 const PIPELINE_ENUMS = Object.freeze({
     GREYSCALE_PIPELINE: 'GREYSCALE_PIPELINE',
     PURPLE_TO_ORANGE_PIPELINE: 'PURPLE_TO_ORANGE_PIPELINE',

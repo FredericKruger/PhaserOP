@@ -1,4 +1,11 @@
+const ServerInstance = require("./server_instance");
+
 class Player {
+    /** CONSTRUCTOR
+     * @param {object} socket
+     * @param {ServerInstance} server 
+     * @param {string} username 
+     *  */    
     constructor(socket, server, username) {
         this.id = server.lastPlayerID++;
         this.socket = socket;
@@ -38,7 +45,9 @@ class Player {
         }
     }
 
-    /** Function that adds cards to the player collection */
+    /** Function that adds cards to the player collection 
+     * @param {Array<number>} cardList
+    */
     addToCollection (cardList) {
         for(let card of cardList) {
             this.collection[card-1].amount++;
@@ -46,7 +55,9 @@ class Player {
         this.server.util.savePlayerCollection(this.username, this.collectionToJSON());
     }
 
-    /** Function that adds a deck to the decklist if possible */
+    /** Function that adds a deck to the decklist if possible 
+     * @param {Array<number>} deck
+    */
     addToDecklist (deck) {
         if(this.decklist.length < 9) {
             this.decklist.push(deck);

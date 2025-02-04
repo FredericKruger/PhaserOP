@@ -2,7 +2,7 @@ class TitleScene extends Phaser.Scene {
 
      constructor() {
         super({key: SCENE_ENUMS.TITLE});
-
+        
         this.deckbuilderLoaded = false;
         this.deckselectionLoaded = false;
         this.game = null;
@@ -70,7 +70,7 @@ class TitleScene extends Phaser.Scene {
         let openPackButton = this.add.image(this.cameras.main.width - 150, this.cameras.main.height - 120, ASSET_ENUMS.ICON_OPEN_PACK).setOrigin(0.5);
         openPackButton.setScale(0.15);
         openPackButton.setInteractive();
-        //openPackButton.on('pointerdown', this.openPacks, this);
+        openPackButton.on('pointerdown', this.openPacks, this);
         openPackButton.on('pointerout', () => openPackButton.setScale(0.15));
         openPackButton.on('pointerover', () => openPackButton.setScale(0.16));
 
@@ -105,6 +105,9 @@ class TitleScene extends Phaser.Scene {
     }
 
     //openPacks
+    openPacks () {
+        this.scene.start(SCENE_ENUMS.PACK_OPENING);
+    }
 
     /*startDeckSelection (vsAI) {
         if(!this.deckselectionLoaded) {

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>One Piece TCG Online</title>
+        <style>
+            html, body, .game {
+                margin: 0px;
+                height: 100vh;
+                width: 100vw;
+                overflow: hidden;
+                background: #d7d7d7;
+            }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.87.0/phaser.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            // Use the browser's built-in functionality to quickly and safely escape the string
+            function escapeHtml(str) {
+                return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+            }
+        </script>
+        <script src="scripts/enums/game_enums.js"></script>
+        <script src="scripts/enums/asset_enums.js"></script>
+
+        <script src="scripts/utils/utils.js"></script>
+        <script src="scripts/client.js"></script>
+
+        <script src="scripts/game_elements/card_collection.js"></script>
+        <script src="scripts/game_elements/card.js"></script>
+        <script src="scripts/game_elements/deck.js"></script>
+        <script src="scripts/game_elements/card_data.js"></script>
+
+        <script src="scripts/scenes/background_loader_scene.js"></script>
+        <script src="scripts/scenes/loader_scene.js"></script>
+        <script src="scripts/scenes/login_scene.js"></script>
+        <script src="scripts/scenes/title_scene.js"></script>
+        <script src="scripts/scenes/collection_manager_scene.js"></script>
+        <script src="scripts/scenes/pack_opening_scene.js"></script>
+
+        <script src="scripts/shaders/greyscale_pipeline.js"></script>
+        <script src="scripts/shaders/orange_to_purple_pipeline.js"></script>
+
+        <script src="scripts/ui_components/scroll_panel.js"></script>
+        <script src="scripts/ui_components/button.js"></script>
+
+        <script src="scripts/ui_elements/collection_manager/collection_book_card_entry.js"></script>
+        <script src="scripts/ui_elements/collection_manager/collection_book.js"></script>
+        <script src="scripts/ui_elements/collection_manager/deck_entry.js"></script>
+        <script src="scripts/ui_elements/collection_manager/deck_card_entry.js"></script>
+        <script src="scripts/ui_elements/collection_manager/deck_list_container.js"></script>
+        <script src="scripts/ui_elements/collection_manager/deck_card_list_container.js"></script>
+
+        <script src="scripts/ui_elements/card_visual.js"></script>
+        <script src="scripts/ui_elements/card_crafting_panel.js"></script>
+        <script src="scripts/ui_elements/first_login_panel.js"></script>
+        <script>
+            $(function () {
+                $('button#options').click(function(){
+                    $('#opts').show();
+                    return false;
+                });
+                $('button#close-menu').click(function(){
+                    $('#opts').hide();
+                    return false;
+                });
+            })
+        </script>
+        <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <div class="game" id="game">
+            <script type="text/javascript" src="scripts/main.js"></script>
+        </div>
+    </body>
+</html>

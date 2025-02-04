@@ -4,13 +4,8 @@ const app = server();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-//const AI = require('./ai.js');
-//const Deck = require('./scripts/server/deck.js');
-//const Match = require('./scripts/server/match.js');
-//const MatchState = require('./scripts/server/matchstate.js');
-const ServerInstance = require('./scripts/server/server_instance.js');
-const Player = require('./scripts/server/player.js');
-//const Bot = require('./scripts/server/bot.js');
+const ServerInstance = require('./server/lib/server_instance.js');
+const Player = require('./server/lib/player.js');
 
 //On start create a new server instance
 const serverInstance = new ServerInstance(__dirname);
@@ -22,20 +17,19 @@ serverInstance.io = io; //to allow communication inside the objects
 
 
 //Setup static directories
-app.use('/plugins', server.static(__dirname + '/plugins'));
-app.use('/css', server.static(__dirname + '/css'));
-app.use('/scripts', server.static(__dirname + '/scripts'));
-app.use('/assets', server.static(__dirname + '/assets'));
-app.use('/server_assets', server.static(__dirname + '/server_assets'));
+app.use('/plugins', server.static(__dirname + '/client/plugins'));
+app.use('/scripts', server.static(__dirname + '/client/lib'));
+app.use('/assets', server.static(__dirname + '/client/assets'));
+//app.use('/server_assets', server.static(__dirname + '/server_assets'));
 
 //Set root domain as index.html
 app.get('/',function(req,res){
-    res.sendFile(__dirname+'/index.html');
+    res.sendFile(__dirname+'/client/index.html');
 });
 
 /** On connection of a player, start socket listenere */
 // @ts-ignore
-io.on('connection', function (socket) {
+io.on('connection', function (/** @type {object} */ socket) {
     socket.player = null;
     
     /* When a player disconnects from the game */
@@ -49,7 +43,7 @@ io.on('connection', function (socket) {
 
 
     /** When a player connects */
-    socket.on('player_connect', async (username) => {
+    socket.on('player_connect', async (/** @type {string} */ username) => {
         let connectSuccess = !serverInstance.isUsernameUsed(username);
         let playerSetting = null;
         let playerCollection = [];
@@ -69,11 +63,7 @@ io.on('connection', function (socket) {
             if(playerSetting === null) {
                 console.log("This is a new Player ! Need to create the settings file");
                 newPlayer = true;
-                playerSetting = {
-                    "avatar": "icon1",
-                    "firstLogin": true,
-                    "berries": 10000
-                };
+                playerSetting = serverInstance.util.createDefaultSetting();
 
                 await serverInstance.util.createPlayerFolder(username);
                 await serverInstance.util.savePlayerSettings(username, playerSetting);
@@ -124,13 +114,13 @@ io.on('connection', function (socket) {
      * Requires the player's username and decklist as JSON
      * Will write into file. Overwrite default
     */
-    socket.on('save_player_decklist', function (decklist) {
+    socket.on('save_player_decklist', function (/** @type {string} */ decklist) {
         socket.player.decklist = JSON.parse(decklist);
         serverInstance.util.savePlayerDecklist(socket.player.username, socket.player.decklist);
     });
 
     /** When a player unlocks a new deck */
-    socket.on('unlock_deck', async (deckName) => {
+    socket.on('unlock_deck', async (/** @type {string} */ deckName) => {
         //First Read preconstructed decks
         try {
             const preconstructedDeck = await serverInstance.util.getPreconstructedDecks(deckName);
@@ -151,7 +141,7 @@ io.on('connection', function (socket) {
     });
 
     /** update player settings */
-    socket.on('update_player_settings', (playerSettings) => {
+    socket.on('update_player_settings', (/** @type {string} */ playerSettings) => {
         socket.player.settings = playerSettings;
         serverInstance.util.savePlayerSettings(socket.player.username, playerSettings);
     });

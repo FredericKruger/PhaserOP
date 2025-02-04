@@ -1,17 +1,14 @@
 const GameClient = new Client();
 
 window.onload = function() {
-    let osize = { x:1500, y:960 };
-    let oscale = { x:1500 / window.innerWidth, y:960 / window.innerHeight }
 
-    let config = {
-        type: Phaser.AUTO,
+    let Game = new Phaser.Game(
+    {
+        type: Phaser.WEBGL,
         parent: 'game',
         disableContextMenu: true,
-        /*fps: {
-            target: 60,
-            forceSetTimeOut: true
-        },*/
+        pixelArt: false,
+        backgroundColor: "#000000",
         scale: {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -21,14 +18,14 @@ window.onload = function() {
         dom: {
             createContainer: true
         }
-    };
+    });
 
-    let Game = new Phaser.Game(config);
     Game.scene.add(SCENE_ENUMS.BACKGROUND_LOADER, BackgroundLoaderScene, false);
     Game.scene.add(SCENE_ENUMS.LOADER, LoaderScene, false);
     Game.scene.add(SCENE_ENUMS.LOGIN, LoginScene, false);
     Game.scene.add(SCENE_ENUMS.TITLE, TitleScene, false);
     Game.scene.add(SCENE_ENUMS.COLLECTION_MANAGER, CollectionManagerScene, false);
+    Game.scene.add(SCENE_ENUMS.PACK_OPENING, PackOpeningScene, false);
     Game.scene.start(SCENE_ENUMS.BACKGROUND_LOADER);
 
     GameClient.game = Game;

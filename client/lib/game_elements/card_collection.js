@@ -1,6 +1,7 @@
 class CardCollection {
 
     constructor() {
+        /** @type {Array<CardData>} */
         this.cardCollection = [];
 
         /** this data is necessary for the  */

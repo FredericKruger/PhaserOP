@@ -1,8 +1,9 @@
+/** @typedef {Button} Button */
 class Button extends Phaser.GameObjects.Container {
 
     /**
      * 
-     * @param {*} config
+     * @param {object} config
      * config.scene
      * config.x
      * config.y
@@ -44,10 +45,11 @@ class Button extends Phaser.GameObjects.Container {
         this.background.setOrigin(0.5, 0.5);
         this.obj.push(this.background);
 
+        let textColor = config.textColor || COLOR_ENUMS_CSS.OP_CREAM;
         this.text = config.scene.add.text(0, 0, config.text, {
             fontFamily: 'Brandon',
             font: config.fontsize + "px monospace",
-            color: COLOR_ENUMS_CSS.OP_CREAM
+            color: textColor
         });
         this.text.setOrigin(0.5, 0.5);
         this.obj.push(this.text);

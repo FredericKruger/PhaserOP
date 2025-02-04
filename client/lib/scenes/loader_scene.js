@@ -4,6 +4,7 @@ class LoaderScene extends Phaser.Scene {
     }
 
     preload(){
+        // Init screen handling
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
@@ -60,6 +61,9 @@ class LoaderScene extends Phaser.Scene {
 
         let assetPath = 'assets/data';
         this.load.json(DATA_ENUMS.PLAYER_ICONS, `${assetPath}/playericons.json`); //icon list
+
+        assetPath = 'assets/backgrounds/';
+        this.load.image(ASSET_ENUMS.LEATHER_BACKGROUND, `${assetPath}/leather_background.jpg`);
         
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
@@ -250,7 +254,6 @@ class LoaderScene extends Phaser.Scene {
     create() {
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
-
         
         // @ts-ignore
         this.renderer.pipelines.add(PIPELINE_ENUMS.GREYSCALE_PIPELINE, new GreyscalePipeline(this.game));

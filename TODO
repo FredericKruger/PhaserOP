@@ -1,11 +1,32 @@
-# REFACTOR code
-    [x] REFACTOR CLIENT
-    [x] REFACTOR SERVER
+# REFACTOR CODE
+---
+- [x] Refactor Client code
+- [x] Refactor Server code
+- [ ] Add typescript document for all files
+- [ ] Typescript for Server
+- [ ] Typescript for Client
+
+# REDESIGN UI TO SCALE
+---
+- [ ] Main function and Phaser config
+- [ ] Login screen
+- [ ] Title screen
+- [ ] Collection Manager
+- [ ] Redesign Collection Book
 
 # WRITE OPEN PACK PANEL
-    [ ] Design ui
-    [ ] Write Server logic
+---
+- [x] Create Pack List in Server Object
+- [ ] Create Pack List Panel
+- [ ] Create Pack Opening Panel
+- [ ] Create Store Button
+- [ ] Create Back Button
+- [ ] Create Card Flip Animation
+- [ ] Write Server logic
+- [ ] Create Rarity Glow
+- [ ] Create Card Opening Animation
 
 # WRITE SHOP PANEL
-    [ ] Design ui
-    [ ] Write Server logic
+---
+- [ ] Design ui
+- [ ] Write Server logic

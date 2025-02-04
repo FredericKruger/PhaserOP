@@ -1,0 +1,10 @@
+{
+    "avatar":"icon1",
+    "firstLogin":false,
+    "berries":10000,
+    "packs": [
+        {"ST01": 0},
+        {"ST02": 3},
+        {"ST03": 1}
+    ]
+}
