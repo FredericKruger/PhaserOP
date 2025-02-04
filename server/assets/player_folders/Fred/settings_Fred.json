@@ -3,8 +3,17 @@
     "firstLogin":false,
     "berries":10000,
     "packs": [
-        {"ST01": 0},
-        {"ST02": 3},
-        {"ST03": 1}
+        {
+            "set":"OP01",
+            "amount":0
+        },
+        {
+            "set":"OP02",
+            "amount":2
+        },
+        {
+            "set":"OP03",
+            "amount":3
+        }
     ]
 }

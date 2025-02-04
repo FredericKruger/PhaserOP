@@ -13,9 +13,18 @@ class Utils {
             "firstLogin": true,
             "berries": 10000,
             "packs": [
-                {"ST01": 0},
-                {"ST02": 0},
-                {"ST03": 0}
+                {
+                    "set":"OP01",
+                    "amount":0
+                },
+                {
+                    "set":"OP02",
+                    "amount":0
+                },
+                {
+                    "set":"OP03",
+                    "amount":0
+                }
             ]
         };
         return defaultSettings;

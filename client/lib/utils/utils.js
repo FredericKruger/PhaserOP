@@ -66,4 +66,13 @@ class Utils {
         return `LEADER_${leaderArt}`;
     }
 
+    /**
+     * 
+     * @param {string} packArt 
+     * @returns string
+     */
+    getPackArt = function(packArt) {
+        return `PACK_ART_${packArt}`;
+    }
+
 }

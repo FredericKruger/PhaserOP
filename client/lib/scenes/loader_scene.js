@@ -42,7 +42,7 @@ class LoaderScene extends Phaser.Scene {
         percentText.setOrigin(0.5, 0.5);
 
         this.load.on('progress', function (value) {
-            percentText.setText(parseInt(value) * 100 + "%");
+            percentText.setText(parseInt(value * 100) + "%");
             progressBar.clear();
             progressBar.fillStyle(COLOR_ENUMS.OP_RED, 1);
             progressBar.fillRect(screenCenterX-150, screenCenterY+80, 300 * value, 30);
@@ -64,6 +64,7 @@ class LoaderScene extends Phaser.Scene {
 
         assetPath = 'assets/backgrounds/';
         this.load.image(ASSET_ENUMS.LEATHER_BACKGROUND, `${assetPath}/leather_background.jpg`);
+        this.load.image(ASSET_ENUMS.MAP_BACKGROUND, `${assetPath}/map_background.webp`);
         
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
@@ -234,10 +235,13 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_DESCRIPTION_ST02,  `${assetPath}/description_ST02.png`);
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_DESCRIPTION_ST03,  `${assetPath}/description_ST03.png`);
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_DESCRIPTION_ST04,  `${assetPath}/description_ST04.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_TITLE, `${assetPath}/openPackTitle.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_PLACEHOLDER, `${assetPath}/openPackPlaceholder.png`);	
 
         assetPath = 'assets/shaders';
         this.load.glsl(SHADER_ENUMS.GREYSCALE_SHADER, `${assetPath}/greyscale.frag`);
         this.load.glsl(SHADER_ENUMS.ORANGE_TO_PURPLE_SHADER, `${assetPath}/purpleToOrange.frag`);
+        this.load.glsl(SHADER_ENUMS.BLUE_TINT_SHADER, `${assetPath}/darkBlueTint.frag`);
         
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
@@ -259,6 +263,7 @@ class LoaderScene extends Phaser.Scene {
         this.renderer.pipelines.add(PIPELINE_ENUMS.GREYSCALE_PIPELINE, new GreyscalePipeline(this.game));
         // @ts-ignore
         this.renderer.pipelines.add(PIPELINE_ENUMS.PURPLE_TO_ORANGE_PIPELINE, new OrangeToPurplePipeline(this.game));
+        this.renderer.pipelines.add(PIPELINE_ENUMS.BLUE_TINT_PIPELINE, new BlueTintPipeline(this.game));
 
         let welcomeText = this.make.text({
             x : screenCenterX,
