@@ -70,6 +70,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
         this.load.image(ASSET_ENUMS.ARROW_LEFT, `${assetPath}/leftarrow.png`);
         this.load.image(ASSET_ENUMS.DELETE_ICON, `${assetPath}/deletedeckicon.png`);
+        this.load.image(ASSET_ENUMS.PACK_NUMBER_BANNER, `${assetPath}/numberBanner.png`);
 
         assetPath = "assets/icons/menuicons";
         this.load.image(ASSET_ENUMS.ICON_STORE, `${assetPath}/storeIcon.png`);
@@ -242,6 +243,9 @@ class LoaderScene extends Phaser.Scene {
         this.load.glsl(SHADER_ENUMS.GREYSCALE_SHADER, `${assetPath}/greyscale.frag`);
         this.load.glsl(SHADER_ENUMS.ORANGE_TO_PURPLE_SHADER, `${assetPath}/purpleToOrange.frag`);
         this.load.glsl(SHADER_ENUMS.BLUE_TINT_SHADER, `${assetPath}/darkBlueTint.frag`);
+        this.load.glsl(SHADER_ENUMS.GLOWING_BORDER_BLUE_SHADER, `${assetPath}/glowingBorderBlue.frag`);
+        this.load.glsl(SHADER_ENUMS.RIGHT_BORDER_RIPPED_SHADER, `${assetPath}/rightBorderRipped.frag`);
+        this.load.glsl(SHADER_ENUMS.LEFT_BORDER_RIPPED_SHADER, `${assetPath}/leftBorderRipped.frag`);
         
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
@@ -264,6 +268,9 @@ class LoaderScene extends Phaser.Scene {
         // @ts-ignore
         this.renderer.pipelines.add(PIPELINE_ENUMS.PURPLE_TO_ORANGE_PIPELINE, new OrangeToPurplePipeline(this.game));
         this.renderer.pipelines.add(PIPELINE_ENUMS.BLUE_TINT_PIPELINE, new BlueTintPipeline(this.game));
+        this.renderer.pipelines.add(PIPELINE_ENUMS.GLOWING_BORDER_BLUE_PIPELINE, new GlowingBorderBluePipeline(this.game));
+        this.renderer.pipelines.add(PIPELINE_ENUMS.RIGHT_BORDER_RIPPED_PIPELINE, new RightBorderRippedPipeline(this.game));
+        this.renderer.pipelines.add(PIPELINE_ENUMS.LEFT_BORDER_RIPPED_PIPELINE, new LeftBorderRippedPipeline(this.game));
 
         let welcomeText = this.make.text({
             x : screenCenterX,

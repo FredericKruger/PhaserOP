@@ -63,7 +63,7 @@ io.on('connection', function (/** @type {object} */ socket) {
             if(playerSetting === null) {
                 console.log("This is a new Player ! Need to create the settings file");
                 newPlayer = true;
-                playerSetting = serverInstance.util.createDefaultSetting();
+                playerSetting = serverInstance.util.createDefaultSettings();
 
                 await serverInstance.util.createPlayerFolder(username);
                 await serverInstance.util.savePlayerSettings(username, playerSetting);

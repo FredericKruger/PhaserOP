@@ -4,6 +4,15 @@ class PackOpeningScene extends Phaser.Scene {
         super({key: SCENE_ENUMS.PACK_OPENING});
 
         this.padding = 35;
+
+        this.packList = [];
+        this.packPlacehoderList = [];
+
+        this.selectedPack = null;
+
+        this.isDragging = false;
+
+        this.animationsProvider = new CardOpeningPanelAnimations(this);
     }
 
     create() {
@@ -62,6 +71,59 @@ class PackOpeningScene extends Phaser.Scene {
         this.packScrollPanel.setVisible(true);
 
         this.generatePacks();
+
+        this.cardPanel = new CardOpeningPanelCardPanel(this);
+
+        //Prepare Drag handlers
+        this.input.on('dragstart', (pointer, gameObject) => {
+            this.children.bringToTop(gameObject);
+            this.isDragging = true;
+            gameObject.showBanner(false);
+
+            this.placeholderImage.setPipeline(PIPELINE_ENUMS.GLOWING_BORDER_BLUE_PIPELINE);
+            this.circleGraphics.setPipeline(PIPELINE_ENUMS.GLOWING_BORDER_BLUE_PIPELINE);
+
+            this.packScrollPanel.removeElement(gameObject);
+            let worldCoord = this.packScrollPanel.convertToWorldPosition(gameObject.x, gameObject.y);
+            gameObject.x = worldCoord.x;
+            gameObject.y = worldCoord.y;
+        });
+
+        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+            let worldCoord = this.packScrollPanel.convertToWorldPosition(dragX, dragY);
+            gameObject.x = worldCoord.x;
+            gameObject.y = worldCoord.y;
+        });
+
+        this.input.on('dragend', (/** @type {{ upX: any; upY: any; }} */ pointer, /** @type {{ input: { dragStartX: any; dragStartY: any; }; deckCardListContainer: { deckDropZone: { getBounds: () => { (): any; new (): any; contains: { (arg0: any, arg1: any): any; new (): any; }; }; }; removeCardFromDeck: (arg0: any) => any; scrollContainer: { addElement: (arg0: DeckCardEntry) => void; }; }; entryIndex: any; setToLocalPosition: () => void; x: any; y: any; }} */ gameObject, /** @type {any} */ dropped) => {
+            if(!dropped) {
+                this.packScrollPanel.addElement(gameObject);
+                gameObject.setToLocalPosition();
+                gameObject.showBanner(true);
+                this.isDragging = false;
+
+                this.placeholderImage.resetPipeline();
+                this.circleGraphics.resetPipeline();
+            }
+        });
+
+        this.input.on('drop', (/** @type {any} */ pointer, /** @type {{ x: number; input: { dragStartX: number; dragStartY: number; }; y: number; }} */ gameObject, /** @type {{ getData: (arg0: string) => string; }} */ zone) => {
+            if(zone.getData('name') === 'packDropZone'){
+                this.isDragging = false;
+                this.selectedPack = gameObject;
+
+                //this.placeholderImage.resetPipeline();
+                //this.circleGraphics.resetPipeline();
+
+                this.movePackToPlaceholder();
+            }
+        });
+    }
+
+    update(time, delta) {
+        if(this.isDragging) {
+            this.placeholderImage.pipeline.set1f('time', time / 1000); // Update the time uniform
+        }
     }
 
     createPackPanel() {
@@ -163,22 +225,76 @@ class PackOpeningScene extends Phaser.Scene {
         this.placeholderImage.setMask(placeholderMaskImage.createBitmapMask());
         placeholderMaskImage.setVisible(false); // Hide the mask image
 
+        // Create a circle around the placeholder image
+        this.circleGraphics = this.add.graphics();
+        this.circleGraphics.lineStyle(12, COLOR_ENUMS.OP_ORANGE); // Set the line style (width and color)
+        this.circleGraphics.strokeCircle(
+            this.placeholderImage.x,
+            this.placeholderImage.y,
+            this.placeholderImage.displayWidth * 1.08 // Adjust the radius as needed
+        );
+        this.circleGraphics.setAlpha(0.4);
+
+        //Create Dropzone
+        this.dropZone = this.add.zone(
+            openingZonePanelBackground.x,
+            openingZonePanelBackground.y,
+            this.openingZoneSize.width,
+            this.openingZoneSize.height,
+        ).setRectangleDropZone(this.openingZoneSize.width, this.openingZoneSize.height);
+        this.dropZone.setData({ name: 'packDropZone'});    
     }
 
     generatePacks() {
+        this.packList = [];
+        this.packPlacehoderList = [];
+
         let validPackIndex = 0;
         for(let i = 0; i<GameClient.playerSettings.packs.length; i++) {
             let pack = GameClient.playerSettings.packs[i];
             if(pack.amount > 0) {
-                let packImage = this.add.image(0, 0, GameClient.utils.getPackArt(pack.set)).setOrigin(0.5).setScale(0.45);
-                let posY = 20 + (packImage.displayHeight + 10) * validPackIndex + packImage.displayHeight/2;
-                packImage.setPosition(this.packScrollPanelSize.width/2, posY);
-                packImage.setInteractive();
-                this.input.setDraggable(packImage);
-                this.packScrollPanel.addElement(packImage);
+                let packPlaceholderVisual = new PackVisual(this, 0, 0, pack.set, true, pack.amount, 0.45);
+                let packVisual = new PackVisual(this, 0, 0, pack.set, false, pack.amount, 0.45);
+                
+                let posY = 20 + (packVisual.displayHeight + 10) * validPackIndex + packVisual.displayHeight/2;
+                packVisual.updatePosition(this.packScrollPanelSize.width/2, posY);
+                packPlaceholderVisual.updatePosition(this.packScrollPanelSize.width/2, posY);
+
+                packVisual.setInteractive();
+                this.input.setDraggable(packVisual);
+
+                this.packScrollPanel.addElement(packPlaceholderVisual);
+                this.packScrollPanel.addElement(packVisual);
+
+                if(pack.amount < 1) packPlaceholderVisual.setVisible(false);
+
+                this.packList.push(packVisual);
+                this.packPlacehoderList.push(packPlaceholderVisual);
 
                 validPackIndex++;
             }
         }
+    }
+
+    movePackToPlaceholder() {
+        let completeFunction = () => {
+            this.openPack([1, 1, 1, 1, 1]);
+        };
+        
+        this.input.enabled = false; // Disable input while animating
+        this.animationsProvider.movePackToPlaceHolderAnimation(completeFunction, this.selectedPack, this.placeholderImage);
+    }
+
+    openPack(cardList) {
+        let completeFunction = (carList) => { 
+            this.showPack(carList);
+        }
+        this.animationsProvider.openPackAnimation(this.selectedPack, completeFunction, cardList);
+    }
+
+    showPack(cardList){
+        this.cardPanel.resetPanel();
+        this.cardPanel.showCards(cardList);
+        this.cardPanel.setVisible(true);
     }
 }

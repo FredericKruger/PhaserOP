@@ -74,5 +74,21 @@ class Utils {
     getPackArt = function(packArt) {
         return `PACK_ART_${packArt}`;
     }
+    
+    // Define a function to generate points for a spiral path
+    generateSpiralPath(startX, startY, endX, endY, startRadius, endRadius, turns, points) {
+        let pathPoints = [];
+        let angleStep = (Math.PI * 2 * turns) / points;
+        let radiusStep = (endRadius - startRadius) / points;
 
+        for (let i = 0; i <= points; i++) {
+            let angle = i * angleStep;
+            let radius = startRadius + i * radiusStep;
+            let x = endX + Math.cos(angle) * radius;
+            let y = endY + Math.sin(angle) * radius;
+            pathPoints.push(new Phaser.Math.Vector2(x, y));
+        }
+
+        return pathPoints;
+    }
 }

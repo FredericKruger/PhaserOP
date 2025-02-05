@@ -17,10 +17,12 @@
 # WRITE OPEN PACK PANEL
 ---
 - [x] Create Pack List in Server Object
-- [ ] Create Pack List Panel
-- [ ] Create Pack Opening Panel
-- [ ] Create Store Button
-- [ ] Create Back Button
+- [x] Create Pack List Panel
+- [x] Create Pack Opening Panel
+- [x] Create Store Button
+- [x] Create Back Button
+- [ ] Create Opening Logic
+- [ ] Create Card Panel
 - [ ] Create Card Flip Animation
 - [ ] Write Server logic
 - [ ] Create Rarity Glow
@@ -28,5 +30,13 @@
 
 # WRITE SHOP PANEL
 ---
-- [ ] Design ui
-- [ ] Write Server logic
+- [ ] Create UI items for Berrys
+- [ ] Create Shop Tabs for Packs and Decks
+- [ ] Create Item Panel for Tabs
+- [ ] Create Interactivity of shop Items
+- [ ] Create Server Logic for Card Transfer
+- [ ] Send Cards and Add to Collection
+- [ ] Send Packs to Settings
+---
+# IMPROVEMENTS
+- [ ] Create a manual log of loaded textures to avoid reloading while it already is loading
