@@ -155,4 +155,22 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
             }
         });
     }
+
+    burnCard() {
+        this.art.setPipeline(PIPELINE_ENUMS.BURNING_PIPELINE);
+
+        // Animate the burnAmount uniform to gradually increase the burn effect
+        this.scene.tweens.add({
+            targets: { burnAmount: 0 },
+            burnAmount: 1,
+            duration: 1000,
+            ease: 'Linear',
+            onUpdate: (tween) => {
+                this.art.pipeline.set1f('burnAmount', tween.getValue());
+            },
+            onComplete: () => {
+                this.destroy(); // Destroy the card after the burning effect
+            }
+        });
+    }
 }

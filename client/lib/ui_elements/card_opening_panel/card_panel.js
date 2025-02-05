@@ -9,17 +9,42 @@ class CardOpeningPanelCardPanel {
         this.scene = scene;
         this.obj = [];
 
-        this.doneButton = this.scene.add.image(this.scene.placeholderImage.x, this.scene.placeholderImage.y, ASSET_ENUMS.ICON_DONE);
+        this.doneButton = this.scene.add.image(this.scene.placeholderImage.x, this.scene.placeholderImage.y, ASSET_ENUMS.ICON_DONE).setScale(0.2);
         this.doneButton.setVisible(false);
+
+        //Create a glow
+        this.doneButton.preFX.setPadding(32);
+        const fx = this.doneButton.preFX.addGlow(COLOR_ENUMS.OP_BLUE, 4 ,0, false, 0.1, 32);
+        this.scene.tweens.add({
+            targets: fx,
+            outerStrength: 10,
+            duration:1000,
+            alpha:0.8,
+            ease: 'Sine.inout',
+            yoyo: true,
+            repeat: -1
+        });
+
+        this.doneButton.setInteractive();
+        this.doneButton.on('pointerdown', () => {
+            this.cleanUp();
+        });
+        this.doneButton.on('pointerover', () => {
+            this.doneButton.setScale(0.23);
+        });
+        this.doneButton.on('pointerout', () => { 
+            this.doneButton.setScale(0.2);
+        });
 
         this.setVisible(false);
     }
 
     resetPanel() {
         for(let o of this.obj) {
-            o.destroy();
+            o.burnCard();
         }
         this.obj = [];
+        this.doneButton.setVisible(false);
     }
 
     showCards(cardList) {
@@ -51,7 +76,8 @@ class CardOpeningPanelCardPanel {
             this.scene.tweens.add({
                 targets: cardVisual,
                 scale: { from: 0, to: 0.35 },
-                duration: 700,
+                duration: 400,
+                delay: i * 100, // Delay each card by 100ms
                 ease: 'Sine.easeInOut',
                 onComplete: () => {
                     this.setCardVisualInteractivity(cardVisual);
@@ -106,7 +132,11 @@ class CardOpeningPanelCardPanel {
             cardVisual.hideGlowEffect();
         });
         cardVisual.on('pointerdown', () => {
-            if(cardVisual.showingBack) cardVisual.flipCard();
+            if(cardVisual.showingBack) {
+                // TODO make intensity dependant on rarity
+                this.scene.cameras.main.shake(100, 0.01);
+                cardVisual.flipCard();
+            }
         });
     }
 
@@ -121,6 +151,11 @@ class CardOpeningPanelCardPanel {
         if(allFlipped) {
             this.doneButton.setVisible(true);
         }
+    }
+
+    cleanUp() {
+        this.resetPanel();
+        this.scene.completePackDrop();
     }
 
 }

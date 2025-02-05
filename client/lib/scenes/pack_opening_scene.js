@@ -24,7 +24,6 @@ class PackOpeningScene extends Phaser.Scene {
         // CREATE PACK LIST PANEL
         this.packPanelSize = {width: 250, height: this.cameras.main.height - this.padding*2};
         this.createPackPanel();
-        //this.generatePacks();
 
         // CREATE OPENING ZONE
         this.openingZoneSize = {width: this.cameras.main.width - this.packPanelSize.width - this.padding*3, height: this.cameras.main.height - this.padding*2};
@@ -98,7 +97,7 @@ class PackOpeningScene extends Phaser.Scene {
             if(!dropped) {
                 this.packScrollPanel.addElement(gameObject);
                 gameObject.setToLocalPosition();
-                gameObject.showBanner(true);
+                gameObject.updateAmount(gameObject.amount); //to reset the banner
                 this.isDragging = false;
 
                 this.stopDropZoneGlow();
@@ -303,6 +302,27 @@ class PackOpeningScene extends Phaser.Scene {
         }
     }
 
+    updatePackScrollPanel() {
+        let validPackIndex = 0;
+        for(let i = 0; i<this.packList.length; i++) {
+            let packPlaceholderVisual = this.packPlacehoderList[i];
+            let packVisual = this.packList[i];
+                
+            let posY = 20 + (packVisual.displayHeight + 10) * validPackIndex + packVisual.displayHeight/2;
+            
+            this.tweens.add({
+                targets: packVisual,
+                y: posY,
+                duration: 500,
+                delay: i*100,
+                ease: 'Sine.easeInOut',
+                onUpdate: () => {
+                    packPlaceholderVisual.y = packVisual.y;
+                }
+            });
+        }
+    }
+
     movePackToPlaceholder() {
         let completeFunction = () => {
             this.openPack([1, 45, 23, 12, 50]);
@@ -332,6 +352,7 @@ class PackOpeningScene extends Phaser.Scene {
     
             for(let pack of this.packList) {
                 pack.setInteractive();
+                this.input.setDraggable(pack);
             }
         } else {
             this.backButton.removeInteractive();
@@ -341,6 +362,47 @@ class PackOpeningScene extends Phaser.Scene {
                 pack.removeInteractive();
             }
         }
+    }
 
+    completePackDrop() {
+        let placeholder = this.packPlacehoderList[this.packList.indexOf(this.selectedPack)];
+        let amount = this.selectedPack.amount-1;
+        this.selectedPack.updateAmount(amount);
+        placeholder.updateAmount(amount-1);
+
+        this.isDragging = false;
+        this.stopDropZoneGlow();
+
+        console.log(amount);
+
+        //Reset position of pack if > 0
+        if(this.selectedPack.amount > 0){
+            this.selectedPack.angle = placeholder.angle;
+            this.selectedPack.scale = placeholder.scale;
+            
+            this.packScrollPanel.addElement(this.selectedPack);
+            this.selectedPack.setToLocalPosition();
+            this.selectedPack.setVisible(true);
+
+            //Hide placeholder if 1
+            if(this.selectedPack.amount === 1) placeholder.setVisible(false);
+        } else {         //Destroy placeholder and visual if 0 and remove from list
+            //remove from scrollpanel
+            this.packScrollPanel.removeElement(this.selectedPack);
+            this.packScrollPanel.removeElement(placeholder);
+
+            //remove from list
+            this.packList.splice(this.packList.indexOf(this.selectedPack), 1);
+            this.packPlacehoderList.splice(this.packPlacehoderList.indexOf(placeholder), 1);
+
+            //destroy element
+            this.selectedPack.destroy();
+            placeholder.destroy();
+
+            //update container
+            this.updatePackScrollPanel();
+        }
+        //Reset interactivity
+        this.setInteractivity(true);
     }
 }

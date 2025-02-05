@@ -248,6 +248,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.glsl(SHADER_ENUMS.GLOWING_BORDER_BLUE_SHADER, `${assetPath}/glowingBorderBlue.frag`);
         this.load.glsl(SHADER_ENUMS.RIGHT_BORDER_RIPPED_SHADER, `${assetPath}/rightBorderRipped.frag`);
         this.load.glsl(SHADER_ENUMS.LEFT_BORDER_RIPPED_SHADER, `${assetPath}/leftBorderRipped.frag`);
+        this.load.glsl(SHADER_ENUMS.BURNING_SHADER, `${assetPath}/burningshader.frag`);
         
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
@@ -273,6 +274,7 @@ class LoaderScene extends Phaser.Scene {
         this.renderer.pipelines.add(PIPELINE_ENUMS.GLOWING_BORDER_BLUE_PIPELINE, new GlowingBorderBluePipeline(this.game));
         this.renderer.pipelines.add(PIPELINE_ENUMS.RIGHT_BORDER_RIPPED_PIPELINE, new RightBorderRippedPipeline(this.game));
         this.renderer.pipelines.add(PIPELINE_ENUMS.LEFT_BORDER_RIPPED_PIPELINE, new LeftBorderRippedPipeline(this.game));
+        this.renderer.pipelines.add(PIPELINE_ENUMS.BURNING_PIPELINE, new BurningPipeline(this.game));
 
         let welcomeText = this.make.text({
             x : screenCenterX,

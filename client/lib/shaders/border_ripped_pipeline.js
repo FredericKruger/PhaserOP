@@ -25,3 +25,17 @@ class LeftBorderRippedPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePip
         });
     }
 }
+
+class BurningPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
+
+    /**
+     * 
+     * @param {Phaser.Game} game 
+     */
+    constructor(game) {
+        super({
+            game: game,
+            fragShader: game.cache.shader.get(SHADER_ENUMS.BURNING_SHADER).fragmentSrc
+        });
+    }
+}

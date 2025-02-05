@@ -51,6 +51,11 @@ class PackVisual extends Phaser.GameObjects.Container {
         this.showBanner(this.amount > 1);
     }
 
+    saveLocalPosition() {
+        this.localX = this.x;
+        this.localY = this.y;
+    }
+
     /** FUNCTION TO UPDATE THE NEW POSITION */
     updatePosition (newX, newY) {
         this.setPosition(newX, newY);

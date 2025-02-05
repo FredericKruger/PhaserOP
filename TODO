@@ -21,12 +21,13 @@
 - [x] Create Pack Opening Panel
 - [x] Create Store Button
 - [x] Create Back Button
-- [ ] Create Opening Logic
-- [ ] Create Card Panel
-- [ ] Create Card Flip Animation
+- [x] Create Opening Logic
+- [x] Create Card Panel
+- [x] Create Card Flip Animation
 - [ ] Write Server logic
-- [ ] Create Rarity Glow
-- [ ] Create Card Opening Animation
+- [x] Create Rarity Glow
+- [x] Create Card Opening Animation
+- [ ] Make intensity of screen shake variable on card flip
 
 # WRITE SHOP PANEL
 ---
