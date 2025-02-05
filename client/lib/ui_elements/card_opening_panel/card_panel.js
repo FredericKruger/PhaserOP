@@ -9,6 +9,9 @@ class CardOpeningPanelCardPanel {
         this.scene = scene;
         this.obj = [];
 
+        this.doneButton = this.scene.add.image(this.scene.placeholderImage.x, this.scene.placeholderImage.y, ASSET_ENUMS.ICON_DONE);
+        this.doneButton.setVisible(false);
+
         this.setVisible(false);
     }
 
@@ -38,35 +41,39 @@ class CardOpeningPanelCardPanel {
                 index: cardIndex,
                 art: card.art,
                 rarity: card.rarity,
-                scale: 0.35
+                newcard: card.amount === 0,
+                scale: 0
             });
             this.obj.push(cardVisual);
 
-            // Add floating effect
+            // Add appearance animation
+            //cardVisual.setScale(0); // Start with scale 0
             this.scene.tweens.add({
                 targets: cardVisual,
-                y: {
-                    value: y + Phaser.Math.Between(-5, 5), // Random vertical movement
-                    duration: Phaser.Math.Between(1500, 2500), // Random duration
-                    ease: 'Sine.easeInOut',
-                    yoyo: true,
-                    repeat: -1
-                },
-                x: {
-                    value: x + Phaser.Math.Between(-5, 5), // Random horizontal movement
-                    duration: Phaser.Math.Between(1500, 2500), // Random duration
-                    ease: 'Sine.easeInOut',
-                    yoyo: true,
-                    repeat: -1
+                scale: { from: 0, to: 0.35 },
+                duration: 700,
+                ease: 'Sine.easeInOut',
+                onComplete: () => {
+                    this.setCardVisualInteractivity(cardVisual);
+                    // Add floating effect
+                    this.scene.tweens.add({
+                        targets: cardVisual,
+                        y: {
+                            value: y + Phaser.Math.Between(-5, 5), // Random vertical movement
+                            duration: Phaser.Math.Between(1500, 2500), // Random duration
+                            ease: 'Sine.easeInOut',
+                            yoyo: true,
+                            repeat: -1
+                        },
+                        x: {
+                            value: x + Phaser.Math.Between(-5, 5), // Random horizontal movement
+                            duration: Phaser.Math.Between(1500, 2500), // Random duration
+                            ease: 'Sine.easeInOut',
+                            yoyo: true,
+                            repeat: -1
+                        }
+                    });
                 }
-            });
-
-            cardVisual.setInteractive();
-            cardVisual.on('pointerover', () => {
-                cardVisual.setScale(0.35);
-            });
-            cardVisual.on('pointerout', () => {
-                cardVisual.setScale(0.3);
             });
         }
     }
@@ -75,6 +82,44 @@ class CardOpeningPanelCardPanel {
     setVisible(visible) {
         for(let o of this.obj) {
             o.setVisible(visible);
+        }
+    }
+
+    setCardVisualInteractivity(cardVisual){
+        cardVisual.setInteractive();
+        cardVisual.on('pointerover', () => {
+            this.scene.tweens.add({
+                targets: cardVisual,
+                scale: 0.37,
+                duration: 200,
+                ease: 'Sine.easeInOut'
+            });
+            cardVisual.addGlowEffect();
+        });
+        cardVisual.on('pointerout', () => {
+            this.scene.tweens.add({
+                targets: cardVisual,
+                scale: 0.35,
+                duration: 200,
+                ease: 'Sine.easeInOut'
+            });
+            cardVisual.hideGlowEffect();
+        });
+        cardVisual.on('pointerdown', () => {
+            if(cardVisual.showingBack) cardVisual.flipCard();
+        });
+    }
+
+    checkAllCardsFlipped() {
+        let allFlipped = true;
+        for(let o of this.obj) {
+            if(!o.flipped) {
+                allFlipped = false;
+                break;
+            }
+        }
+        if(allFlipped) {
+            this.doneButton.setVisible(true);
         }
     }
 

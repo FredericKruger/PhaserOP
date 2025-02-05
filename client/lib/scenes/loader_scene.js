@@ -82,6 +82,8 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.ICON_COST, `${assetPath}/costIcon.png`);
         this.load.image(ASSET_ENUMS.ICON_COLLECTION_SET, `${assetPath}/collectionSetIcon.png`);
         this.load.image(ASSET_ENUMS.ICON_SEARCH, `${assetPath}/searchIcon.png`);
+        this.load.image(ASSET_ENUMS.ICON_NEW_CARD, `${assetPath}/newCardIcon.png`);
+        this.load.image(ASSET_ENUMS.ICON_DONE, `${assetPath}/doneIcon.png`);
 
         assetPath = "assets/icons/setfiltericons";
         this.load.image(ASSET_ENUMS.SET_FILTER_ALL, `${assetPath}/setFilterAll.png`);

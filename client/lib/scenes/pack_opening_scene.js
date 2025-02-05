@@ -42,7 +42,7 @@ class PackOpeningScene extends Phaser.Scene {
         this.storeButton.on('pointerout',  () => {this.storeButton.setScale(0.2)});
 
         // Create back button
-        let backButton = new Button({
+        this.backButton = new Button({
             scene: this,
             x: this.cameras.main.width - this.padding - 40, 
             y: this.cameras.main.height - this.padding - 15,
@@ -55,10 +55,10 @@ class PackOpeningScene extends Phaser.Scene {
             fontsize: 18,
             textColor: COLOR_ENUMS_CSS.OP_BLACK,
         });
-        backButton.setInteractive(true);
-        backButton.on('pointerover',  () => {backButton.setScale(1.1)});
-        backButton.on('pointerout',  () => {backButton.setScale(1)});
-        backButton.on('pointerdown', () => {this.scene.start(SCENE_ENUMS.TITLE)});
+        this.backButton.setInteractive(true);
+        this.backButton.on('pointerover',  () => {this.backButton.setScale(1.1)});
+        this.backButton.on('pointerout',  () => {this.backButton.setScale(1)});
+        this.backButton.on('pointerdown', () => {this.scene.start(SCENE_ENUMS.TITLE)});
 
         //Create scrollPanel
         this.packScrollPanelSize = {
@@ -80,8 +80,7 @@ class PackOpeningScene extends Phaser.Scene {
             this.isDragging = true;
             gameObject.showBanner(false);
 
-            this.placeholderImage.setPipeline(PIPELINE_ENUMS.GLOWING_BORDER_BLUE_PIPELINE);
-            this.circleGraphics.setPipeline(PIPELINE_ENUMS.GLOWING_BORDER_BLUE_PIPELINE);
+            this.startDropZoneGlow();
 
             this.packScrollPanel.removeElement(gameObject);
             let worldCoord = this.packScrollPanel.convertToWorldPosition(gameObject.x, gameObject.y);
@@ -102,8 +101,7 @@ class PackOpeningScene extends Phaser.Scene {
                 gameObject.showBanner(true);
                 this.isDragging = false;
 
-                this.placeholderImage.resetPipeline();
-                this.circleGraphics.resetPipeline();
+                this.stopDropZoneGlow();
             }
         });
 
@@ -111,9 +109,6 @@ class PackOpeningScene extends Phaser.Scene {
             if(zone.getData('name') === 'packDropZone'){
                 this.isDragging = false;
                 this.selectedPack = gameObject;
-
-                //this.placeholderImage.resetPipeline();
-                //this.circleGraphics.resetPipeline();
 
                 this.movePackToPlaceholder();
             }
@@ -213,7 +208,7 @@ class PackOpeningScene extends Phaser.Scene {
         );
 
         //Create placeholder image
-        this.placeholderImage = this.add.image(openingZonePanelBackground.x, openingZonePanelBackground.y, ASSET_ENUMS.IMAGE_PACK_OPEN_PLACEHOLDER).setOrigin(0.5).setScale(0.3).setAlpha(0.4);
+        this.placeholderImage = this.add.image(openingZonePanelBackground.x, openingZonePanelBackground.y, ASSET_ENUMS.IMAGE_PACK_OPEN_PLACEHOLDER).setOrigin(0.5).setScale(0.3).setAlpha(0.6);
         
         maskGraphics = this.make.graphics();
         maskGraphics.fillStyle(0xffffff);
@@ -227,7 +222,7 @@ class PackOpeningScene extends Phaser.Scene {
 
         // Create a circle around the placeholder image
         this.circleGraphics = this.add.graphics();
-        this.circleGraphics.lineStyle(12, COLOR_ENUMS.OP_ORANGE); // Set the line style (width and color)
+        this.circleGraphics.lineStyle(12, COLOR_ENUMS.OP_BLACK); // Set the line style (width and color)
         this.circleGraphics.strokeCircle(
             this.placeholderImage.x,
             this.placeholderImage.y,
@@ -243,6 +238,38 @@ class PackOpeningScene extends Phaser.Scene {
             this.openingZoneSize.height,
         ).setRectangleDropZone(this.openingZoneSize.width, this.openingZoneSize.height);
         this.dropZone.setData({ name: 'packDropZone'});    
+    }
+
+    startDropZoneGlow() {
+        this.placeholderImage.preFX.setPadding(32);
+        const placeholderImageFX = this.placeholderImage.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4 ,0, false, 0.1, 32);
+
+        this.tweens.add({
+            targets: placeholderImageFX,
+            outerStrength: 10,
+            duration:1000,
+            alpha:0.8,
+            ease: 'Sine.inout',
+            yoyo: true,
+            repeat: -1
+        });
+
+        const circleGraphicsFX = this.circleGraphics.postFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4 ,0, false, 0.1, 32);
+
+        this.tweens.add({
+            targets: circleGraphicsFX,
+            outerStrength: 10,
+            duration:1000,
+            alpha:0.8,
+            ease: 'Sine.inout',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    stopDropZoneGlow() {
+        this.placeholderImage.preFX.clear();
+        this.circleGraphics.postFX.clear();
     }
 
     generatePacks() {
@@ -278,10 +305,10 @@ class PackOpeningScene extends Phaser.Scene {
 
     movePackToPlaceholder() {
         let completeFunction = () => {
-            this.openPack([1, 1, 1, 1, 1]);
+            this.openPack([1, 45, 23, 12, 50]);
         };
         
-        this.input.enabled = false; // Disable input while animating
+        this.setInteractivity(false);
         this.animationsProvider.movePackToPlaceHolderAnimation(completeFunction, this.selectedPack, this.placeholderImage);
     }
 
@@ -296,5 +323,24 @@ class PackOpeningScene extends Phaser.Scene {
         this.cardPanel.resetPanel();
         this.cardPanel.showCards(cardList);
         this.cardPanel.setVisible(true);
+    }
+
+    setInteractivity(interactivity) {
+        if(interactivity) {
+            this.backButton.setInteractive();
+            this.storeButton.setInteractive();
+    
+            for(let pack of this.packList) {
+                pack.setInteractive();
+            }
+        } else {
+            this.backButton.removeInteractive();
+            this.storeButton.removeInteractive();
+    
+            for(let pack of this.packList) {
+                pack.removeInteractive();
+            }
+        }
+
     }
 }
