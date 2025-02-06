@@ -3,6 +3,10 @@ class LoginScene extends Phaser.Scene {
         super({key: SCENE_ENUMS.LOGIN});
     }
 
+    init(){
+        this.game.gameClient.loginScene = this;
+    }
+
     create() {
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -27,8 +31,6 @@ class LoginScene extends Phaser.Scene {
             let focusedElement = (document.activeElement);
             if(focusedElement === usernameElement) this.checkLogin(usernameElement);
         });
-
-        this.game.gameClient.loginScene = this;
     }
 
     checkLogin(inputUsername) {

@@ -9,6 +9,7 @@ class TitleScene extends Phaser.Scene {
     }
 
     init () {
+        this.game.gameClient.titleScene = this;
         this.game.gameClient.askPlayerDeckList();
     }
 
@@ -84,8 +85,6 @@ class TitleScene extends Phaser.Scene {
         this.playerAvatar.on('pointerover', () => this.playerAvatar.setScale(0.54));
         this.playerAvatar.on('pointerout', () => this.playerAvatar.setScale(0.5));
         this.playerAvatar.on('pointerdown', () => {this.scrollContainer.setVisible(!this.scrollContainer.isVisible)});
-
-        this.game.gameClient.titleScene = this;
 
         this.firstLoginPanel = null;
         if(this.game.gameClient.firstLogin) {
