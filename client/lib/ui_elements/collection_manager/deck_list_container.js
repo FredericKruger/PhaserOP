@@ -114,7 +114,7 @@ class DeckListContainer {
                     }),
             deckListContainer: this,
             update: function () {
-                this.obj.setVisible(GameClient.decklist.length<9);
+                this.obj.setVisible(this.obj.scene.game.gameClient.decklist.length<9);
                 
                 let numberdeck = this.deckListContainer.deckEntries.length;
                 let newY = this.deckListContainer.startY + numberdeck * GAME_ENUMS.DECK_ENTRY_HEIGHT + Math.max(numberdeck, 0) * GAME_ENUMS.DECK_ENTRY_INTERSPACE;
@@ -129,8 +129,8 @@ class DeckListContainer {
 
     /** FUNCTION INITIALISING THE DECK LIST */
     init() {
-        for(let i = 0; i<GameClient.decklist.length; i++){
-            let deckConfig = this.processDeck(GameClient.decklist[i], i);
+        for(let i = 0; i<this.scene.game.gameClient.decklist.length; i++){
+            let deckConfig = this.processDeck(this.scene.game.gameClient.decklist[i], i);
             this.addDeck(deckConfig);
         }
     }
@@ -166,8 +166,8 @@ class DeckListContainer {
     /** PROCESS DECK FROM DECKLIST */
     processDeck = function(deck, id) {
         let name = deck.name;
-        let colors = GameClient.playerCollection.cardCollection[deck.cards[0]-1].colors;
-        let leader = GameClient.playerCollection.cardCollection[deck.cards[0]-1].art;
+        let colors = this.scene.game.gameClient.playerCollection.cardCollection[deck.cards[0]-1].colors;
+        let leader = this.scene.game.gameClient.playerCollection.cardCollection[deck.cards[0]-1].art;
         let deckid = id;
 
         return {

@@ -5,17 +5,16 @@ class TitleScene extends Phaser.Scene {
         
         this.deckbuilderLoaded = false;
         this.deckselectionLoaded = false;
-        this.game = null;
         this.CardIndex = null;
     }
 
     init () {
-        GameClient.askPlayerDeckList();
+        this.game.gameClient.askPlayerDeckList();
     }
 
     preload () {
         let assetPath = 'assets/icons/playericons';
-        this.load.image(GameClient.playerSettings.avatar, `${assetPath}/${GameClient.playerSettings.avatar}.png`);   
+        this.load.image(this.game.gameClient.playerSettings.avatar, `${assetPath}/${this.game.gameClient.playerSettings.avatar}.png`);   
     }
 
     create () {
@@ -26,7 +25,7 @@ class TitleScene extends Phaser.Scene {
         this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND1).setScale(1);
         this.add.image(screenCenterX, screenCenterY-320, ASSET_ENUMS.LOGO).setOrigin(0.5, 0.5).setScale(1);
 
-        this.add.text(30 + this.avatarPortraitWidth, this.avatarPortraitWidth/2, "Welcome, " + GameClient.username, {
+        this.add.text(30 + this.avatarPortraitWidth, this.avatarPortraitWidth/2, "Welcome, " + this.game.gameClient.username, {
             fontFamily: 'Brandon',
             font: "16px monospace",
             color: COLOR_ENUMS_CSS.OP_CREAM
@@ -77,7 +76,7 @@ class TitleScene extends Phaser.Scene {
         let avatarX = 20 + this.avatarPortraitWidth/2;
         let avatarY = 20 + this.avatarPortraitWidth/2;
         this.add.circle(avatarX, avatarY, this.avatarPortraitWidth/2+1, COLOR_ENUMS.OP_WHITE, 1).setStrokeStyle(3, COLOR_ENUMS.OP_CREAM).setOrigin(0.5);
-        this.playerAvatar = this.add.image(avatarX, avatarY, GameClient.playerSettings.avatar).setOrigin(0.5).setScale(0.5);
+        this.playerAvatar = this.add.image(avatarX, avatarY, this.game.gameClient.playerSettings.avatar).setOrigin(0.5).setScale(0.5);
 
         this.createAvatarSelectionPanel();
 
@@ -86,10 +85,10 @@ class TitleScene extends Phaser.Scene {
         this.playerAvatar.on('pointerout', () => this.playerAvatar.setScale(0.5));
         this.playerAvatar.on('pointerdown', () => {this.scrollContainer.setVisible(!this.scrollContainer.isVisible)});
 
-        GameClient.titleScene = this;
+        this.game.gameClient.titleScene = this;
 
         this.firstLoginPanel = null;
-        if(GameClient.firstLogin) {
+        if(this.game.gameClient.firstLogin) {
             this.firstLoginPanel = new FirstLoginPanel(this, this.cameras.main.width/2, this.cameras.main.height/2);
             this.firstLoginPanel.launch();
         }
@@ -119,7 +118,7 @@ class TitleScene extends Phaser.Scene {
     }*/
 
     logout () {
-        GameClient.playerDisconnect();
+        this.game.gameClient.playerDisconnect();
     }
 
     loadLoginScreen() {
@@ -156,9 +155,9 @@ class TitleScene extends Phaser.Scene {
 
                 //Event for when an image is selected
                 image.on('pointerdown', (pointer) => {
-                    GameClient.playerSettings.avatar = image.texture.key;
+                    this.game.gameClient.playerSettings.avatar = image.texture.key;
                         this.playerAvatar.setTexture(image.texture.key);
-                        GameClient.updatePlayerSettings();
+                        this.game.gameClient.updatePlayerSettings();
                 });
                 this.scrollContainer.addElement(image);
             }

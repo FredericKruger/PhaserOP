@@ -149,7 +149,7 @@ class DeckCardListContainer {
     /** FUNCTION TO LOAD A DECK */
     loadDeck(deck) {
         for(let i = 0; i<deck.cards.length; i++){
-            this.currentDeck.addCard(GameClient.playerCollection.cardCollection[deck.cards[i]-1]);
+            this.currentDeck.addCard(this.scene.game.gameClient.playerCollection.cardCollection[deck.cards[i]-1]);
         }
         this.setDeckName(deck.name);
         this.updateDeckColors();
@@ -182,12 +182,12 @@ class DeckCardListContainer {
         if(this.currentDeck.colors.length === 0){
             this.decknameBackground.setBackgroundColor(COLOR_ENUMS.OP_ORANGE);
         } else {
-            this.setTypeImage(GameClient.utils.getCardSymbol(this.currentDeck.colors, 1));
+            this.setTypeImage(this.scene.game.utilFunctions.getCardSymbol(this.currentDeck.colors, 1));
 
             if(this.currentDeck.colors.length === 1) {
-                this.decknameBackground.setBackgroundColor(GameClient.utils.getCardColor(this.currentDeck.colors[0]));
+                this.decknameBackground.setBackgroundColor(this.scene.game.utilFunctions.getCardColor(this.currentDeck.colors[0]));
             } else {
-                this.getNameBackground().setDoubleBackgroundColor(GameClient.utils.getCardColor(this.currentDeck.colors[0]), GameClient.utils.getCardColor(this.currentDeck.colors[1]));
+                this.getNameBackground().setDoubleBackgroundColor(this.scene.game.utilFunctions.getCardColor(this.currentDeck.colors[0]), this.scene.game.utilFunctions.getCardColor(this.currentDeck.colors[1]));
             }
         }
     }
@@ -232,14 +232,14 @@ class DeckCardListContainer {
             width: DECKCARD_ENTRY_WIDTH,
             height: DECKCARD_ENTRY_HEIGHT,
             backgroundcolor: COLOR_ENUMS.OP_CREAM,
-            bordercolor: GameClient.utils.getCardColor(card.colors[0]),
+            bordercolor: this.scene.game.utilFunctions.getCardColor(card.colors[0]),
             name: cardname,
             amount: amount,
             art: card.art,
             cardtype: card.card,
-            type: GameClient.utils.getCardSymbol(card.colors, false),
-            cost: GameClient.utils.getCardCost(card.colors[0], card.cost),
-            attribute: GameClient.utils.getCardAttributeSymbol(card.attribute),
+            type: this.scene.game.utilFunctions.getCardSymbol(card.colors, false),
+            cost: this.scene.game.utilFunctions.getCardCost(card.colors[0], card.cost),
+            attribute: this.scene.game.utilFunctions.getCardAttributeSymbol(card.attribute),
             isleader: card.isleader
         }, this);
         //this.scrollContainer.add(deckEntry);

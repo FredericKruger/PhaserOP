@@ -23,7 +23,7 @@ class CollectionManagerScene extends Phaser.Scene {
     }
 
     init () {
-        this.pageMax = GameClient.playerCollection.filterCollection();
+        this.pageMax = this.game.gameClient.playerCollection.filterCollection();
     }
 
     preload () {
@@ -108,11 +108,11 @@ class CollectionManagerScene extends Phaser.Scene {
                 textObject.text = text;
             },
             onClose: function (/** @type {{ text: string; }} */ textObject) {
-                GameClient.playerCollection.removeFilter({type:'text',value:textObject.text});
+                this.game.gameClient.playerCollection.removeFilter({type:'text',value:textObject.text});
                 if(textObject.text === "") {
                     textObject.text = "Search";
                 } else {
-                    GameClient.playerCollection.addFilter({type:'text',value:textObject.text});
+                    this.game.gameClient.playerCollection.addFilter({type:'text',value:textObject.text});
                 } 
                 this.scene.collectionBook.updateMinMaxPage();
                 this.scene.collectionBook.updateCardVisuals(); 
@@ -204,7 +204,7 @@ class CollectionManagerScene extends Phaser.Scene {
 
     /** BACK TO TITLE FUNCTION */
     backToTitle() {
-        GameClient.askSavePlayerDecks();
+        this.game.gameClient.askSavePlayerDecks();
         this.scene.switch(SCENE_ENUMS.TITLE);
     }
 
@@ -233,27 +233,27 @@ class CollectionManagerScene extends Phaser.Scene {
         let currentDeck = this.deckCardListContainer.currentDeck;
         if(currentDeck.deckSize > 0){
             if(currentDeck.isNewDeck){ //1. Deck is a new deck
-                let deckId = GameClient.decklist.length;
+                let deckId = this.game.gameClient.decklist.length;
                 let deckname = this.deckCardListContainer.getDeckName();
                 let cards = currentDeck.getCardListAsJSON();
 
-                GameClient.decklist.push({
+                this.game.gameClient.decklist.push({
                     name: deckname,
                     cards: cards
                 });
                 
-                let deckconfig = this.deckListContainer.processDeck(GameClient.decklist[deckId], deckId);
+                let deckconfig = this.deckListContainer.processDeck(this.game.gameClient.decklist[deckId], deckId);
                 this.deckListContainer.addDeck(deckconfig);
 
             } else { //2. Deck already exists
                 let deckname = this.deckCardListContainer.getDeckName();
                 let cards = currentDeck.getCardListAsJSON();
                 
-                GameClient.decklist[this.selectedDeck].name = deckname;
-                GameClient.decklist[this.selectedDeck].cards = cards;
+                this.game.gameClient.decklist[this.selectedDeck].name = deckname;
+                this.game.gameClient.decklist[this.selectedDeck].cards = cards;
 
                 //update deckentry
-                let deckconfig = this.deckListContainer.processDeck(GameClient.decklist[this.selectedDeck], this.selectedDeck);
+                let deckconfig = this.deckListContainer.processDeck(this.game.gameClient.decklist[this.selectedDeck], this.selectedDeck);
                 this.deckListContainer.updateDeck(deckconfig);
             }
         } else {
@@ -270,7 +270,7 @@ class CollectionManagerScene extends Phaser.Scene {
         this.updateDeckColors();
 
         //Send to Server
-        GameClient.askSavePlayerDecks();
+        this.game.gameClient.askSavePlayerDecks();
     }
 
     /**
@@ -279,11 +279,11 @@ class CollectionManagerScene extends Phaser.Scene {
      */
     deleteDeck(deckid) {
         this.deckListContainer.deleteDeck(deckid);
-        GameClient.decklist.splice(deckid, 1); //remove the deck from the client as well
+        this.game.gameClient.decklist.splice(deckid, 1); //remove the deck from the client as well
         this.deckListContainer.updateEntryLayout();
 
         //Send to Server
-        GameClient.askSavePlayerDecks();
+        this.game.gameClient.askSavePlayerDecks();
     }
 
     /**
@@ -295,7 +295,7 @@ class CollectionManagerScene extends Phaser.Scene {
         let cardi = (this.collectionBook.currentColorPage-1) * GAME_ENUMS.MAX_CARDS_PER_PAGE + card;
 
         let resultCode = this.deckCardListContainer.currentDeck.addCard(
-            GameClient.playerCollection.getCardFromPage(this.collectionBook.selectedColor-1, cardi)
+            this.game.gameClient.playerCollection.getCardFromPage(this.collectionBook.selectedColor-1, cardi)
         );
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
@@ -342,7 +342,7 @@ class CollectionManagerScene extends Phaser.Scene {
      * @param {number} decki
      */
     loadDeck(decki) {
-        let deck = GameClient.decklist[decki];
+        let deck = this.game.gameClient.decklist[decki];
         this.deckCardListContainer.currentDeck = new Deck(false);
         this.selectedDeck = decki;
 

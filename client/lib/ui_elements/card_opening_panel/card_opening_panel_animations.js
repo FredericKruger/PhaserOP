@@ -14,7 +14,7 @@ class CardOpeningPanelAnimations {
         let targetScale = Math.min(scaleX, scaleY) * 0.95; // Slightly smaller to almost fit
 
         // Generate points for the spiral path
-        let spiralPoints = GameClient.utils.generateSpiralPath(startX, startY, targetX, targetY, 200, 0, 1, 100);
+        let spiralPoints = this.scene.game.utilFunctions.generateSpiralPath(startX, startY, targetX, targetY, 200, 0, 1, 100);
 
         // Define a control point for the Bezier curve
         let controlX = (startX + spiralPoints[0].x) / 2;

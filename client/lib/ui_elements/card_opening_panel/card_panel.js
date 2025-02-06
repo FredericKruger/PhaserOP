@@ -64,7 +64,7 @@ class CardOpeningPanelCardPanel {
 
         for(let i = 0; i<cardList.length; i++) {
             let cardIndex = cardList[i];
-            let card = GameClient.playerCollection.cardCollection[cardIndex - 1];
+            let card = this.scene.game.gameClient.playerCollection.cardCollection[cardIndex - 1];
             let angle = -60 + i * angleStep;
             let x = centerX + radius * Math.cos(angle);
             let y = centerY + radius * Math.sin(angle);
@@ -149,7 +149,7 @@ class CardOpeningPanelCardPanel {
         cardVisual.on('pointerdown', () => {
             if(cardVisual.showingBack) {
                 // TODO make intensity dependant on rarity
-                let intensity = GameClient.utils.getShakeIntensity(cardVisual.rarity);
+                let intensity = this.scene.game.utilFunctions.getShakeIntensity(cardVisual.rarity);
                 this.scene.cameras.main.shake(100, intensity);
                 cardVisual.flipCard();
             }

@@ -1,6 +1,5 @@
-const GameClient = new Client();
-
 window.onload = function() {
+    let GameClient = new Client();
 
     let Game = new Phaser.Game(
     {
@@ -20,6 +19,9 @@ window.onload = function() {
         }
     });
 
+    Game.gameClient = GameClient;
+    Game.utilFunctions = new Utils();
+
     Game.scene.add(SCENE_ENUMS.BACKGROUND_LOADER, BackgroundLoaderScene, false);
     Game.scene.add(SCENE_ENUMS.LOADER, LoaderScene, false);
     Game.scene.add(SCENE_ENUMS.LOGIN, LoginScene, false);
@@ -28,9 +30,7 @@ window.onload = function() {
     Game.scene.add(SCENE_ENUMS.PACK_OPENING, PackOpeningScene, false);
     Game.scene.start(SCENE_ENUMS.BACKGROUND_LOADER);
 
-    GameClient.game = Game;
-}
-
-window.onclose = function () {
-    GameClient.askDisconnect();
+    window.onclose = function () {
+        Game.gameClient.askDisconnect();
+    }
 }

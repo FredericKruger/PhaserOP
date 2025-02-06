@@ -12,11 +12,12 @@ class PackOpeningScene extends Phaser.Scene {
 
         this.isDragging = false;
 
-        GameClient.packOpeningScene = this;
         this.animationsProvider = new CardOpeningPanelAnimations(this);
     }
 
     create() {
+        this.game.gameClient.packOpeningScene = this;
+
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
@@ -277,8 +278,8 @@ class PackOpeningScene extends Phaser.Scene {
         this.packPlacehoderList = [];
 
         let validPackIndex = 0;
-        for(let i = 0; i<GameClient.playerSettings.packs.length; i++) {
-            let pack = GameClient.playerSettings.packs[i];
+        for(let i = 0; i<this.game.gameClient.playerSettings.packs.length; i++) {
+            let pack = this.game.gameClient.playerSettings.packs[i];
             if(pack.amount > 0) {
                 let packPlaceholderVisual = new PackVisual(this, 0, 0, pack.set, true, pack.amount, 0.45);
                 let packVisual = new PackVisual(this, 0, 0, pack.set, false, pack.amount, 0.45);
@@ -336,7 +337,7 @@ class PackOpeningScene extends Phaser.Scene {
      */
     movePackToPlaceholder() {
         let completeFunction = () => {
-            GameClient.requestOpenPack(this.selectedPack.set);
+            this.game.gameClient.requestOpenPack(this.selectedPack.set);
         };
         
         this.setInteractivity(false);

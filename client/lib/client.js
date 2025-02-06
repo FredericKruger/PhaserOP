@@ -15,8 +15,6 @@ class Client {
         //Connects to the server.
         // @ts-ignore
         this.socket = io.connect();
-        this.game = null; //No game initially
-        this.utils = new Utils();
 
         this.matchScene = null; //Store pointer for matchscene
         /** @type {LoginScene} */
@@ -84,7 +82,7 @@ class Client {
     askPlayerDeckList () {this.socket.emit('request_player_decklist');};
 
     /** Function that sends the server the player decks to save */
-    askSavePlayerDecks () {this.socket.emit('save_player_decklist', JSON.stringify(GameClient.decklist));};
+    askSavePlayerDecks () {this.socket.emit('save_player_decklist', JSON.stringify(this.decklist));};
 
     /** Function that connects a new player to the server */
     playerConnect () {this.socket.emit('player_connect', this.username);}

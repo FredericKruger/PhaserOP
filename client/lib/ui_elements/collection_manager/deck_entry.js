@@ -9,8 +9,8 @@ class DeckEntry extends Phaser.GameObjects.Container {
         this.width = config.width;
         this.height = config.height;
 
-        this.color1 = GameClient.utils.getCardColor(config.colors[0]);
-        this.color2 = config.colors.length > 1? GameClient.utils.getCardColor(config.colors[1]) : null;
+        this.color1 = this.scene.game.utilFunctions.getCardColor(config.colors[0]);
+        this.color2 = config.colors.length > 1? this.scene.game.utilFunctions.getCardColor(config.colors[1]) : null;
 
         this.numberCards = 0;
 
@@ -28,9 +28,9 @@ class DeckEntry extends Phaser.GameObjects.Container {
         }).setOrigin(0.5)
 
         /** Type icons */
-        this.typeImage = this.scene.add.image(this.background.x+this.background.width/2 - 30, this.background.y, GameClient.utils.getCardSymbol(config.colors, true)).setScale(0.6).setOrigin(0.5);
+        this.typeImage = this.scene.add.image(this.background.x+this.background.width/2 - 30, this.background.y, this.scene.game.utilFunctions.getCardSymbol(config.colors, true)).setScale(0.6).setOrigin(0.5);
         
-        this.leaderImage = this.scene.add.image(this.background.x-this.background.width/2 + 40, this.background.y, GameClient.utils.getLeaderArt(config.leaderArt)).setScale(0.5).setOrigin(0.5);
+        this.leaderImage = this.scene.add.image(this.background.x-this.background.width/2 + 40, this.background.y, this.scene.game.utilFunctions.getLeaderArt(config.leaderArt)).setScale(0.5).setOrigin(0.5);
 
         /** Text if there are missing cards */
         this.missingCardsText = this.scene.add.text(
@@ -107,14 +107,14 @@ class DeckEntry extends Phaser.GameObjects.Container {
 
     /** FUNCTION TO UPDATE THE DECK ENTRY INFORMATION */
     updateInfo(newInfo) {
-        this.color1 = GameClient.utils.getCardColor(newInfo.colors[0]);
-        this.color2 = newInfo.colors.length > 1? GameClient.utils.getCardColor(newInfo.colors[1]) : null;
+        this.color1 = this.scene.game.utilFunctions.getCardColor(newInfo.colors[0]);
+        this.color2 = newInfo.colors.length > 1? this.scene.game.utilFunctions.getCardColor(newInfo.colors[1]) : null;
 
         if(this.color2 !== null) this.background.setFillStyle(this.color1, this.color2, true);
         else this.background.setFillStyle(this.color1);
 
-        this.typeImage.setTexture(GameClient.utils.getCardSymbol(newInfo.colors, true));
-        this.leaderImage.setTexture(GameClient.utils.getLeaderArt(newInfo.leader));
+        this.typeImage.setTexture(this.scene.game.utilFunctions.getCardSymbol(newInfo.colors, true));
+        this.leaderImage.setTexture(this.scene.game.utilFunctions.getLeaderArt(newInfo.leader));
 
         this.deckname.text = newInfo.name;
 

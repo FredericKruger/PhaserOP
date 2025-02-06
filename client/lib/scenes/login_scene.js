@@ -28,15 +28,15 @@ class LoginScene extends Phaser.Scene {
             if(focusedElement === usernameElement) this.checkLogin(usernameElement);
         });
 
-        GameClient.loginScene = this;
+        this.game.gameClient.loginScene = this;
     }
 
     checkLogin(inputUsername) {
         //Have they entered anything ?
         if (inputUsername.value !== '') {
-            GameClient.username = inputUsername.value;
+            this.game.gameClient.username = inputUsername.value;
 
-            GameClient.playerConnect();
+            this.game.gameClient.playerConnect();
         } else {
             //Flash the prompt
             this.shakeLoginMenu();

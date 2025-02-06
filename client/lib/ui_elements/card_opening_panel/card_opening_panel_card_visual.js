@@ -62,7 +62,7 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
      * Function that adds a glowing effect around the card
      */
     addGlowEffect() {
-        let glowColor = GameClient.utils.getRarityColor(this.rarity);
+        let glowColor = this.scene.game.utilFunctions.getRarityColor(this.rarity);
 
         if(!this.isGlowing) {  
             if(this.showingBack) {
