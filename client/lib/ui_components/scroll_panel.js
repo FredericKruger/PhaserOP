@@ -65,7 +65,8 @@ class ScrollPanel{
 
     updateScrollcontainer() {
         this.scrollContainerMaxHeight = this.calculateScrollContainerHeight();
-        this.scrollContainer.y = Phaser.Math.Clamp(this.scrollContainer.y, this.scrollContainerPosition.y-Math.max((this.scrollContainerMaxHeight - this.scrollContainerHeight), 0), this.scrollContainerPosition.y);
+ 
+        this.scrollContainer.y = Phaser.Math.Clamp(this.scrollContainer.y, this.y - Math.max(this.scrollContainerMaxHeight-this.height, 0), this.y);
 
         //Update interactivity of objects in maskbound
         let maskBounds = {
@@ -94,7 +95,7 @@ class ScrollPanel{
         let maxHeight = 0;
     
         this.scrollContainer.each(function (child) {
-            let childBottom = child.y + (child.height || 0) * child.scaleY;
+            let childBottom = child.y + (child.displayHeight || 0);
             if (childBottom > maxHeight) {
                 maxHeight = childBottom;
             }

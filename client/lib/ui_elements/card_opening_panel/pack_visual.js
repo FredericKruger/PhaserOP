@@ -15,11 +15,12 @@ class PackVisual extends Phaser.GameObjects.Container {
 
         this.scene = scene;
         this.amount = amount;
+        this.set = set;
         this.isPlaceholder = isPlaceholder;
 
-        this.art = this.scene.add.image(0, 0, GameClient.utils.getPackArt(set));
+        this.art = this.scene.add.image(0, 0, GameClient.utils.getPackArt(set)).setOrigin(0.5, 0);
 
-        this.banner = this.scene.add.image(this.art.displayWidth/2 - 50, -this.art.displayHeight/2 - 2, ASSET_ENUMS.PACK_NUMBER_BANNER).setScale(1.2).setOrigin(0.5, 0); 
+        this.banner = this.scene.add.image(this.art.displayWidth/2 - 50, - 2, ASSET_ENUMS.PACK_NUMBER_BANNER).setScale(1.2).setOrigin(0.5, 0); 
         this.banner.setPipeline(PIPELINE_ENUMS.PURPLE_TO_ORANGE_PIPELINE);
         this.banner.setVisible(amount > 1);
 
@@ -34,7 +35,7 @@ class PackVisual extends Phaser.GameObjects.Container {
 
         this.setSize(this.art.displayWidth, this.art.displayHeight);
         this.setScale(scale);
-
+ 
         this.scene.add.existing(this);
 
         if(this.isPlaceholder) this.updateAmount(this.amount-1);

@@ -24,8 +24,9 @@
 - [x] Create Opening Logic
 - [x] Create Card Panel
 - [x] Create Card Flip Animation
-- [ ] Write Server logic
-- [x] Create Rarity Glow
+- [x] Write Server logic
+- [ ] Write Random Card Generation in Server
+- [ ] Create Rarity Glow
 - [x] Create Card Opening Animation
 - [ ] Make intensity of screen shake variable on card flip
 
@@ -38,6 +39,11 @@
 - [ ] Create Server Logic for Card Transfer
 - [ ] Send Cards and Add to Collection
 - [ ] Send Packs to Settings
----
+
 # IMPROVEMENTS
+---
+- [ ] Create Dynamic Texture Manager to manage loading
 - [ ] Create a manual log of loaded textures to avoid reloading while it already is loading
+- [ ] Assign GameClient to game object
+- [ ] Assign Util to game object
+- [ ] Assign Texture Manager to game object6

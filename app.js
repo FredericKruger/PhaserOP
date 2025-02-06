@@ -5,7 +5,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 const ServerInstance = require('./server/lib/server_instance.js');
-const Player = require('./server/lib/player.js');
+const Player = require('./server/lib/game_objects/player.js');
 
 //On start create a new server instance
 const serverInstance = new ServerInstance(__dirname);
@@ -72,7 +72,7 @@ io.on('connection', function (/** @type {object} */ socket) {
             }
 
             /** Update serverside information */
-            socket.player.loadCollection(serverInstance.cardIndex, playerCollection);
+            socket.player.collection.loadCollection(serverInstance.cardIndex, playerCollection);
             socket.player.setDeckList(playerDecklist);
             socket.player.setSettings(playerSetting);
 
@@ -90,7 +90,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     /** When a player disconnects */
     socket.on('player_disconnect', () => {
         //save all data
-        serverInstance.util.savePlayerCollection(socket.player.username, socket.player.collectionToJSON());
+        serverInstance.util.savePlayerCollection(socket.player.username, socket.player.collection.collectionToJSON());
         serverInstance.util.savePlayerSettings(socket.player.username, socket.player.settings);
         serverInstance.util.savePlayerDecklist(socket.player.username, socket.player.decklist);
 
@@ -103,6 +103,9 @@ io.on('connection', function (/** @type {object} */ socket) {
      * Call the sendAIDecklist - Might need to be adjusted with promises
     */
     socket.on('request_ai_decklist', () => { /*sendAIDeckList();*/ });
+
+    /** When the player request to open a pack */
+    socket.on('open_pack', (set) => {socket.player.openPack(set);});
 
     /** When the players request their decklists
      * Requires the player's username
@@ -126,14 +129,14 @@ io.on('connection', function (/** @type {object} */ socket) {
             const preconstructedDeck = await serverInstance.util.getPreconstructedDecks(deckName);
              
             //Add cards to player collection
-            socket.player.addToCollection(preconstructedDeck.cards);
+            socket.player.collection.addToCollection(preconstructedDeck.cards);
     
             //Add deck to decklist if possible
             let addedToDecklist = socket.player.addToDecklist(preconstructedDeck);
     
             //update client side data
             if(addedToDecklist) socket.emit('update_player_decklist', JSON.stringify(socket.player.decklist));
-            socket.emit('update_player_collection', JSON.stringify(socket.player.collectionToJSON()));
+            socket.emit('update_player_collection', JSON.stringify(socket.player.collection.collectionToJSON()));
             socket.emit('first_login_complete');
         } catch (error) {
             console.error('Error unlocking deck:', error);

@@ -19,8 +19,12 @@ class Client {
         this.utils = new Utils();
 
         this.matchScene = null; //Store pointer for matchscene
+        /** @type {LoginScene} */
         this.loginScene = null; //Store pointer to loginScene
+        /** @type {TitleScene} */
         this.titleScene = null; //Store pointer to titleScene
+        /** @type {PackOpeningScene} */
+        this.packOpeningScene = null; //Store pointer to packOpeningScene
 
         //To help scene initialisation
         this.player1NumberCards = null;
@@ -53,20 +57,28 @@ class Client {
          * decklist: JSON object containing the player decklist
         */
         this.socket.on('update_player_decklist', (deckList) => {this.decklist = JSON.parse(deckList);});
-
         /** Signal to update collection */
         this.socket.on('update_player_collection', (collection) => {
             collection = JSON.parse(collection);
             this.playerCollection.updateCollection(collection);
             this.playerCollection.filterCollection();
         });
+        /** Signal to update the settings */
+        this.socket.on('update_player_settings', (settings) => {this.playerSettings = settings;});
+
+        /** PACK OPENING LISTENERS */
+        this.socket.on('pack_opened', (cardList) => {this.packOpeningScene.openPack(cardList);});
+        this.socket.on('pack_open_failed', (message) => {this.packOpeningScene.packOpenFailed(message);});
     }
 
     /** Function that tells the server a new deck was chosen */
     addDeckToCollection (deckName) {this.socket.emit('unlock_deck', deckName);}
 
     /** Function that tells the server the main player disconnected */
-    askDisconnect () {this.socket.emit('disconnect');}; 
+    askDisconnect () {this.socket.emit('disconnect');};
+    
+    /** Function that tells the server the main player wants to open the pack */
+    requestOpenPack (set) {this.socket.emit('open_pack', set);};
     
     /** Function that asks the server for the player decklists */
     askPlayerDeckList () {this.socket.emit('request_player_decklist');};

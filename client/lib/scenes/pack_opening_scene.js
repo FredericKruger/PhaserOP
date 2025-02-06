@@ -12,6 +12,7 @@ class PackOpeningScene extends Phaser.Scene {
 
         this.isDragging = false;
 
+        GameClient.packOpeningScene = this;
         this.animationsProvider = new CardOpeningPanelAnimations(this);
     }
 
@@ -62,9 +63,9 @@ class PackOpeningScene extends Phaser.Scene {
         //Create scrollPanel
         this.packScrollPanelSize = {
             width: this.packPanelSize.width, 
-            height: this.packPanelSize.height - this.padding - this.storeButton.displayHeight,
+            height: this.packPanelSize.height - this.storeButton.displayHeight - 20,
             x: this.padding,
-            y: this.padding
+            y: this.padding + 10
         };
         this.packScrollPanel = new ScrollPanel(this, this.packScrollPanelSize.x, this.packScrollPanelSize.y, this.packScrollPanelSize.width, this.packScrollPanelSize.height, false);
         this.packScrollPanel.setVisible(true);
@@ -282,7 +283,7 @@ class PackOpeningScene extends Phaser.Scene {
                 let packPlaceholderVisual = new PackVisual(this, 0, 0, pack.set, true, pack.amount, 0.45);
                 let packVisual = new PackVisual(this, 0, 0, pack.set, false, pack.amount, 0.45);
                 
-                let posY = 20 + (packVisual.displayHeight + 10) * validPackIndex + packVisual.displayHeight/2;
+                let posY = (packVisual.displayHeight + 10) * validPackIndex; // + packVisual.displayHeight/2;
                 packVisual.updatePosition(this.packScrollPanelSize.width/2, posY);
                 packPlaceholderVisual.updatePosition(this.packScrollPanelSize.width/2, posY);
 
@@ -292,7 +293,7 @@ class PackOpeningScene extends Phaser.Scene {
                 this.packScrollPanel.addElement(packPlaceholderVisual);
                 this.packScrollPanel.addElement(packVisual);
 
-                if(pack.amount < 1) packPlaceholderVisual.setVisible(false);
+                if(pack.amount <= 1) packPlaceholderVisual.setVisible(false);
 
                 this.packList.push(packVisual);
                 this.packPlacehoderList.push(packPlaceholderVisual);
@@ -308,7 +309,7 @@ class PackOpeningScene extends Phaser.Scene {
             let packPlaceholderVisual = this.packPlacehoderList[i];
             let packVisual = this.packList[i];
                 
-            let posY = 20 + (packVisual.displayHeight + 10) * validPackIndex + packVisual.displayHeight/2;
+            let posY = (packVisual.displayHeight + 10) * validPackIndex + packVisual.displayHeight/2;
             
             this.tweens.add({
                 targets: packVisual,
@@ -318,20 +319,34 @@ class PackOpeningScene extends Phaser.Scene {
                 ease: 'Sine.easeInOut',
                 onUpdate: () => {
                     packPlaceholderVisual.y = packVisual.y;
+                },
+                onComplete: () => {
+                    packPlaceholderVisual.saveLocalPosition();
+                    packVisual.saveLocalPosition();
                 }
             });
+
+            validPackIndex = validPackIndex + 1;
         }
     }
 
+    /**
+     * Function that prepares the animation to move the pack to the card placeholder at the center of the panel.
+     * It provides a callback to call at the end of the animation
+     */
     movePackToPlaceholder() {
         let completeFunction = () => {
-            this.openPack([1, 45, 23, 12, 50]);
+            GameClient.requestOpenPack(this.selectedPack.set);
         };
         
         this.setInteractivity(false);
         this.animationsProvider.movePackToPlaceHolderAnimation(completeFunction, this.selectedPack, this.placeholderImage);
     }
 
+    /**
+     * Function to open a pack. Starts with creating the open pack animation and creating a callback
+     * @param {Array<number>} cardList 
+     */
     openPack(cardList) {
         let completeFunction = (carList) => { 
             this.showPack(carList);
@@ -339,12 +354,20 @@ class PackOpeningScene extends Phaser.Scene {
         this.animationsProvider.openPackAnimation(this.selectedPack, completeFunction, cardList);
     }
 
+    /**
+     * Function that will prepare the cardPanel to show the cards
+     * @param {Array<number>} cardList 
+     */
     showPack(cardList){
         this.cardPanel.resetPanel();
         this.cardPanel.showCards(cardList);
         this.cardPanel.setVisible(true);
     }
 
+    /**
+     * Function that sets and removes the interactivity of the buttons and packs from the scene while cards are being shown
+     * @param {boolean} interactivity 
+     */
     setInteractivity(interactivity) {
         if(interactivity) {
             this.backButton.setInteractive();
@@ -373,8 +396,6 @@ class PackOpeningScene extends Phaser.Scene {
         this.isDragging = false;
         this.stopDropZoneGlow();
 
-        console.log(amount);
-
         //Reset position of pack if > 0
         if(this.selectedPack.amount > 0){
             this.selectedPack.angle = placeholder.angle;
@@ -402,6 +423,25 @@ class PackOpeningScene extends Phaser.Scene {
             //update container
             this.updatePackScrollPanel();
         }
+        //Reset interactivity
+        this.setInteractivity(true);
+    }
+
+    /**
+     * Function that handles when a pack could not be opened by the server
+     * @param {string} message 
+     */
+    packOpenFailed(message) {
+        this.isDragging = false;
+        this.stopDropZoneGlow();
+
+        this.selectedPack.angle = placeholder.angle;
+        this.selectedPack.scale = placeholder.scale;
+        
+        this.packScrollPanel.addElement(this.selectedPack);
+        this.selectedPack.setToLocalPosition();
+        this.selectedPack.setVisible(true);
+
         //Reset interactivity
         this.setInteractivity(true);
     }
