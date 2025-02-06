@@ -26,7 +26,6 @@ class CardOpeningPanelAnimations {
         for (let i = 1; i < spiralPoints.length; i++) {
             path.lineTo(spiralPoints[i].x, spiralPoints[i].y);
         }
-        
 
         // Create a PathFollower to follow the path
         let follower = this.scene.add.follower(path, startX, startY, targetObject.art.texture.key);

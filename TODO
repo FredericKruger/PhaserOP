@@ -25,10 +25,10 @@
 - [x] Create Card Panel
 - [x] Create Card Flip Animation
 - [x] Write Server logic
-- [ ] Write Random Card Generation in Server
-- [ ] Create Rarity Glow
+- [x] Write Random Card Generation in Server
+- [x] Create Rarity Glow
 - [x] Create Card Opening Animation
-- [ ] Make intensity of screen shake variable on card flip
+- [x] Make intensity of screen shake variable on card flip
 
 # WRITE SHOP PANEL
 ---

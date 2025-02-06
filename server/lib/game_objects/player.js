@@ -1,5 +1,6 @@
 const ServerInstance = require("../server_instance");
 const CardCollection = require("./card_collection");
+const CardPack = require("./card_packs");
 
 class Player {
     /** CONSTRUCTOR
@@ -55,7 +56,7 @@ class Player {
             pack.amount--;
 
             //get cards
-            let cardList = [5, 78, 5, 69, 8];
+            let cardList = new CardPack().getCardsFromPack(this.server, set);
             
             //update collection with new cards
             this.socket.player.collection.addToCollection(cardList);

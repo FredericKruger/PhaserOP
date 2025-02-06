@@ -75,7 +75,83 @@ class Utils {
         return `PACK_ART_${packArt}`;
     }
     
-    // Define a function to generate points for a spiral path
+    /**
+     * Returns the glow color
+     * @param {string} rarity 
+     * @returns 
+     */
+    getRarityColor = function(rarity) {
+        let glowColor = null;
+        switch (rarity) {
+            case 'COMMON':
+                glowColor = COLOR_ENUMS.OP_WHITE;
+                break;
+            case 'UNCOMMON':
+                glowColor = COLOR_ENUMS.OP_GREEN;
+                break;
+            case 'RARE':
+                glowColor = COLOR_ENUMS.OP_BLUE;
+                break;
+            case 'SUPER RARE':
+                glowColor = COLOR_ENUMS.OP_PURPLE; // Gold glow for legendary
+                break;
+            case 'LEADER':
+                glowColor = COLOR_ENUMS.OP_ORANGE;
+                break; // Gold glow for legendary
+            case 'SECRET RARE':
+                glowColor = COLOR_ENUMS.OP_GOLD; // Gold glow for legendary
+                break;
+            default:
+                glowColor = COLOR_ENUMS.OP_WHITE; // Default white glow
+        }
+        return glowColor;
+    }
+
+    /**
+     * Returns the glow color
+     * @param {string} rarity 
+     * @returns 
+     */
+    getShakeIntensity = function(rarity) {
+        let intensity = 0;
+        switch (rarity) {
+            case 'COMMON':
+                intensity = 0.01;
+                break;
+            case 'UNCOMMON':
+                intensity = 0.025;
+                break;
+            case 'RARE':
+                intensity = 0.05;
+                break;
+            case 'SUPER RARE':
+                intensity = 0.075; // Gold glow for legendary
+                break;
+            case 'LEADER':
+                intensity = 0.1;
+                break; // Gold glow for legendary
+            case 'SECRET RARE':
+                intensity = 0.2; // Gold glow for legendary
+                break;
+            default:
+                intensity = 0.01; // Default white glow
+        }
+        return intensity;
+    }
+
+    /**
+     * Function that creates a spiral path from a start to an end target with various radius given an amount of turns.
+     * Points will allow to determine the smoothness of the curve
+     * @param {number} startX 
+     * @param {number} startY 
+     * @param {number} endX 
+     * @param {number} endY 
+     * @param {number} startRadius 
+     * @param {number} endRadius 
+     * @param {number} turns 
+     * @param {number} points 
+     * @returns 
+     */
     generateSpiralPath(startX, startY, endX, endY, startRadius, endRadius, turns, points) {
         let pathPoints = [];
         let angleStep = (Math.PI * 2 * turns) / points;

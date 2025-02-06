@@ -283,7 +283,7 @@ class PackOpeningScene extends Phaser.Scene {
                 let packPlaceholderVisual = new PackVisual(this, 0, 0, pack.set, true, pack.amount, 0.45);
                 let packVisual = new PackVisual(this, 0, 0, pack.set, false, pack.amount, 0.45);
                 
-                let posY = (packVisual.displayHeight + 10) * validPackIndex; // + packVisual.displayHeight/2;
+                let posY = (packVisual.displayHeight + 10) * validPackIndex + packVisual.displayHeight/2;
                 packVisual.updatePosition(this.packScrollPanelSize.width/2, posY);
                 packPlaceholderVisual.updatePosition(this.packScrollPanelSize.width/2, posY);
 

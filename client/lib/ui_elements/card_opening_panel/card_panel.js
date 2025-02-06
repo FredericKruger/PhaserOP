@@ -7,6 +7,7 @@ class CardOpeningPanelCardPanel {
     constructor(scene) {
         /** @type {PackOpeningScene} */
         this.scene = scene;
+        /** @type {Array<CardOpeningPanelCardVisual} */
         this.obj = [];
 
         this.doneButton = this.scene.add.image(this.scene.placeholderImage.x, this.scene.placeholderImage.y, ASSET_ENUMS.ICON_DONE).setScale(0.2);
@@ -39,6 +40,9 @@ class CardOpeningPanelCardPanel {
         this.setVisible(false);
     }
 
+    /** Reset the panel at the end of the opening
+     * Create burn animation for the card, delete the obj arrive and render the done button invisible
+     */
     resetPanel() {
         for(let o of this.obj) {
             o.burnCard();
@@ -47,6 +51,11 @@ class CardOpeningPanelCardPanel {
         this.doneButton.setVisible(false);
     }
 
+    /**
+     * Function to display the cards in the panel
+     * Position the card and give it a floating effect
+     * @param {Array<number>} cardList 
+     */
     showCards(cardList) {
         const centerX = this.scene.placeholderImage.x;
         const centerY = this.scene.placeholderImage.y;
@@ -72,7 +81,6 @@ class CardOpeningPanelCardPanel {
             this.obj.push(cardVisual);
 
             // Add appearance animation
-            //cardVisual.setScale(0); // Start with scale 0
             this.scene.tweens.add({
                 targets: cardVisual,
                 scale: { from: 0, to: 0.35 },
@@ -104,13 +112,20 @@ class CardOpeningPanelCardPanel {
         }
     }
 
-    // function to show visibility of the card panel
+    /**
+     * function to show visibility of the card panel
+     * @param {boolean} visible 
+     */
     setVisible(visible) {
         for(let o of this.obj) {
             o.setVisible(visible);
         }
     }
 
+    /**
+     * Function to make the cardVisual interactive
+     * @param {CardOpeningPanelCardVisual} cardVisual 
+     */
     setCardVisualInteractivity(cardVisual){
         cardVisual.setInteractive();
         cardVisual.on('pointerover', () => {
@@ -134,12 +149,16 @@ class CardOpeningPanelCardPanel {
         cardVisual.on('pointerdown', () => {
             if(cardVisual.showingBack) {
                 // TODO make intensity dependant on rarity
-                this.scene.cameras.main.shake(100, 0.01);
+                let intensity = GameClient.utils.getShakeIntensity(cardVisual.rarity);
+                this.scene.cameras.main.shake(100, intensity);
                 cardVisual.flipCard();
             }
         });
     }
 
+    /** 
+     * Function that checks if all the cards have been flipped 
+     */
     checkAllCardsFlipped() {
         let allFlipped = true;
         for(let o of this.obj) {
@@ -153,6 +172,9 @@ class CardOpeningPanelCardPanel {
         }
     }
 
+    /** Function called when the done button has been pressed 
+     * 
+    */
     cleanUp() {
         this.resetPanel();
         this.scene.completePackDrop();

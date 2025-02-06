@@ -1,5 +1,10 @@
 class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
 
+    /**
+     * 
+     * @param {PackOpeningScene} scene 
+     * @param {*} config 
+     */
     constructor (scene, config) {
         super(scene, config.x, config.y);
 
@@ -37,7 +42,9 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
         this.setUpdate();
     }
 
-    /** Update the content of the card */
+    /** 
+     * Update the content of the card 
+     * */
     setUpdate () {
         let loader = new Phaser.Loader.LoaderPlugin(this.scene); //create a loader 
         if(!this.scene.textures.exists(this.artKey)) {
@@ -51,27 +58,11 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
         }
     }
 
+    /** 
+     * Function that adds a glowing effect around the card
+     */
     addGlowEffect() {
-        let glowColor;
-        switch (this.rarity) {
-            case 'COMMON':
-                glowColor = 0xffffff; // White glow for common
-                break;
-            case 'UNCOMMON':
-                glowColor = 0x0000ff; // Blue glow for rare
-                break;
-            case 'RARE':
-                glowColor = 0x800080; // Purple glow for epic
-                break;
-            case 'SUPER RARE':
-                glowColor = 0xffd700; // Gold glow for legendary
-                break;
-            case 'LEADER':
-                glowColor = COLOR_ENUMS.OP_GOLD; // Gold glow for legendary
-                break;
-            default:
-                glowColor = 0xffffff; // Default white glow
-        }
+        let glowColor = GameClient.utils.getRarityColor(this.rarity);
 
         if(!this.isGlowing) {  
             if(this.showingBack) {
@@ -106,6 +97,9 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
         }
     }
 
+    /**
+     * Function that hides the card's glow effect
+     */
     hideGlowEffect() {
         if(this.showingBack){
             this.backart.preFX.clear();
@@ -119,15 +113,25 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
         }
     }
 
+    /**
+     * Function that returns the container's width
+     * @returns number
+     */
     getWidth () {
         return this.width * this.scale;
     }
 
+    /**
+     * Function that returns the container's height
+     * @returns number
+     */
     getHeight () {
         return this.height * this.scale;
     }
 
-    /** Flip the card to reveal the art */
+    /** Flip the card to reveal the art
+     * 
+     */
     flipCard() {
         this.scene.tweens.add({
             targets: this.backart,
@@ -156,6 +160,9 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
         });
     }
 
+    /**
+     * Function that starts a pipline to burn the card
+     */
     burnCard() {
         this.art.setPipeline(PIPELINE_ENUMS.BURNING_PIPELINE);
 

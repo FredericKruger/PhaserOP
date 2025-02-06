@@ -95,7 +95,7 @@ class ScrollPanel{
         let maxHeight = 0;
     
         this.scrollContainer.each(function (child) {
-            let childBottom = child.y + (child.displayHeight || 0);
+            let childBottom = child.y + (child.displayHeight || 0) * (1-child.originY);
             if (childBottom > maxHeight) {
                 maxHeight = childBottom;
             }
