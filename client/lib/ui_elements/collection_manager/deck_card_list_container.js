@@ -155,24 +155,23 @@ class DeckCardListContainer {
         this.updateDeckColors();
 
         /** Preload Card Art if not loaded yet */
-        let loader = new Phaser.Loader.LoaderPlugin(this.scene); // create a loader
-        for(let i=0; i<this.currentDeck.cards.length; i++) {
-            let cardArtKey = `deckentry_${this.currentDeck.cards[i].cardData.art}`;
-            let nbLoads = 0;
-            if(!this.scene.textures.exists(cardArtKey)) {
-                loader.image(cardArtKey, `assets/deckentryart/${cardArtKey}.png`); // load image
-                nbLoads++;
-            } 
-        }
-        loader.once(Phaser.Loader.Events.COMPLETE, () => {
+        let textures = [];
+        let callback = () => {
             for(let i=0; i<this.currentDeck.cards.length; i++){
                 let ci = this.currentDeck.cards[i].cardData;
                 this.currentDeck.cards[i].setPlaceholderEntry(this.createDeckCardEntry(ci, i, true, this.currentDeck.cards[i].amount));
                 this.currentDeck.cards[i].setDeckbuilderEntry(this.createDeckCardEntry(ci, i, false, this.currentDeck.cards[i].amount));
             }
             this.updateDeckCardEntries();
-        });
-        loader.start();
+        }
+        for(let i=0; i<this.currentDeck.cards.length; i++) {
+            let cardArtKey = `deckentry_${this.currentDeck.cards[i].cardData.art}`;
+            textures.push({
+                key: cardArtKey,
+                path: `assets/deckentryart/${cardArtKey}.png`
+            }); 
+        }
+        this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));
     }
 
     /** FUNCTION TO UPDATE THE DECK TYPE */

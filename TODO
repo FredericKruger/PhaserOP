@@ -14,6 +14,10 @@
 - [ ] Collection Manager
 - [ ] Redesign Collection Book
 
+# WRITE COLLECTION BOOK
+---
+- [ ] Refactor Tooltip to be permanent and not destroyed (causes bugs)
+
 # WRITE OPEN PACK PANEL
 ---
 - [x] Create Pack List in Server Object
@@ -42,8 +46,8 @@
 
 # IMPROVEMENTS
 ---
-- [ ] Create Dynamic Texture Manager to manage loading
-- [ ] Create a manual log of loaded textures to avoid reloading while it already is loading
+- [x] Create Dynamic Texture Manager to manage loading
+- [x] Create a manual log of loaded textures to avoid reloading while it already is loading
 - [x] Assign GameClient to game object
 - [x] Assign Util to game object
-- [ ] Assign Texture Manager to game object
+- [x] Assign Texture Manager to game object

@@ -202,9 +202,11 @@ class CollectionBook {
 
     /** FUNCTION THAT REFRESHES THE CARD PLACEHOLDERS */
     updateCardVisuals() {
-        /** preload new art */
-        let numberOfArtLoads = 0;
-        let loader = new Phaser.Loader.LoaderPlugin(this.scene); //create a loader 
+        let textures = [];
+        let callback = () => {
+            for(let bookEntry of this.collectionBookCardEntries) bookEntry.update();
+        }
+        
         for(let i = 0; i<GAME_ENUMS.MAX_CARDS_PER_PAGE; i++) {
             let cardi = (this.currentColorPage-1) * GAME_ENUMS.MAX_CARDS_PER_PAGE + i;
             cardi = Math.max(cardi, 0);
@@ -212,20 +214,20 @@ class CollectionBook {
                 let cardData = this.scene.game.gameClient.playerCollection.getCardFromPage(this.selectedColor-1, cardi);
                 this.collectionBookCardEntries[i].updateCardData(cardData);
                 
-                let cardArtKey = cardData.art
-                if(!this.scene.cache.game.textures.list[cardArtKey]){
-                    numberOfArtLoads++;
-                    loader.image(cardArtKey, `assets/cardart/${cardArtKey}.png`); //load image
-                    loader.image(`deckentry_${cardArtKey}`, `assets/deckentryart/deckentry_${cardArtKey}.png`); //load deck entry preemtiveley to avvoid errors later
-                }  
+                let cardArtKey = cardData.art;
+                textures.push({
+                    key: cardArtKey,
+                    path: `assets/cardart/${cardArtKey}.png`
+                });
+                textures.push({
+                    key: `deckentry_${cardArtKey}`,
+                    path: `assets/deckentryart/deckentry_${cardArtKey}.png`
+                })
             } else {
                 this.collectionBookCardEntries[i].updateCardData(null);
             }
-            loader.once(Phaser.Loader.Events.COMPLETE, () => {
-                for(let bookEntry of this.collectionBookCardEntries) bookEntry.update();
-            });
-            loader.start();
         }
+        this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));
     }
 
     /** FUNCTION TO UPDATE THE PAGE TITLE */

@@ -21,6 +21,7 @@ window.onload = function() {
 
     Game.gameClient = GameClient;
     Game.utilFunctions = new Utils();
+    Game.loaderManager = new DynamicTextureLoaderManager();
 
     Game.scene.add(SCENE_ENUMS.BACKGROUND_LOADER, BackgroundLoaderScene, false);
     Game.scene.add(SCENE_ENUMS.LOADER, LoaderScene, false);

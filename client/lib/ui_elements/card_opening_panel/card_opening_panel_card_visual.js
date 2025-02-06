@@ -46,16 +46,16 @@ class CardOpeningPanelCardVisual extends Phaser.GameObjects.Container {
      * Update the content of the card 
      * */
     setUpdate () {
-        let loader = new Phaser.Loader.LoaderPlugin(this.scene); //create a loader 
-        if(!this.scene.textures.exists(this.artKey)) {
-            loader.image(this.artKey, `assets/cardart/${this.artKey}.png`); //load image
-            loader.once(Phaser.Loader.Events.COMPLETE, () => {
-                this.art.setTexture(this.artKey);
-            });
-            loader.start();
-        } else {
+        let textures = [];
+        let callback = () => {
             this.art.setTexture(this.artKey);
         }
+        
+        textures.push({
+            key: this.artKey,
+            path: `assets/cardart/${this.artKey}.png`
+        });
+         this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));
     }
 
     /** 
