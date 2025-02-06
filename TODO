@@ -16,7 +16,7 @@
 
 # WRITE COLLECTION BOOK
 ---
-- [ ] Refactor Tooltip to be permanent and not destroyed (causes bugs)
+- [x] Refactor Tooltip to be permanent and not destroyed (causes bugs)
 
 # WRITE OPEN PACK PANEL
 ---

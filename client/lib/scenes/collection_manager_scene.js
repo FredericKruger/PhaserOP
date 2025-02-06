@@ -383,7 +383,11 @@ class CollectionManagerScene extends Phaser.Scene {
                 };
                 this.cardTooltipContainer = new CardVisual(this, config);
                 this.cardTooltipContainer.setUpdate(cardToolTipConfig.cardData);  
+            } else {
+                this.cardTooltipContainer.setUpdate(cardToolTipConfig.cardData); 
+                this.cardTooltipContainer.setPosition(cardToolTipConfig.positionx, cardToolTipConfig.positiony);
             }
+            this.cardTooltipContainer.setVisible(true);
             
             //check if tooltip out of screen
             if(cardToolTipConfig.positiony - this.cardTooltipContainer.height/2*this.cardTooltipContainer.scale < 20){
@@ -397,8 +401,7 @@ class CollectionManagerScene extends Phaser.Scene {
             
         } else {
             if(this.cardTooltipContainer !== null){
-                this.cardTooltipContainer.destroy();
-                this.cardTooltipContainer = null;
+                this.cardTooltipContainer.setVisible(false);
             }
         }
     }
