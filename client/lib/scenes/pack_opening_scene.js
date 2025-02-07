@@ -55,7 +55,8 @@ class PackOpeningScene extends Phaser.Scene {
             backgroundcolor: COLOR_ENUMS.OP_CREAM,
             outlinecolor: COLOR_ENUMS.OP_CREAM_DARKER,
             text: "Back",
-            fontsize: 18,
+            fontsize: 25,
+            fontfamily: "OnePieceFont",
             textColor: COLOR_ENUMS_CSS.OP_BLACK,
         });
         this.backButton.setInteractive(true);
@@ -243,6 +244,9 @@ class PackOpeningScene extends Phaser.Scene {
         this.dropZone.setData({ name: 'packDropZone'});    
     }
 
+    /**
+     * function to start the drop zone glow effect
+     */
     startDropZoneGlow() {
         this.placeholderImage.preFX.setPadding(32);
         const placeholderImageFX = this.placeholderImage.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4 ,0, false, 0.1, 32);
@@ -270,11 +274,17 @@ class PackOpeningScene extends Phaser.Scene {
         });
     }
 
+    /**
+     * Function to stopp the DropZone glow effect
+     */
     stopDropZoneGlow() {
         this.placeholderImage.preFX.clear();
         this.circleGraphics.postFX.clear();
     }
 
+    /**
+     * Function that will generate the packVisuals and add them to the scroll container
+     */
     generatePacks() {
         this.packList = [];
         this.packPlacehoderList = [];
@@ -306,6 +316,9 @@ class PackOpeningScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * Function that will update the position of every pack in the scoll panel after a pack has disappeared
+     */
     updatePackScrollPanel() {
         let validPackIndex = 0;
         for(let i = 0; i<this.packList.length; i++) {
@@ -390,6 +403,9 @@ class PackOpeningScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * function that completes the pack drop by modifying numbers and deleting packs when needed
+     */
     completePackDrop() {
         let placeholder = this.packPlacehoderList[this.packList.indexOf(this.selectedPack)];
         let amount = this.selectedPack.amount-1;

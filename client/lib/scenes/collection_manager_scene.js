@@ -74,8 +74,7 @@ class CollectionManagerScene extends Phaser.Scene {
         /** DECK TITLE */
         let deckTitle = this.add.text(listOfDecksContainerConfig.x + listOfDecksContainerConfig.width/2 + 25, listOfDecksContainerConfig.y - 15, 'New Deck', 
             { 
-                fontFamily: 'Brandon',
-                font: "20px monospace",
+                font: "20px OnePieceFont",
                 color: COLOR_ENUMS_CSS.OP_CREAM,
                 fixedWidth: 220,
                 align: 'center',
@@ -419,8 +418,7 @@ class CollectionManagerScene extends Phaser.Scene {
             title: scene.rexUI.add.label({
                 background: scene.add.rexRoundRectangleCanvas(0, 0, 100, 40, 5, COLOR_ENUMS.OP_RED, COLOR_ENUMS.OP_CREAM, 3),
                 text: scene.add.text(0, 0, title, {
-                    fontFamily: 'Brandon',
-                    font: "24px monospace",
+                    font: "24px OnePieceTCGFont",
                     color: COLOR_ENUMS_CSS.OP_WHITE
                 }),
                 space: {
@@ -432,8 +430,7 @@ class CollectionManagerScene extends Phaser.Scene {
             }),
 
             content: scene.add.text(0, 0, message, {
-                fontFamily: 'Brandon',
-                font: "18px monospace",
+                font: "18px OnePieceTCGFont",
                 color: COLOR_ENUMS_CSS.OP_BLACK
             }),
 
@@ -442,8 +439,7 @@ class CollectionManagerScene extends Phaser.Scene {
                     background: scene.rexUI.add.roundRectangle(0, 0, 0, 0, 10, COLOR_ENUMS.OP_RED),
 
                     text: scene.add.text(0, 0, "OK", {
-                        fontFamily: 'Brandon',
-                        font: "18px monospace",
+                        font: "18px OnePieceTCGFont",
                         color: COLOR_ENUMS_CSS.OP_BLACK
                     }), 
 

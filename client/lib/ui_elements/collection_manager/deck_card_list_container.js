@@ -33,7 +33,8 @@ class DeckCardListContainer {
             backgroundcolor: COLOR_ENUMS.OP_ORANGE,
             outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "",
-            fontsize: 32
+            fontsize: 36,
+            fontfamily: "OnePieceFont"
         });
         this.obj.push(this.decknameBackground);
 
@@ -51,7 +52,8 @@ class DeckCardListContainer {
             backgroundcolor: COLOR_ENUMS.OP_RED,
             outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "Done",
-            fontsize: 18
+            fontsize: 25,
+            fontfamily: "OnePieceFont"
         });
         this.saveDeckButton.on('pointerdown', function () {
             this.scene.saveDeck();
@@ -68,8 +70,7 @@ class DeckCardListContainer {
         this.cardAmountTextRectangle = this.scene.add.rexRoundRectangleCanvas(this.x  + this.width/2 - 58, this.y + this.height - 23,  170, 35, 5, COLOR_ENUMS.OP_BLUE, COLOR_ENUMS.OP_CREAM, 2);
         this.cardAmountText = { 
             obj: this.scene.add.text(this.cardAmountTextRectangle.x, this.cardAmountTextRectangle.y-5, '0/' + GAME_ENUMS.DECK_LIMIT, {
-                fontFamily: 'Brandon',
-                font: "20px monospace",
+                font: "20px OnePieceTCGFont",
                 color: COLOR_ENUMS_CSS.OP_CREAM
             }).setOrigin(0.5, 0.5),
             deckCardListContainer: this,
@@ -79,8 +80,7 @@ class DeckCardListContainer {
         }
         this.objToUpdate.push(this.cardAmountText);
         this.cardAmountText2 = this.scene.add.text(this.cardAmountTextRectangle.x, this.cardAmountTextRectangle.y+7, 'cards', {
-            fontFamily: 'Brandon',
-            font: "14px monospace",
+            font: "14px OnePieceTCGFont",
             color: COLOR_ENUMS_CSS.OP_CREAM
         }).setOrigin(0.5, 0.5);
         this.obj.push(this.cardAmountTextRectangle);

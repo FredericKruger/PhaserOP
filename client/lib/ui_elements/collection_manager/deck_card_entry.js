@@ -19,8 +19,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         this.background.setOrigin(0.5, 0.5);
 
         this.amountText = this.scene.add.text(-config.width/2 + 7, 0, config.amount + 'x', {
-            fontFamily: 'Brandon',
-            font: "bold 20px monospace",
+            font: "bold 20px OnePieceTCGFont",
             fill: COLOR_ENUMS_CSS.OP_BLACK,
             backgroundColor: "rgba(255, 255, 255, 0.8)"//,
         });
@@ -45,8 +44,7 @@ class DeckCardEntry extends Phaser.GameObjects.Container {
         
 
         this.name = this.scene.add.text(-70, 0, config.name, {
-            fontFamily: 'Brandon',
-            font: "bold 16px monospace",
+            font: "bold 16px OnePieceTCGFont",
             fill: COLOR_ENUMS_CSS.OP_BLACK,
             backgroundColor: "rgba(255, 255, 255, 0.8)"//,
             //fixedWidth: 70 + config.width/2 - 5

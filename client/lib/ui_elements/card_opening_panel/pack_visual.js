@@ -27,7 +27,10 @@ class PackVisual extends Phaser.GameObjects.Container {
         this.numberText = this.scene.add.text(
             this.banner.x, this.banner.y + this.banner.displayHeight/2, 
             this.amount, 
-            { fontFamily: 'Arial', fontSize: 40, color: COLOR_ENUMS_CSS.OP_BLACK }
+            { 
+                font: "50px OnePieceFont", 
+                color: COLOR_ENUMS_CSS.OP_BLACK 
+            }
         ).setOrigin(0.5, 0.5);
         this.numberText.setVisible(amount > 1);
 

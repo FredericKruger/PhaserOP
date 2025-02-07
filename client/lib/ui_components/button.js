@@ -47,8 +47,8 @@ class Button extends Phaser.GameObjects.Container {
 
         let textColor = config.textColor || COLOR_ENUMS_CSS.OP_CREAM;
         this.text = config.scene.add.text(0, 0, config.text, {
-            fontFamily: 'Brandon',
-            font: config.fontsize + "px monospace",
+            fontFamily: 'OnePieceFont',
+            font: config.fontsize + "px " + config.fontfamily,
             color: textColor
         });
         this.text.setOrigin(0.5, 0.5);

@@ -39,8 +39,7 @@ class CardCraftingPanel extends Phaser.GameObjects.Container{
         this.cardAmountBox.strokeRoundedRect(-60, GAME_ENUMS.CARD_ART_HEIGHT/2*0.6-100-55, 120, 80, 5); // Draw the border
 
         this.cardAmountText = this.scene.add.text(0, GAME_ENUMS.CARD_ART_HEIGHT/2*0.6-100-20, 'x4', {
-            fontFamily: 'Arial',
-            fontSize: '45px',
+            font: '45px OnePieceFont',
             color: COLOR_ENUMS_CSS.OP_RED
         });
         this.cardAmountText.setOrigin(0.5, 0.5);

@@ -23,8 +23,7 @@ class CollectionBookCardEntry {
         this.cardAmountBox.strokeRoundedRect(this.x - 30, this.y + this.bookCardAreaHeight/2 - 5, 60, 40, 5); // Draw the border
 
         this.cardAmountText = this.collectionBook.scene.add.text(this.x, this.y + this.bookCardAreaHeight/2 + 12, 'x', {
-            fontFamily: 'Arial',
-            fontSize: '20px',
+            font: '28px OnePieceFont',
             color: COLOR_ENUMS_CSS.OP_RED
         });
         this.cardAmountText.setOrigin(0.5, 0.5);

@@ -32,7 +32,8 @@ class DeckListContainer {
             backgroundcolor: COLOR_ENUMS.OP_RED,
             outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "My Decks",
-            fontsize: 36
+            fontsize: 36,
+            fontfamily: 'OnePieceFont'
         });
         this.obj.push(this.title);
 
@@ -47,7 +48,8 @@ class DeckListContainer {
             backgroundcolor: COLOR_ENUMS.OP_RED,
             outlinecolor: COLOR_ENUMS.OP_CREAM,
             text: "Back",
-            fontsize: 18
+            fontsize: 25,
+            fontfamily: 'OnePieceFont'
         });
         this.backButton.on('pointerdown', () =>  {
             this.scene.backToTitle();
@@ -66,8 +68,7 @@ class DeckListContainer {
         this.deckAmountTextRectangle = this.scene.add.rexRoundRectangleCanvas(this.x + this.width/2 - 58, this.y + this.height - 23,  170, 35, 5, COLOR_ENUMS.OP_RED, COLOR_ENUMS.OP_WHITE, 2);
         this.deckAmountText = {
             obj: this.scene.add.text(this.deckAmountTextRectangle.x, this.deckAmountTextRectangle.y-5, '0/9', {
-                fontFamily: 'Brandon',
-                font: "20px monospace",
+                font: "20px OnePieceTCGFont",
                 color: COLOR_ENUMS_CSS.OP_CREAM
             }).setOrigin(0.5, 0.5),
             deckContainer: this,
@@ -77,8 +78,7 @@ class DeckListContainer {
         }
         this.objToUpdate.push(this.deckAmountText);
         this.deckAmountText2 = this.scene.add.text(this.deckAmountTextRectangle.x, this.deckAmountTextRectangle.y+7, 'decks', {
-            fontFamily: 'Brandon',
-            font: "14px monospace",
+            font: "14px OnePieceTCGFont",
             color: COLOR_ENUMS_CSS.OP_CREAM
         }).setOrigin(0.5, 0.5);
         this.obj.push(this.deckAmountTextRectangle);
@@ -101,7 +101,8 @@ class DeckListContainer {
                     backgroundcolor: COLOR_ENUMS.OP_ORANGE,
                     outlinecolor: COLOR_ENUMS.OP_WHITE,
                     text: "New Deck",
-                    fontsize: 30
+                    fontsize: 40,
+                    fontfamily: 'OnePieceFont'
                 })
                     .on('pointerdown', function() {
                         this.scene.newDeck();

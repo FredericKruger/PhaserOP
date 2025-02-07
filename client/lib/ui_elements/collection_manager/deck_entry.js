@@ -21,8 +21,7 @@ class DeckEntry extends Phaser.GameObjects.Container {
 
         /** Deck Name Text */
         this.deckname = this.scene.add.text(this.background.x, this.background.y, config.name, {
-            fontFamily: 'Brandon',
-            font: "20px monospace",
+            font: "38px OnePieceFont",
             color: COLOR_ENUMS_CSS.OP_CREAM
 
         }).setOrigin(0.5)
@@ -37,8 +36,7 @@ class DeckEntry extends Phaser.GameObjects.Container {
             this.background.x + this.background.width/2 - 60,
             this.background.y + this.background.height/2 - 12,
             "Missing cards", {
-                fontFamily: 'Brandon',
-                font: "14px monospace",
+                font: "14px OnePieceTCGFont",
                 color: COLOR_ENUMS_CSS.OP_WHITE
             });
         this.missingCardsText.setVisible(false);
@@ -60,8 +58,7 @@ class DeckEntry extends Phaser.GameObjects.Container {
             this.background.x-this.background.width/2 + 5 + 20, 
             this.background.y-this.background.height/2 - 5 + 12.5, 
             "0/40", {
-                fontFamily: 'Brandon',
-                font: "12px monospace",
+                font: "12px OnePieceTCGFont",
                 fill: "#ffffff"
         });
         this.missingCardsBoxText.setVisible(false);

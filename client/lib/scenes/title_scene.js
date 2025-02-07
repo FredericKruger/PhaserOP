@@ -27,8 +27,7 @@ class TitleScene extends Phaser.Scene {
         this.add.image(screenCenterX, screenCenterY-320, ASSET_ENUMS.LOGO).setOrigin(0.5, 0.5).setScale(1);
 
         this.add.text(30 + this.avatarPortraitWidth, this.avatarPortraitWidth/2, "Welcome, " + this.game.gameClient.username, {
-            fontFamily: 'Brandon',
-            font: "16px monospace",
+            font: "18px OnePieceFont",
             color: COLOR_ENUMS_CSS.OP_CREAM
         });
 

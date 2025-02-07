@@ -167,4 +167,18 @@ class Utils {
 
         return pathPoints;
     }
+
+    /**
+     * Helper function to load fonts
+     * @param {string} name 
+     * @param {string} url 
+     */
+    loadFont(name, url) {
+        let newFont = new FontFace(name, `url(${url})`);
+        newFont.load().then(function (loaded) {
+            document.fonts.add(loaded);
+        }).catch(function (error) {
+            return error;
+        });
+    }
 }

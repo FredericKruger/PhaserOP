@@ -22,8 +22,7 @@ class LoaderScene extends Phaser.Scene {
             y : screenCenterY+50,
             text: "Loading...",
             style: {
-                fontFamily: 'Brandon',
-                font: "24px monospace",
+                font: "24px OnePieceFont",
                 color: COLOR_ENUMS_CSS.OP_CREAM
             }
         });
@@ -34,8 +33,7 @@ class LoaderScene extends Phaser.Scene {
             y : screenCenterY+70+25,
             text: "0%",
             style: {
-                fontFamily: 'Brandon',
-                font: "18px monospace",
+                font: "18px OnePieceFont",
                 color: COLOR_ENUMS_CSS.OP_CREAM
             }
         });
@@ -281,8 +279,7 @@ class LoaderScene extends Phaser.Scene {
             y : screenCenterY+50,
             text: "Welcome to One Piece",
             style: {
-                fontFamily: 'Brandon',
-                font: "24px monospace",
+                font: "24px OnePieceFont",
                 color: COLOR_ENUMS_CSS.OP_CREAM
             }
         });

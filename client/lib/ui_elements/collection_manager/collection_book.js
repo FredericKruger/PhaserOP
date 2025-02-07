@@ -101,7 +101,7 @@ class CollectionBook {
         /** PAGE NUMBER */
         this.pageNumber = {
             obj: this.scene.add.text(this.tabs.x, this.tabs.y + this.tabs.height / 2 - 80, '', {
-                fontSize: '25px',
+                font: '25px OnePieceFont',
                 color: COLOR_ENUMS_CSS.OP_BLACK,
                 fontWeight: 'bold' // Make the text bold
             }).setOrigin(0.5),
@@ -435,7 +435,7 @@ class CollectionBook {
             background: this.scene.rexUI.add.roundRectangle(0, 0, 0, 0, 15, COLOR_ENUMS.OP_CREAM_DARKER),
             icon: this.scene.add.image(0, 0, ASSET_ENUMS.ICON_SEARCH).setScale(0.5),
             text: this.scene.rexUI.add.BBCodeText(50, 0, 'Search', {
-                fontSize: '20px',
+                font: '20px OnePieceTCGFonnt',
                 fixedWidth: rectWidth-60,
                 fixedHeight: rectHeight-20,
                 valign: 'center',

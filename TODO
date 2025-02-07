@@ -2,9 +2,6 @@
 ---
 - [x] Refactor Client code
 - [x] Refactor Server code
-- [ ] Add typescript document for all files
-- [ ] Typescript for Server
-- [ ] Typescript for Client
 
 # REDESIGN UI TO SCALE
 ---
@@ -37,12 +34,25 @@
 # WRITE SHOP PANEL
 ---
 - [ ] Create UI items for Berrys
+- [ ] Create backplacehoder for packs
 - [ ] Create Shop Tabs for Packs and Decks
 - [ ] Create Item Panel for Tabs
 - [ ] Create Interactivity of shop Items
 - [ ] Create Server Logic for Card Transfer
 - [ ] Send Cards and Add to Collection
 - [ ] Send Packs to Settings
+
+# WRITE GAME PANEL
+---
+- [ ] Draw the board
+- [ ] Make tilted Camera for board effet
+- [ ] Draw the player Hand
+- [ ] Draw the opponent Hand
+- [ ] Draw DON Area
+- [ ] Draw Discard Pile
+- [ ] Draw 5 Card Placeholders (max 5 cards on board in One Piece)
+- [ ] Draw Location Placeholder
+
 
 # IMPROVEMENTS
 ---
@@ -51,3 +61,8 @@
 - [x] Assign GameClient to game object
 - [x] Assign Util to game object
 - [x] Assign Texture Manager to game object
+
+# UI IMPROVEMENTS
+---
+- [x] Add custom One Piece Font
+- [x] Add custom One Piece TCG Font
