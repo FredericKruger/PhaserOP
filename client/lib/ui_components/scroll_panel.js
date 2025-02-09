@@ -22,7 +22,7 @@ class ScrollPanel{
         this.scrollContainer = this.scene.add.container(x, y);
         this.scrollContainerPosition = {x: this.scrollContainer.x, y:this.scrollContainer.y};
         this.scrollContainerHeight = height;
-        this.scrollContainer.setInteractive(new Phaser.Geom.Rectangle(x, y+40, width, height-40), Phaser.Geom.Rectangle.Contains);
+        //this.scrollContainer.setInteractive(new Phaser.Geom.Rectangle(x, y, width, height), Phaser.Geom.Rectangle.Contains);
         this.obj.push(this.scrollContainer);
 
         //Create the maskshape
@@ -35,10 +35,10 @@ class ScrollPanel{
         this.scrollContainer.setMask(this.mask);
 
         this.scene.input.on('wheel', (pointer, gameObject, deltaX, deltaY) => {
-            console.log(this.scrollContainer.y);
-            this.scrollContainer.y -= deltaY/10;
-            console.log(this.scrollContainer.y);
-            this.updateScrollcontainer();
+            if (this.isPointerWithinBounds(pointer)) {
+                this.scrollContainer.y -= deltaY/10;
+                this.updateScrollcontainer();
+            }
         });
 
         this.setVisible(this.isVisible);
@@ -116,6 +116,11 @@ class ScrollPanel{
         let newY = transformMatrix.ty + x * transformMatrix.b + y * transformMatrix.d;
 
         return {x:newX, y:newY};
+    }
+
+    isPointerWithinBounds(pointer) {
+        let bounds = new Phaser.Geom.Rectangle(this.x, this.y, this.width, this.height);
+        return Phaser.Geom.Rectangle.Contains(bounds, pointer.x, pointer.y);
     }
 
 }

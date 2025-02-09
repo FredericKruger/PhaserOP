@@ -23,12 +23,15 @@ class StoreScene extends Phaser.Scene {
         //Create top menu panel
         this.createTopMenuPanel();
 
-        //Create ScrollPanel
+         //Create ScrollPanel
         this.scrollPanel = new ScrollPanel(this, 
             this.topMenuPanelBounds.x, this.topMenuPanelBounds.y, 
             this.topMenuPanelBounds.width, this.topMenuPanelBounds.height, 
-            true, {backgroundColor: COLOR_ENUMS.OP_BLACK, alpha: 1, round: 5});
+            false, {backgroundColor: COLOR_ENUMS.OP_BLACK, alpha: 1, round: 5});
         this.scrollPanel.setVisible(true);
+
+        this.children.bringToTop(this.setButton);
+        this.children.bringToTop(this.packButton);
 
         /*let maskGraphics = this.add.graphics();
         maskGraphics.fillStyle(0xffffff);
@@ -207,7 +210,6 @@ class StoreScene extends Phaser.Scene {
         this.packButton.on('pointerover', () => {this.packButton.onHover();});
         this.packButton.on('pointerout', () => {this.packButton.onOut();});
         this.packButton.on('pointerdown', () => {
-            console.log("Pack Button Clicked");
             if(this.selectedButton === this.packButton) return;
             this.selectedButton.toggle();
             this.selectedButton = this.packButton;
@@ -234,7 +236,6 @@ class StoreScene extends Phaser.Scene {
         this.setButton.on('pointerout', () => {this.setButton.onOut();});
         this.setButton.on('pointerdown', () => {
             if(this.selectedButton === this.setButton) return;
-            console.log("Set Button Clicked");
             this.selectedButton.toggle();
             this.selectedButton = this.setButton;
             this.selectedButton.toggle();
