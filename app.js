@@ -49,6 +49,7 @@ io.on('connection', function (/** @type {object} */ socket) {
         let playerCollection = [];
         let playerDecklist = [];
         let newPlayer = false;
+        let shopData = [];
         if(connectSuccess) {
             console.log('A user connected: ' + socket.id);
             socket.player = new Player(socket, serverInstance, username); //Create a new player instance
@@ -58,6 +59,7 @@ io.on('connection', function (/** @type {object} */ socket) {
             playerSetting = await serverInstance.util.getPlayerSettings(username);
             playerCollection = await serverInstance.util.getPlayerCollection(username);
             playerDecklist = await serverInstance.util.getPlayerDecklist(username);
+            shopData = await serverInstance.util.getShopData();
 
             //create playerseetings
             if(playerSetting === null) {
@@ -77,7 +79,7 @@ io.on('connection', function (/** @type {object} */ socket) {
             socket.player.setSettings(playerSetting);
 
             // Send message to the client that everything is ready
-            socket.emit('player_connected', connectSuccess, playerSetting, serverInstance.cardIndex, playerCollection, newPlayer);
+            socket.emit('player_connected', connectSuccess, playerSetting, serverInstance.cardIndex, playerCollection, newPlayer, shopData);
 
             //Save new settings
             if(newPlayer){

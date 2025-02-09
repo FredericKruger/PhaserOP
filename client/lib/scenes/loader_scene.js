@@ -63,6 +63,7 @@ class LoaderScene extends Phaser.Scene {
         assetPath = 'assets/backgrounds/';
         this.load.image(ASSET_ENUMS.LEATHER_BACKGROUND, `${assetPath}/leather_background.jpg`);
         this.load.image(ASSET_ENUMS.MAP_BACKGROUND, `${assetPath}/map_background.webp`);
+        this.load.image(ASSET_ENUMS.BACKGORUND4, `${assetPath}/backgroundshop.png`);
         
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
@@ -237,7 +238,10 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_DESCRIPTION_ST03,  `${assetPath}/description_ST03.png`);
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_DESCRIPTION_ST04,  `${assetPath}/description_ST04.png`);
         this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_TITLE, `${assetPath}/openPackTitle.png`);
-        this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_PLACEHOLDER, `${assetPath}/openPackPlaceholder.png`);	
+        this.load.image(ASSET_ENUMS.IMAGE_SHOP_TITLE, `${assetPath}/shopTitle.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_PLACEHOLDER, `${assetPath}/openPackPlaceholder.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_SHOP_ITEM_PLACEHOLDER, `${assetPath}/shopitemPlaceholder.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_SHOP_EMPTY_PLACEHOLDER, `${assetPath}/shopEmptyPlaceholder.png`);	
 
         assetPath = 'assets/shaders';
         this.load.glsl(SHADER_ENUMS.GREYSCALE_SHADER, `${assetPath}/greyscale.frag`);

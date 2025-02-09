@@ -62,7 +62,7 @@ class TitleScene extends Phaser.Scene {
         let shopButton = this.add.image(150, this.cameras.main.height - 75, ASSET_ENUMS.ICON_STORE).setOrigin(0.5);
         shopButton.setScale(0.2);
         shopButton.setInteractive();
-        //shopButton.on('pointerdown', this.openStore, this);
+        shopButton.on('pointerdown', this.openStore, this);
         shopButton.on('pointerout', () => shopButton.setScale(0.2));
         shopButton.on('pointerover', () => shopButton.setScale(0.21));
 
@@ -99,6 +99,11 @@ class TitleScene extends Phaser.Scene {
         } else {
             this.scene.start(SCENE_ENUMS.COLLECTION_MANAGER);
         }
+    }
+
+    //Open store
+    openStore() {
+        this.scene.start(SCENE_ENUMS.STORE);
     }
 
     //openPacks

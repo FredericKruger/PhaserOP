@@ -9,6 +9,7 @@ class Client {
         this.playerCollection = new CardCollection(); //Store the player collection
         this.decklist = []; //Store the player decks
         this.aidecklist = {}; //Store the ai decks
+        this.shopData = []; //Store the shop data
 
         this.firstLogin = false;
 
@@ -23,17 +24,20 @@ class Client {
         this.titleScene = null; //Store pointer to titleScene
         /** @type {PackOpeningScene} */
         this.packOpeningScene = null; //Store pointer to packOpeningScene
+        /** @type {StoreScene} */
+        this.storeScene = null; //Store pointer to storeScene
 
         //To help scene initialisation
         this.player1NumberCards = null;
         this.player2NumberCards = null;
 
         /** Listen to the signal from the server that the player has successfully connected */
-        this.socket.on('player_connected', (success, playerSetting, cardList, playerCollection, newPlayer) => {
+        this.socket.on('player_connected', (success, playerSetting, cardList, playerCollection, newPlayer, shopData) => {
             if(success) {
                 this.playerSettings = playerSetting;
                 this.playerCollection.loadCards(cardList);
                 this.playerCollection.updateCollection(playerCollection);
+                this.shopData = shopData;
                 this.firstLogin = newPlayer;
                 this.loginScene.loadTitleScene();
             } else {

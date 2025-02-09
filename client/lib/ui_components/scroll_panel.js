@@ -9,6 +9,7 @@ class ScrollPanel{
         this.y = y;
 
         this.height = height;
+        this.width = width;
 
         // Create the background for the scroll container
         if(showBackground) {
@@ -21,7 +22,7 @@ class ScrollPanel{
         this.scrollContainer = this.scene.add.container(x, y);
         this.scrollContainerPosition = {x: this.scrollContainer.x, y:this.scrollContainer.y};
         this.scrollContainerHeight = height;
-        this.scrollContainer.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
+        this.scrollContainer.setInteractive(new Phaser.Geom.Rectangle(x, y+40, width, height-40), Phaser.Geom.Rectangle.Contains);
         this.obj.push(this.scrollContainer);
 
         //Create the maskshape
@@ -34,13 +35,15 @@ class ScrollPanel{
         this.scrollContainer.setMask(this.mask);
 
         this.scene.input.on('wheel', (pointer, gameObject, deltaX, deltaY) => {
+            console.log(this.scrollContainer.y);
             this.scrollContainer.y -= deltaY/10;
+            console.log(this.scrollContainer.y);
             this.updateScrollcontainer();
         });
 
         this.setVisible(this.isVisible);
 
-        this.scrollContainer.setInteractive();
+        //this.scrollContainer.setInteractive();
         /*this.scrollContainer.on('pointerover', () => {
             this.obj.forEach(o => o.setDepth(1)); // Set a higher depth value
         });*/
@@ -65,7 +68,6 @@ class ScrollPanel{
 
     updateScrollcontainer() {
         this.scrollContainerMaxHeight = this.calculateScrollContainerHeight();
- 
         this.scrollContainer.y = Phaser.Math.Clamp(this.scrollContainer.y, this.y - Math.max(this.scrollContainerMaxHeight-this.height, 0), this.y);
 
         //Update interactivity of objects in maskbound
@@ -95,7 +97,9 @@ class ScrollPanel{
         let maxHeight = 0;
     
         this.scrollContainer.each(function (child) {
-            let childBottom = child.y + (child.displayHeight || 0) * (1-child.originY);
+            let originY = 0;
+            if(child.type !== "Container") originY = child.originY;
+            let childBottom = child.y + (child.displayHeight || 0) * (1-originY);
             if (childBottom > maxHeight) {
                 maxHeight = childBottom;
             }

@@ -32,6 +32,7 @@ const SCENE_ENUMS = Object.freeze({
     TITLE: 'TITLE', 
     COLLECTION_MANAGER: 'COLLECTION_MANAGER',
     PACK_OPENING: 'PACK_OPENING',
+    STORE: 'STORE',
 });
 
 const COLOR_ENUMS = Object.freeze({
@@ -45,7 +46,9 @@ const COLOR_ENUMS = Object.freeze({
     OP_YELLOW: 0xEFE75A,
     OP_GOLD: 0xD6AA44,
     OP_ORANGE: 0xEA6929,
+    OP_ORANGE_LIGHTER: 0xFF7E31,
     OP_WHITE: 0xffffff,
+    OP_GREY: 0x3b3b3b,
 
     ON_ATTACK: 0x307EB2,
     DON: 0x13111E,

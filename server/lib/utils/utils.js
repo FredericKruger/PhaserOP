@@ -120,7 +120,9 @@ class Utils {
         return null; //If there is an error return nothing
     }
 
-    /** Get a Preconstructed Deck */
+    /** Get a Preconstructed Deck 
+     * @param {string} deckname - name of the deck
+    */
     async getPreconstructedDecks (deckname) {
         let deck = [];
         let filepath = this.serverPath + '/server/assets/data/preconstructeddecks.json';
@@ -134,6 +136,21 @@ class Utils {
             console.error(err);
         }
         return deck;
+    }
+
+    /** Get Shop Data */
+    async getShopData () {
+        let shopData = [];
+        let filepath = this.serverPath + '/server/assets/data/shop_data.json'; //Get path of the shop data
+
+        try {
+            const data = await fs.promises.readFile(filepath); //Read the json file
+            shopData = JSON.parse(data.toString()); //Turn file into JSON object
+            return shopData; //Return the database
+        } catch (err) {
+            console.log(err);
+        }
+        return null; //Return nothing in case of error 
     }
 
     /** Asynchronous function that creates a promise to save the user collection
@@ -174,6 +191,9 @@ class Utils {
         }
     }
 
+    /** Asynchrnous function that creates the player folder to store player information
+     * @param {string} username - player username
+     */
     async createPlayerFolder(username) {
         if(!fs.existsSync(this.serverPath + '/server/assets/player_folders/' + username)) {
             fs.mkdirSync(this.serverPath + '/server/assets/player_folders/' + username);

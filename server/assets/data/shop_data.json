@@ -1,0 +1,47 @@
+[
+    {
+        "type": "PACKS",
+        "items": [
+            {
+                "name": "OP01",
+                "description": "-ROMANCE DAWN-",
+                "price": 1000
+            },
+            {
+                "name": "OP02",
+                "description": "--PARAMOUNT WAR-",
+                "price": 1000
+            },
+            {
+                "name": "OP03",
+                "description": "-PILLARS OF STRENGTH-",
+                "price": 1000
+            }
+        ]
+    },
+    {
+        "type": "DECKS",
+        "items": [
+            {
+                "name": "ST01",
+                "description": "-STRAW HAT CREW-",
+                "price": 10000
+            },
+            {
+                "name": "ST02",
+                "description": "-THE WORST GENERATION-",
+                "price": 10000
+            },
+            {
+                "name": "ST03",
+                "description": "-THE SEVEN WARLORDS OF THE SEA-",
+                "price": 10000
+            },
+            {
+                "name": "ST04",
+                "description": "-ANIMAL KINGDOM PIRATES-",
+                "price": 10000
+            }
+        ]
+    }
+]

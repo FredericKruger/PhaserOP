@@ -43,6 +43,7 @@ class PackOpeningScene extends Phaser.Scene {
         this.storeButton.setInteractive();
         this.storeButton.on('pointerover',  () => {this.storeButton.setScale(0.21)});
         this.storeButton.on('pointerout',  () => {this.storeButton.setScale(0.2)});
+        this.storeButton.on('pointerdown', () => {this.scene.start(SCENE_ENUMS.STORE)});
 
         // Create back button
         this.backButton = new Button({
