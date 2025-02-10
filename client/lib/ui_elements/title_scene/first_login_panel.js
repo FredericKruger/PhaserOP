@@ -59,26 +59,35 @@ class FirstLoginPanel extends Phaser.GameObjects.Container{
         this.scene.add.existing(this);
 
         this.setVisible(false);
+        this.setDepth(3);
 
         this.setInteractive();
         this.on('pointerdown', (pointer) => {
         });
     }
 
+    /** Function that shows the panel */
     launch() {
         this.setVisible(true);
     }
 
+    /** Function that sets the visibility of the panel
+     * @param {boolean} visible - The visibility of the panel
+     */
     // @ts-ignore
     setVisible(visible) {
         for(let o of this.obj) o.setVisible(visible);
         this.deckDescription.setVisible(false);
     }
 
+    /** Function that handles the selection of the panel
+     * @param {number} index - The index of the deck selected
+     */
     deckSelected(index) {
         this.scene.game.gameClient.addDeckToCollection("ST0" + (index+1));
     }
 
+    /** Function that closes the panel */
     closePanel() {
         this.setVisible(false);
         this.destroy();

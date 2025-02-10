@@ -64,6 +64,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.LEATHER_BACKGROUND, `${assetPath}/leather_background.jpg`);
         this.load.image(ASSET_ENUMS.MAP_BACKGROUND, `${assetPath}/map_background.webp`);
         this.load.image(ASSET_ENUMS.BACKGORUND4, `${assetPath}/backgroundshop.png`);
+        this.load.image(ASSET_ENUMS.BACKGROUND5, `${assetPath}/background4.jpg`);
         
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
@@ -83,6 +84,8 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.ICON_SEARCH, `${assetPath}/searchIcon.png`);
         this.load.image(ASSET_ENUMS.ICON_NEW_CARD, `${assetPath}/newCardIcon.png`);
         this.load.image(ASSET_ENUMS.ICON_DONE, `${assetPath}/doneIcon.png`);
+        this.load.image(ASSET_ENUMS.ICON_BERRIES, `${assetPath}/berriesIcon.png`);
+        this.load.image(ASSET_ENUMS.ICON_BUY, `${assetPath}/buyIcon.png`);
 
         assetPath = "assets/icons/setfiltericons";
         this.load.image(ASSET_ENUMS.SET_FILTER_ALL, `${assetPath}/setFilterAll.png`);
@@ -110,6 +113,15 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.PACK_ART_ST02,  `${assetPath}/ST02.png`);
         this.load.image(ASSET_ENUMS.PACK_ART_ST03,  `${assetPath}/ST03.png`);
         this.load.image(ASSET_ENUMS.PACK_ART_ST04,  `${assetPath}/ST04.png`);
+
+        assetPath = 'assets/icons/banners';
+        this.load.image(ASSET_ENUMS.BANNER_OP01, `${assetPath}/OP01_banner.webp`);	
+        this.load.image(ASSET_ENUMS.BANNER_OP02, `${assetPath}/OP02_banner.webp`);
+        this.load.image(ASSET_ENUMS.BANNER_OP03, `${assetPath}/OP03_banner.webp`);
+        this.load.image(ASSET_ENUMS.BANNER_ST01, `${assetPath}/ST01_banner.webp`);
+        this.load.image(ASSET_ENUMS.BANNER_ST02, `${assetPath}/ST02_banner.webp`);
+        this.load.image(ASSET_ENUMS.BANNER_ST03, `${assetPath}/ST03_banner.webp`);
+        this.load.image(ASSET_ENUMS.BANNER_ST04, `${assetPath}/ST04_banner.webp`);
 
         assetPath = 'assets/icons/colorsymbols';
         this.load.image(ASSET_ENUMS.ICON_SYMBOL_RED,  `${assetPath}/OP_RED.png`);

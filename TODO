@@ -10,10 +10,12 @@
 - [ ] Title screen
 - [ ] Collection Manager
 - [ ] Redesign Collection Book
+- [ ] Parametrize UI
 
 # WRITE COLLECTION BOOK
 ---
 - [x] Refactor Tooltip to be permanent and not destroyed (causes bugs)
+- [ ] BUG: Fix bug on wrong depth of filter button for sets
 
 # WRITE OPEN PACK PANEL
 ---
@@ -33,16 +35,19 @@
 
 # WRITE SHOP PANEL
 ---
-- [ ] Create Scene and barebones
-- [ ] Create Art For PackHolder, buttons and ui
-- [ ] Create UI items for Berrys
-- [ ] Create backplacehoder for packs
-- [ ] Create Shop Tabs for Packs and Decks
-- [ ] Create Item Panel for Tabs
-- [ ] Create Interactivity of shop Items
+- [x] Create Scene and barebones
+- [x] Create Art For PackHolder, buttons and ui
+- [x] Create UI items for Berrys
+- [x] Create backplacehoder for packs
+- [x] Create Shop Tabs for Packs and Decks
+- [x] Create Item Panel for Tabs
+- [x] Create Interactivity of shop Items
 - [ ] Create Server Logic for Card Transfer
 - [ ] Send Cards and Add to Collection
+- [ ] Create Animation for Adding Packs
+- [ ] Create Animation for Opening Deck
 - [ ] Send Packs to Settings
+- [ ] Refactor UI Code
 
 # WRITE GAME PANEL
 ---
@@ -68,3 +73,8 @@
 ---
 - [x] Add custom One Piece Font
 - [x] Add custom One Piece TCG Font
+- [ ] Add Depth Handling
+    - [x] Title Screen
+    - [ ] Open Pack Panel
+    - [ ] Shop Panel
+    - [ ] Collection

@@ -1,12 +1,14 @@
 class ScrollPanel{
 
-    constructor(scene, x, y, width, height, showBackground, backgroundConfig) {
+    constructor(scene, x, y, width, height, config, showBackground, backgroundConfig) {
         this.obj = [];
         this.scene = scene;
         this.isVisible = false;
 
         this.x = x;
         this.y = y;
+        this.scrollSpeed = config.scrollSpeed || 10;
+        this.depth = config.depth || 1;
 
         this.height = height;
         this.width = width;
@@ -16,12 +18,14 @@ class ScrollPanel{
             let background = this.scene.add.graphics();
             background.fillStyle(backgroundConfig.backgroundColor, backgroundConfig.alpha); // Set the background color to OP_CREAM_DARKER
             background.fillRoundedRect(x, y, width, height, backgroundConfig.round);
+            background.setDepth(this.depth);
             this.obj.push(background);
         }
 
         this.scrollContainer = this.scene.add.container(x, y);
         this.scrollContainerPosition = {x: this.scrollContainer.x, y:this.scrollContainer.y};
         this.scrollContainerHeight = height;
+        this.scrollContainer.setDepth(this.depth);
         //this.scrollContainer.setInteractive(new Phaser.Geom.Rectangle(x, y, width, height), Phaser.Geom.Rectangle.Contains);
         this.obj.push(this.scrollContainer);
 
@@ -36,7 +40,7 @@ class ScrollPanel{
 
         this.scene.input.on('wheel', (pointer, gameObject, deltaX, deltaY) => {
             if (this.isPointerWithinBounds(pointer)) {
-                this.scrollContainer.y -= deltaY/10;
+                this.scrollContainer.y -= deltaY*this.scrollSpeed;
                 this.updateScrollcontainer();
             }
         });
@@ -97,8 +101,7 @@ class ScrollPanel{
         let maxHeight = 0;
     
         this.scrollContainer.each(function (child) {
-            let originY = 0;
-            if(child.type !== "Container") originY = child.originY;
+            let originY = child.originY;
             let childBottom = child.y + (child.displayHeight || 0) * (1-originY);
             if (childBottom > maxHeight) {
                 maxHeight = childBottom;

@@ -23,60 +23,56 @@ class TitleScene extends Phaser.Scene {
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
         this.avatarPortraitWidth = 150/2;
 
-        this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND1).setScale(1);
-        this.add.image(screenCenterX, screenCenterY-320, ASSET_ENUMS.LOGO).setOrigin(0.5, 0.5).setScale(1);
+        this.add.image(screenCenterX, screenCenterY, ASSET_ENUMS.BACKGROUND1).setScale(1).setDepth(0);
+        this.add.image(screenCenterX, screenCenterY-320, ASSET_ENUMS.LOGO).setOrigin(0.5, 0.5).setScale(1).setDepth(0);
 
         this.add.text(30 + this.avatarPortraitWidth, this.avatarPortraitWidth/2, "Welcome, " + this.game.gameClient.username, {
             font: "18px OnePieceFont",
             color: COLOR_ENUMS_CSS.OP_CREAM
-        });
+        }).setDepth(0);
 
-        let bFM = this.add.image(screenCenterX, screenCenterY+225, ASSET_ENUMS.ICON_RANDOM_MATCH).setOrigin(0.5);
-        bFM.setScale(0.25);
-        bFM.setInteractive();
+        let bFM = this.add.image(screenCenterX, screenCenterY+225, ASSET_ENUMS.ICON_RANDOM_MATCH)
+                .setOrigin(0.5).setScale(0.25).setInteractive().setDepth(2);
         //bFM.on('pointerdown', () => {this.startDeckSelection(false);});
         bFM.on('pointerout', () => bFM.setScale(0.25));
         bFM.on('pointerover', () => bFM.setScale(0.26));
 
-        let bVSAI = this.add.image(screenCenterX, screenCenterY+295, ASSET_ENUMS.ICON_VS_AI).setOrigin(0.5);
-        bVSAI.setScale(0.25);
-        bVSAI.setInteractive();
+        let bVSAI = this.add.image(screenCenterX, screenCenterY+295, ASSET_ENUMS.ICON_VS_AI)
+                .setOrigin(0.5).setScale(0.25).setInteractive().setDepth(2);
         //bVSAI.on('pointerdown', () => {this.startDeckSelection(true);});
         bVSAI.on('pointerout', () => bVSAI.setScale(0.25));
         bVSAI.on('pointerover', () => bVSAI.setScale(0.26));
 
-        let bDB = this.add.image(screenCenterX, screenCenterY+365, ASSET_ENUMS.ICON_COLLECTION).setOrigin(0.5);
-        bDB.setScale(0.26);
-        bDB.setInteractive();
+        let bDB = this.add.image(screenCenterX, screenCenterY+365, ASSET_ENUMS.ICON_COLLECTION)
+                .setOrigin(0.5).setScale(0.26).setInteractive().setDepth(2);
         bDB.on('pointerdown', this.startDeckBuilder, this);
         bDB.on('pointerout', () => bDB.setScale(0.26));
         bDB.on('pointerover', () => bDB.setScale(0.27));
 
-        let logOutB = this.add.image(this.cameras.main.width - 75, 75, ASSET_ENUMS.ICON_LOUGOUT).setOrigin(0.5);
-        logOutB.setScale(0.2);
-        logOutB.setInteractive();
+        let logOutB = this.add.image(this.cameras.main.width - 75, 75, ASSET_ENUMS.ICON_LOUGOUT)
+                .setOrigin(0.5).setScale(0.2).setInteractive().setDepth(2);
         logOutB.on('pointerdown', this.logout, this);
         logOutB.on('pointerout', () => logOutB.setScale(0.2));
         logOutB.on('pointerover', () => logOutB.setScale(0.21));
 
-        let shopButton = this.add.image(150, this.cameras.main.height - 75, ASSET_ENUMS.ICON_STORE).setOrigin(0.5);
-        shopButton.setScale(0.2);
-        shopButton.setInteractive();
+        let shopButton = this.add.image(150, this.cameras.main.height - 75, ASSET_ENUMS.ICON_STORE)
+                .setOrigin(0.5).setScale(0.2).setInteractive().setDepth(2);
         shopButton.on('pointerdown', this.openStore, this);
         shopButton.on('pointerout', () => shopButton.setScale(0.2));
         shopButton.on('pointerover', () => shopButton.setScale(0.21));
 
-        let openPackButton = this.add.image(this.cameras.main.width - 150, this.cameras.main.height - 120, ASSET_ENUMS.ICON_OPEN_PACK).setOrigin(0.5);
-        openPackButton.setScale(0.15);
-        openPackButton.setInteractive();
+        let openPackButton = this.add.image(this.cameras.main.width - 150, this.cameras.main.height - 120, ASSET_ENUMS.ICON_OPEN_PACK)
+                .setOrigin(0.5).setScale(0.15).setInteractive().setDepth(2);
         openPackButton.on('pointerdown', this.openPacks, this);
         openPackButton.on('pointerout', () => openPackButton.setScale(0.15));
         openPackButton.on('pointerover', () => openPackButton.setScale(0.16));
 
         let avatarX = 20 + this.avatarPortraitWidth/2;
         let avatarY = 20 + this.avatarPortraitWidth/2;
-        this.add.circle(avatarX, avatarY, this.avatarPortraitWidth/2+1, COLOR_ENUMS.OP_WHITE, 1).setStrokeStyle(3, COLOR_ENUMS.OP_CREAM).setOrigin(0.5);
-        this.playerAvatar = this.add.image(avatarX, avatarY, this.game.gameClient.playerSettings.avatar).setOrigin(0.5).setScale(0.5);
+        this.add.circle(avatarX, avatarY, this.avatarPortraitWidth/2+1, COLOR_ENUMS.OP_WHITE, 1).setStrokeStyle(3, COLOR_ENUMS.OP_CREAM)
+            .setOrigin(0.5).setDepth(2);
+        this.playerAvatar = this.add.image(avatarX, avatarY, this.game.gameClient.playerSettings.avatar)
+            .setOrigin(0.5).setScale(0.5).setDepth(2);
 
         this.createAvatarSelectionPanel();
 
@@ -135,7 +131,8 @@ class TitleScene extends Phaser.Scene {
         
         //this.scrollContainer = this.add.container(this.avatarSelectionPanelX,this.avatarSelectionPanelY);
         let backgroundConfig = {backgroundColor: COLOR_ENUMS.OP_WHITE, alpha: 1.0, round: 15};
-        this.scrollContainer = new ScrollPanel(this, this.avatarSelectionPanelX, this.avatarSelectionPanelY, 325, 250, true, backgroundConfig);
+        this.scrollContainer = new ScrollPanel(this, this.avatarSelectionPanelX, this.avatarSelectionPanelY, 325, 250, 
+            {scrollSpeed:0.1, depth: 1}, true, backgroundConfig);
 
         //Get the icon data
         let iconData = this.cache.json.get(DATA_ENUMS.PLAYER_ICONS);
