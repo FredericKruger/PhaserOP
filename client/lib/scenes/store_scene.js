@@ -51,7 +51,7 @@ class StoreScene extends Phaser.Scene {
         this.shopUIElements.createButtons(); 
         
         //Prepare purchase panel
-        this.purchasePanel = new PurchasePanel(this, this.shopUIElements.screenCenterX, this.shopUIElements.screenCenterY, null);
+        this.purchasePanel = new PurchasePanel(this, this.shopUIElements.screenCenterX, this.shopUIElements.screenCenterY);
     }
 
     /** 
@@ -77,7 +77,8 @@ class StoreScene extends Phaser.Scene {
                 name: item.name,
                 description: item.description,
                 price: item.price,
-                isplaceholder: false
+                isplaceholder: false,
+                itemtype: itemType
             }
             let shopItem = new ShopItemVisual(this, config);
             this.shelfItems.push(shopItem);
@@ -115,6 +116,13 @@ class StoreScene extends Phaser.Scene {
         }
         this.scrollPanel.updateScrollcontainer();
 
+    }
+
+    /** Function that activates buying the shopItem 
+     * 
+     * */ 
+    buyItem(item, itemType) {
+        this.game.gameClient.playerBuyItem(item, itemType);
     }
 
     /** Function that sets the player berries */

@@ -71,6 +71,13 @@ class Client {
         /** PACK OPENING LISTENERS */
         this.socket.on('pack_opened', (cardList) => {this.packOpeningScene.openPack(cardList);});
         this.socket.on('pack_open_failed', (message) => {this.packOpeningScene.packOpenFailed(message);});
+
+        /** SHOP LISTENERS */
+        this.socket.on('shop_purchase_failed', (message) => {this.storeScene.purchasePanel.purchaseFailed(message);});
+        this.socket.on('shop_purchase_successful', (ShopItem, itemType, cardList) => {
+            this.storeScene.setPlayerBerries();
+            this.storeScene.purchasePanel.purchaseSuccessful(ShopItem, itemType, cardList);
+        });
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -87,6 +94,9 @@ class Client {
 
     /** Function that sends the server the player decks to save */
     askSavePlayerDecks () {this.socket.emit('save_player_decklist', JSON.stringify(this.decklist));};
+
+    /** Function that sends the server a request from the player to buy the item */
+    playerBuyItem (item, itemType) {this.socket.emit('player_buy_item', item, itemType)};
 
     /** Function that connects a new player to the server */
     playerConnect () {this.socket.emit('player_connect', this.username);}

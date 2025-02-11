@@ -37,7 +37,7 @@ class Player {
      * @param {Array<number>} deck
     */
     addToDecklist (deck) {
-        if(this.decklist.length < 9) {
+        if(this.decklist.length < 9 && !this.decklist.find(d => d.name === deck.name)) {
             this.decklist.push(deck);
             this.server.util.savePlayerDecklist(this.username, this.decklist);
             return true;
@@ -72,6 +72,54 @@ class Player {
         } else {
             this.socket.emit('pack_open_failed', 'No packs available');
         }    
+    }
+
+    /** Function that buys an item */
+    async buyItem(item, itemType) {
+        //Get Player money
+        let availableBerries = this.settings.berries;
+        //get item price
+        let itemPrice = item.price;
+
+        //Resolve purchase
+        if(availableBerries >= itemPrice) {
+            //Update player settings
+            this.settings.berries -= itemPrice;
+
+            if(itemType === 'PACKS') { //If it's a pack
+                //Increase Pack Amount
+                let pack = this.settings.packs.find(pack => pack.set === item.name);
+                pack.amount++;
+
+                //Save settings
+                this.server.util.savePlayerSettings(this.username, this.settings);
+
+                this.socket.emit('update_player_settings', this.settings); //Update settings
+                this.socket.emit('shop_purchase_successful', item, itemType, []); //Send message to client
+            } else if(itemType === 'DECKS') {
+                //Get the card list of the selected set
+                const preconstructedDeck = await this.server.util.getPreconstructedDecks(item.name);
+                let cardList = preconstructedDeck.cards;
+             
+                //Add cards to player collection
+                this.collection.addToCollection(cardList);
+
+                //Save player information
+                this.server.util.savePlayerSettings(this.username, this.settings);
+                            
+                //Add deck to decklist if possible
+                let addedToDecklist = this.addToDecklist(preconstructedDeck);
+                
+                //Send new data to clients
+                this.socket.emit('update_player_collection', JSON.stringify(this.collection.collectionToJSON()));
+                this.socket.emit('update_player_settings', this.settings); //Update settings
+                if(addedToDecklist) this.socket.emit('update_player_decklist', JSON.stringify(this.decklist));
+                this.socket.emit('shop_purchase_successful', item, itemType, cardList); //Send message to client
+            }
+        } else {
+            //Send message to the client
+            this.socket.emit('shop_purchase_failed', 'Not enough berries');
+        }
     }
 }
 

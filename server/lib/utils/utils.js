@@ -11,7 +11,7 @@ class Utils {
         let defaultSettings = {
             "avatar": "icon1",
             "firstLogin": true,
-            "berries": 10000,
+            "berries": 20000,
             "packs": [
                 {
                     "set":"OP01",

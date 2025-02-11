@@ -295,7 +295,7 @@ class CollectionBook {
         let setIcon = this.scene.add.image(this.tabs.x - this.tabs.width/2 + 50, this.tabs.y + this.tabs.height / 2 - 30, ASSET_ENUMS.ICON_COLLECTION_SET).setOrigin(0.5).setScale(0.6);
         //Create the set scrollpanel
         let backgroundConfig = {backgroundColor: COLOR_ENUMS.OP_CREAM_DARKER, alpha: 0.8, round:0};
-        let setFilterScrollPanel = new ScrollPanel(this.scene, this.tabs.x - this.tabs.width/2 + 50 - setIcon.width/2*0.6, this.tabs.y + this.tabs.height / 2 - 65 - 200, 150, 200, true, backgroundConfig);
+        let setFilterScrollPanel = new ScrollPanel(this.scene, this.tabs.x - this.tabs.width/2 + 50 - setIcon.width/2*0.6, this.tabs.y + this.tabs.height / 2 - 65 - 200, 150, 200, {scollSpeed: 0.5, depth: 1}, true, backgroundConfig);
         
         setIcon.setInteractive();
         setIcon.on('pointerover', () => {setIcon.setScale(0.65)});

@@ -210,7 +210,7 @@ class ShopUIElements {
         this.playerBerries = this.scene.add.text(
             this.screenCenterX + this.mainPanelSize.width/2 - 3  - this.insidePanelSize.width - 50,
             this.screenCenterY + this.mainPanelSize.height/2 - 3 - this.insidePanelSize.height/2, 
-            '50000',
+            this.scene.game.gameClient.playerSettings.berries,
             {
                 font: "22px OnePieceTCGFont",
                 color: COLOR_ENUMS_CSS.OP_BLACK

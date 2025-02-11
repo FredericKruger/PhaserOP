@@ -12,6 +12,10 @@
 - [ ] Redesign Collection Book
 - [ ] Parametrize UI
 
+# WRITE FIRST LOGIN ANIMATION
+---
+- [ ] Add message that berries were given to help start
+
 # WRITE COLLECTION BOOK
 ---
 - [x] Refactor Tooltip to be permanent and not destroyed (causes bugs)
@@ -42,12 +46,12 @@
 - [x] Create Shop Tabs for Packs and Decks
 - [x] Create Item Panel for Tabs
 - [x] Create Interactivity of shop Items
-- [ ] Create Server Logic for Card Transfer
-- [ ] Send Cards and Add to Collection
-- [ ] Create Animation for Adding Packs
-- [ ] Create Animation for Opening Deck
-- [ ] Send Packs to Settings
-- [ ] Refactor UI Code
+- [x] Create Server Logic for Card Transfer
+- [x] Send Cards and Add to Collection
+- [x] Create Animation for Adding Packs
+- [x] Create Animation for Opening Deck
+- [x] Send Packs to Settings
+- [x] Refactor UI Code
 
 # WRITE GAME PANEL
 ---
@@ -68,6 +72,7 @@
 - [x] Assign GameClient to game object
 - [x] Assign Util to game object
 - [x] Assign Texture Manager to game object
+- [ ] Modify first login behaviour to only change flag when deck was selected./ Currently if logged out not working
 
 # UI IMPROVEMENTS
 ---

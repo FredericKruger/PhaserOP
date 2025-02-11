@@ -7,6 +7,9 @@ class FirstLoginPanel extends Phaser.GameObjects.Container{
         this.obj = [];
         this.decks = [];
 
+        const screenCenterX = this.scene.cameras.main.worldView.x + this.scene.cameras.main.width / 2;
+        const screenCenterY = this.scene.cameras.main.worldView.y + this.scene.cameras.main.height / 2;
+
         // Create a semi-transparent overlay that takes up the whole window
         this.overlay = this.scene.add.graphics();
         this.overlay.fillStyle(COLOR_ENUMS.OP_BLACK, 0.9); // Black color with 50% opacity
@@ -27,7 +30,13 @@ class FirstLoginPanel extends Phaser.GameObjects.Container{
         this.obj.push(this.starterMessage);
 
         this.deckDescription = this.scene.add.image(0, 0, '').setScale(0.35).setOrigin(0.5);
-        //this.obj.push(this.deckDescription);
+
+        // Create the animated sprite
+        this.waitingAnimation = this.scene.add.sprite(
+            -this.scene.scale.width/2+100,
+            this.scene.scale.height/2-75, 
+            ASSET_ENUMS.SKULL_SPRITESHEET).setScale(0.5).setOrigin(0.5);
+        this.waitingAnimation.setVisible(false);
 
         let separatorWidth = 50;
         let packArtStartX = -((346*0.5) * 1.5 + separatorWidth + separatorWidth/2);
@@ -53,7 +62,7 @@ class FirstLoginPanel extends Phaser.GameObjects.Container{
             packArtStartX += (346*0.5) + separatorWidth;
         }
 
-        this.add([this.overlay, this.transparentPanel, this.luffyDialogImg, this.starterMessage, this.decks[0], this.decks[1], this.decks[2], this.decks[3], this.deckDescription]);
+        this.add([this.overlay, this.transparentPanel, this.luffyDialogImg, this.starterMessage, this.decks[0], this.decks[1], this.decks[2], this.decks[3], this.deckDescription, this.waitingAnimation]);
         this.setSize(this.scene.scale.width, this.scene.scale.height);
 
         this.scene.add.existing(this);
@@ -84,13 +93,19 @@ class FirstLoginPanel extends Phaser.GameObjects.Container{
      * @param {number} index - The index of the deck selected
      */
     deckSelected(index) {
+        this.waitingAnimation.setVisible(true);
+        this.waitingAnimation.play(ANIMATION_ENUMS.SKULL_WAITING_ANIMATION);
         this.scene.game.gameClient.addDeckToCollection("ST0" + (index+1));
     }
 
     /** Function that closes the panel */
     closePanel() {
-        this.setVisible(false);
-        this.destroy();
+        this.scene.time.delayedCall(500, () => {
+            this.waitingAnimation.stop();
+            this.waitingAnimation.setVisible(false);
+            this.setVisible(false);
+            this.destroy();
+        });
     }
 
 }

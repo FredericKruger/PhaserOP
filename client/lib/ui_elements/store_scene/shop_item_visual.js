@@ -11,7 +11,8 @@ class ShopItemVisual extends Phaser.GameObjects.Container {
         this.art = this.scene.add.image(0, 0, '').setOrigin(0.5);
         if(!config.isplaceholder) {
             this.art.setTexture(`PACK_ART_${config.art}`);
-            this.art.setScale(0.37);
+            if(config.itemtype === "PACKS") this.art.setScale(0.37);
+            else if(config.itemtype === "DECKS") this.art.setScale(0.45);
             this.art.setPosition(0,  -this.art.displayHeight/2 + 18);
         } else {
             this.art.setVisible(false);

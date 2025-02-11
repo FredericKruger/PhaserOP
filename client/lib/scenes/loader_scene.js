@@ -254,6 +254,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_PLACEHOLDER, `${assetPath}/openPackPlaceholder.png`);
         this.load.image(ASSET_ENUMS.IMAGE_SHOP_ITEM_PLACEHOLDER, `${assetPath}/shopitemPlaceholder.png`);
         this.load.image(ASSET_ENUMS.IMAGE_SHOP_EMPTY_PLACEHOLDER, `${assetPath}/shopEmptyPlaceholder.png`);	
+        this.load.image(ASSET_ENUMS.IMAGE_TREASURE_CHEST, `${assetPath}/treasure_chest.png`);
 
         assetPath = 'assets/shaders';
         this.load.glsl(SHADER_ENUMS.GREYSCALE_SHADER, `${assetPath}/greyscale.frag`);
@@ -264,6 +265,9 @@ class LoaderScene extends Phaser.Scene {
         this.load.glsl(SHADER_ENUMS.LEFT_BORDER_RIPPED_SHADER, `${assetPath}/leftBorderRipped.frag`);
         this.load.glsl(SHADER_ENUMS.BURNING_SHADER, `${assetPath}/burningshader.frag`);
         
+        assetPath = 'assets/spritesheets';
+        this.load.spritesheet(ASSET_ENUMS.SKULL_SPRITESHEET, `${assetPath}/skull_spritesheet.png`, { frameWidth: 400, frameHeight: 300 });	
+
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
 
@@ -289,6 +293,14 @@ class LoaderScene extends Phaser.Scene {
         this.renderer.pipelines.add(PIPELINE_ENUMS.RIGHT_BORDER_RIPPED_PIPELINE, new RightBorderRippedPipeline(this.game));
         this.renderer.pipelines.add(PIPELINE_ENUMS.LEFT_BORDER_RIPPED_PIPELINE, new LeftBorderRippedPipeline(this.game));
         this.renderer.pipelines.add(PIPELINE_ENUMS.BURNING_PIPELINE, new BurningPipeline(this.game));
+
+        ///create Animations
+        this.anims.create({
+            key: ANIMATION_ENUMS.SKULL_WAITING_ANIMATION,
+            frames: this.anims.generateFrameNumbers(ASSET_ENUMS.SKULL_SPRITESHEET, { start: 0, end: 231 }),
+            frameRate: 60,
+            repeat: -1
+        });
 
         let welcomeText = this.make.text({
             x : screenCenterX,

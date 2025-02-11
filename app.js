@@ -145,6 +145,11 @@ io.on('connection', function (/** @type {object} */ socket) {
         }
     });
 
+    /** When a player buys an item in the shop */
+    socket.on('player_buy_item', (item, itemType) => {
+        socket.player.buyItem(item, itemType);
+    });
+
     /** update player settings */
     socket.on('update_player_settings', (/** @type {string} */ playerSettings) => {
         socket.player.settings = playerSettings;
