@@ -66,6 +66,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.BACKGORUND4, `${assetPath}/backgroundshop.png`);
         this.load.image(ASSET_ENUMS.BACKGROUND5, `${assetPath}/background4.jpg`);
         this.load.image(ASSET_ENUMS.DECK_SELECTION_BACKGROUND, `${assetPath}/background_deckselection.jpeg`);
+        this.load.image(ASSET_ENUMS.MATCH_READY_BACKGROUND, `${assetPath}/match_ready_background.jpg`);
         
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
@@ -87,6 +88,8 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.ICON_DONE, `${assetPath}/doneIcon.png`);
         this.load.image(ASSET_ENUMS.ICON_BERRIES, `${assetPath}/berriesIcon.png`);
         this.load.image(ASSET_ENUMS.ICON_BUY, `${assetPath}/buyIcon.png`);
+        this.load.image(ASSET_ENUMS.ICON_PLAY, `${assetPath}/playIcon.png`);
+        this.load.image(ASSET_ENUMS.ICON_LIFE, `${assetPath}/lifeIcon.png`);
 
         assetPath = "assets/icons/setfiltericons";
         this.load.image(ASSET_ENUMS.SET_FILTER_ALL, `${assetPath}/setFilterAll.png`);

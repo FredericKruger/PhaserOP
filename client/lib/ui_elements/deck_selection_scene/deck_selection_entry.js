@@ -52,7 +52,6 @@ class DeckSelectionEntry extends Phaser.GameObjects.Container {
         this.add(this.obj);
 
         this.setSize(this.background.displayWidth, backgroundBanner.displayHeight);
-        console.log(this.background.displayWidth, backgroundBanner.displayHeight);
 
         this.scene.add.existing(this);
 

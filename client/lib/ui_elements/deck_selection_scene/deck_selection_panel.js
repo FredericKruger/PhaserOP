@@ -79,11 +79,13 @@ class DeckSelectionPanel extends Phaser.GameObjects.Container{
         let name = deck.name;
         let colors = this.scene.game.gameClient.playerCollection.cardCollection[deck.cards[0]-1].colors;
         let leader = this.scene.game.gameClient.playerCollection.cardCollection[deck.cards[0]-1].art;
+        let leaderlife = this.scene.game.gameClient.playerCollection.cardCollection[deck.cards[0]-1].life;
         let deckid = id;
 
         return {
             name: name,
             leader: leader,
+            leaderlife: leaderlife,
             colors: colors,
             deckid: deckid
         };
@@ -97,6 +99,9 @@ class DeckSelectionPanel extends Phaser.GameObjects.Container{
             this.selectedEntry.unSelect();
         }
         this.selectedEntry = deckEntry;
+
+        //tell scene to update the match summary panel
+        this.scene.updateSelectedDeck(deckEntry.deckconfig);
     }
 
 }
