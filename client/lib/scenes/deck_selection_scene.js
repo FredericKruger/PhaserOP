@@ -16,8 +16,8 @@ class DeckSelectionScene extends Phaser.Scene {
 
             this.decksPanelSize = {
                 width: this.cameras.main.width*0.65,
-                height: this.cameras.main.height*0.8,
-                x: this.screenCenterX*0.68,
+                height: this.cameras.main.height*0.85,
+                x: this.screenCenterX*0.8,
                 y: this.screenCenterY
             }
 
@@ -44,7 +44,29 @@ class DeckSelectionScene extends Phaser.Scene {
             this.add.image(this.decksPanelSize.x, this.decksPanelSize.y - this.decksPanelSize.height/2, ASSET_ENUMS.IMAGE_DECK_SELECTION_TITLE).setScale(0.2);
 
             //Add the collection button
-            this.openCollectionButton = this.add.image(this.decksPanelSize.x, this.decksPanelSize.y + this.decksPanelSize.height/2, ASSET_ENUMS.ICON_COLLECTION).setScale(0.2);   
+            this.openCollectionButton = this.add.image(this.decksPanelSize.x, this.decksPanelSize.y + this.decksPanelSize.height/2, ASSET_ENUMS.ICON_COLLECTION).setScale(0.25);
+            let openCollectionButtonBrightness = this.openCollectionButton.preFX.addColorMatrix().brightness(1.5);
+            openCollectionButtonBrightness.active = false;
+            this.openCollectionButton.setInteractive();
+            this.openCollectionButton.on('pointerover', () => {
+                this.tweens.killTweensOf(openCollectionButtonBrightness);
+                this.add.tween({
+                    targets: openCollectionButtonBrightness,
+                    alpha: { from: 0, to: 1, yoyo: false, duration: 100, ease: "Expo" },
+                    onStart: () => { openCollectionButtonBrightness.active = true; },
+                });
+            });
+            this.openCollectionButton.on('pointerout', () => {
+                this.tweens.killTweensOf(openCollectionButtonBrightness);
+                this.add.tween({
+                    targets: openCollectionButtonBrightness,
+                    alpha: { from: 1, to: 0, yoyo: false, duration: 100, ease: "Expo" },
+                    onComplete: () => { openCollectionButtonBrightness.active = false; },
+                });    
+            });
+            this.openCollectionButton.on('pointerdown', () => {
+                this.scene.start(SCENE_ENUMS.COLLECTION_MANAGER);
+            }); 
         }
 
         createDecksPanel() {

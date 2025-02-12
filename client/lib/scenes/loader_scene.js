@@ -243,6 +243,14 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.ICON_ATTRIBUTE_SYMBOL_STRIKE,  `${assetPath}/STRIKE.png`);
         this.load.image(ASSET_ENUMS.ICON_ATTRIBUTE_SYMBOL_WISDOM,  `${assetPath}/WISDOM.png`);
 
+        assetPath = 'assets/icons/deckselectionbanners';
+        this.load.image(ASSET_ENUMS.BANNER_RED, `${assetPath}/banner_red.png`);
+        this.load.image(ASSET_ENUMS.BANNER_GREEN, `${assetPath}/banner_green.png`);
+        this.load.image(ASSET_ENUMS.BANNER_BLUE, `${assetPath}/banner_blue.png`);
+        this.load.image(ASSET_ENUMS.BANNER_BLACK, `${assetPath}/banner_black.png`);
+        this.load.image(ASSET_ENUMS.BANNER_PURPLE, `${assetPath}/banner_purple.png`);
+        this.load.image(ASSET_ENUMS.BANNER_YELLOW, `${assetPath}/banner_yellow.png`);
+
         assetPath = 'assets/images';
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_LUFFY,  `${assetPath}/luffy_intro.png`);
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_STARTER_MESSAGE,  `${assetPath}/starter_message.png`);

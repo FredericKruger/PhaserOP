@@ -36,6 +36,15 @@ class Utils {
             return colorString;
         }
     }
+
+    /**
+     * 
+     * @param {string} color 
+     * @returns 
+     */
+    getBannerFromColor = function(color) {
+        return `BANNER_${color}`;
+    }
     
     /**
      * 
