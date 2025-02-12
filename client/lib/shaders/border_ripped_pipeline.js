@@ -39,3 +39,17 @@ class BurningPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
         });
     }
 }
+
+class BlurringPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
+
+    /**
+     * 
+     * @param {Phaser.Game} game 
+     */
+    constructor(game) {
+        super({
+            game: game,
+            fragShader: game.cache.shader.get(SHADER_ENUMS.BLURING_SHADER).fragmentSrc
+        });
+    }
+}

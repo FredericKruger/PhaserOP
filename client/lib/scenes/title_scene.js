@@ -33,13 +33,13 @@ class TitleScene extends Phaser.Scene {
 
         let bFM = this.add.image(screenCenterX, screenCenterY+225, ASSET_ENUMS.ICON_RANDOM_MATCH)
                 .setOrigin(0.5).setScale(0.25).setInteractive().setDepth(2);
-        //bFM.on('pointerdown', () => {this.startDeckSelection(false);});
+        bFM.on('pointerdown', () => {this.startDeckSelection(false);});
         bFM.on('pointerout', () => bFM.setScale(0.25));
         bFM.on('pointerover', () => bFM.setScale(0.26));
 
         let bVSAI = this.add.image(screenCenterX, screenCenterY+295, ASSET_ENUMS.ICON_VS_AI)
                 .setOrigin(0.5).setScale(0.25).setInteractive().setDepth(2);
-        //bVSAI.on('pointerdown', () => {this.startDeckSelection(true);});
+        bVSAI.on('pointerdown', () => {this.startDeckSelection(true);});
         bVSAI.on('pointerout', () => bVSAI.setScale(0.25));
         bVSAI.on('pointerover', () => bVSAI.setScale(0.26));
 
@@ -107,14 +107,10 @@ class TitleScene extends Phaser.Scene {
         this.scene.start(SCENE_ENUMS.PACK_OPENING);
     }
 
-    /*startDeckSelection (vsAI) {
-        if(!this.deckselectionLoaded) {
-            this.scene.start('deckselection', {"vsAI": vsAI});
-            this.deckselectionLoaded = true;
-        } else {
-            this.scene.manager.getScene('deckselection').scene.restart({"vsAI": vsAI});
-        }
-    }*/
+    //Open Deck Selection
+    startDeckSelection (vsAI) {
+        this.scene.start(SCENE_ENUMS.DECK_SELECTION, {"vsAI": vsAI});
+    }
 
     logout () {
         this.game.gameClient.playerDisconnect();

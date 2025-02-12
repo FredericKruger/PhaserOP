@@ -65,6 +65,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.MAP_BACKGROUND, `${assetPath}/map_background.webp`);
         this.load.image(ASSET_ENUMS.BACKGORUND4, `${assetPath}/backgroundshop.png`);
         this.load.image(ASSET_ENUMS.BACKGROUND5, `${assetPath}/background4.jpg`);
+        this.load.image(ASSET_ENUMS.DECK_SELECTION_BACKGROUND, `${assetPath}/background_deckselection.jpeg`);
         
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
@@ -251,19 +252,21 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_DESCRIPTION_ST04,  `${assetPath}/description_ST04.png`);
         this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_TITLE, `${assetPath}/openPackTitle.png`);
         this.load.image(ASSET_ENUMS.IMAGE_SHOP_TITLE, `${assetPath}/shopTitle.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_DECK_SELECTION_TITLE, `${assetPath}/deckSelectionTitle.png`);
         this.load.image(ASSET_ENUMS.IMAGE_PACK_OPEN_PLACEHOLDER, `${assetPath}/openPackPlaceholder.png`);
         this.load.image(ASSET_ENUMS.IMAGE_SHOP_ITEM_PLACEHOLDER, `${assetPath}/shopitemPlaceholder.png`);
         this.load.image(ASSET_ENUMS.IMAGE_SHOP_EMPTY_PLACEHOLDER, `${assetPath}/shopEmptyPlaceholder.png`);	
         this.load.image(ASSET_ENUMS.IMAGE_TREASURE_CHEST, `${assetPath}/treasure_chest.png`);
 
         assetPath = 'assets/shaders';
-        this.load.glsl(SHADER_ENUMS.GREYSCALE_SHADER, `${assetPath}/greyscale.frag`);
-        this.load.glsl(SHADER_ENUMS.ORANGE_TO_PURPLE_SHADER, `${assetPath}/purpleToOrange.frag`);
-        this.load.glsl(SHADER_ENUMS.BLUE_TINT_SHADER, `${assetPath}/darkBlueTint.frag`);
-        this.load.glsl(SHADER_ENUMS.GLOWING_BORDER_BLUE_SHADER, `${assetPath}/glowingBorderBlue.frag`);
-        this.load.glsl(SHADER_ENUMS.RIGHT_BORDER_RIPPED_SHADER, `${assetPath}/rightBorderRipped.frag`);
-        this.load.glsl(SHADER_ENUMS.LEFT_BORDER_RIPPED_SHADER, `${assetPath}/leftBorderRipped.frag`);
-        this.load.glsl(SHADER_ENUMS.BURNING_SHADER, `${assetPath}/burningshader.frag`);
+        this.load.glsl(SHADER_ENUMS.GREYSCALE_SHADER, `${assetPath}/greyscale_shader.frag`);
+        this.load.glsl(SHADER_ENUMS.ORANGE_TO_PURPLE_SHADER, `${assetPath}/purple_to_orange_shader.frag`);
+        this.load.glsl(SHADER_ENUMS.BLUE_TINT_SHADER, `${assetPath}/dark_blue_tint_shader.frag`);
+        this.load.glsl(SHADER_ENUMS.GLOWING_BORDER_BLUE_SHADER, `${assetPath}/glowing_border_blue_shader.frag`);
+        this.load.glsl(SHADER_ENUMS.RIGHT_BORDER_RIPPED_SHADER, `${assetPath}/right_border_ripped_shader.frag`);
+        this.load.glsl(SHADER_ENUMS.LEFT_BORDER_RIPPED_SHADER, `${assetPath}/left_border_ripped_shader.frag`);
+        this.load.glsl(SHADER_ENUMS.BURNING_SHADER, `${assetPath}/burning_shader.frag`);
+        this.load.glsl(SHADER_ENUMS.BLURING_SHADER, `${assetPath}/blurring_shader.frag`);
         
         assetPath = 'assets/spritesheets';
         this.load.spritesheet(ASSET_ENUMS.SKULL_SPRITESHEET, `${assetPath}/skull_spritesheet.png`, { frameWidth: 400, frameHeight: 300 });	
@@ -293,6 +296,7 @@ class LoaderScene extends Phaser.Scene {
         this.renderer.pipelines.add(PIPELINE_ENUMS.RIGHT_BORDER_RIPPED_PIPELINE, new RightBorderRippedPipeline(this.game));
         this.renderer.pipelines.add(PIPELINE_ENUMS.LEFT_BORDER_RIPPED_PIPELINE, new LeftBorderRippedPipeline(this.game));
         this.renderer.pipelines.add(PIPELINE_ENUMS.BURNING_PIPELINE, new BurningPipeline(this.game));
+        this.renderer.pipelines.add(PIPELINE_ENUMS.BLURING_PIPELINE, new BlurringPipeline(this.game));
 
         ///create Animations
         this.anims.create({

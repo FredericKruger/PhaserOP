@@ -12,9 +12,10 @@ class FirstLoginPanel extends Phaser.GameObjects.Container{
 
         // Create a semi-transparent overlay that takes up the whole window
         this.overlay = this.scene.add.graphics();
-        this.overlay.fillStyle(COLOR_ENUMS.OP_BLACK, 0.9); // Black color with 50% opacity
+        this.overlay.fillStyle(COLOR_ENUMS.OP_BLACK, 0.7); // Black color with 50% opacity
         this.overlay.fillRect(-this.scene.scale.width/2, -this.scene.scale.height/2, this.scene.scale.width, this.scene.scale.height);
         this.obj.push(this.overlay);
+        
 
         // Create a transparent panel that takes up the whole window
         this.transparentPanel = this.scene.add.graphics();

@@ -53,6 +53,14 @@
 - [x] Send Packs to Settings
 - [x] Refactor UI Code
 
+# WRITE DECK SELECTION PANEL
+---
+- [ ] Write Main UI
+- [ ] Write DeckSelection Panel
+- [ ] Write DeckEntry
+- [ ] Write Selection Behaviour
+- [ ] Write Game Summary Panel
+
 # WRITE GAME PANEL
 ---
 - [ ] Draw the board
@@ -78,6 +86,7 @@
 ---
 - [x] Add custom One Piece Font
 - [x] Add custom One Piece TCG Font
+- [ ] Blur Panels when there's a container above
 - [ ] Add Depth Handling
     - [x] Title Screen
     - [ ] Open Pack Panel
