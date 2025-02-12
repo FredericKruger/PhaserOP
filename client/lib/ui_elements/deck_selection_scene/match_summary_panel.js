@@ -30,19 +30,8 @@ class MatchSummaryPanel extends Phaser.GameObjects.Container {
     create() {
         //Leader Portrait
         this.leaderProtrait = this.scene.add.image(0, -150, '');
+        this.leaderProtrait.preFX.addGlow(COLOR_ENUMS.OP_CREAM_DARKER, 3);
         this.obj.push(this.leaderProtrait);
-
-        //Portrait Frame
-        this.portraitFrame = this.scene.add.graphics();
-        this.portraitFrame.lineStyle(4, COLOR_ENUMS.OP_CREAM_DARKER); // Set the line style (width and color)
-        this.portraitFrame.strokeRoundedRect(
-                this.leaderProtrait.x - 75,
-                this.leaderProtrait.y - 75,
-                150,
-                150,
-                20 // Adjust the radius as needed
-            );
-        this.obj.push(this.portraitFrame);
 
         //Deck Color
         this.deckColor = this.scene.add.image(
@@ -101,12 +90,18 @@ class MatchSummaryPanel extends Phaser.GameObjects.Container {
         this.obj.unshift(this.background);
     }
 
+    /** Function to set the panel's visibility
+     * @param {boolean} visible - The visibility of the panel
+     */
     setVisible(visible) {
         this.obj.forEach(element => {
             element.setVisible(visible);
         });
     }
 
+    /** Update the content of the panel
+     * @param {Object} deck - The deck to display
+     */
     updateSelectedDeck(deck) {
         this.leaderProtrait.setTexture(this.scene.game.utilFunctions.getLeaderArt(deck.leader));
         this.leaderProtrait.setScale(1.5);
