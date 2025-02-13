@@ -57,7 +57,7 @@ class PlayerInfoUI {
             {font: "1000 40px OnePieceTCGFont", color: color, stroke: COLOR_ENUMS_CSS.OP_WHITE, strokeThickness: 4}
         ).setOrigin(0.5).setDepth(1);
         this.restingDonCardAmountText = this.scene.add.text(this.restingDonplaceholderPos.x, this.restingDonplaceholderPos.y, "0", 
-            {font: "1000 40px OnePieceTCGFont", color: color, stroke: COLOR_ENUMS_CSS.OP_WHITE, strokeThickness: 4}
+            {font: "1000 25px OnePieceTCGFont", color: color, stroke: COLOR_ENUMS_CSS.OP_WHITE, strokeThickness: 4}
         ).setOrigin(0.5).setDepth(1);
 
         //Life text

@@ -30,10 +30,10 @@ class CardLocationUI {
             this.posScale = CARD_SCALE.IN_LOCATION;
             if(playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
                 this.posX = this.playerScene.donDeck.posX + this.playerScene.donDeck.posWidth/2 + GAME_UI_CONSTANTS.COMPONENT_SEPARATOR_WIDTH + this.posScale * GAME_UI_CONSTANTS.CARD_ART_WIDTH/2;
-                this.posY = this.playerScene.donDeck.posY + ((CARD_SCALE.IN_DON_DECK - CARD_SCALE.IN_LOCATION) * GAME_UI_CONSTANTS.CARD_ART_HEIGHT)/2;;
+                this.posY = this.playerScene.donDeck.posY - ((CARD_SCALE.IN_LOCATION - CARD_SCALE.IN_DON_DECK) * GAME_UI_CONSTANTS.CARD_ART_HEIGHT)/2;;
             } else {
                 this.posX = this.playerScene.donDeck.posX - this.playerScene.donDeck.posWidth/2 - GAME_UI_CONSTANTS.COMPONENT_SEPARATOR_WIDTH - this.posScale * GAME_UI_CONSTANTS.CARD_ART_WIDTH/2;
-                this.posY = this.playerScene.donDeck.posY - ((CARD_SCALE.IN_DON_DECK - CARD_SCALE.IN_LOCATION) * GAME_UI_CONSTANTS.CARD_ART_HEIGHT)/2;
+                this.posY = this.playerScene.donDeck.posY - ((CARD_SCALE.IN_LOCATION - CARD_SCALE.IN_DON_DECK) * GAME_UI_CONSTANTS.CARD_ART_HEIGHT)/2;
             }
         }
         this.posWidth = GAME_UI_CONSTANTS.CARD_ART_WIDTH * this.posScale;
