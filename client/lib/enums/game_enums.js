@@ -3,12 +3,6 @@ const GAME_ENUMS = Object.freeze({
     CARD_LIMIT: 4,
     CARD_LEADER_LIMIT: 1,
     
-    CARD_ART_WIDTH: 744,
-    CARD_ART_HEIGHT: 1004,
-    
-    CARD_WIDTH: 704,
-    CARD_HEIGHT: 984,
-
     BOOK_CARD_WIDTH: 260,
     BOOK_CARD_HEIGHT: 300,
 
@@ -41,6 +35,7 @@ const SCENE_ENUMS = Object.freeze({
     PACK_OPENING: 'PACK_OPENING',
     STORE: 'STORE',
     DECK_SELECTION: 'DECK_SELECTION',
+    GAME_SCENE: 'GAME_SCENE',
 });
 
 const COLOR_ENUMS = Object.freeze({
@@ -67,7 +62,8 @@ const COLOR_ENUMS_CSS = Object.freeze({
     OP_CREAM: "#E9E6CE",
     OP_WHITE: "#ffffff",
     OP_BLACK: "#000000",
-    OP_RED: "0xD6AA44",
+    OP_BLUE: "#002060",
+    OP_RED: "#80350E"
 });
 
 const ERROR_CODES = Object.freeze({

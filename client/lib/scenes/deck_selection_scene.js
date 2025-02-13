@@ -110,7 +110,7 @@ class DeckSelectionScene extends Phaser.Scene {
                     onComplete: () => { playButtonBrightness.active = false; },
                 }); 
             });
-            //this.playButton.on('pointerdown', () => this.startDuel());
+            this.playButton.on('pointerdown', () => this.startGame());
 
             // Create back button
             this.backButton = new Button({
@@ -171,6 +171,7 @@ class DeckSelectionScene extends Phaser.Scene {
             );
         }
 
+        /** Function to create the match summary panel */
         createMatchSummaryPanel() {
             // Create a texture from the image
             let graphics = this.add.graphics();
@@ -221,6 +222,10 @@ class DeckSelectionScene extends Phaser.Scene {
         /** Update the deck summary panel */
         updateSelectedDeck(deck) {
             this.matchSummaryPanel.updateSelectedDeck(deck);
+        }
+
+        startGame() {
+            this.scene.start(SCENE_ENUMS.GAME_SCENE);
         }
 
 }

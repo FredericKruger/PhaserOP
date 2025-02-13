@@ -68,6 +68,8 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.DECK_SELECTION_BACKGROUND, `${assetPath}/background_deckselection.jpeg`);
         this.load.image(ASSET_ENUMS.MATCH_READY_BACKGROUND, `${assetPath}/match_ready_background.jpg`);
         
+        this.load.image(ASSET_ENUMS.BATTE_BACKGROUND_1, `${assetPath}/battle_background_foosha_village.webp`);
+
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
         this.load.image(ASSET_ENUMS.ARROW_LEFT, `${assetPath}/leftarrow.png`);
@@ -278,6 +280,15 @@ class LoaderScene extends Phaser.Scene {
         this.load.glsl(SHADER_ENUMS.LEFT_BORDER_RIPPED_SHADER, `${assetPath}/left_border_ripped_shader.frag`);
         this.load.glsl(SHADER_ENUMS.BURNING_SHADER, `${assetPath}/burning_shader.frag`);
         this.load.glsl(SHADER_ENUMS.BLURING_SHADER, `${assetPath}/blurring_shader.frag`);
+
+        assetPath = 'assets/images/game';
+        this.load.image(ASSET_ENUMS.GAME_ACTIVE_PLAYER_INFO, `${assetPath}/activePlayerInfo.png`);
+        this.load.image(ASSET_ENUMS.GAME_PASSIVE_PLAYER_INFO, `${assetPath}/passivePlayerInfo.png`);
+        this.load.image(ASSET_ENUMS.GAME_DON_SMALL, `${assetPath}/don_small.png`);
+        this.load.image(ASSET_ENUMS.GAME_PHASE_BOX, `${assetPath}/phaseBox.png`);
+
+        assetPath = 'assets/cardart';
+        this.load.image(ASSET_ENUMS.DON_CARD, `${assetPath}/don.png`);
         
         assetPath = 'assets/spritesheets';
         this.load.spritesheet(ASSET_ENUMS.SKULL_SPRITESHEET, `${assetPath}/skull_spritesheet.png`, { frameWidth: 400, frameHeight: 300 });	

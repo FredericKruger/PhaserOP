@@ -55,11 +55,12 @@
 
 # WRITE DECK SELECTION PANEL
 ---
-- [ ] Write Main UI
-- [ ] Write DeckSelection Panel
-- [ ] Write DeckEntry
-- [ ] Write Selection Behaviour
-- [ ] Write Game Summary Panel
+- [x] Write Main UI
+- [x] Write DeckSelection Panel
+- [x] Write DeckEntry
+- [x] Write Selection Behaviour
+- [x] Write Game Summary Panel
+- [ ] Write Server Logic to start a Match
 
 # WRITE GAME PANEL
 ---
