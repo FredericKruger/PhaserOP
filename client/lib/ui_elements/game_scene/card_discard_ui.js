@@ -27,7 +27,6 @@ class CardDiscardUI extends CardPileUI {
 
     //Function to draw the deck ui elments
     create() {
-        console.log("CREATE DISCARD UI");
         //Create Outline
         this.deckOutline = this.scene.add.graphics();
         this.deckOutline.fillStyle(COLOR_ENUMS.OP_BLACK, 0.5); // Black color with 50% opacity

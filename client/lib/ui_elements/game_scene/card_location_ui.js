@@ -21,10 +21,10 @@ class CardLocationUI {
             this.posScale = CARD_SCALE.IN_LOCATION;
             if(playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
                 this.posX = this.scene.screenCenterX;
-                this.posY = this.scene.screenHeight * 0.85;
+                this.posY = this.scene.screenHeight * 0.81;
             } else {
                 this.posX = this.scene.screenCenterX;
-                this.posY = this.scene.screenHeight * 0.15;
+                this.posY = this.scene.screenHeight * 0.19;
             }
         } else if(id === "Stage") {
             this.posScale = CARD_SCALE.IN_LOCATION;
@@ -51,4 +51,9 @@ class CardLocationUI {
         this.deckOutline.setDepth(0);
     }
 
+    addCard(card) {
+        this.card = card;
+        this.card.moveTo(this.posX, this.posY);
+        this.card.scaleTo(this.posScale);
+    }
 }

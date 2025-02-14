@@ -15,6 +15,14 @@ class GameScene extends Phaser.Scene {
 
         this.activePlayerScene = new PlayerScene(this, PLAYER_POSITIONS.BOTTOM, this.activePlayer);
         this.passivePlayerScene = new PlayerScene(this, PLAYER_POSITIONS.TOP, this.passivePlayer);
+
+        //Set Engines
+        this.actionManager = new ActionManager(this);
+        this.actionLibrary = new ActionLibrary(this);
+        this.animationManager = new AnimationManager(this);
+
+        //Game state variables
+        this.dragginCard = false;
     }
 
     create() {
@@ -33,8 +41,101 @@ class GameScene extends Phaser.Scene {
         this.activePlayerScene.create();
         this.passivePlayerScene.create();
 
-        //Will be removed
-        //this.activePlayerScene.deck.addCards([400,410,410,410,410]);
+        //Create new card to test
+        let cards = [];
+        for(let id of [410,411,420,413,411, 414]){
+            let testCard = new GameCardUI(this, this.activePlayerScene, {
+                x: this.screenCenterX,
+                y: this.screenCenterY,
+                cardData: null,
+                state: CARD_STATES.IN_HAND,
+                artVisible: false
+            });
+            testCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[id]);
+            testCard.makeInteractive(true);
+            testCard.makeDraggable(true);
+            cards.push(testCard);
+        }
+        this.activePlayerScene.hand.addCards(cards);
+        //create leader Card
+        let leaderCard = new GameCardUI(this, this.activePlayerScene, {
+            x: this.screenCenterX,
+            y: this.screenCenterY,
+            cardData: null,
+            state: CARD_STATES.IN_LOCATION,
+            artVisible: false
+        });
+        leaderCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[400]);
+        this.activePlayerScene.leaderLocation.addCard(leaderCard);
+
+        /** LISTENERS */
+        /** Hander for when the poinster enters a card */
+        this.input.on('pointerover', (pointer, gameObject) => {
+            if(gameObject[0] instanceof GameCardUI) {
+                let card = gameObject[0];
+                if(card.state === CARD_STATES.IN_HAND) {
+                    card.setState(CARD_STATES.IN_HAND_HOVERED);
+                    card.playerScene.hand.update();
+                }
+            }
+        });
+
+        /** Handler for when the pointer leaves a card */
+        this.input.on('pointerout', (pointer, gameObject) => {
+            if(gameObject[0] instanceof GameCardUI) {
+                let card = gameObject[0];
+                if(card.state === CARD_STATES.IN_HAND_HOVERED) {
+                    card.setState(CARD_STATES.IN_HAND);
+                    card.playerScene.hand.update();
+                }
+            }
+        });
+
+        /** HANLDER FOR CLICKING */
+        this.input.on('pointerdown', (pointer, gameObject) => {
+        });    
+
+
+        /** HANDLER FOR DRAG START */
+        this.input.on('dragstart', (pointer, gameObject) => {
+            this.children.bringToTop(gameObject);
+            this.dragginCard = true;
+
+            gameObject.setState(CARD_STATES.TRAVELLING_FROM_HAND);
+            gameObject.scaleTo(CARD_SCALE.TRAVELLING_FROM_HAND, true, false, false);
+            gameObject.angleTo(0, true, false, false);
+
+            gameObject.playerScene.hand.update();
+        });
+
+        /** HANDLDER FOR DRAG */
+        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+            gameObject.setPosition(dragX, dragY);
+        });
+
+        /** HANDLER FOR DRAGEN */
+        this.input.on('dragend', (pointer, gameObject, dropped) => {
+            if(!dropped) {
+                //Reset the cards position
+                gameObject.x = gameObject.input.dragStartX;
+                gameObject.y = gameObject.input.dragStartY;
+
+                //Reset card state
+                gameObject.setState(CARD_STATES.IN_HAND);
+                gameObject.playerScene.hand.update();
+
+                this.dragginCard = false;
+            }
+        });
+
+        /** HANDLER FOR DROP */
+        this.input.on('drop', (pointer, gameObject, dropZone) => {
+            if(dropZone.getData('name') === 'CharacterArea') {
+                gameObject.playerScene.playCard(gameObject);
+            }
+
+            this.dragginCard = false;
+        });
     }
 
 }

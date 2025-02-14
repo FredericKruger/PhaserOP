@@ -9,21 +9,114 @@ class CardHandUI extends CardPileUI {
         super(scene, playerScene);
 
         //Set Y position
-        this.handY = 0;
+        this.posY = this.posX = 0;
+        this.angleStep = 2; // Adjust this value to change the angle between cards
+        this.heightStep = 5; // Adjust this value to change the height difference between cards
+
         if(playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
-            this.handY = this.scene.screenCenterY + this.scene.screenHeight / 2 - 30;
+            this.posY = this.scene.screenCenterY + this.scene.screenHeight / 2 - 50;
+            this.posX = this.scene.screenWidth * 0.75;
         } else {
-            this.handY = 30;
+            this.posY = 50;
+            this.posX = this.scene.screenWidth * 0.25;
+            this.heightStep *= -1;
+        }
+    }
+
+    /** Function to update the hand */
+    update() {
+        let numberCards = this.getNumberCardsInHand();
+        let currentIndex = Math.floor(numberCards/2) - numberCards;
+
+        // Adjust currentIndex for even number of cards
+        if (numberCards % 2 === 0) {
+            currentIndex += 0.5;
+        }
+
+        //find the index of the card currently hovered
+        let hoverIndex = -1;
+        //Find if a card is being hovered
+        for(let i = 0; i<this.cards.length; i++) {
+            if(this.cards[i].state === CARD_STATES.IN_HAND_HOVERED) {
+                hoverIndex = i;
+                break;
+            }
+        }
+
+        //Iterate through cards
+        for(let i=0; i<this.cards.length; i++) {
+            let card = this.cards[i];
+            if(card.state === CARD_STATES.IN_HAND) {
+                let cardX = this.posX + Math.floor(currentIndex) * (GAME_UI_CONSTANTS.CARD_ART_WIDTH* GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * CARD_SCALE.IN_HAND);
+                let cardY = this.posY + Math.abs(currentIndex) * this.heightStep;
+                let cardAngle = currentIndex * this.angleStep;
+
+                if(hoverIndex>-1) {
+                    if(i<hoverIndex) {
+                        cardX -= GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND_HOVERED * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION - 10;
+                    } else if(i>hoverIndex) { 
+                        cardX += GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND_HOVERED * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION - 10;
+                    } 
+                }
+
+                card.moveTo(cardX, cardY, true, false, false);
+                card.scaleTo(CARD_SCALE.IN_HAND, true, false, false);
+                card.angleTo(cardAngle);
+
+                currentIndex++;
+            } else if(card.state === CARD_STATES.IN_HAND_HOVERED) { //If the card is hovered, zoom in and bring the card up
+                let cardX = this.posX + Math.floor(currentIndex) * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * CARD_SCALE.IN_HAND);
+                let cardY = this.posY - (card.scale * GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.65 - 50);// - (Math.abs(currentIndex) * this.heightStep);
+                let cardAngle = currentIndex * this.angleStep;
+
+                card.moveTo(cardX, cardY, true, false, false);
+                card.scaleTo(CARD_SCALE.IN_HAND_HOVERED, true, false, false);
+                card.angleTo(cardAngle);
+
+                currentIndex++;
+            }
+            if(card.playerScene.player.isActivePlayer) this.scene.children.bringToTop(card); //reorder the cards if they are in the main player's hand and not in the mulligan
         }
     }
 
     /**
-     * Function that adds new cards to the hand
-     * @param {Array<number>} card 
+     * Function that returns the number of cards in the hand
+     * @returns {number}
      */
-    addCards(card) {
-        this.cards.push(card);
-        //this.updateHand();
+    getNumberCardsInHand() {
+        let numberCards = 0;
+        for(let card of this.cards) {
+            if(card.state === CARD_STATES.IN_HAND) {
+                numberCards++;
+            }
+        }
+        return numberCards;
     }
+
+    /**
+     * Function that adds new cards to the hand
+     * @param {Array<GameCardUI>} cards
+     */
+    addCards(cards) {
+        for(let card of cards){
+            card.setDepth(2);
+            this.cards.push(card);
+        } 
+
+        this.update();
+    }
+
+    /** Function that removes a card from the hand
+     * @param {GameCardUI} card
+     */
+    removeCard(card) {
+        let index = this.cards.indexOf(card);
+        if(index > -1) {
+            this.cards.splice(index, 1);
+        }
+        this.update();
+    }
+
+
 
 }

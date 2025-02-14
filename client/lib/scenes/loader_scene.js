@@ -256,6 +256,9 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.BANNER_PURPLE, `${assetPath}/banner_purple.png`);
         this.load.image(ASSET_ENUMS.BANNER_YELLOW, `${assetPath}/banner_yellow.png`);
 
+        assetPath = 'assets/icons';
+        this.load.image(ASSET_ENUMS.ICON_COUNTER, `${assetPath}/counter_icon.png`);
+
         assetPath = 'assets/images';
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_LUFFY,  `${assetPath}/luffy_intro.png`);
         this.load.image(ASSET_ENUMS.IMAGE_INTRO_STARTER_MESSAGE,  `${assetPath}/starter_message.png`);

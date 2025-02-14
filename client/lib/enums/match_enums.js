@@ -4,6 +4,8 @@ const GAME_UI_CONSTANTS = Object.freeze({
 
     CARD_ART_WIDTH: 600,
     CARD_ART_HEIGHT: 838,
+
+    HAND_CARD_SEPARATION: 0.5
 });
 
 const PLAYER_POSITIONS = Object.freeze({
@@ -19,16 +21,30 @@ const CARD_STATES = Object.freeze({
     IN_LOCATION: 'IN_LOCATION',
 
     TRAVELLING_DECK_HAND: 'TRAVELLING_DECK_HAND',
+    TRAVELLING_FROM_HAND: 'TRAVELLING_FROM_HAND',
+});
+
+const CARD_TYPES = Object.freeze({
+    CHARACTER: 'CHARACTER',
+    EVENT: 'EVENT',
+    LOCATION: 'LOCATION',
+    LEADER: 'LEADER',
+    DON: 'DON',
 });
 
 const CARD_SCALE = Object.freeze({
     IN_DON_DECK: 0.11,
     IN_DECK: 0.13,
-    IN_HAND: 0.3,
-    IN_HAND_HOVERED: 0.4,
+    IN_HAND: 0.27,
+    IN_HAND_HOVERED: 0.45,
+
+    TRAVELLING_FROM_HAND:0.2,
+
     IN_DISCARD: 0.11,
-    IN_LOCATION: 0.17,
-    IN_LOCATION_LEADER: 0.2 
+    IN_LOCATION: 0.18,
+    IN_PLAY_ANIMATION: 0.25,
+
+    IN_LOCATION_LEADER: 0.23 
 });
 
 const GAME_PHASES = Object.freeze({
