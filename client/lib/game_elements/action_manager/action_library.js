@@ -40,7 +40,9 @@ class ActionLibrary {
         }).pause();
 
         //Prepare the tweens from the playArea animation
-        let tweens2 = playerScene.characterArea.addCardAnimation(card);
+        let tweens2 = null;
+        if(card.cardData.card === CARD_TYPES.CHARACTER) tweens2 = playerScene.characterArea.addCardAnimation(card);
+        else if(card.cardData.card === CARD_TYPES.STAGE) tweens2 = playerScene.stageLocation.addCardAnimation(card);
         tweens2 = tweens2.concat({ //concat additional tween to call the completeAction function
             duration: 100,
             onComplete: () => {this.actionManager.finalizeAction();}
@@ -66,7 +68,10 @@ class ActionLibrary {
             playerScene.hand.removeCard(card); //Remove the card form the hand
 
             card.isInPlayAnimation = true;
-            playerScene.characterArea.addCard(card); //Add the card to the play area
+            if(card.cardData.card === CARD_TYPES.CHARACTER)
+                playerScene.characterArea.addCard(card); //Add the card to the play area
+            else if(card.cardData.card === CARD_TYPES.STAGE)
+                playerScene.stageLocation.addCard(card); //Add the card to the play area
         };
         action.animation = animation; //Play animation
         action.end = () => {

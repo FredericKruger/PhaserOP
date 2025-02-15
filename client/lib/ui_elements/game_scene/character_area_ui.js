@@ -15,7 +15,7 @@ class CharacterAreaUI extends CardPileUI {
         this.posX = this.scene.screenCenterX;
         
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
-            this.posY = this.scene.screenCenterY + 20 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.5 * CARD_SCALE.IN_LOCATION;
+            this.posY = this.scene.screenCenterY + GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.5 * CARD_SCALE.IN_LOCATION;
         } else {
             this.posY = this.scene.screenCenterY - 20 - GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.5 * CARD_SCALE.IN_LOCATION;
         }
@@ -32,9 +32,21 @@ class CharacterAreaUI extends CardPileUI {
         } 
     }
 
+    /** Funciton to update the character area */
     update() {
-        for(let card of this.cards) {
-            card.moveTo(this.posX, this.posY, true, false, false);
+        let numberCards = Math.max(this.cards.length-1, 0);
+        let currentIndex = numberCards/2 - numberCards;
+
+        //Iterate through cards
+        for(let i=0; i<this.cards.length; i++) {
+            let card = this.cards[i];
+
+            let cardX = this.posX - currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_LOCATION + 20);
+            let cardY = this.posY;
+            card.moveTo(cardX, cardY, true, false, false);
+            card.scaleTo(CARD_SCALE.IN_LOCATION, true, false, false);
+
+            currentIndex++;
         }
     }
 

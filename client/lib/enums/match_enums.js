@@ -27,7 +27,7 @@ const CARD_STATES = Object.freeze({
 const CARD_TYPES = Object.freeze({
     CHARACTER: 'CHARACTER',
     EVENT: 'EVENT',
-    LOCATION: 'LOCATION',
+    STAGE: 'STAGE',
     LEADER: 'LEADER',
     DON: 'DON',
 });

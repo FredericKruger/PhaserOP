@@ -43,7 +43,7 @@ class GameScene extends Phaser.Scene {
 
         //Create new card to test
         let cards = [];
-        for(let id of [410,411,420,413,411, 414]){
+        for(let id of [411,412,421,414,413, 415, 145]){
             let testCard = new GameCardUI(this, this.activePlayerScene, {
                 x: this.screenCenterX,
                 y: this.screenCenterY,
@@ -51,27 +51,29 @@ class GameScene extends Phaser.Scene {
                 state: CARD_STATES.IN_HAND,
                 artVisible: false
             });
-            testCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[id]);
+            testCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[id-1]);
             testCard.makeInteractive(true);
             testCard.makeDraggable(true);
             cards.push(testCard);
         }
         this.activePlayerScene.hand.addCards(cards);
         //create leader Card
-        let leaderCard = new GameCardUI(this, this.activePlayerScene, {
+        /*let leaderCard = new GameCardUI(this, this.activePlayerScene, {
             x: this.screenCenterX,
             y: this.screenCenterY,
             cardData: null,
             state: CARD_STATES.IN_LOCATION,
             artVisible: false
         });
-        leaderCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[400]);
-        this.activePlayerScene.leaderLocation.addCard(leaderCard);
+        leaderCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[400]);*/
+        //this.activePlayerScene.leaderLocation.addCard(leaderCard);
 
         /** LISTENERS */
         /** Hander for when the poinster enters a card */
         this.input.on('pointerover', (pointer, gameObject) => {
-            if(gameObject[0] instanceof GameCardUI) {
+            if(gameObject[0] instanceof GameCardUI
+                && !this.dragginCard
+            ) {
                 let card = gameObject[0];
                 if(card.state === CARD_STATES.IN_HAND) {
                     card.setState(CARD_STATES.IN_HAND_HOVERED);
@@ -82,7 +84,9 @@ class GameScene extends Phaser.Scene {
 
         /** Handler for when the pointer leaves a card */
         this.input.on('pointerout', (pointer, gameObject) => {
-            if(gameObject[0] instanceof GameCardUI) {
+            if(gameObject[0] instanceof GameCardUI
+                && !this.dragginCard
+            ) {
                 let card = gameObject[0];
                 if(card.state === CARD_STATES.IN_HAND_HOVERED) {
                     card.setState(CARD_STATES.IN_HAND);

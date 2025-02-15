@@ -17,8 +17,8 @@ class PlayerScene {
         this.discard = new CardDiscardUI(scene, this);
         this.deck = new CardDeckUI(scene, this);
 
-        this.leaderLocation = new CardLocationUI(scene, this, "Leader");
-        this.stageLocation = new CardLocationUI(scene, this, "Stage");
+        this.leaderLocation = new CardLocationUI(scene, this, CARD_TYPES.LEADER);
+        this.stageLocation = new CardLocationUI(scene, this, CARD_TYPES.STAGE);
 
         this.hand = new CardHandUI(scene, this);
         this.characterArea = new CharacterAreaUI(scene, this);
@@ -41,9 +41,9 @@ class PlayerScene {
      * @param {GameCardUI} card
      */
     playCard(card) {
-        if(card.cardData.type === CARD_TYPES.LOCATION) {
-            //this.characterArea.addCard(card);
-        } else if(card.cardData.card === CARD_TYPES.CHARACTER) {
+        if(card.cardData.card === CARD_TYPES.STAGE
+            || card.cardData.card === CARD_TYPES.CHARACTER
+        ) {
             this.scene.actionLibrary.playCardAction(card, this);
         }
     }

@@ -17,7 +17,7 @@ class CardLocationUI {
         //Prepare positionof the deck
         this.posX = this.posY = this.posWidth = this.posHeight = 0;
         this.posScale = 1;
-        if(id === "Leader") {
+        if(id === CARD_TYPES.LEADER) {
             this.posScale = CARD_SCALE.IN_LOCATION;
             if(playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
                 this.posX = this.scene.screenCenterX;
@@ -26,7 +26,7 @@ class CardLocationUI {
                 this.posX = this.scene.screenCenterX;
                 this.posY = this.scene.screenHeight * 0.19;
             }
-        } else if(id === "Stage") {
+        } else if(id === CARD_TYPES.STAGE) {
             this.posScale = CARD_SCALE.IN_LOCATION;
             if(playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
                 this.posX = this.playerScene.donDeck.posX + this.playerScene.donDeck.posWidth/2 + GAME_UI_CONSTANTS.COMPONENT_SEPARATOR_WIDTH + this.posScale * GAME_UI_CONSTANTS.CARD_ART_WIDTH/2;
@@ -41,6 +41,7 @@ class CardLocationUI {
 
     }
 
+    /** Function to create the location */
     create() {
         //Create Outline
         this.deckOutline = this.scene.add.graphics();
@@ -51,9 +52,35 @@ class CardLocationUI {
         this.deckOutline.setDepth(0);
     }
 
+    /** Function that adds a card to the location
+     * @param {GameCardUI} card
+     */
     addCard(card) {
         this.card = card;
-        this.card.moveTo(this.posX, this.posY);
-        this.card.scaleTo(this.posScale);
+    }
+
+    
+    /** ANIMATION */
+    
+    /** Add a card to the area
+     * @param {GameCardUI} card
+     */
+    addCardAnimation(card) {
+        let tweens = null;
+        if(card.cardData.card === CARD_TYPES.STAGE) {
+            tweens = [
+                { //Tween 1: At start show card art, then rotate 90 deg, move to new positon and scale to IN_PLAY scaling
+                    onStart: () => {
+                        
+                    },
+                    scale: CARD_SCALE.IN_LOCATION,
+                    x: this.posX,
+                    y: this.posY, 
+                    duration: 100
+                }
+            ]
+        }
+
+        return tweens;
     }
 }

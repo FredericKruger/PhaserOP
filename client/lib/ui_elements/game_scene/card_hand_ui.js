@@ -25,13 +25,8 @@ class CardHandUI extends CardPileUI {
 
     /** Function to update the hand */
     update() {
-        let numberCards = this.getNumberCardsInHand();
-        let currentIndex = Math.floor(numberCards/2) - numberCards;
-
-        // Adjust currentIndex for even number of cards
-        if (numberCards % 2 === 0) {
-            currentIndex += 0.5;
-        }
+        let numberCards = Math.max(this.getNumberCardsInHand()-1, 0);
+        let currentIndex = numberCards/2 - numberCards;
 
         //find the index of the card currently hovered
         let hoverIndex = -1;
@@ -47,15 +42,15 @@ class CardHandUI extends CardPileUI {
         for(let i=0; i<this.cards.length; i++) {
             let card = this.cards[i];
             if(card.state === CARD_STATES.IN_HAND) {
-                let cardX = this.posX + Math.floor(currentIndex) * (GAME_UI_CONSTANTS.CARD_ART_WIDTH* GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * CARD_SCALE.IN_HAND);
+                let cardX = this.posX + currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * CARD_SCALE.IN_HAND);
                 let cardY = this.posY + Math.abs(currentIndex) * this.heightStep;
                 let cardAngle = currentIndex * this.angleStep;
 
                 if(hoverIndex>-1) {
                     if(i<hoverIndex) {
-                        cardX -= GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND_HOVERED * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION - 10;
+                        cardX -= (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND_HOVERED * 0.5);// - 10;
                     } else if(i>hoverIndex) { 
-                        cardX += GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND_HOVERED * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION - 10;
+                        cardX += (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND * 0.5)// - 10;
                     } 
                 }
 
