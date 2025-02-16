@@ -120,7 +120,16 @@
         - [ ] Create base logic
         - [ ] Create animation
     - [ ] Create animation to put leader in location
-    
+
+# GAME LOADING SCENE
+---
+- [ ] Create scene while server is looking for Game
+    - [x] Prepare Loading Gif
+    - [x] Create Background
+    - [ ] Add loading gif to background
+    - [ ] Create Cancel button
+    - [ ] Create logic to grey out button if game is found
+    - [ ] Create logic to cancel search and go back to deck selection
 
 # GAME ENGINE
 ---

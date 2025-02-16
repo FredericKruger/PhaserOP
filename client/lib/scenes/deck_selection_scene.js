@@ -8,6 +8,7 @@ class DeckSelectionScene extends Phaser.Scene {
 
         init(data) {
             this.vsAI = data.vsAI;
+            this.game.gameClient.deckSelectionScene = this;
         }
 
         create() {
@@ -224,8 +225,15 @@ class DeckSelectionScene extends Phaser.Scene {
             this.matchSummaryPanel.updateSelectedDeck(deck);
         }
 
+        /** Function to start the matchmaking */
         startGame() {
-            this.scene.start(SCENE_ENUMS.GAME_SCENE);
+            if(this.playerDeckSelectionPanel.selectedEntry !== null)
+                this.game.gameClient.requestEnterMatchmaking(this.playerDeckSelectionPanel.getSelectedDeckID());
+        }
+
+        /** Function that start the game searching scene */
+        startGameSearchingScene() {
+            this.scene.start(SCENE_ENUMS.GAME_SEARCHING_SCENE);
         }
 
 }

@@ -36,6 +36,7 @@ const SCENE_ENUMS = Object.freeze({
     STORE: 'STORE',
     DECK_SELECTION: 'DECK_SELECTION',
     GAME_SCENE: 'GAME_SCENE',
+    GAME_SEARCHING_SCENE: 'GAME_SEARCHING_SCENE',
 });
 
 const COLOR_ENUMS = Object.freeze({

@@ -6,6 +6,8 @@ class ServerInstance {
         this.players = []; //List of currently connected players
         this.matches = []; //List of currently started matches
         this.bots = []; //List of currently active bots
+
+        this.waitingPlayers = []; //List of players waiting for a match
         
         this.lastPlayerID = 0; //keep track of the last assigned id to a new player
         this.lastMatchID = 0; //Keep track of the last assigned matchid
@@ -90,14 +92,14 @@ class ServerInstance {
 
     /** Function to get a list of all players currentlzy waiting to be connected to a match */
     getAllWaitingPlayers() {
-        let players = [];
-        Object.keys(this.io.sockets.connected).forEach(function(socketID) {
-            let player = this.io.sockets.connected[socketID].player;
-            if(player) {
-                if(player.waitingForMatch) players.push(player);
-            }
-        })
-        return players;
+        return this.waitingPlayers;
+    }
+
+    /** Add a player to the list of waiting players 
+     * @param {Player} player - Player object
+    */
+    addToWaitingPlayers(player) {
+        this.waitingPlayers.push(player);
     }
 }
 

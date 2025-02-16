@@ -68,7 +68,10 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.DECK_SELECTION_BACKGROUND, `${assetPath}/background_deckselection.jpeg`);
         this.load.image(ASSET_ENUMS.MATCH_READY_BACKGROUND, `${assetPath}/match_ready_background.jpg`);
         
-        this.load.image(ASSET_ENUMS.BATTE_BACKGROUND_1, `${assetPath}/battle_background_foosha_village.webp`);
+        assetPath = 'assets/backgrounds/battle_backgrounds';
+        this.load.image(ASSET_ENUMS.BATTE_BACKGROUND_FOOSHA_VILLAGE, `${assetPath}/battle_background_foosha_village.webp`);
+        this.load.image(ASSET_ENUMS.BATTLEBACKGROUND_BARATIE, `${assetPath}/battle_background_baratie.jpg`);
+        this.load.image(ASSET_ENUMS.BATTLE_BACKGROUND_ARLONG_PARK, `${assetPath}/battle_background_arlongpark.webp`);
 
         assetPath = 'assets/elements'
         this.load.image(ASSET_ENUMS.ARROW_RIGHT, `${assetPath}/rightarrow.png`);
@@ -295,6 +298,8 @@ class LoaderScene extends Phaser.Scene {
         
         assetPath = 'assets/spritesheets';
         this.load.spritesheet(ASSET_ENUMS.SKULL_SPRITESHEET, `${assetPath}/skull_spritesheet.png`, { frameWidth: 400, frameHeight: 300 });	
+        this.load.spritesheet(ASSET_ENUMS.GOING_MERRY_SPRITESHEET, `${assetPath}/merry_loader.png`, { frameWidth: 524, frameHeight: 321 });
+        this.load.spritesheet(ASSET_ENUMS.LOADING_SPRITESHEET, `${assetPath}/loading_gif.png`, { frameWidth: 479, frameHeight: 236 });
 
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
@@ -328,6 +333,20 @@ class LoaderScene extends Phaser.Scene {
             key: ANIMATION_ENUMS.SKULL_WAITING_ANIMATION,
             frames: this.anims.generateFrameNumbers(ASSET_ENUMS.SKULL_SPRITESHEET, { start: 0, end: 231 }),
             frameRate: 60,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: ANIMATION_ENUMS.GOING_MERRY_ANIMATION,
+            frames: this.anims.generateFrameNumbers(ASSET_ENUMS.GOING_MERRY_SPRITESHEET, { start: 0, end: 23}),
+            frameRate: 60,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: ANIMATION_ENUMS.LOADING_ANIMATION,
+            frames: this.anims.generateFrameNumbers(ASSET_ENUMS.LOADING_SPRITESHEET, { start: 0, end: 114}),
+            frameRate: 20,
             repeat: -1
         });
 

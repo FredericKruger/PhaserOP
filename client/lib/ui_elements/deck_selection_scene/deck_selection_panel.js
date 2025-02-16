@@ -104,4 +104,9 @@ class DeckSelectionPanel extends Phaser.GameObjects.Container{
         this.scene.updateSelectedDeck(deckEntry.deckconfig);
     }
 
+    /** GET SELECTED DECK ID */
+    getSelectedDeckID() {
+        return this.selectedEntry.deckconfig.deckid;
+    }
+
 }

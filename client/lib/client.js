@@ -17,7 +17,8 @@ class Client {
         // @ts-ignore
         this.socket = io.connect();
 
-        this.matchScene = null; //Store pointer for matchscene
+        /** @type {GameScene} */
+        this.gameScene = null; //Store pointer for matchscene
         /** @type {LoginScene} */
         this.loginScene = null; //Store pointer to loginScene
         /** @type {TitleScene} */
@@ -26,6 +27,10 @@ class Client {
         this.packOpeningScene = null; //Store pointer to packOpeningScene
         /** @type {StoreScene} */
         this.storeScene = null; //Store pointer to storeScene
+        /** @type {DeckSelectionScene} */
+        this.deckSelectionScene = null; //Store pointer to deckSelectionScene
+        /** @type {GameSearchingScene} */
+        this.gameSearchingScene = null; //Store pointer to gameSearchingScene
 
         //To help scene initialisation
         this.player1NumberCards = null;
@@ -78,6 +83,11 @@ class Client {
             this.storeScene.setPlayerBerries();
             this.storeScene.purchasePanel.purchaseSuccessful(ShopItem, itemType, cardList);
         });
+
+        /** MATCHMAKING LISTENERS */
+        this.socket.on('start_game_searching_scene', () => {
+            this.deckSelectionScene.startGameSearchingScene();
+        });
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -105,6 +115,11 @@ class Client {
     playerDisconnect () {
         this.socket.emit('player_disconnect', this.username);
         this.username = null;
+    }
+
+    /** Function that request entering the matchmaking */
+    requestEnterMatchmaking (selectedDeck) {
+        this.socket.emit('player_enter_matchmaking', selectedDeck);
     }
 
     /** Function that tells the server to update the player settings */

@@ -32,6 +32,7 @@ window.onload = function() {
     Game.scene.add(SCENE_ENUMS.STORE, StoreScene, false);
     Game.scene.add(SCENE_ENUMS.DECK_SELECTION, DeckSelectionScene, false);
     Game.scene.add(SCENE_ENUMS.GAME_SCENE, GameScene, false);
+    Game.scene.add(SCENE_ENUMS.GAME_SEARCHING_SCENE, GameSearchingScene, false);
     Game.scene.start(SCENE_ENUMS.BACKGROUND_LOADER);
 
     window.onclose = function () {

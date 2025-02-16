@@ -155,6 +155,19 @@ io.on('connection', function (/** @type {object} */ socket) {
         socket.player.settings = playerSettings;
         serverInstance.util.savePlayerSettings(socket.player.username, playerSettings);
     });
+
+    /** On entering matchmaking */
+    socket.on('player_enter_matchmaking', (selectedDeckID) => {
+        console.log('Entering matchmaking for player');
+
+        socket.player.waitingForMatch = true;
+        socket.player.selectedDeck = selectedDeckID;
+
+        serverInstance.addToWaitingPlayers(socket.player);
+
+        //Start the waiting scene
+        socket.emit('start_game_searching_scene');
+    });
 });
 
 /** Asynchronous function that creates a promise to send the player the ai decklist
