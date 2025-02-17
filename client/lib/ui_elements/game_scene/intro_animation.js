@@ -47,6 +47,10 @@ class IntroAnimation extends BaseComponentUI{
      */
     constructor(scene, activePlayerLeader, passivePlayLeader) {
         super(scene, null);
+
+        //keep to pass on to the setup at the end of the animation
+        this.activePlayerLeader = activePlayerLeader.cardData;
+        this.passivePlayLeader = passivePlayLeader.cardData;
  
         this.onomatopeImage = this.scene.add.image(this.scene.screenCenterX, this.scene.screenCenterY, ASSET_ENUMS.GAME_ONOMATOPE_IMAGE)
             .setOrigin(0.5)
@@ -105,6 +109,7 @@ class IntroAnimation extends BaseComponentUI{
                                         this.scene.time.delayedCall(1000, () => {
                                             this.setVisible(false);
                                             this.destroyAll();
+                                            this.scene.gameStateManager.setupScene(this.activePlayerLeader, this.passivePlayLeader);
                                         });
                                     }
                                 })

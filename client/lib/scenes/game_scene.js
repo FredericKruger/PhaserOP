@@ -28,6 +28,9 @@ class GameScene extends Phaser.Scene {
         this.actionLibrary = new ActionLibrary(this);
         this.animationManager = new AnimationManager(this);
 
+        //Game Manager
+        this.gameStateManager = new GameStateManager(this);
+
         //Game state variables
         this.dragginCard = false;
     }
@@ -187,6 +190,15 @@ class GameScene extends Phaser.Scene {
         }
         this.activePlayerScene.playerInfo.setBackgroundVisible(true);
         this.passivePlayerScene.playerInfo.setBackgroundVisible(true);
+
+        //Set health totals
+        this.activePlayer.setLife(activePlayerLeader.cardData.life);
+        this.passivePlayer.setLife(passivePlayerLeader.cardData.life);
+
+        //Set life points in the ui
+        this.activePlayerScene.playerInfo.setLifePoints(this.activePlayer.totalLife);
+        this.passivePlayerScene.playerInfo.setLifePoints(this.passivePlayer.totalLife);
+
         //Make the scene appear
         this.cameras.main.fadeIn(1000, 0, 0, 0); // Fade in over 1 second
 

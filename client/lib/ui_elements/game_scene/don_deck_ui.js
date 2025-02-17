@@ -62,17 +62,22 @@ class DonDeckUI extends CardPileUI {
     */
     createCardPile(numberOfCards) {
         let step = 1;
+        let delay = 50;
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) step *=-1;
         for(let i = 0; i<numberOfCards; i++ ) {
-            this.cardVisuals.push(this.scene.add.image(this.posX-i*step, this.posY+i*step/2, ASSET_ENUMS.CARD_BACK2).setScale(CARD_SCALE.IN_DON_DECK));
+            this.scene.time.delayedCall(delay*i, () => {
+                this.cardVisuals.push(this.scene.add.image(this.posX-i*step, this.posY+i*step/2, ASSET_ENUMS.CARD_BACK2).setScale(CARD_SCALE.IN_DON_DECK));
+            });
         }
 
-        this.updateCardAmountText();
+        this.scene.time.delayedCall(delay*numberOfCards, () => {
+            this.updateCardAmountText();
+        });
     }
 
     /** Function that update the cardAmount Text */
     updateCardAmountText() {
-        this.cardAmountText.setText(this.cards.cardVisuals);
+        this.cardAmountText.setText(this.cardVisuals.length);
         this.cardAmountText.setPosition(this.cardVisuals[this.cardVisuals.length-1].x, this.cardVisuals[this.cardVisuals.length-1].y + this.posHeight/2);
     }
 

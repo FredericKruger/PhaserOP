@@ -85,6 +85,8 @@ class GameCardUI extends Phaser.GameObjects.Container {
         this.counterIcon.setScale(0.25);
         this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND);
         this.obj.push(this.counterIcon);
+
+        this.setScale(CARD_SCALE.IN_DECK);
     }
 
     //Draw the powerBox 

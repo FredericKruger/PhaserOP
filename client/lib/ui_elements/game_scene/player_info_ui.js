@@ -67,11 +67,11 @@ class PlayerInfoUI extends BaseComponentUI{
 
         //Life text
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
-            this.lifeAmountText = this.scene.add.text(this.posX - this.posWidth*0.335, this.posY - this.posHeight*0.04, "5",
+            this.lifeAmountText = this.scene.add.text(this.posX - this.posWidth*0.335, this.posY - this.posHeight*0.04, "",
                 {font: "1000 80px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: color, strokeThickness: 6}
             ).setOrigin(0.5).setDepth(1);
         } else if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) {
-            this.lifeAmountText = this.scene.add.text(this.posX + this.posWidth*0.357, this.posY - this.posHeight*0.006, "5",
+            this.lifeAmountText = this.scene.add.text(this.posX + this.posWidth*0.357, this.posY - this.posHeight*0.006, "",
                 {font: "1000 80px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: color, strokeThickness: 6}
             ).setOrigin(0.5).setDepth(1);
         }
@@ -88,4 +88,9 @@ class PlayerInfoUI extends BaseComponentUI{
             obj.setVisible(visible);
         }
     }
+
+    /** Function that set the life amount in the text area
+     * @param {number} life
+     */
+    setLifePoints(life) {this.lifeAmountText.setText(life);}
 }

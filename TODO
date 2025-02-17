@@ -105,7 +105,7 @@
     - [ ] Create logic to remove card if card is added
 - [ ] Draw Leader Location
     - [x] Create Area
-    - [ ] Create entering logic to add leader
+    - [x] Create entering logic to add leader
 - [ ] Create Mulligan
     - [ ] Create main Panel to show the 5 cards
     - [ ] Create mulligan button
@@ -116,11 +116,11 @@
     - [x] Show VS image
     - [x] Show Opponent portrait through slide in aimation
     - [ ] Close Panel and start mulligan
-- [ ] Prepare Start of game
-    - [ ] Shuffle 10 Don Cards
-        - [ ] Create base logic
-        - [ ] Create animation
-    - [ ] Create animation to put leader in location
+- [x] Prepare Start of game
+    - [x] Shuffle 10 Don Cards
+        - [x] Create base logic
+        - [x] Create animation
+    - [x] Create animation to put leader in location
 
 # GAME LOADING SCENE
 ---
