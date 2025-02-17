@@ -2,16 +2,23 @@ class GameScene extends Phaser.Scene {
 
     constructor() {
         super(SCENE_ENUMS.GAME_SCENE);
+
+        this.obj = [];
     }
 
-    init() {
+    init(data) {
+        this.game.gameClient.gameScene = this;
+
+        this.gameBackgroundImageKey = this.game.utilFunctions.getBattleBackground(data.board);
+
         this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.displayWidth / 2;
         this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.displayHeight / 2;
         this.screenHeight = this.cameras.main.displayHeight;
         this.screenWidth = this.cameras.main.displayWidth;
 
-        this.activePlayer = new Player(true, this.game.gameClient.decklist[0]);
-        this.passivePlayer = new Player(false, []);
+        //Prepare Game Data
+        this.activePlayer = new Player(true, this.game.gameClient.activePlayerNumberCards);
+        this.passivePlayer = new Player(false, this.game.gameClient.passivePlayerNumberCards);
 
         this.activePlayerScene = new PlayerScene(this, PLAYER_POSITIONS.BOTTOM, this.activePlayer);
         this.passivePlayerScene = new PlayerScene(this, PLAYER_POSITIONS.TOP, this.passivePlayer);
@@ -27,22 +34,45 @@ class GameScene extends Phaser.Scene {
 
     create() {
         //Prepare the background
-        this.add.image(
-            this.screenCenterX, this.screenCenterY, ASSET_ENUMS.BATTE_BACKGROUND_1
+        let backgroundImage = this.add.image(
+            this.screenCenterX, this.screenCenterY, this.gameBackgroundImageKey
         )
         .setDisplaySize(this.cameras.main.width, this.cameras.main.height)
         .setDepth(0);
+        this.obj.push(backgroundImage);
 
-        this.add.image(10, this.screenCenterY, ASSET_ENUMS.GAME_PHASE_BOX).setScale(0.8).setOrigin(0, 0.5).setDepth(0).setAlpha(0.74);
+        // Calculate the scale factor
+        let scaleX = this.cameras.main.width / backgroundImage.width;
+        let scaleY = this.cameras.main.height / backgroundImage.height;
+        let scale = Math.max(scaleX, scaleY);
+
+        // Apply the scale factor
+        backgroundImage.setScale(scale);
+
+        // Center the image
+        backgroundImage.setPosition(this.screenCenterX, this.screenCenterY);
+
+        //Create the phase box
+        /*let phaseBox = this.add.image(10, this.screenCenterY, ASSET_ENUMS.GAME_PHASE_BOX).setScale(0.8).setOrigin(0, 0.5).setDepth(0).setAlpha(0.74);
         this.phaseText = this.add.text(30, this.screenCenterY, "Phase: 1", 
             {font: "30px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, align: "left"}
         ).setOrigin(0, 0.5).setDepth(0);
+        this.obj.push(phaseBox);
+        this.obj.push(this.phaseText);*/
 
         this.activePlayerScene.create();
         this.passivePlayerScene.create();
 
+        //Create mask Panel
+        this.maskPanel = this.add.rectangle(
+            this.screenCenterX, this.screenCenterY, 
+            this.screenWidth, this.screenWidth, 
+            COLOR_ENUMS.OP_BLACK, 0.8).setOrigin(0.5);
+        this.maskPanel.setVisible(false);
+        this.obj.push(this.maskPanel);
+
         //Create new card to test
-        let cards = [];
+        /*let cards = [];
         for(let id of [411,412,421,414,413, 415, 145]){
             let testCard = new GameCardUI(this, this.activePlayerScene, {
                 x: this.screenCenterX,
@@ -56,7 +86,7 @@ class GameScene extends Phaser.Scene {
             testCard.makeDraggable(true);
             cards.push(testCard);
         }
-        this.activePlayerScene.hand.addCards(cards);
+        this.activePlayerScene.hand.addCards(cards);*/
         //create leader Card
         /*let leaderCard = new GameCardUI(this, this.activePlayerScene, {
             x: this.screenCenterX,
@@ -140,6 +170,47 @@ class GameScene extends Phaser.Scene {
 
             this.dragginCard = false;
         });
+
+        this.setVisible(false);
+
+        //tell the server the scene is ready
+        this.game.gameClient.requestMatchSceneReady();
+    }
+
+    /** Starts the intro animation
+     * @param {Object} activePlayerLeader
+     * @param {Object} passivePlayerLeader
+     */
+    startIntroAnimation(activePlayerLeader, passivePlayerLeader) {
+        for(let obj of this.obj) {
+            obj.setVisible(true);
+        }
+        this.activePlayerScene.playerInfo.setBackgroundVisible(true);
+        this.passivePlayerScene.playerInfo.setBackgroundVisible(true);
+        //Make the scene appear
+        this.cameras.main.fadeIn(1000, 0, 0, 0); // Fade in over 1 second
+
+        this.cameras.main.once('camerafadeincomplete', () => {
+            this.time.delayedCall(1000, () => {
+                let introAnimation = new IntroAnimation(this, activePlayerLeader, passivePlayerLeader);
+                introAnimation.startAnimation();
+            });
+        });
+
+    }
+
+    /** Function that set the panel invisible
+     * @param {boolean} visible
+     */
+    setVisible(visible) {
+        for(let obj of this.obj) {
+            obj.setVisible(visible);
+        }
+        this.activePlayerScene.setVisible(visible);
+        this.passivePlayerScene.setVisible(visible);
+
+        this.activePlayerScene.playerInfo.setBackgroundVisible(visible);
+        this.passivePlayerScene.playerInfo.setBackgroundVisible(visible);
     }
 
 }

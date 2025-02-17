@@ -30,7 +30,6 @@ class CardDeckUI extends CardPileUI {
 
     //Function to draw the deck ui elments
     create() {
-        console.log("CREATE DECK UI");
         //Create Outline
         this.deckOutline = this.scene.add.graphics();
         this.deckOutline.fillStyle(COLOR_ENUMS.OP_WHITE, 0.5); // Black color with 50% opacity
@@ -38,22 +37,34 @@ class CardDeckUI extends CardPileUI {
         this.deckOutline.lineStyle(1, COLOR_ENUMS.OP_CREAM);
         this.deckOutline.strokeRoundedRect(this.posX - this.posWidth/2, this.posY-this.posHeight/2, this.posWidth, this.posHeight, 10); // 10 is padding, 15 is corner radius
         this.deckOutline.setDepth(0);
+        this.obj.push(this.deckOutline);
 
-        //Create Title
-        this.scene.add.text(this.posX, this.posY, "Deck", 
-            {font: "36px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLACK}
-        ).setOrigin(0.5).setDepth(0);
+        //Card Amount Text
+        this.cardAmountText = this.scene.add.text(this.posX, this.posY + this.posHeight/2, "", 
+            {font: "25px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: COLOR_ENUMS_CSS.OP_BLACK, strokeThickness: 4}
+        ).setOrigin(0.5).setDepth(1);
+        this.obj.push(this.cardAmountText);
 
+        this.setVisible(false);
+    }
+
+    /** Function to prepare the deck 
+     * @param {number} numberOfCards - The number of cards in the deck
+    */
+    createCardPile(numberOfCards) {
         let step = -0.25;
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) step *=-1;
-        for(let i = 0; i<45; i++ ) {
+        for(let i = 0; i<numberOfCards; i++ ) {
             this.cardVisuals.push(this.scene.add.image(this.posX-i*step, this.posY+i*step/2, ASSET_ENUMS.CARD_BACK1).setScale(CARD_SCALE.IN_DECK));
         }
 
-        //Card Amount Text
-        this.cardAmountText = this.scene.add.text(this.cardVisuals[this.cardVisuals.length-1].x, this.cardVisuals[this.cardVisuals.length-1].y + this.posHeight/2, "10", 
-            {font: "25px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: COLOR_ENUMS_CSS.OP_BLACK, strokeThickness: 4}
-        ).setOrigin(0.5).setDepth(1);
+        this.updateCardAmountText();
+    }
+
+    /** Function that update the cardAmount Text */
+    updateCardAmountText() {
+        this.cardAmountText.setText(this.cards.cardVisuals);
+        this.cardAmountText.setPosition(this.cardVisuals[this.cardVisuals.length-1].x, this.cardVisuals[this.cardVisuals.length-1].y + this.posHeight/2);
     }
 
 }

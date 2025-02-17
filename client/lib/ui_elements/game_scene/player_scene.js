@@ -47,4 +47,15 @@ class PlayerScene {
             this.scene.actionLibrary.playCardAction(card, this);
         }
     }
+
+    setVisible(visible) {
+        this.donDeck.setVisible(visible);
+        this.discard.setVisible(visible);
+        this.deck.setVisible(visible);
+        this.leaderLocation.setVisible(visible);
+        this.stageLocation.setVisible(visible);
+        //this.hand.setVisible(visible);
+        this.characterArea.setVisible(visible);
+        this.playerInfo.setVisible(visible);    
+    }
 }

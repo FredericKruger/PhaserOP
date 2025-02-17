@@ -1,4 +1,8 @@
 const Utils = require('./utils/utils.js');
+const Bot = require('./game_objects/bot.js');
+const Match = require('./match_objects/match.js');
+const Player = require('./game_objects/player.js');
+const AI_Instance = require('./ai_engine/ai_instance.js');
 
 /** Object to store Server information */
 class ServerInstance {
@@ -12,7 +16,9 @@ class ServerInstance {
         this.lastPlayerID = 0; //keep track of the last assigned id to a new player
         this.lastMatchID = 0; //Keep track of the last assigned matchid
         this.lastBotID = 0; //Keep track of the last assigned bot id
+        
         this.ai = null;
+
         this.usedMatchIDS = []; //Keep track of the matchIDS currents in use
 
         this.cardIndex = {}; //Store the card database
@@ -100,6 +106,87 @@ class ServerInstance {
     */
     addToWaitingPlayers(player) {
         this.waitingPlayers.push(player);
+    }
+
+    /** Remove a player from the list of waiting Players 
+     * @param {Player} player - Player object
+    */
+    removeFromWaitingPlayers(player) {
+        this.waitingPlayers = this.waitingPlayers.filter(p => p.id !== player.id);
+    }
+
+    /** Function that finds a match between 2 players
+     * @param {Player} player - Player object
+     */
+    findMatch(player) {
+        let n = 0;
+        let p = null;
+        let attempts = 0;
+        const maxAttempts = 10;
+        let matchFound = false;
+
+        do {
+            attempts++;
+            n = this.getRandomInt(0, this.waitingPlayers.length);
+            p = this.waitingPlayers[n];
+            if(p.id === player.id) {
+                continue;
+            } else {
+                matchFound = true;
+                break;
+            };
+        } while(attempts < maxAttempts);
+        
+        if(matchFound) {
+            this.removeFromWaitingPlayers(player);
+            this.removeFromWaitingPlayers(p);
+            player.matchFound = true;
+            p.matchFound = true;
+        } else {
+            p = null;
+        }
+
+        return p;
+    }
+
+    /** Create  
+     * @param {Player} player - Player object
+    */
+    async createAIMatch(player) {
+        let bot = new Bot(this);
+
+        let match = new Match(player, bot, this, true); //Create a new match
+        match.id = this.lastMatchID++; //Assign a match id
+        this.lastMatchID += 1;
+        this.matches.push(match); //Add match to list
+
+        bot.match = match; //Give the bot the match he will play
+        player.match = match; //Assign match to player
+        player.matchFound = true; //Set the match found flag to true
+
+        //Retrieve the decks. This needs to happen synchronously. Eventually, player user name will be use. FOR NOW HARDCODED
+        let aiDeck = await this.util.getRandomAIDeck();
+        let playerDeck = player.decklist[player.selectedDeck];
+
+        //Fill the deck from the JSON decklist provided
+        match.state.player1.deck.fromJSON(playerDeck, this.cardIndex);
+        match.state.player2.deck.fromJSON(aiDeck, this.cardIndex);
+
+        //Shuffle the decks
+        match.state.player1.deck.shuffle();
+        match.state.player2.deck.shuffle();
+
+        //Create an AI to play the game
+        match.ai = new AI_Instance(this, match);
+
+        let board = this.getRandomInt(0, 2); //Randomly select the board
+       
+        //Send the client messages to 
+        // 1: Load the match ui, provided the number of cards in each deck
+        player.socket.emit('start_game_scene', 
+            match.state.player1.deck.cards.length, match.state.player2.deck.cards.length, 
+            "", 
+            board);
     }
 }
 

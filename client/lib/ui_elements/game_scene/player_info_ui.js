@@ -1,4 +1,4 @@
-class PlayerInfoUI {
+class PlayerInfoUI extends BaseComponentUI{
 
     /**
      * 
@@ -6,8 +6,8 @@ class PlayerInfoUI {
      * @param {PlayerScene} playerScene 
      */
     constructor(scene, playerScene) {
-        this.scene = scene;
-        this.playerScene = playerScene;
+        super(scene, playerScene);
+        this.backgroundObj = [];
 
         //Save the player localy
         this.player = playerScene.player;
@@ -33,6 +33,7 @@ class PlayerInfoUI {
 
         this.playerInfoBackground = this.scene.add.image(this.posX, this.posY, infoImage).setScale(0.15);
         this.playerInfoBackground.preFX.addGlow(glowColor, 1);
+        this.backgroundObj.push(this.playerInfoBackground);
 
         this.posWidth = this.playerInfoBackground.displayWidth;
         this.posHeight = this.playerInfoBackground.displayHeight;
@@ -46,6 +47,8 @@ class PlayerInfoUI {
         }
         this.activeDonPlaceholder.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 5);
         this.restingDonplaceholder.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 5);
+        this.backgroundObj.push(this.activeDonPlaceholder);
+        this.backgroundObj.push(this.restingDonplaceholder);
 
         //Save the positions
         this.acticePlaceholderPos = {x: this.activeDonPlaceholder.x, y: this.activeDonPlaceholder.y};
@@ -56,9 +59,11 @@ class PlayerInfoUI {
         this.activeDonCardAmountText = this.scene.add.text(this.acticePlaceholderPos.x, this.acticePlaceholderPos.y, "0", 
             {font: "1000 40px OnePieceTCGFont", color: color, stroke: COLOR_ENUMS_CSS.OP_WHITE, strokeThickness: 4}
         ).setOrigin(0.5).setDepth(1);
+        this.obj.push(this.activeDonCardAmountText);
         this.restingDonCardAmountText = this.scene.add.text(this.restingDonplaceholderPos.x, this.restingDonplaceholderPos.y, "0", 
             {font: "1000 25px OnePieceTCGFont", color: color, stroke: COLOR_ENUMS_CSS.OP_WHITE, strokeThickness: 4}
         ).setOrigin(0.5).setDepth(1);
+        this.obj.push(this.restingDonCardAmountText);
 
         //Life text
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
@@ -70,8 +75,17 @@ class PlayerInfoUI {
                 {font: "1000 80px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: color, strokeThickness: 6}
             ).setOrigin(0.5).setDepth(1);
         }
+        this.obj.push(this.lifeAmountText);
+
+        this.setVisible(false);
     }
 
-
-
+    /** Function toe set the backgruond elements visible
+     * @param {boolean} visible
+     */
+    setBackgroundVisible(visible) {
+        for(let obj of this.backgroundObj) {
+            obj.setVisible(visible);
+        }
+    }
 }

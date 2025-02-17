@@ -1,11 +1,9 @@
-class CardPileUI {
+class CardPileUI extends BaseComponentUI{
 
     constructor(scene, playerScene) {
-        this.scene = scene;
-        this.playerScene = playerScene;
+        super(scene, playerScene);
 
         //Pile of Cards
         this.cards = [];
     }
-
 }

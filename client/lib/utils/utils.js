@@ -190,4 +190,9 @@ class Utils {
             return error;
         });
     }
+
+    getBattleBackground(index) {
+        let battleBackgroundList = Object.keys(ASSET_ENUMS).filter(key => key.startsWith('BATTLE_BACKGROUND'));
+        return battleBackgroundList[index];
+    }
 }

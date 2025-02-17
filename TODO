@@ -61,6 +61,7 @@
 - [x] Write Selection Behaviour
 - [x] Write Game Summary Panel
 - [ ] Write Server Logic to start a Match
+- [ ] Make Start game button more interactive by greying if not deck selected and glowing if deck selected
 
 # WRITE GAME PANEL
 ---
@@ -111,9 +112,9 @@
     - [ ] Create logic to redraw 5 cards
     - [ ] Create animation to close panel
 - [ ] Create Game start animation
-    - [ ] Show Player Portrait through slide in animation
-    - [ ] Show VS image
-    - [ ] Show Opponent portrait through slide in aimation
+    - [x] Show Player Portrait through slide in animation
+    - [x] Show VS image
+    - [x] Show Opponent portrait through slide in aimation
     - [ ] Close Panel and start mulligan
 - [ ] Prepare Start of game
     - [ ] Shuffle 10 Don Cards
@@ -126,10 +127,11 @@
 - [ ] Create scene while server is looking for Game
     - [x] Prepare Loading Gif
     - [x] Create Background
-    - [ ] Add loading gif to background
-    - [ ] Create Cancel button
+    - [x] Add loading gif to background
+    - [x] Create Cancel button
     - [ ] Create logic to grey out button if game is found
-    - [ ] Create logic to cancel search and go back to deck selection
+    - [x] Create logic to cancel search and go back to deck selection
+    - [ ] Improvement: blend gif more with background
 
 # GAME ENGINE
 ---

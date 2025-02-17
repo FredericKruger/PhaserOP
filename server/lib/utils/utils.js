@@ -1,12 +1,18 @@
 const fs = require('fs');
+const ServerInstance = require('../server_instance');
 
 class Utils {
 
+    /** Constructor
+     * @param {ServerInstance} server - server object
+     * @param {string} serverPath - path to the server
+     */
     constructor(server, serverPath) {
         this.server = server;
         this.serverPath = serverPath;
     }
 
+    /** Function to create default player settings when a new player connects */
     createDefaultSettings() {
         let defaultSettings = {
             "avatar": "icon1",
@@ -51,16 +57,16 @@ class Utils {
     }
 
     /** Asynchronous function that creates a promise to send the player the request bot deck
-     * @param {number} selectedDeck - id of the selected bot deck
      */
-    async getBotDeck (selectedDeck) {
+    async getRandomAIDeck () {
         let aiDeck = {}; //Create emoty object
-        let filepath = this.serverPath + '/server/assets/data/decks_ai.json'; //Get file npath
+        let filepath = this.serverPath + '/server/assets/data/preconstructeddecks.json'; //Get file path
 
         try {
             const data = await fs.promises.readFile(filepath); //Read the file
             aiDeck = JSON.parse(data.toString()); //Turn file into JSON object
-            return aiDeck[selectedDeck]; //Return the selected deck from the list
+            let randomDeck = Math.floor(Math.random() * aiDeck.length); //Get a random deck
+            return aiDeck[randomDeck]; //Return the selected deck from the list
         } catch(err) {
             console.log(err);
         }  

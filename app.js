@@ -156,6 +156,7 @@ io.on('connection', function (/** @type {object} */ socket) {
         serverInstance.util.savePlayerSettings(socket.player.username, playerSettings);
     });
 
+    /** MATCHMAKING REQUESTS */
     /** On entering matchmaking */
     socket.on('player_enter_matchmaking', (selectedDeckID) => {
         console.log('Entering matchmaking for player');
@@ -167,7 +168,50 @@ io.on('connection', function (/** @type {object} */ socket) {
 
         //Start the waiting scene
         socket.emit('start_game_searching_scene');
+
+        //See if you can find a match
+        if(serverInstance.findMatch(socket.player)) {
+            console.log("Start Match");
+        } else { //If not create a timeout by witch an AI game will be created
+            setTimeout(() => {
+                if(!socket.player.matchFound) {
+                    serverInstance.removeFromWaitingPlayers(socket.player);
+                    socket.player.waitingForMatch = false;
+                    
+                    //Create AI Match
+                    serverInstance.createAIMatch(socket.player);
+                }
+            }, 2000); //2 seconds for now TODO
+        }
     });
+
+    socket.on('player_leave_matchmaking', () => {
+        if(!socket.player.matchFound) {
+            serverInstance.removeFromWaitingPlayers(socket.player);
+            socket.player.waitingForMatch = false;
+            socket.player.selectedDeck = null;
+            //Send message to client
+            socket.emit('matchmaking_stopped');
+        }
+    });
+
+    /** GAME REQUESTS */
+    socket.on('player_match_scene_ready', () => {
+        socket.player.match.setPlayerReady(socket.player);
+
+        if(socket.player.match.botMatch) {
+            socket.player.match.player2_Ready = true; //Set the bot to ready
+
+            let player1Leader = socket.player.match.state.player1.deck.leader;
+            let player2Leader = socket.player.match.state.player2.deck.leader;
+
+            //Start the intro animation
+            socket.emit('start_game_intro', player1Leader, player2Leader);
+        } else {
+
+        }
+    });
+
 });
 
 /** Asynchronous function that creates a promise to send the player the ai decklist

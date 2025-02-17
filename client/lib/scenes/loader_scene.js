@@ -69,8 +69,8 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.MATCH_READY_BACKGROUND, `${assetPath}/match_ready_background.jpg`);
         
         assetPath = 'assets/backgrounds/battle_backgrounds';
-        this.load.image(ASSET_ENUMS.BATTE_BACKGROUND_FOOSHA_VILLAGE, `${assetPath}/battle_background_foosha_village.webp`);
-        this.load.image(ASSET_ENUMS.BATTLEBACKGROUND_BARATIE, `${assetPath}/battle_background_baratie.jpg`);
+        this.load.image(ASSET_ENUMS.BATTLE_BACKGROUND_FOOSHA_VILLAGE, `${assetPath}/battle_background_foosha_village.webp`);
+        this.load.image(ASSET_ENUMS.BATTLE_BACKGROUND_BARATIE, `${assetPath}/battle_background_baratie.jpg`);
         this.load.image(ASSET_ENUMS.BATTLE_BACKGROUND_ARLONG_PARK, `${assetPath}/battle_background_arlongpark.webp`);
 
         assetPath = 'assets/elements'
@@ -292,6 +292,8 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.GAME_PASSIVE_PLAYER_INFO, `${assetPath}/passivePlayerInfo.png`);
         this.load.image(ASSET_ENUMS.GAME_DON_SMALL, `${assetPath}/don_small.png`);
         this.load.image(ASSET_ENUMS.GAME_PHASE_BOX, `${assetPath}/phaseBox.png`);
+        this.load.image(ASSET_ENUMS.GAME_VS_ICON, `${assetPath}/vsIcon.png`);
+        this.load.image(ASSET_ENUMS.GAME_ONOMATOPE_IMAGE, `${assetPath}/onomatope.png`);
 
         assetPath = 'assets/cardart';
         this.load.image(ASSET_ENUMS.DON_CARD, `${assetPath}/don.png`);

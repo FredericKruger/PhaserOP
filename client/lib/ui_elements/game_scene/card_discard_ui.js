@@ -10,6 +10,7 @@ class CardDiscardUI extends CardPileUI {
         super(scene, playerScene);
 
         //Array of images to represent the cards
+        this.obj = [];
         this.cardVisuals = [];
 
         //Prepare positionof the deck
@@ -34,11 +35,15 @@ class CardDiscardUI extends CardPileUI {
         this.deckOutline.lineStyle(1, COLOR_ENUMS.OP_BLACK);
         this.deckOutline.strokeRoundedRect(this.posX - this.posWidth/2, this.posY-this.posHeight/2, this.posWidth, this.posHeight, 1); // 10 is padding, 15 is corner radius
         this.deckOutline.setDepth(0);
+        this.obj.push(this.deckOutline);
 
         //Create Title
-        this.scene.add.text(this.posX, this.posY - this.posHeight/2 - 10 , "Discard", 
+        this.discardText = this.scene.add.text(this.posX, this.posY - this.posHeight/2 - 10 , "Discard", 
             {font: "18px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLACK}
         ).setOrigin(0.5).setDepth(0);
+        this.obj.push(this.discardText);
+
+        this.setVisible(false);
     }
 
 }

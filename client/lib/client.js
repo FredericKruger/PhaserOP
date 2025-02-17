@@ -33,8 +33,9 @@ class Client {
         this.gameSearchingScene = null; //Store pointer to gameSearchingScene
 
         //To help scene initialisation
-        this.player1NumberCards = null;
-        this.player2NumberCards = null;
+        this.activePlayerNumberCards = null;
+        this.passivePlayerNumberCards = null;
+        this.passivePlayerName = "";
 
         /** Listen to the signal from the server that the player has successfully connected */
         this.socket.on('player_connected', (success, playerSetting, cardList, playerCollection, newPlayer, shopData) => {
@@ -88,6 +89,20 @@ class Client {
         this.socket.on('start_game_searching_scene', () => {
             this.deckSelectionScene.startGameSearchingScene();
         });
+        this.socket.on('matchmaking_stopped', () => {
+            this.gameSearchingScene.goBackToDeckSelection();
+        });
+
+        /** GAME LISTENERS */
+        this.socket.on('start_game_scene', (activePlayerNumberCards, passivePlayerNumberCards, passivePlayerName, board) => {
+            this.activePlayerNumberCards = activePlayerNumberCards;
+            this.passivePlayerNumberCards = passivePlayerNumberCards;
+            this.passivePlayerName = passivePlayerName;
+            this.gameSearchingScene.startGameScene(board);
+        });
+        this.socket.on('start_game_intro', (activePlayerLeader, passivePlayerLeader) => {
+            this.gameScene.startIntroAnimation(activePlayerLeader, passivePlayerLeader);
+        });
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -121,6 +136,14 @@ class Client {
     requestEnterMatchmaking (selectedDeck) {
         this.socket.emit('player_enter_matchmaking', selectedDeck);
     }
+
+    /** Function that request leaving the matchmaking */
+    requestLeaveMatchmaking() {
+        this.socket.emit('player_leave_matchmaking');
+    }
+
+    /** GAME COMMUNICATION */
+    requestMatchSceneReady () {this.socket.emit('player_match_scene_ready');}
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}

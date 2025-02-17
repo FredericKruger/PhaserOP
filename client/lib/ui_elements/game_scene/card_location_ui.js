@@ -1,4 +1,4 @@
-class CardLocationUI {
+class CardLocationUI extends CardPileUI {
 
     /**
      * 
@@ -7,12 +7,8 @@ class CardLocationUI {
      * @param {string} id 
      */
     constructor(scene, playerScene, id) {
-        this.scene = scene;
-        this.playerScene = playerScene;
+        super(scene, playerScene);
         this.id = id;
-
-        //Cardvisual
-        this.card = null;
 
         //Prepare positionof the deck
         this.posX = this.posY = this.posWidth = this.posHeight = 0;
@@ -50,15 +46,17 @@ class CardLocationUI {
         this.deckOutline.lineStyle(1, COLOR_ENUMS.OP_BLACK);
         this.deckOutline.strokeRoundedRect(this.posX - this.posWidth/2 - 5, this.posY-this.posHeight/2 - 5, this.posWidth + 10, this.posHeight + 10, 1); // 10 is padding, 15 is corner radius
         this.deckOutline.setDepth(0);
+        this.obj.push(this.deckOutline);
+
+        this.setVisible(false);
     }
 
     /** Function that adds a card to the location
      * @param {GameCardUI} card
      */
     addCard(card) {
-        this.card = card;
+        this.cards.push(card);
     }
-
     
     /** ANIMATION */
     

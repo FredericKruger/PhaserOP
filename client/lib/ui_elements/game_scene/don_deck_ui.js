@@ -30,8 +30,7 @@ class DonDeckUI extends CardPileUI {
 
     //Function to draw the deck ui elments
     create() {
-        console.log("CREATE DON DECK UI");
-
+        //Determine the color
         let color = COLOR_ENUMS.OP_BLUE;
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) color = COLOR_ENUMS.OP_RED;
 
@@ -42,24 +41,39 @@ class DonDeckUI extends CardPileUI {
         this.deckOutline.lineStyle(1, color);
         this.deckOutline.strokeRoundedRect(this.posX - this.posWidth/2 + 5, this.posY-this.posHeight/2 + 5, this.posWidth-10, this.posHeight-10, 5); // 10 is padding, 15 is corner radius
         this.deckOutline.setDepth(0);
+        this.obj.push(this.deckOutline);
+
+        //Card Amount Text
+        this.cardAmountText = this.scene.add.text(this.posX, this.posY + this.posHeight/2, "", 
+            {font: "25px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: COLOR_ENUMS_CSS.OP_BLACK, strokeThickness: 4}
+        ).setOrigin(0.5).setDepth(1);
+        this.obj.push(this.cardAmountText);
 
         //Create Title
         this.donImage = this.scene.add.image(this.posX - this.posWidth/4, this.posY - this.posHeight/2 - 15, ASSET_ENUMS.GAME_DON_SMALL);
         this.donImage.setScale(0.5).setDepth(0).preFX.addGlow(COLOR_ENUMS.OP_BLACK, 1);
-        this.scene.add.text(this.donImage.x + 30, this.donImage.y + 2, "Deck", 
-            {font: "20px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLACK}
-        ).setOrigin(0.5).setDepth(0);
+        this.obj.push(this.donImage);
 
+        this.setVisible(false);
+    }
+
+    /** Function to prepare the deck 
+     * @param {number} numberOfCards - The number of cards in the deck
+    */
+    createCardPile(numberOfCards) {
         let step = 1;
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) step *=-1;
-        for(let i = 0; i<10; i++ ) {
+        for(let i = 0; i<numberOfCards; i++ ) {
             this.cardVisuals.push(this.scene.add.image(this.posX-i*step, this.posY+i*step/2, ASSET_ENUMS.CARD_BACK2).setScale(CARD_SCALE.IN_DON_DECK));
         }
 
-        //Card Amount Text
-        this.cardAmountText = this.scene.add.text(this.cardVisuals[this.cardVisuals.length-1].x, this.cardVisuals[this.cardVisuals.length-1].y + this.posHeight/2, "10", 
-            {font: "25px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: COLOR_ENUMS_CSS.OP_BLACK, strokeThickness: 4}
-        ).setOrigin(0.5).setDepth(1);
+        this.updateCardAmountText();
+    }
+
+    /** Function that update the cardAmount Text */
+    updateCardAmountText() {
+        this.cardAmountText.setText(this.cards.cardVisuals);
+        this.cardAmountText.setPosition(this.cardVisuals[this.cardVisuals.length-1].x, this.cardVisuals[this.cardVisuals.length-1].y + this.posHeight/2);
     }
 
 }

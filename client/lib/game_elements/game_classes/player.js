@@ -1,9 +1,12 @@
 class Player {
 
-    constructor(isActivePlayer, decklist) {
+    constructor(isActivePlayer, numberOfCards) {
         this.isActivePlayer = isActivePlayer;
         
-        this.decklist = decklist;
+        this.decklist = [];
+        for(let i = 0; i<numberOfCards; i++) {
+            this.decklist.push(1);
+        }
     }
 
 }

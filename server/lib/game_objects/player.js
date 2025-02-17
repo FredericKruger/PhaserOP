@@ -17,6 +17,7 @@ class Player {
         this.username = username;
         this.inMatch = false;
         this.waitingForMatch = false;
+        this.matchFound = false;
         this.selectedDeck = 0;
         this.spectating = false;
         this.match = null;
