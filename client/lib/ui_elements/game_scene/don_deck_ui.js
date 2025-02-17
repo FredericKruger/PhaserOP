@@ -53,6 +53,10 @@ class DonDeckUI extends CardPileUI {
         this.donImage = this.scene.add.image(this.posX - this.posWidth/4, this.posY - this.posHeight/2 - 15, ASSET_ENUMS.GAME_DON_SMALL);
         this.donImage.setScale(0.5).setDepth(0).preFX.addGlow(COLOR_ENUMS.OP_BLACK, 1);
         this.obj.push(this.donImage);
+        this.donImageText = this.scene.add.text(this.donImage.x + 30, this.donImage.y + 2, "Deck", 
+            {font: "20px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLACK}
+        ).setOrigin(0.5).setDepth(0);
+        this.obj.push(this.donImageText);
 
         this.setVisible(false);
     }
