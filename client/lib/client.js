@@ -86,12 +86,9 @@ class Client {
         });
 
         /** MATCHMAKING LISTENERS */
-        this.socket.on('start_game_searching_scene', () => {
-            this.deckSelectionScene.startGameSearchingScene();
-        });
-        this.socket.on('matchmaking_stopped', () => {
-            this.gameSearchingScene.goBackToDeckSelection();
-        });
+        this.socket.on('start_game_searching_scene', () => {this.deckSelectionScene.startGameSearchingScene();});
+        this.socket.on('matchmaking_stopped', () => {this.gameSearchingScene.goBackToDeckSelection();});
+        this.socket.on('match_found_disable_cancel', () => {this.gameSearchingScene.disableCancelButton();});
 
         /** GAME LISTENERS */
         this.socket.on('start_game_scene', (activePlayerNumberCards, passivePlayerNumberCards, passivePlayerName, board) => {
@@ -102,6 +99,9 @@ class Client {
         });
         this.socket.on('start_game_intro', (activePlayerLeader, passivePlayerLeader) => {
             this.gameScene.startIntroAnimation(activePlayerLeader, passivePlayerLeader);
+        });
+        this.socket.on('game_start_mulligan', (activePlayerCards, passivePlayerCards) => {
+            this.gameScene.gameStateManager.startMulligan(activePlayerCards, passivePlayerCards);
         });
     }
 
@@ -144,6 +144,7 @@ class Client {
 
     /** GAME COMMUNICATION */
     requestMatchSceneReady () {this.socket.emit('player_match_scene_ready');}
+    requestStartMulliganPhase () {this.socket.emit('player_match_start_mulligan_phase');}
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}

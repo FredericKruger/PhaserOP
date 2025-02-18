@@ -276,6 +276,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.IMAGE_SHOP_ITEM_PLACEHOLDER, `${assetPath}/shopitemPlaceholder.png`);
         this.load.image(ASSET_ENUMS.IMAGE_SHOP_EMPTY_PLACEHOLDER, `${assetPath}/shopEmptyPlaceholder.png`);	
         this.load.image(ASSET_ENUMS.IMAGE_TREASURE_CHEST, `${assetPath}/treasure_chest.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_MULLIGAN_TITLE, `${assetPath}/mulliganTitle.png`);
 
         assetPath = 'assets/shaders';
         this.load.glsl(SHADER_ENUMS.GREYSCALE_SHADER, `${assetPath}/greyscale_shader.frag`);

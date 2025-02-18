@@ -27,9 +27,11 @@ class GameScene extends Phaser.Scene {
         this.actionManager = new ActionManager(this);
         this.actionLibrary = new ActionLibrary(this);
         this.animationManager = new AnimationManager(this);
+        this.animationLibrary = new AnimationLibrary(this);
 
         //Game Manager
-        this.gameStateManager = new GameStateManager(this);
+        this.gameStateUI = new GameStateUI(this);
+        this.gameStateManager = new GameStateManager(this, this.gameStateUI);
 
         //Game state variables
         this.dragginCard = false;
@@ -55,51 +57,16 @@ class GameScene extends Phaser.Scene {
         // Center the image
         backgroundImage.setPosition(this.screenCenterX, this.screenCenterY);
 
-        //Create the phase box
-        /*let phaseBox = this.add.image(10, this.screenCenterY, ASSET_ENUMS.GAME_PHASE_BOX).setScale(0.8).setOrigin(0, 0.5).setDepth(0).setAlpha(0.74);
-        this.phaseText = this.add.text(30, this.screenCenterY, "Phase: 1", 
-            {font: "30px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, align: "left"}
-        ).setOrigin(0, 0.5).setDepth(0);
-        this.obj.push(phaseBox);
-        this.obj.push(this.phaseText);*/
-
         this.activePlayerScene.create();
         this.passivePlayerScene.create();
+        this.gameStateUI.create();
 
         //Create mask Panel
         this.maskPanel = this.add.rectangle(
             this.screenCenterX, this.screenCenterY, 
             this.screenWidth, this.screenWidth, 
-            COLOR_ENUMS.OP_BLACK, 0.8).setOrigin(0.5);
-        this.maskPanel.setVisible(false);
-        this.obj.push(this.maskPanel);
-
-        //Create new card to test
-        /*let cards = [];
-        for(let id of [411,412,421,414,413, 415, 145]){
-            let testCard = new GameCardUI(this, this.activePlayerScene, {
-                x: this.screenCenterX,
-                y: this.screenCenterY,
-                cardData: null,
-                state: CARD_STATES.IN_HAND,
-                artVisible: false
-            });
-            testCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[id-1]);
-            testCard.makeInteractive(true);
-            testCard.makeDraggable(true);
-            cards.push(testCard);
-        }
-        this.activePlayerScene.hand.addCards(cards);*/
-        //create leader Card
-        /*let leaderCard = new GameCardUI(this, this.activePlayerScene, {
-            x: this.screenCenterX,
-            y: this.screenCenterY,
-            cardData: null,
-            state: CARD_STATES.IN_LOCATION,
-            artVisible: false
-        });
-        leaderCard.updateCardData(this.game.gameClient.playerCollection.cardCollection[400]);*/
-        //this.activePlayerScene.leaderLocation.addCard(leaderCard);
+            COLOR_ENUMS.OP_BLACK, 0.8).setOrigin(0.5).setDepth(3);
+        this.maskPanel.setVisible(true);
 
         /** LISTENERS */
         /** Hander for when the poinster enters a card */
@@ -208,18 +175,15 @@ class GameScene extends Phaser.Scene {
                 introAnimation.startAnimation();
             });
         });
-
     }
 
     /** Function that set the panel invisible
      * @param {boolean} visible
      */
     setVisible(visible) {
-        for(let obj of this.obj) {
-            obj.setVisible(visible);
-        }
         this.activePlayerScene.setVisible(visible);
         this.passivePlayerScene.setVisible(visible);
+        this.gameStateUI.setVisible(visible);
 
         this.activePlayerScene.playerInfo.setBackgroundVisible(visible);
         this.passivePlayerScene.playerInfo.setBackgroundVisible(visible);

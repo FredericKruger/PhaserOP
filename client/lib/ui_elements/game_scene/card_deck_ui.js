@@ -72,4 +72,17 @@ class CardDeckUI extends CardPileUI {
         this.cardAmountText.setPosition(this.cardVisuals[this.cardVisuals.length-1].x, this.cardVisuals[this.cardVisuals.length-1].y + this.posHeight/2);
     }
 
+    /** Get the top card visual from the deck (back of the card) 
+    * @returns {Phaser.GameObjects.Image} image of the top cardback
+    */
+    getTopCardVisual() {return this.cardVisuals[this.cardVisuals.length-1];}
+
+    /** Pop the top card visual from the deck */
+    popTopCardVisual() {
+        this.cardVisuals[this.cardVisuals.length-1].destroy();
+        this.cardVisuals.splice(this.cardVisuals.length-1, 1);
+
+        this.updateCardAmountText();
+    }
+
 }

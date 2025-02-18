@@ -23,6 +23,8 @@ class Player {
         this.match = null;
         this.bot = false;
 
+        this.currentMatchPlayer = null;
+
         this.settings = {};
         this.collection = new CardCollection(this);
         this.decklist = [];

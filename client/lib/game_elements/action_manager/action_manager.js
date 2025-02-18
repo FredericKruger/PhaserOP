@@ -2,12 +2,12 @@
 class Action {
     constructor() {
         this.start = null; //callback function to be executed at the beginning of the action
-        this.animation = null; //animation to be played between the start and the end. Needs to call 'completeAction' to perform
+        this.start_animation = null; //animation to be played between the start and the end. Needs to call 'completeAction' to perform
         this.end = null; //callback function to be executed at the end of the action
-        this.animation2 = null; //animation to be played between the end and the final. Nees to call 'finalizeAction' to perform
+        this.end_animation = null; //animation to be played between the end and the final. Nees to call 'finalizeAction' to perform
         this.finally = null; //callback function be executed right before changing action
         this.isPlayerAction = true; //flag to signals if a delay needs to be respected before starting the next action
-        this.waitForAnimation = true; //flag to signal wether the end function should wait the end of the animation. Requires the animation to call 'completeAction'
+        this.waitForAnimationToComplete = true; //flag to signal wether the end function should wait the end of the animation. Requires the animation to call 'completeAction'
         this.switchEventTriggered = false; //flag to signal wether the start of the next action will be event triggered
         this.name = ''; //Name of the action for debugging purposes
         this.hasMoreEvents = false;
@@ -56,10 +56,10 @@ class ActionManager {
             if(this.currentAction.start !== null) this.currentAction.start();
     
             //Then execute the animation
-            if(this.currentAction.waitForAnimation) {
-                if(this.currentAction.animation !== null) this.scene.animationManager.addAnimation({animation: this.currentAction.animation, delay: 0});
+            if(this.currentAction.waitForAnimationToComplete) {
+                if(this.currentAction.start_animation !== null) this.scene.animationManager.addAnimation({animation: this.currentAction.start_animation, delay: 0});
             } else {
-                if(this.currentAction.animation !== null) this.currentAction.animation.restart();
+                if(this.currentAction.start_animation !== null) this.currentAction.start_animation.restart();
                 this.completeAction();
             }  
         }
@@ -89,10 +89,10 @@ class ActionManager {
      * 
      */
     triggerCompleteAction() {
-        if(this.currentAction.waitForAnimation && this.currentAction.animation2 !== null) {
-            this.scene.animationManager.addAnimation({animation: this.currentAction.animation2, delay: 0});
+        if(this.currentAction.waitForAnimationToComplete && this.currentAction.end_animation !== null) {
+            this.scene.animationManager.addAnimation({animation: this.currentAction.end_animation, delay: 0});
         } else {
-            if(this.currentAction.animation2 !== null) this.currentAction.animation2.restart();
+            if(this.currentAction.end_animation !== null) this.currentAction.end_animation.restart();
             this.finalizeAction();
         } 
         /*let delay = 500;

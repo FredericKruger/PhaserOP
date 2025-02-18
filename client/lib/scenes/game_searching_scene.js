@@ -93,7 +93,9 @@ class GameSearchingScene extends Phaser.Scene {
 
   //Function to disable the cancel button if match was found
   disableCancelButton() {
-    this.cancelButton.disable();
+    console.log("TODO BUG: CANCEL BUTTON NOT DISABLING");
+    this.cancelButton.removeInteractive();
+    this.cancelButton.setPostPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE); //TODO NOT WORKING
   }
 
   startGameScene(board) {

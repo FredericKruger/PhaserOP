@@ -13,9 +13,12 @@ class GameCardUI extends Phaser.GameObjects.Container {
         this.playerScene = playerScene;
         
         this.cardData = config.cardData;
+        this.id = config.id;
 
         this.state = config.state;    
         this.artVisible = config.artVisible;
+        this.currentScale = config.scale;
+        this.cardDeph = config.depth;
 
         //STATE VARIABLES
         this.isInPlayAnimation = false;
@@ -31,7 +34,8 @@ class GameCardUI extends Phaser.GameObjects.Container {
         //Add Scene
         this.setSize(this.backArt.width, this.backArt.height);
         this.scene.add.existing(this);
-        this.setDepth(1);
+
+        this.setDepth(this.cardDeph);
     }
 
     /**Function to create the card */
@@ -86,7 +90,7 @@ class GameCardUI extends Phaser.GameObjects.Container {
         this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND);
         this.obj.push(this.counterIcon);
 
-        this.setScale(CARD_SCALE.IN_DECK);
+        this.setScale(this.currentScale);
     }
 
     //Draw the powerBox 
@@ -101,8 +105,11 @@ class GameCardUI extends Phaser.GameObjects.Container {
             {tl: 10, tr: 0, br: 0, bl:10}); // 10 is padding, 15 is corner
     }
 
-    /** Update Card Data */
-    updateCardData(cardData) {
+    /** Update Card Data 
+     * @param {Object} cardData
+     * @param {boolean} flipCard
+    */
+    updateCardData(cardData, flipCard) {
         this.cardData = cardData;
         
         let textures = [];
@@ -116,7 +123,9 @@ class GameCardUI extends Phaser.GameObjects.Container {
             this.counterIcon.setVisible(this.cardData.counter && this.state === CARD_STATES.IN_HAND);
             this.locationPowerText.setText(this.cardData.power);
             this.locationPowerText.setVisible(this.state === CARD_STATES.IN_LOCATION);
-            this.flipCard();
+            if(flipCard) this.flipCard();
+
+            this.setDepth(this.cardDeph);
         };
 
         textures.push({
@@ -147,8 +156,11 @@ class GameCardUI extends Phaser.GameObjects.Container {
         }   
     }
 
-    /** Set card scale depending on the state */
-    setStateScale(state) {
+    /** Set card scale depending on the state 
+     * @param {number} scale
+    */
+    setStateScale(scale) {
+        this.currentScale = scale;
         this.setScale(scale);
     }
 
@@ -215,11 +227,13 @@ class GameCardUI extends Phaser.GameObjects.Container {
                 duration: 200,
                 ease: 'linear',
                 onComplete: () => {
-                    this.setScale(scale);
+                    this.currentScale = scale;
+                    this.setScale(this.currentScale);
                 }
             });
         } else {
-            this.setScale(scale);
+            this.currentScale = scale;
+            this.setScale(currentScale);
         }
     }
 
@@ -248,5 +262,14 @@ class GameCardUI extends Phaser.GameObjects.Container {
         }
     }
 
+    /** preFX Function */
+
+    /** Show Glow
+     * 
+     */
+    showGlow(color) {this.postFX.addGlow(color, 4);}
+
+    /** Hide Glow */
+    hideGlow() {this.postFX.clear();}
 
 }

@@ -55,22 +55,26 @@ class IntroAnimation extends BaseComponentUI{
         this.onomatopeImage = this.scene.add.image(this.scene.screenCenterX, this.scene.screenCenterY, ASSET_ENUMS.GAME_ONOMATOPE_IMAGE)
             .setOrigin(0.5)
             .setScale(1.5)
-            .setVisible(false);
+            .setVisible(false)
+            .setDepth(4);
         this.obj.push(this.onomatopeImage);
         this.vsImage = this.scene.add.image(this.scene.screenCenterX, this.scene.screenCenterY, ASSET_ENUMS.GAME_VS_ICON)
             .setOrigin(0.5)
             .setScale(1.5)
-            .setVisible(false);
+            .setVisible(false)
+            .setDepth(4);
         this.obj.push(this.vsImage);
 
         this.activePlayerIntroContainer = new IntroAnimationPlayerContainer(scene, 
             activePlayerLeader, this.scene.game.gameClient.username, 
             {x:0 , y: this.scene.screenHeight*0.25}, 'left');
+        this.activePlayerIntroContainer.setDepth(4);
         this.obj.push(this.activePlayerIntroContainer);
                                                                 
         this.passivePlayerIntroContainer = new IntroAnimationPlayerContainer(scene, 
             passivePlayLeader, this.scene.game.gameClient.passivePlayerName, 
             {x:this.scene.screenWidth , y: this.scene.screenHeight*0.75}, 'right');
+        this.passivePlayerIntroContainer.setDepth(4);
         this.obj.push(this.passivePlayerIntroContainer);
     }
 

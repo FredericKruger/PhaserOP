@@ -29,6 +29,11 @@ class MatchDeck {
         this.cards.push(card);
     }
 
+    //Removes the card at the top of the deck and returns it
+    draw() {
+        return this.cards.pop();
+    }
+
     /** Function to shuffle the deck */
     shuffle() {
         let len = this.cards.length;

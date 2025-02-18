@@ -1,6 +1,6 @@
 const ServerInstance = require("../server_instance");
 const Player = require("../game_objects/player");
-const {MatchState} = require("./match_state");
+const {MatchState, MATCH_PHASES} = require("./match_state");
 
 class Match {
 
@@ -22,11 +22,16 @@ class Match {
         this.player1 = player1; //Assign the players
         this.player2 = player2;
 
-        this.player1_Ready = false; //Flags to keep track of which player is ready
-        this.player2_Ready = false;
+        //Assign pointers
+        this.player1.currentMatchPlayer = this.state.player1;
+        this.player2.currentMatchPlayer = this.state.player2;
 
-        this.player1_mulligan_over = false; //Flags to keep tack of the mulligan phase
-        this.player2_mulligan_over = false;
+        this.gameFlags = {
+            READY_SETUP: [false, false],
+
+            READY_MULLIGAN: [false, false],
+            MULLIGAN_OVER: [false, false]
+        }
 
         this.firstPlayer = null; //Pointer to the first player
     }
@@ -34,14 +39,54 @@ class Match {
     /** Set the readiness of the plauer
      * @param {Player} player
      */
-    setPlayerReady(player) {
+    setPlayerReadyForPhase(player, phase) {
         if(player === this.player1) {
-            this.player1_Ready = true;
+            phase[0] = true;
         } else if(player === this.player2) {
-            this.player2_Ready = true;
+            phase[1] = true;
         }
     }
 
+    /** Function to start the game setup
+     * @param {Player} requestingPlayer
+     */
+    startSetup (requestingPlayer) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.READY_SETUP);
+
+        if(this.botMatch) {
+            this.setPlayerReadyForPhase(this.player2, this.gameFlags.READY_SETUP); //Set the bot to ready
+
+            this.state.current_phase = MATCH_PHASES.SETUP;
+            let player1Leader = this.state.player1.deck.leader;
+            let player2Leader = this.state.player2.deck.leader;
+
+            //Start the intro animation
+            this.player1.socket.emit('start_game_intro', player1Leader, player2Leader);
+        } else {
+
+        }
+    }
+
+    /** Function to state the mulligan phase
+     * @param {Player} requestingPlayer
+     */
+    startMulliganPhase (requestingPlayer) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.READY_MULLIGAN);
+
+        if(this.botMatch) {
+            this.setPlayerReadyForPhase(this.player2, this.gameFlags.READY_MULLIGAN); //Set the bot to ready
+
+            //Start hte mulligan phase in the match engine and get cards drawn for mulligan
+            this.state.current_phase = MATCH_PHASES.MULLIGAN_PHASE;
+
+            //Draw the cards
+            let player1Cards = this.state.drawCards(this.player1.currentMatchPlayer, 5);
+            let player2Cards = this.state.drawCards(this.player2.currentMatchPlayer, 5);
+
+            //Send cards to client
+            this.player1.socket.emit('game_start_mulligan', player1Cards, player2Cards);
+        }
+    }
 }
 
 module.exports = Match;

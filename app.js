@@ -171,6 +171,7 @@ io.on('connection', function (/** @type {object} */ socket) {
 
         //See if you can find a match
         if(serverInstance.findMatch(socket.player)) {
+            socket.emit('match_found_disable_cancel');
             console.log("Start Match");
         } else { //If not create a timeout by witch an AI game will be created
             setTimeout(() => {
@@ -179,6 +180,7 @@ io.on('connection', function (/** @type {object} */ socket) {
                     socket.player.waitingForMatch = false;
                     
                     //Create AI Match
+                    socket.emit('match_found_disable_cancel');
                     serverInstance.createAIMatch(socket.player);
                 }
             }, 2000); //2 seconds for now TODO
@@ -197,40 +199,13 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     /** GAME REQUESTS */
     socket.on('player_match_scene_ready', () => {
-        socket.player.match.setPlayerReady(socket.player);
-
-        if(socket.player.match.botMatch) {
-            socket.player.match.player2_Ready = true; //Set the bot to ready
-
-            let player1Leader = socket.player.match.state.player1.deck.leader;
-            let player2Leader = socket.player.match.state.player2.deck.leader;
-
-            //Start the intro animation
-            socket.emit('start_game_intro', player1Leader, player2Leader);
-        } else {
-
-        }
+        socket.player.match.startSetup(socket.player);
+    });
+    socket.on('player_match_start_mulligan_phase', () => {
+        socket.player.match.startMulliganPhase(socket.player);
     });
 
 });
-
-/** Asynchronous function that creates a promise to send the player the ai decklist
- * Emits signals to the player with the ai decklists
- */
-/*async function sendAIDeckList () {
-    let fs = require('fs');
-    let aiDeck = {}; //Creat empty decklist in case of error
-    let filepath = __dirname + '/server_assets/ai_decks/decks_ai.json'; //Get file
-    
-    try {
-        const data = await fs.promises.readFile(filepath); //Read the file as a promise
-        aiDeck = JSON.parse(data.toString()); //Turn file into JSON object
-        io.emit('send_ai_decklist', JSON.stringify(aiDeck)); //Send the player the ai decklist
-    } catch (err) { //In case of an error
-        //console.log(err);
-        io.emit('send_ai_decklist', aiDeck); //Send an empty decklist
-    }
-}*/
 
 //START LISTENING
 http.listen(8081,function(){ //Listens to port 8081
