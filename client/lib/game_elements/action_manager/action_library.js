@@ -52,17 +52,15 @@ class ActionLibrary {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            if(phase === GAME_PHASES.MULLIGAN_PHASE){}
+            if(phase === GAME_PHASES.MULLIGAN_PHASE){card.setDepth(1);}
             else this.scene.children.bringToTop(card);
-
-            //Add Card to hand
-            playerScene.hand.addCards([card]);
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
                 card.setState(CARD_STATES.IN_MULLIGAN);
-                this.scene.gameStateUI.mulliganUI.addCard(card.id);
+                this.scene.gameStateUI.mulliganUI.addCard(card);
             } else {
                 card.setState(CARD_STATES.TRAVELLING_DECK_HAND);
+                playerScene.hand.addCards([card]);
             }
         };
         drawAction.start_animation = start_animation;
@@ -73,6 +71,8 @@ class ActionLibrary {
 
                 card.setState(CARD_STATES.IN_HAND);
                 card.setScale(CARD_SCALE.IN_HAND);
+            } else {
+                card.setDepth(4);
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
         }
@@ -88,6 +88,50 @@ class ActionLibrary {
         this.actionManager.addAction(drawAction);
     }
 
+    /**
+     * 
+     * @param {PlayerScene} playerScene 
+     * @param {GameCardUI} card 
+     */
+    moveCardsMulliganToDeckAction(playerScene, card, animationConfig, config) {
+        //Prepare Tweens
+        let tweens = this.scene.animationLibrary.animation_move_card_mulligan2deck(card, animationConfig.delay);
+        if(config.waitForAnimationToComplete) {
+            tweens = tweens.concat({
+                duration: 10,
+                onComplete: () => { this.scene.actionManager.completeAction(); }
+            });
+        }
+        let start_animation = this.scene.tweens.chain({ //Create tween chain
+            targets: card,
+            tweens: tweens
+        }).pause();
+
+        let action = new Action();
+        action.start = () => {
+            card.setDepth(1);
+            card.setState(CARD_STATES.TRAVELLING_MULLIGAN_DECK);
+            card.hideGlow();
+        };
+        action.start_animation = start_animation;
+        action.finally = () => {
+            //Delete the card
+            this.scene.gameStateUI.mulliganUI.removeCard(card);
+            card.setState(CARD_STATES.IN_DECK);
+            card.destroy();
+
+            //Add new Card Visual to deck
+            playerScene.deck.addDeckVisual();
+            playerScene.deck.updateCardAmountText();
+        };
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = config.waitForAnimationToComplete;
+        action.name = "MOVE CARD MULLIGAN TO DECK ACTION";
+
+        //Add Action to the action stack
+        this.actionManager.addAction(action);
+    }
+
     /** Creates the Play Card Action.
          * @param {GameCardUI} card - Card that is being played.
          * @param {PlayerScene} playerScene - Player Scene that is playing the card.
@@ -97,7 +141,7 @@ class ActionLibrary {
          *  start: Pay Cost, Remove from hand, add to playarea
          *  end: play exert animation to show card is drying. Send Server a message about card being played
         */
-    playCardAction(card, playerScene) {
+    playCardAction(playerScene, card) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
         let displayY = this.scene.screenCenterY;
 

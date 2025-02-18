@@ -65,7 +65,7 @@ class GameStateManager {
             targets: activePlayerLeaderCard,
             y: this.scene.activePlayerScene.leaderLocation.posY - 50,
             scale: {from: CARD_SCALE.IN_DECK, to: 0.4},
-            duration: 1000,
+            duration: 500,
             ease: 'easeOut',
             onComplete: () => {
                 this.scene.add.tween({
@@ -90,7 +90,7 @@ class GameStateManager {
             targets: passivePlayerLeaderCard,
             y: this.scene.passivePlayerScene.leaderLocation.posY + 50,
             scale: {from: CARD_SCALE.IN_DECK, to: 0.4},
-            duration: 800,
+            duration: 450,
             ease: 'easeOut',
             onComplete: () => {
                 this.scene.add.tween({
@@ -137,8 +137,43 @@ class GameStateManager {
 
                 for(let i=0; i<activePlayerCards.length; i++) 
                     this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, activePlayerCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false});
+
+                //Create action to start at the end to show the bbuttons
+                let action = new Action();
+                action.start = () => {
+                    this.gameStateUI.mulliganUI.keepButton.setVisible(true);
+                    this.gameStateUI.mulliganUI.mulliganButton.setVisible(true);
+                }
+                action.isPlayerAction = true;
+                action.waitForAnimationToComplete = false;
+                this.scene.actionManager.addAction(action);
             }
         });
+    }
+
+    /** Swap the new cards
+     * @param {Array<Object>} newCards - The new cards to swap
+     */
+    mulliganCards(newCards) {
+        //Put the old cards back
+        let index = 0;
+        let oldCards = this.gameStateUI.mulliganUI.cards;
+        for(let card of oldCards) {
+            this.scene.actionLibrary.moveCardsMulliganToDeckAction(this.scene.activePlayerScene, card, {delay: 0}, {waitForAnimationToComplete: true});            
+        }
+
+        //Create an action to start the next step once the previous once are competed
+        let action = new Action();
+        action.start = () => {
+            this.scene.time.delayedCall(1000, () => {
+                for(let i=0; i<newCards.length; i++) 
+                    this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, newCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false});
+            })
+        }
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(action);
+
     }
 
     /** Function to set the phase of the game 

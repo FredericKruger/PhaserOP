@@ -39,6 +39,31 @@ class MatchState {
         }
         return cards;
     }
+
+    /** Function that mulligans the cards
+     * @param {MatchPlayer} player - player object
+     * @param {Array<number>} cards - list of card ids to be mulliganed
+     */
+    mulliganCards(player, cards) {
+        let newCards = []; //Store the new cards
+
+        //Draw new cards
+        for(let i=0; i<cards.length; i++) 
+            newCards.push(player.deck.draw());
+
+        //Add the old cards to the hand
+        for(let card of player.inHand) 
+            player.deck.add(card);
+
+        //Empty the hand and add new cards
+        player.inHand = [];
+        player.inHand.concat(newCards);
+
+        //reshuffle the deck
+        player.deck.shuffle();
+
+        return newCards;
+    }
 }
 
 module.exports = {

@@ -87,6 +87,19 @@ class Match {
             this.player1.socket.emit('game_start_mulligan', player1Cards, player2Cards);
         }
     }
+
+    /** Function that does the card mulligan
+     * @param {Player} requestingPlayer
+     * @param {Array<number>} cards
+     */
+    mulliganCards(requestingPlayer, cards) {
+        let newCards = this.state.mulliganCards(requestingPlayer.currentMatchPlayer, cards);
+
+        //Update the other players ui that cards where mulligan
+
+        //Send new cards to clients
+        requestingPlayer.socket.emit('game_mulligan_cards', newCards);
+    }
 }
 
 module.exports = Match;

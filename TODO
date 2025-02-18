@@ -107,9 +107,9 @@
     - [x] Create Area
     - [x] Create entering logic to add leader
 - [ ] Create Mulligan
-    - [ ] Create main Panel to show the 5 cards
-    - [ ] Create mulligan button
-    - [ ] Create logic to redraw 5 cards
+    - [x] Create main Panel to show the 5 cards
+    - [x] Create mulligan button
+    - [x] Create logic to redraw 5 cards
     - [ ] Create animation to close panel
 - [ ] Create Game start animation
     - [x] Show Player Portrait through slide in animation

@@ -7,8 +7,11 @@ class AnimationLibrary {
         this.scene = scene;
     }
 
-    /**
-     * 
+    /** Animation that brings a card from the deck to the mulligan
+     * Get future card position in the mulligan ui
+     * tween1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function
+     * tween2: move slightly more to the left of the deck pile and increase the y scale
+     * tween3: move the card to the mulligan card position
      * @param {GameCardUI} card 
      * @param {number} delay 
      */
@@ -41,5 +44,49 @@ class AnimationLibrary {
             }
         ];
         return tweens;
+    }
+
+    /** Animation that brings a card from the mulligan UI to the deck
+     * First get the deckpile coordinates
+     * Tween 1: move the card close to the deckpoile while reducing the scale
+     * Tween 2: move the card closer to the deckpile while reducing the x scale to 0. At the end, remove mulligan selection ui and flip the card. Change card state to IN_DECK for hand reflesh
+     * Tween 3: reducing scaling to IN_PILE to simulate putting back on top. Move the card on top of the deckpile
+     * Tween 4: reduce card scale to 0 to simulate disappearing
+     * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
+     * @param {number} delay - delay with which to start the tweens 
+     */
+    animation_move_card_mulligan2deck(card, delay) {
+        let posX = card.playerScene.deck.posX;
+        let posY = card.playerScene.deck.posY;
+
+        let animation = [
+            { //Tween 1: move the card close to the deckpoile while reducing the scale
+                x: posX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.2/2) - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_DECK - 20),
+                y: posY,
+                scale: 0.2,
+                duration: 200,
+                delay: delay,
+            }, { //Tween 2: move the card closer to the deckpile while reducing the x scale to 0. At the end, remove mulligan selection ui and flip the card. Change card state to IN_DECK for hand reflesh
+                scaleX: 0,
+                scaleY: 0.18,
+                x: posX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_DECK - 20),
+                duration: 100,
+                onComplete: () => {
+                    card.flipCard();
+                    card.setState(CARD_STATES.IN_DECK);
+                }
+            }, { //Tween 3: reducing scaling to IN_PILE to simulate putting back on top. Move the card on top of the deckpile
+                scaleX: CARD_SCALE.IN_DECK,
+                scaleY: CARD_SCALE.IN_DECK,
+                x: posX,
+                duration: 100,
+            }, { //Tween 4: reduce card scale to 0 to simulate disappearing
+                scaleX: 0,
+                scaleY: 0,
+                duration: 50
+            }
+        ];
+    
+        return animation;
     }
 }

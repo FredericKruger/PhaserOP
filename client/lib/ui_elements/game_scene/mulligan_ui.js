@@ -22,7 +22,7 @@ class MulliganUI {
                 .setScale(0.3);
         this.obj.push(this.title);
         
-        this.keepbutton = new Button({
+        this.keepButton = new Button({
             scene: this.scene,
             x: this.scene.screenWidth*0.66, 
             y: this.scene.screenHeight*0.8,
@@ -36,10 +36,11 @@ class MulliganUI {
             fontfamily: "OnePieceFont",
             textColor: COLOR_ENUMS_CSS.OP_BLACK,
         }).setDepth(4);
-        this.keepbutton.setInteractive();
-        this.keepbutton.on('pointerover', () => {this.keepbutton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2);});
-        this.keepbutton.on('pointerout', () => {this.keepbutton.postFX.clear();});
-        this.obj.push(this.keepbutton);
+        this.keepButton.setInteractive();
+        this.keepButton.on('pointerover', () => {this.keepButton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2);});
+        this.keepButton.on('pointerout', () => {this.keepButton.postFX.clear();});
+        this.keepButton.setVisible(false);
+        //this.obj.push(this.keepButton);
 
         this.mulliganButton = new Button({
             scene: this.scene,
@@ -58,7 +59,9 @@ class MulliganUI {
         this.mulliganButton.setInteractive();
         this.mulliganButton.on('pointerover', () => {this.mulliganButton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2);});
         this.mulliganButton.on('pointerout', () => {this.mulliganButton.postFX.clear();});
-        this.obj.push(this.mulliganButton);
+        this.mulliganButton.on('pointerdown', () => {this.mulliganCards();})
+        this.mulliganButton.setVisible(false);
+        //this.obj.push(this.mulliganButton);
 
         this.setVisible(false);
     }
@@ -101,10 +104,38 @@ class MulliganUI {
     }
 
     /** Add a card to the mulligan array
-     * @param {number} cardid - card id sent by the server
+     * @param {GameCardUI} cardid - card id sent by the server
      */
-    addCard(cardid) {
-        this.cards.push(cardid);
+    addCard(card) {
+        this.cards.push(card);
+    }
+
+    /** Remove a card form the mulligan array
+     * @param {GameCardUI} card - card to be removed
+     */
+    removeCard(card) {
+        let index = -1;
+        for(let i=0; i<this.cards.length; i++) {
+            if(this.cards[i].id === card.id) {
+                index = i;
+                break;
+            }
+        }
+        if(index > -1) {
+            this.cards.splice(index, 1);
+        }
+    }
+
+    /** Function to mulligan cards */
+    mulliganCards() {
+        this.keepButton.setVisible(false);
+        this.mulliganButton.setVisible(false);
+
+        //Retrieve the card ids
+        let cardIds = [];
+        for(let card of this.cards) cardIds.push(card.id);
+
+        this.scene.game.gameClient.requestMulliganCards(cardIds);
     }
 
 }
