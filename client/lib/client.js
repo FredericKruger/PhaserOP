@@ -106,6 +106,9 @@ class Client {
         this.socket.on('game_mulligan_cards', (newCards) => {
             this.gameScene.gameStateManager.mulliganCards(newCards);
         });
+        this.socket.on('game_end_mulligan', () => {
+            this.gameScene.gameStateManager.endMulligan();
+        });
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -149,6 +152,7 @@ class Client {
     requestMatchSceneReady () {this.socket.emit('player_match_scene_ready');}
     requestStartMulliganPhase () {this.socket.emit('player_match_start_mulligan_phase');}
     requestMulliganCards (cards) {this.socket.emit('player_mulligan_cards', cards);}
+    requestEndMulliganPhase () {this.socket.emit('player_match_end_mulligan_phase');}
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}

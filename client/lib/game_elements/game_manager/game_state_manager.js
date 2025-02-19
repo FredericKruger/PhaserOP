@@ -155,25 +155,60 @@ class GameStateManager {
      * @param {Array<Object>} newCards - The new cards to swap
      */
     mulliganCards(newCards) {
-        //Put the old cards back
-        let index = 0;
-        let oldCards = this.gameStateUI.mulliganUI.cards;
-        for(let card of oldCards) {
-            this.scene.actionLibrary.moveCardsMulliganToDeckAction(this.scene.activePlayerScene, card, {delay: 0}, {waitForAnimationToComplete: true});            
-        }
+        if(newCards.length > 0) { //If there are new cards Mulligan
+            //Put the old cards back
+            let index = 0;
+            let oldCards = this.gameStateUI.mulliganUI.cards;
+            for(let card of oldCards) {
+                this.scene.actionLibrary.moveCardsMulliganToDeckAction(this.scene.activePlayerScene, card, {delay: 0}, {waitForAnimationToComplete: true});            
+            }
 
-        //Create an action to start the next step once the previous once are competed
-        let action = new Action();
-        action.start = () => {
+            //Create an action to start the next step once the previous once are competed
             this.scene.time.delayedCall(1000, () => {
-                for(let i=0; i<newCards.length; i++) 
-                    this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, newCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false});
-            })
+                //Create an overall action to start all the draw Cards
+                let action = new Action();
+                action.start = () => {
+                        for(let i=0; i<newCards.length; i++) {
+                            let waitForAnimationToComplete = (i === (newCards.length-1) ? true : false); //Last Draw Card to wait for end of animation
+                            this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, newCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: waitForAnimationToComplete});
+                        }
+                        //At the end of the draw cards, create an action to end the mulligan phase
+                        let endMulliganAction = new Action();
+                        endMulliganAction.start = () => {this.scene.game.gameClient.requestEndMulliganPhase();}
+                        endMulliganAction.isPlayerAction = true;
+                        endMulliganAction.waitForAnimationToComplete = false;
+                        this.scene.actionManager.addAction(endMulliganAction);
+                }
+                action.isPlayerAction = true;
+                action.waitForAnimationToComplete = false;
+                this.scene.actionManager.addAction(action);
+            });
+        } else { //If there are no new cards, end the mulligan phase
+            let endMulliganAction = new Action();
+            endMulliganAction.start = () => {this.scene.game.gameClient.requestEndMulliganPhase();}
+            endMulliganAction.isPlayerAction = true;
+            endMulliganAction.waitForAnimationToComplete = false;
+            this.scene.actionManager.addAction(endMulliganAction);
         }
-        action.isPlayerAction = true;
-        action.waitForAnimationToComplete = false;
-        this.scene.actionManager.addAction(action);
+    }
 
+    /** Function to end the mulligan phase */
+    endMulligan() {
+        //remove ui
+        this.gameStateUI.mulliganUI.keepButton.setVisible(false);
+
+        //Add Mulligan cards to the hand
+        this.scene.activePlayerScene.hand.addCards(this.gameStateUI.mulliganUI.cards, {setCardState: true, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: false});
+        //Create tween to remove mulligan UI
+        this.scene.add.tween({
+            targets: this.scene.maskPanel,
+            alpha: {from:0.85, to:0},
+            duration: 500,
+            onComplete: () => {
+                //Redraw the hand
+                this.scene.activePlayerScene.hand.update();
+            }
+        });      
     }
 
     /** Function to set the phase of the game 

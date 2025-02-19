@@ -207,6 +207,9 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_mulligan_cards', (cards) => {
         socket.player.match.mulliganCards(socket.player, cards); 
     });
+    socket.on('player_match_end_mulligan_phase', () => {
+        socket.player.match.mulliganComplete(socket.player);
+    });
 
 });
 

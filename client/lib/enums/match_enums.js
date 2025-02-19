@@ -38,8 +38,8 @@ const CARD_TYPES = Object.freeze({
 const CARD_SCALE = Object.freeze({
     IN_DON_DECK: 0.11,
     IN_DECK: 0.13,
-    IN_HAND: 0.27,
-    IN_HAND_HOVERED: 0.45,
+    IN_HAND: 0.25,
+    IN_HAND_HOVERED: 0.4,
     IN_MULLIGAN: 0.4,
 
     TRAVELLING_FROM_HAND:0.2,

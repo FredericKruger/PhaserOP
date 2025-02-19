@@ -57,7 +57,7 @@ class CardDeckUI extends CardPileUI {
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) step *=-1;
         for(let i = 0; i<numberOfCards; i++ ) {
             this.scene.time.delayedCall(i*delay, () => {
-                this.cardVisuals.push(this.scene.add.image(this.posX-i*step, this.posY+i*step/2, ASSET_ENUMS.CARD_BACK1).setScale(CARD_SCALE.IN_DECK).setDepth(1));
+                this.cardVisuals.push(this.scene.add.image(this.posX-i*step, this.posY+i*step/2, ASSET_ENUMS.CARD_BACK1).setScale(CARD_SCALE.IN_DECK).setDepth(0));
             });
         }
 
@@ -73,7 +73,7 @@ class CardDeckUI extends CardPileUI {
         let step = -0.25;
         let lastY = this.cardVisuals[this.cardVisuals.length-1].y;
         let lastX = this.cardVisuals[this.cardVisuals.length-1].x;
-        this.cardVisuals.push(this.scene.add.image(lastX-step, lastY-step/2, ASSET_ENUMS.CARD_BACK1).setScale(CARD_SCALE.IN_DECK).setDepth(1));
+        this.cardVisuals.push(this.scene.add.image(lastX-step, lastY-step/2, ASSET_ENUMS.CARD_BACK1).setScale(CARD_SCALE.IN_DECK).setDepth(0));
     }
 
     /** Function that update the cardAmount Text */

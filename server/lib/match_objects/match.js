@@ -93,12 +93,33 @@ class Match {
      * @param {Array<number>} cards
      */
     mulliganCards(requestingPlayer, cards) {
-        let newCards = this.state.mulliganCards(requestingPlayer.currentMatchPlayer, cards);
+        let newCards = [];
+        if(cards.length > 0) newCards = this.state.mulliganCards(requestingPlayer.currentMatchPlayer, cards);
 
         //Update the other players ui that cards where mulligan
 
         //Send new cards to clients
         requestingPlayer.socket.emit('game_mulligan_cards', newCards);
+    }
+
+    /** Function to complete the Mulligan Phase
+     * @param {Player} requestingPlayer
+     */
+    mulliganComplete(requestingPlayer) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.MULLIGAN_OVER);
+
+        if(this.botMatch) {
+            this.setPlayerReadyForPhase(this.player2, this.gameFlags.MULLIGAN_OVER); //Set the bot to ready
+
+            //Start hte mulligan phase in the match engine and get cards drawn for mulligan
+            this.state.current_phase = MATCH_PHASES.MULLIGAN_PHASE_OVER;
+
+            // Delay the call to game_end_mulligan by 1 second
+            setTimeout(() => {
+                //Send cards to client
+                this.player1.socket.emit('game_end_mulligan');
+            }, 1000);
+        }
     }
 }
 

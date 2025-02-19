@@ -64,13 +64,13 @@ class AnimationLibrary {
                 x: posX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.2/2) - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_DECK - 20),
                 y: posY,
                 scale: 0.2,
-                duration: 200,
+                duration: 150,
                 delay: delay,
             }, { //Tween 2: move the card closer to the deckpile while reducing the x scale to 0. At the end, remove mulligan selection ui and flip the card. Change card state to IN_DECK for hand reflesh
                 scaleX: 0,
                 scaleY: 0.18,
                 x: posX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_DECK - 20),
-                duration: 100,
+                duration: 75,
                 onComplete: () => {
                     card.flipCard();
                     card.setState(CARD_STATES.IN_DECK);
@@ -79,11 +79,11 @@ class AnimationLibrary {
                 scaleX: CARD_SCALE.IN_DECK,
                 scaleY: CARD_SCALE.IN_DECK,
                 x: posX,
-                duration: 100,
+                duration: 75,
             }, { //Tween 4: reduce card scale to 0 to simulate disappearing
                 scaleX: 0,
                 scaleY: 0,
-                duration: 50
+                duration: 25
             }
         ];
     

@@ -83,7 +83,7 @@ class CardHandUI extends CardPileUI {
         for(let card of this.cards) {
             if(card.state === CARD_STATES.IN_HAND) {
                 numberCards++;
-            }
+            }   
         }
         return numberCards;
     }
@@ -91,14 +91,18 @@ class CardHandUI extends CardPileUI {
     /**
      * Function that adds new cards to the hand
      * @param {Array<GameCardUI>} cards
+    * @param {Object} config
      */
-    addCards(cards) {
+    addCards(cards, config = {setCardState: false, setCardDepth: false, setCardInteractive: false, setCardDraggable: false, updateUI: false}) {
         for(let card of cards){
-            card.setDepth(2);
+            if(config.setCardDepth) card.setDepth(2);
+            if(config.setCardInteractive) card.makeInteractive(true);
+            if(config.setCardDraggable) card.makeDraggable(true);
+            if(config.setCardState) card.setState(CARD_STATES.IN_HAND);
             this.cards.push(card);
         } 
 
-        this.update();
+        if(config.updateUI) this.update();
     }
 
     /** Function that removes a card from the hand

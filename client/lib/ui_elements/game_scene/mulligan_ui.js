@@ -39,6 +39,7 @@ class MulliganUI {
         this.keepButton.setInteractive();
         this.keepButton.on('pointerover', () => {this.keepButton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2);});
         this.keepButton.on('pointerout', () => {this.keepButton.postFX.clear();});
+        this.keepButton.on('pointerdown', () => {this.mulliganCards(false);});
         this.keepButton.setVisible(false);
         //this.obj.push(this.keepButton);
 
@@ -59,7 +60,7 @@ class MulliganUI {
         this.mulliganButton.setInteractive();
         this.mulliganButton.on('pointerover', () => {this.mulliganButton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2);});
         this.mulliganButton.on('pointerout', () => {this.mulliganButton.postFX.clear();});
-        this.mulliganButton.on('pointerdown', () => {this.mulliganCards();})
+        this.mulliganButton.on('pointerdown', () => {this.mulliganCards(true);})
         this.mulliganButton.setVisible(false);
         //this.obj.push(this.mulliganButton);
 
@@ -127,15 +128,14 @@ class MulliganUI {
     }
 
     /** Function to mulligan cards */
-    mulliganCards() {
+    mulliganCards(mulligan) {
         this.keepButton.setVisible(false);
         this.mulliganButton.setVisible(false);
 
         //Retrieve the card ids
         let cardIds = [];
-        for(let card of this.cards) cardIds.push(card.id);
+        if(mulligan) for(let card of this.cards) cardIds.push(card.id);
 
         this.scene.game.gameClient.requestMulliganCards(cardIds);
     }
-
 }

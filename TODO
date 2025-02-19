@@ -106,21 +106,36 @@
 - [ ] Draw Leader Location
     - [x] Create Area
     - [x] Create entering logic to add leader
-- [ ] Create Mulligan
+- [x] Create Mulligan
     - [x] Create main Panel to show the 5 cards
     - [x] Create mulligan button
     - [x] Create logic to redraw 5 cards
-    - [ ] Create animation to close panel
-- [ ] Create Game start animation
+    - [x] Create animation to close panel
+- [x] Create Game start animation
     - [x] Show Player Portrait through slide in animation
     - [x] Show VS image
     - [x] Show Opponent portrait through slide in aimation
-    - [ ] Close Panel and start mulligan
+    - [x] Close Panel and start mulligan
 - [x] Prepare Start of game
     - [x] Shuffle 10 Don Cards
         - [x] Create base logic
         - [x] Create animation
     - [x] Create animation to put leader in location
+- [ ] Prepare first turn
+    - [ ] Show Phase Element
+    - [ ] Show Next turn button
+    - [ ] Create player turn art
+    - [ ] Create Board separation
+    - [ ] Create Board bolors
+
+# OPPONENT ACTIONS
+---
+- [ ] Opponent Mulligan
+    - [ ] Create Mulligan UI for Opponent
+    - [ ] Create Swap cards animations
+    - [ ] Transfer to Opponent Hand
+- [ ] Opponent Hand
+    - [ ] Create Opponent Hand
 
 # GAME LOADING SCENE
 ---
@@ -146,6 +161,12 @@
         - [ ] Toss coin animation
         - [ ] Refactor in Jan-ken-pun
         - [ ] distribute don card
+
+# AI ACTIONS
+---
+- [ ] Handle Mulligan
+    - [ ] Determine if there right cards in hand
+    - [ ] Perform mulligan action
 
 # IMPROVEMENTS
 ---
