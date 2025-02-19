@@ -90,4 +90,54 @@ class AnimationLibrary {
     
         return animation;
     }
+
+    /** Animation that brings a card from the mulligan UI to the deck
+     * First get the deckpile coordinates
+     * Tween 1: move the card close to the deckpoile while reducing the scale
+     * Tween 2: move the card closer to the deckpile while reducing the x scale to 0. At the end, remove mulligan selection ui and flip the card. Change card state to IN_DECK for hand reflesh
+     * Tween 3: reducing scaling to IN_PILE to simulate putting back on top. Move the card on top of the deckpile
+     * Tween 4: reduce card scale to 0 to simulate disappearing
+     * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
+     * @param {number} delay - delay with which to start the tweens 
+     */
+    animation_move_card_deck2lifedeck(card, delay) {
+        let posX = card.playerScene.playerInfo.lifeAmountText.x;
+        let posY = card.playerScene.playerInfo.lifeAmountText.y;
+
+        let tweens = [
+            { //tween1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function
+                scaleX: 0,
+                scaleY: CARD_SCALE.IN_DECK,
+                x: card.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.2/2,
+                duration: 150,
+                delay: delay,
+                onComplete: () => {
+                    card.state = CARD_STATES.IN_LIFEDECK;
+                }
+            }, { //tween2: move slightly more to the left of the deck pile and increase the y scale
+                scaleX: CARD_SCALE.IN_DECK,
+                scaleY: CARD_SCALE.IN_DECK,
+                x: card.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.28 - 20,
+                y: card.y - 100,
+                ease: 'quart.out',
+                duration: 150,
+            }, { //tween3: move the card to the mulligan card position
+                scale: CARD_SCALE.IN_DECK,
+                x: posX,
+                y: posY,
+                duration: 750,
+                onComplete: () => {
+                    card.setDepth(0);
+                    this.scene.children.moveBelow(card, card.playerScene.playerInfo.lifeAmountText);
+                }
+            }, {
+                delay: 100,
+                duration: 10,
+                onComplete: () => {
+                    card.setVisible(false);
+                }
+            } 
+        ];
+        return tweens;
+    }
 }

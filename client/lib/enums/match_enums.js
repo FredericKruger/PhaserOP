@@ -20,6 +20,7 @@ const CARD_STATES = Object.freeze({
     IN_DISCARD: 'IN_DISCARD',
     IN_LOCATION: 'IN_LOCATION',
     IN_MULLIGAN: 'IN_MULLIGAN',
+    IN_LIFEDECK: 'IN_LIFEDECK',
     
     LEADER_TRAVELLING_TO_LOCATION: 'LEADER_TRAVELLING_TO_LOCATION',
 
@@ -53,10 +54,12 @@ const CARD_SCALE = Object.freeze({
     IN_HAND_PASSIVE_PLAYER: 0.18,
     IN_HAND_HOVERED_PASSIVE_PLAYER: 0.22,
     IN_MULLIGAN_PASSIVE_PLAYER: 0.15,
+    
 });
 
 const GAME_PHASES = Object.freeze({
     SETUP: 'Setup',
     MULLIGAN_PHASE: 'Mulligan Phase',
+    PREPARING_FIRST_TURN: 'Preparing First Turn',
     DON_PHASE: 'Don Phase',
 });

@@ -173,7 +173,7 @@ class GameCardUI extends Phaser.GameObjects.Container {
             this.powerBox.setVisible(this.state === CARD_STATES.IN_HAND);
             this.costIcon.setVisible(this.state === CARD_STATES.IN_HAND);
             this.powerText.setVisible(this.state === CARD_STATES.IN_HAND);
-            this.counterIcon.setVisible(this.cardData.counter && this.state === CARD_STATES.IN_HAND);
+            this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND && this.cardData.counter);
         }
         this.locationPowerText.setVisible(this.state === CARD_STATES.IN_LOCATION);
     }

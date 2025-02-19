@@ -36,7 +36,11 @@ class Match {
             READY_MULLIGAN: [false, false],
             MULLIGAN_SWAPPED_CARDS: [false, false],
             MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER: [false, false],
-            MULLIGAN_OVER: [false, false]
+            MULLIGAN_OVER: [false, false],
+
+            READY_FIRST_TURN_STEP: [false, false],
+            FIRST_TURN_PREP_COMPLETE: [false, false],
+            FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE: [false, false],
         }
 
         this.firstPlayer = null; //Pointer to the first player
@@ -65,6 +69,10 @@ class Match {
             this.state.current_phase = MATCH_PHASES.SETUP;
             let player1Leader = this.state.player1.deck.leader;
             let player2Leader = this.state.player2.deck.leader;
+
+            //Put in the location
+            this.state.player1.inLeaderLocation = player1Leader;
+            this.state.player2.inLeaderLocation = player2Leader;
 
             //Start the intro animation
             this.player1.socket.emit('start_game_intro', player1Leader, player2Leader);
@@ -157,6 +165,57 @@ class Match {
             }, 1000);
         }
     }
+
+    /** Function to set up the first turn */
+    firstTurnSetup(requestingPlayer) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.READY_FIRST_TURN_STEP);
+
+        if(this.botMatch) {
+            this.setPlayerReadyForPhase(this.player2, this.gameFlags.READY_FIRST_TURN_STEP); //Set the bot to ready
+
+            this.state.current_phase = MATCH_PHASES.PREPARING_FIRST_TURN;
+            
+            //Get Cards for life decks
+            let player1Cards = this.state.addCardToLifeDeck(this.player1.currentMatchPlayer);
+            let player2Cards = this.state.addCardToLifeDeck(this.player2.currentMatchPlayer);
+
+            this.player1.socket.emit('game_first_turn_setup', player1Cards, player2Cards); //Send to client
+        }
+    }
+
+    /** Function to handle the competion of the first turn setup 
+     * @param {Player} requestingPlayer
+    */
+    firstTurnSetupComplete(requestingPlayer) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.FIRST_TURN_PREP_COMPLETE);
+
+        if(this.botMatch) {
+            this.setPlayerReadyForPhase(this.player2, this.gameFlags.FIRST_TURN_PREP_COMPLETE); //Set the bot to ready
+
+            this.endFirstTurnSetup();
+        }
+    }
+
+    /** Function to handle the completion of the animation of the pasive player for the competion of the first turn setup */
+    firstTurnSetupPassivePlayerAnimationComplete(requestingPlayer) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE);
+
+        if(this.botMatch) {
+            this.setPlayerReadyForPhase(this.player2, this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE); //Set the bot to ready
+
+            this.endFirstTurnSetup();
+        }
+    }
+
+    /** Function to complete the setup once player and animation are ready on both sides */
+    endFirstTurnSetup() {
+        if(this.gameFlags.FIRST_TURN_PREP_COMPLETE[0] && this.gameFlags.FIRST_TURN_PREP_COMPLETE[1]
+            && this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE[0] && this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE[1]
+        ) {
+            console.log("READY TO START GAME");
+        }
+    }
 }
+
 
 module.exports = Match;

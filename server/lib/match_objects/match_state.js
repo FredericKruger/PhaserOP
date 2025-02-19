@@ -66,6 +66,19 @@ class MatchState {
 
         return newCards;
     }
+
+    /** Function that distributes cards in the life pool for the player 
+     * @param {MatchPlayer} player - player object
+     */
+    addCardToLifeDeck(player) {
+        let cards = [];
+        for(let i=0; i<player.inLeaderLocation.cardData.life; i++) {
+            let card = player.deck.draw();
+            cards.push(card.id);
+            player.inLifeDeck.push(card);
+        }
+        return cards;
+    }
 }
 
 module.exports = {

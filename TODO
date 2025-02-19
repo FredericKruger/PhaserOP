@@ -130,7 +130,7 @@
     - [ ] Create player turn art
     - [x] Create Board separation
     - [x] Create Board bolors
-    - [ ] Send life cards to life ui
+    - [x] Send life cards to life ui
 
 # OPPONENT ACTIONS
 ---

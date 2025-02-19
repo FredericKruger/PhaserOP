@@ -31,11 +31,12 @@ class ActionLibrary {
             id: serverCard.id,
             depth: 4
         });
-        card.updateCardData(serverCard.cardData, false);
+        if(serverCard.cardData) card.updateCardData(serverCard.cardData, false); //in some case we only pass the id
 
         //Prepare Tweens
         let tweens = [];
         if(phase === GAME_PHASES.MULLIGAN_PHASE) tweens = this.scene.animationLibrary.animation_move_card_deck2mulligan(card, config.mulliganPosition, animationConfig.delay);
+        else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) tweens = this.scene.animationLibrary.animation_move_card_deck2lifedeck(card, animationConfig.delay);
         //else this.scene.animations.animationMoveCardFromDeckToHand(card, delay); TODO
 
         if(animationConfig.startAnimationCallback) {
@@ -58,12 +59,16 @@ class ActionLibrary {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            if(phase === GAME_PHASES.MULLIGAN_PHASE){card.setDepth(1);}
+            if(phase === GAME_PHASES.MULLIGAN_PHASE) card.setDepth(1);
+            else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) card.setDepth(1);
             else this.scene.children.bringToTop(card);
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
                 card.setState(CARD_STATES.IN_MULLIGAN);
                 this.scene.gameStateUI.mulliganUI.addCard(card);
+            } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
+                card.setState(CARD_STATES.IN_LIFEDECK);
+                playerScene.lifeDeck.addCard(card);
             } else {
                 card.setState(CARD_STATES.TRAVELLING_DECK_HAND);
                 playerScene.hand.addCards([card]);
@@ -71,19 +76,22 @@ class ActionLibrary {
         };
         drawAction.start_animation = start_animation;
         drawAction.end = () => {
-            if(phase !== GAME_PHASES.MULLIGAN_PHASE) {
+            if(phase === GAME_PHASES.MULLIGAN_PHASE) {
+                card.setDepth(4);
+            } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
+            } else {
                 card.makeInteractive(true);
                 card.makeDraggable(true);
 
                 card.setState(CARD_STATES.IN_HAND);
                 card.setScale(CARD_SCALE.IN_HAND);
-            } else {
-                card.setDepth(4);
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
         }
         drawAction.finally = () => {
-            card.showGlow(COLOR_ENUMS.OP_WHITE);
+            if(phase !== GAME_PHASES.PREPARING_FIRST_TURN) {
+                card.showGlow(COLOR_ENUMS.OP_WHITE);
+            }
             deckVisual.destroy();
         };
         drawAction.isPlayerAction = true;

@@ -250,12 +250,36 @@ class GameStateManager {
                 this.scene.activePlayerScene.hand.update();
                 this.scene.passivePlayerScene.hand.update();
 
-                //Show ui
-                this.gameStateUI.setVisible(true);
-
-                this.scene.game.gameClient.requestReadyFirstTurn();
+                this.scene.game.gameClient.requestFirstTurnSetup();
             }
         });      
+    }
+
+    /** Function that prepares the ui for the first turn. Distributes life cards from the deck
+     * @param {Array<number>} activePlayerCards - The active player's cards
+     * @param {Array<number>} passivePlayerCards - The passive player's cards
+     */
+    firstTurnSetup(activePlayerCards, passivePlayerCards) {
+        //Show ui
+        this.gameStateUI.setVisible(true);
+        
+        //Draw the active player's cards
+        let animationCallback = () => {
+            this.scene.game.gameClient.requestFirstTurnSetupComplete();
+        };
+        for(let i=0; i<activePlayerCards.length; i++) {
+            let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
+            this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, {id:activePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
+        }
+        
+        //Draw the passive player's cards
+        animationCallback = () => {
+            this.scene.game.gameClient.requestFirstTurnSetupPassivePlayerAnimationComplete();
+        };
+        for(let i=0; i<passivePlayerCards.length; i++) {
+            let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
+            this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+        }
     }
 
     /** Function to set the phase of the game 

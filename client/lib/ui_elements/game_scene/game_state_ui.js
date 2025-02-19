@@ -41,8 +41,8 @@ class GameStateUI {
         let graphics = this.scene.add.graphics();
         graphics.lineStyle(4, COLOR_ENUMS.OP_BLACK, 1); // White color, 2px width
 
-        let startX = this.scene.screenWidth*0.15;
-        let endX = this.scene.screenWidth*0.85;
+        let startX = this.scene.screenWidth*0.2;
+        let endX = this.scene.screenWidth*0.8;
         let y = this.scene.screenCenterY-10;
 
         let dashLength = 20;

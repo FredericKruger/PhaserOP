@@ -16,6 +16,7 @@ class PlayerScene {
         this.donDeck = new DonDeckUI(scene, this);
         this.discard = new CardDiscardUI(scene, this);
         this.deck = new CardDeckUI(scene, this);
+        this.lifeDeck = new CardLifePileUI(scene, this);
 
         this.leaderLocation = new CardLocationUI(scene, this, CARD_TYPES.LEADER);
         this.stageLocation = new CardLocationUI(scene, this, CARD_TYPES.STAGE);

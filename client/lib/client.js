@@ -97,21 +97,12 @@ class Client {
             this.passivePlayerName = passivePlayerName;
             this.gameSearchingScene.startGameScene(board);
         });
-        this.socket.on('start_game_intro', (activePlayerLeader, passivePlayerLeader) => {
-            this.gameScene.startIntroAnimation(activePlayerLeader, passivePlayerLeader);
-        });
-        this.socket.on('game_start_mulligan', (activePlayerCards, passivePlayerCards) => {
-            this.gameScene.gameStateManager.startMulligan(activePlayerCards, passivePlayerCards);
-        });
-        this.socket.on('game_mulligan_cards', (newCards) => {
-            this.gameScene.gameStateManager.mulliganCards(newCards);
-        });
-        this.socket.on('game_mulligan_cards_passiveplayer', (newCards) => {
-            this.gameScene.gameStateManager.mulliganCardsPassivePlayer(newCards);
-        });
-        this.socket.on('game_end_mulligan', () => {
-            this.gameScene.gameStateManager.endMulligan();
-        });
+        this.socket.on('start_game_intro', (activePlayerLeader, passivePlayerLeader) => {this.gameScene.startIntroAnimation(activePlayerLeader, passivePlayerLeader);});
+        this.socket.on('game_start_mulligan', (activePlayerCards, passivePlayerCards) => {this.gameScene.gameStateManager.startMulligan(activePlayerCards, passivePlayerCards);});
+        this.socket.on('game_mulligan_cards', (newCards) => {this.gameScene.gameStateManager.mulliganCards(newCards);});
+        this.socket.on('game_mulligan_cards_passiveplayer', (newCards) => {this.gameScene.gameStateManager.mulliganCardsPassivePlayer(newCards);});
+        this.socket.on('game_end_mulligan', () => {this.gameScene.gameStateManager.endMulligan();});
+        this.socket.on('game_first_turn_setup', (activePlayerCards, passivePlayerCards) => {this.gameScene.gameStateManager.firstTurnSetup(activePlayerCards, passivePlayerCards);});
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -157,7 +148,10 @@ class Client {
     requestMulliganCards (cards) {this.socket.emit('player_mulligan_cards', cards);}
     requestEndMulliganPhase () {this.socket.emit('player_match_end_mulligan_phase');}
     requestMulliganAnimationPassivePlayerComplete () {this.socket.emit('player_mulligan_animation_passiveplayer_complete');}
+    requestFirstTurnSetup () {this.socket.emit('player_first_turn_setup');}
     requestReadyFirstTurn () {this.socket.emit('player_ready_first_turn');}
+    requestFirstTurnSetupComplete() {this.socket.emit('player_first_turn_setup_complete');};
+    requestFirstTurnSetupPassivePlayerAnimationComplete() {this.socket.emit('player_first_turn_setup_passiveplayer_animation_complete');};
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}
