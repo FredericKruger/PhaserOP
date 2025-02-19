@@ -168,10 +168,13 @@ class GameCardUI extends Phaser.GameObjects.Container {
     setState(state) {
         this.state = state;
 
-        this.powerBox.setVisible(this.state === CARD_STATES.IN_HAND);
-        this.costIcon.setVisible(this.state === CARD_STATES.IN_HAND);
-        this.powerText.setVisible(this.state === CARD_STATES.IN_HAND);
-        this.counterIcon.setVisible(this.cardData.counter && this.state === CARD_STATES.IN_HAND);
+        //Only show the art if ths card is from the active player
+        if(this.playerScene.player.isActivePlayer) {
+            this.powerBox.setVisible(this.state === CARD_STATES.IN_HAND);
+            this.costIcon.setVisible(this.state === CARD_STATES.IN_HAND);
+            this.powerText.setVisible(this.state === CARD_STATES.IN_HAND);
+            this.counterIcon.setVisible(this.cardData.counter && this.state === CARD_STATES.IN_HAND);
+        }
         this.locationPowerText.setVisible(this.state === CARD_STATES.IN_LOCATION);
     }
 

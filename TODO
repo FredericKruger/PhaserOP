@@ -130,12 +130,12 @@
 
 # OPPONENT ACTIONS
 ---
-- [ ] Opponent Mulligan
-    - [ ] Create Mulligan UI for Opponent
-    - [ ] Create Swap cards animations
-    - [ ] Transfer to Opponent Hand
-- [ ] Opponent Hand
-    - [ ] Create Opponent Hand
+- [x] Opponent Mulligan
+    - [x] Create Mulligan UI for Opponent
+    - [x] Create Swap cards animations
+    - [x] Transfer to Opponent Hand
+- [x] Opponent Hand
+    - [x] Create Opponent Hand
 
 # GAME LOADING SCENE
 ---

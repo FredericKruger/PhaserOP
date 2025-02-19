@@ -135,8 +135,13 @@ class GameStateManager {
             onComplete: () => {
                 this.gameStateUI.mulliganUI.startMulligan();
 
+                //Draw the active player's cards
                 for(let i=0; i<activePlayerCards.length; i++) 
                     this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, activePlayerCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false});
+                
+                //Draw the passive player's cards
+                for(let i=0; i<passivePlayerCards.length; i++)
+                    this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false, isServerRequest: false});
 
                 //Create action to start at the end to show the bbuttons
                 let action = new Action();
@@ -192,13 +197,41 @@ class GameStateManager {
         }
     }
 
+    /** Function to mulligan the passive players cards 
+     * @param {Array<Object>} newCards - The new cards to swap
+    */
+    mulliganCardsPassivePlayer(newCards) {
+        if(newCards.length>0) {
+            //Put the old cards back
+            let index = 0;
+            let oldCards = this.gameStateUI.mulliganUI.card_passivePlayer;
+            for(let card of oldCards) {
+                this.scene.actionLibraryPassivePlayer.moveCardsMulliganToDeckAction(this.scene.passivePlayerScene, card, {delay: index*300}, {waitForAnimationToComplete: false});            
+                index++;
+            }
+            this.gameStateUI.mulliganUI.card_passivePlayer = []; //Delete the array
+
+            //Draw the passive player's cards
+            let animationCallback = () => {
+                this.scene.game.gameClient.requestMulliganAnimationPassivePlayerComplete();
+            };
+            for(let i=0; i<newCards.length; i++) {
+                let callback = (i === (newCards.length-1) ? animationCallback : null);
+                this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, newCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300 + 1500, startAnimationCallback: callback}, {mulliganPosition: i, waitForAnimationToComplete: false, isServerRequest: false});
+            }
+        } else {
+            this.scene.game.gameClient.requestMulliganAnimationPassivePlayerComplete();
+        }
+    }
+
     /** Function to end the mulligan phase */
     endMulligan() {
         //remove ui
-        this.gameStateUI.mulliganUI.keepButton.setVisible(false);
+        this.gameStateUI.mulliganUI.setVisible(false);
 
         //Add Mulligan cards to the hand
         this.scene.activePlayerScene.hand.addCards(this.gameStateUI.mulliganUI.cards, {setCardState: true, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: false});
+        this.scene.passivePlayerScene.hand.addCards(this.gameStateUI.mulliganUI.card_passivePlayer, {setCardState: true, setCardDepth: false, setCardInteractive: false, setCardDraggable: false, updateUI: false});
         //Create tween to remove mulligan UI
         this.scene.add.tween({
             targets: this.scene.maskPanel,
@@ -207,6 +240,7 @@ class GameStateManager {
             onComplete: () => {
                 //Redraw the hand
                 this.scene.activePlayerScene.hand.update();
+                this.scene.passivePlayerScene.hand.update();
             }
         });      
     }

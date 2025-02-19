@@ -198,18 +198,11 @@ io.on('connection', function (/** @type {object} */ socket) {
     });
 
     /** GAME REQUESTS */
-    socket.on('player_match_scene_ready', () => {
-        socket.player.match.startSetup(socket.player);
-    });
-    socket.on('player_match_start_mulligan_phase', () => {
-        socket.player.match.startMulliganPhase(socket.player);
-    });
-    socket.on('player_mulligan_cards', (cards) => {
-        socket.player.match.mulliganCards(socket.player, cards); 
-    });
-    socket.on('player_match_end_mulligan_phase', () => {
-        socket.player.match.mulliganComplete(socket.player);
-    });
+    socket.on('player_match_scene_ready', () => {socket.player.match.startSetup(socket.player);});
+    socket.on('player_match_start_mulligan_phase', () => {socket.player.match.startMulliganPhase(socket.player);});
+    socket.on('player_mulligan_cards', (cards) => {socket.player.match.mulliganCards(socket.player, cards);});
+    socket.on('player_match_end_mulligan_phase', () => {socket.player.match.mulliganComplete(socket.player);});
+    socket.on('player_mulligan_animation_passiveplayer_complete', () => {socket.player.match.mulliganAnimationPassivePlayerComplete(socket.player);});
 
 });
 

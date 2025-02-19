@@ -1,6 +1,7 @@
 const ServerInstance = require("../server_instance");
 const Player = require("../game_objects/player");
 const {MatchState, MATCH_PHASES} = require("./match_state");
+const { request } = require("express");
 
 class Match {
 
@@ -30,6 +31,8 @@ class Match {
             READY_SETUP: [false, false],
 
             READY_MULLIGAN: [false, false],
+            MULLIGAN_SWAPPED_CARDS: [false, false],
+            MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER: [false, false],
             MULLIGAN_OVER: [false, false]
         }
 
@@ -93,10 +96,17 @@ class Match {
      * @param {Array<number>} cards
      */
     mulliganCards(requestingPlayer, cards) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.MULLIGAN_SWAPPED_CARDS);
         let newCards = [];
         if(cards.length > 0) newCards = this.state.mulliganCards(requestingPlayer.currentMatchPlayer, cards);
 
         //Update the other players ui that cards where mulligan
+        if(this.botMatch) {
+            //let AI do the mulligan
+
+            let newCardsAI = this.state.drawCards(this.player2.currentMatchPlayer, 5); //To be changes
+            requestingPlayer.socket.emit('game_mulligan_cards_passiveplayer', newCardsAI);
+        }
 
         //Send new cards to clients
         requestingPlayer.socket.emit('game_mulligan_cards', newCards);
@@ -111,6 +121,29 @@ class Match {
         if(this.botMatch) {
             this.setPlayerReadyForPhase(this.player2, this.gameFlags.MULLIGAN_OVER); //Set the bot to ready
 
+            this.endMulliganPhase();
+        }
+    }
+
+    /** Function to complete the mulligan animation for the passive player
+     * @param {Player} requestingPlayer
+     */
+    mulliganAnimationPassivePlayerComplete(requestingPlayer) {
+        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER);
+
+        if(this.botMatch) {
+            this.setPlayerReadyForPhase(this.player2, this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER); //Set the bot to ready
+
+            this.endMulliganPhase();
+        }
+    }
+
+    /** Function to end the mulligan phase */
+    endMulliganPhase() {
+        //Only end mulligan if both player have completed the mulligan and the animation phase
+        if(this.gameFlags.MULLIGAN_OVER[0] && this.gameFlags.MULLIGAN_OVER[1]
+            && this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER[0] && this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER[1]
+        ) {
             //Start hte mulligan phase in the match engine and get cards drawn for mulligan
             this.state.current_phase = MATCH_PHASES.MULLIGAN_PHASE_OVER;
 

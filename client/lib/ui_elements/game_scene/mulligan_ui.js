@@ -10,6 +10,7 @@ class MulliganUI {
         this.obj = [];
 
         this.cards = [];
+        this.card_passivePlayer = [];
 
         this.mulliganPositions = []; //Array to store the positions of the cards in the mulligan
     }
@@ -41,7 +42,6 @@ class MulliganUI {
         this.keepButton.on('pointerout', () => {this.keepButton.postFX.clear();});
         this.keepButton.on('pointerdown', () => {this.mulliganCards(false);});
         this.keepButton.setVisible(false);
-        //this.obj.push(this.keepButton);
 
         this.mulliganButton = new Button({
             scene: this.scene,
@@ -62,7 +62,6 @@ class MulliganUI {
         this.mulliganButton.on('pointerout', () => {this.mulliganButton.postFX.clear();});
         this.mulliganButton.on('pointerdown', () => {this.mulliganCards(true);})
         this.mulliganButton.setVisible(false);
-        //this.obj.push(this.mulliganButton);
 
         this.setVisible(false);
     }
@@ -96,7 +95,7 @@ class MulliganUI {
         let posY = this.scene.screenCenterY;
 
         if(this.mulliganPositions.length>0) {
-            posX =  this.mulliganPositions[this.mulliganCounter].x;
+            posX = this.mulliganPositions[this.mulliganCounter].x;
         } else {
             posX =  startX + (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_MULLIGAN + 20) * cardPosition;
         }
@@ -106,24 +105,29 @@ class MulliganUI {
 
     /** Add a card to the mulligan array
      * @param {GameCardUI} cardid - card id sent by the server
+     * @param {boolean} isActivePlayer - boolean to check if the card is from the active player
      */
-    addCard(card) {
-        this.cards.push(card);
+    addCard(card, isActivePlayer = true) {
+        if(isActivePlayer) this.cards.push(card);
+        else this.card_passivePlayer.push(card);
     }
 
     /** Remove a card form the mulligan array
      * @param {GameCardUI} card - card to be removed
+     * @param {boolean} isActivePlayer - boolean to check if the card is from the active player
      */
-    removeCard(card) {
+    removeCard(card, isActivePlayer = true) {
         let index = -1;
-        for(let i=0; i<this.cards.length; i++) {
-            if(this.cards[i].id === card.id) {
+        let cardArray = isActivePlayer ? this.cards : this.card_passivePlayer;
+
+        for(let i=0; i<cardArray.length; i++) {
+            if(cardArray[i].id === card.id) {
                 index = i;
                 break;
             }
         }
         if(index > -1) {
-            this.cards.splice(index, 1);
+            cardArray.splice(index, 1);
         }
     }
 

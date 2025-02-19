@@ -26,8 +26,10 @@ class GameScene extends Phaser.Scene {
         //Set Engines
         this.actionManager = new ActionManager(this);
         this.actionLibrary = new ActionLibrary(this);
+        this.actionLibraryPassivePlayer = new ActionLibraryPassivePlayer(this);
         this.animationManager = new AnimationManager(this);
         this.animationLibrary = new AnimationLibrary(this);
+        this.animationLibraryPassivePlayer = new AnimationLibraryPassivePlayer(this);
 
         //Game Manager
         this.gameStateUI = new GameStateUI(this);

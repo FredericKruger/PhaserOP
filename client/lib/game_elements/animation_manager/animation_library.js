@@ -13,6 +13,7 @@ class AnimationLibrary {
      * tween2: move slightly more to the left of the deck pile and increase the y scale
      * tween3: move the card to the mulligan card position
      * @param {GameCardUI} card 
+     * @param {number} mulliganPosition
      * @param {number} delay 
      */
     animation_move_card_deck2mulligan(card, mulliganPosition, delay){

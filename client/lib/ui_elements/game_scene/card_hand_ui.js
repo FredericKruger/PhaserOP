@@ -20,6 +20,7 @@ class CardHandUI extends CardPileUI {
             this.posY = 50;
             this.posX = this.scene.screenWidth * 0.25;
             this.heightStep *= -1;
+            this.angleStep *= -1;
         }
     }
 
@@ -27,6 +28,13 @@ class CardHandUI extends CardPileUI {
     update() {
         let numberCards = Math.max(this.getNumberCardsInHand()-1, 0);
         let currentIndex = numberCards/2 - numberCards;
+
+        let currentScale = CARD_SCALE.IN_HAND;
+        let currentScaleHovered = CARD_SCALE.IN_HAND_HOVERED;
+        if(!this.playerScene.player.isActivePlayer) {
+            currentScale = CARD_SCALE.IN_HAND_PASSIVE_PLAYER;
+            currentScaleHovered = CARD_SCALE.IN_HAND_HOVERED_PASSIVE_PLAYER;
+        }
 
         //find the index of the card currently hovered
         let hoverIndex = -1;
@@ -42,30 +50,30 @@ class CardHandUI extends CardPileUI {
         for(let i=0; i<this.cards.length; i++) {
             let card = this.cards[i];
             if(card.state === CARD_STATES.IN_HAND) {
-                let cardX = this.posX + currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * CARD_SCALE.IN_HAND);
+                let cardX = this.posX + currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * currentScale);
                 let cardY = this.posY + Math.abs(currentIndex) * this.heightStep;
                 let cardAngle = currentIndex * this.angleStep;
 
                 if(hoverIndex>-1) {
                     if(i<hoverIndex) {
-                        cardX -= (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND_HOVERED * 0.5);// - 10;
+                        cardX -= (GAME_UI_CONSTANTS.CARD_ART_WIDTH * currentScaleHovered * 0.5);// - 10;
                     } else if(i>hoverIndex) { 
-                        cardX += (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_HAND * 0.5)// - 10;
+                        cardX += (GAME_UI_CONSTANTS.CARD_ART_WIDTH * currentScale * 0.5)// - 10;
                     } 
                 }
 
                 card.moveTo(cardX, cardY, true, false, false);
-                card.scaleTo(CARD_SCALE.IN_HAND, true, false, false);
+                card.scaleTo(currentScale, true, false, false);
                 card.angleTo(cardAngle);
 
                 currentIndex++;
             } else if(card.state === CARD_STATES.IN_HAND_HOVERED) { //If the card is hovered, zoom in and bring the card up
-                let cardX = this.posX + Math.floor(currentIndex) * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * CARD_SCALE.IN_HAND);
+                let cardX = this.posX + Math.floor(currentIndex) * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * currentScale);
                 let cardY = this.posY - (card.scale * GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.65 - 50);// - (Math.abs(currentIndex) * this.heightStep);
                 let cardAngle = currentIndex * this.angleStep;
 
                 card.moveTo(cardX, cardY, true, false, false);
-                card.scaleTo(CARD_SCALE.IN_HAND_HOVERED, true, false, false);
+                card.scaleTo(currentScaleHovered, true, false, false);
                 card.angleTo(cardAngle);
 
                 currentIndex++;

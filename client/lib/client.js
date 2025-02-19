@@ -106,6 +106,9 @@ class Client {
         this.socket.on('game_mulligan_cards', (newCards) => {
             this.gameScene.gameStateManager.mulliganCards(newCards);
         });
+        this.socket.on('game_mulligan_cards_passiveplayer', (newCards) => {
+            this.gameScene.gameStateManager.mulliganCardsPassivePlayer(newCards);
+        });
         this.socket.on('game_end_mulligan', () => {
             this.gameScene.gameStateManager.endMulligan();
         });
@@ -153,6 +156,7 @@ class Client {
     requestStartMulliganPhase () {this.socket.emit('player_match_start_mulligan_phase');}
     requestMulliganCards (cards) {this.socket.emit('player_mulligan_cards', cards);}
     requestEndMulliganPhase () {this.socket.emit('player_match_end_mulligan_phase');}
+    requestMulliganAnimationPassivePlayerComplete () {this.socket.emit('player_mulligan_animation_passiveplayer_complete');}
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}
