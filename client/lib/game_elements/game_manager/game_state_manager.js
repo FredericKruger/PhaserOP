@@ -249,6 +249,11 @@ class GameStateManager {
                 //Redraw the hand
                 this.scene.activePlayerScene.hand.update();
                 this.scene.passivePlayerScene.hand.update();
+
+                //Show ui
+                this.gameStateUI.setVisible(true);
+
+                this.scene.game.gameClient.requestReadyFirstTurn();
             }
         });      
     }

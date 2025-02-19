@@ -121,12 +121,16 @@
         - [x] Create base logic
         - [x] Create animation
     - [x] Create animation to put leader in location
+- [ ] Life Card UI
+    - [ ] Create interactive with life ui (clicking on the life)
+    - [ ] Fan available cards
 - [ ] Prepare first turn
-    - [ ] Show Phase Element
-    - [ ] Show Next turn button
+    - [x] Show Phase Element
+    - [x] Show Next turn button
     - [ ] Create player turn art
-    - [ ] Create Board separation
+    - [x] Create Board separation
     - [x] Create Board bolors
+    - [ ] Send life cards to life ui
 
 # OPPONENT ACTIONS
 ---

@@ -157,6 +157,7 @@ class Client {
     requestMulliganCards (cards) {this.socket.emit('player_mulligan_cards', cards);}
     requestEndMulliganPhase () {this.socket.emit('player_match_end_mulligan_phase');}
     requestMulliganAnimationPassivePlayerComplete () {this.socket.emit('player_mulligan_animation_passiveplayer_complete');}
+    requestReadyFirstTurn () {this.socket.emit('player_ready_first_turn');}
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}
