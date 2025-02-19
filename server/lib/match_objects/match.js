@@ -2,6 +2,7 @@ const ServerInstance = require("../server_instance");
 const Player = require("../game_objects/player");
 const {MatchState, MATCH_PHASES} = require("./match_state");
 const { request } = require("express");
+const AI_Instance = require("../ai_engine/ai_instance");
 
 class Match {
 
@@ -17,6 +18,8 @@ class Match {
 
         this.id = -1; //Match ID
         this.botMatch = botMatch; //Flag to keep track if the match is against a bot
+        /** @type {AI_Instance} */
+        this.ai = null; //Pointer to the AI instance
 
         this.state = new MatchState(this); //Create a new match state
 
@@ -103,8 +106,8 @@ class Match {
         //Update the other players ui that cards where mulligan
         if(this.botMatch) {
             //let AI do the mulligan
-
-            let newCardsAI = this.state.drawCards(this.player2.currentMatchPlayer, 5); //To be changes
+            
+            let newCardsAI = this.ai.mulligan();
             requestingPlayer.socket.emit('game_mulligan_cards_passiveplayer', newCardsAI);
         }
 

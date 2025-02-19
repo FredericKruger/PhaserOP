@@ -135,23 +135,31 @@ class GameStateManager {
             onComplete: () => {
                 this.gameStateUI.mulliganUI.startMulligan();
 
+                //Callback for the last card draw to show the buttons
+                let startAnimationCallback = () => {
+                    this.gameStateUI.mulliganUI.keepButton.setVisible(true);
+                    this.gameStateUI.mulliganUI.mulliganButton.setVisible(true);
+                };
+
                 //Draw the active player's cards
-                for(let i=0; i<activePlayerCards.length; i++) 
-                    this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, activePlayerCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false});
+                for(let i=0; i<activePlayerCards.length; i++) {
+                    let callBack = (i === (activePlayerCards.length-1) ? startAnimationCallback : null);
+                    this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, activePlayerCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300, startAnimationCallback: callBack}, {mulliganPosition: i, waitForAnimationToComplete: false});
+                }
                 
                 //Draw the passive player's cards
                 for(let i=0; i<passivePlayerCards.length; i++)
                     this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false, isServerRequest: false});
 
                 //Create action to start at the end to show the bbuttons
-                let action = new Action();
+                /*let action = new Action();
                 action.start = () => {
                     this.gameStateUI.mulliganUI.keepButton.setVisible(true);
                     this.gameStateUI.mulliganUI.mulliganButton.setVisible(true);
                 }
                 action.isPlayerAction = true;
                 action.waitForAnimationToComplete = false;
-                this.scene.actionManager.addAction(action);
+                this.scene.actionManager.addAction(action);*/
             }
         });
     }

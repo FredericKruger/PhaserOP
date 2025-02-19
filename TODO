@@ -126,7 +126,7 @@
     - [ ] Show Next turn button
     - [ ] Create player turn art
     - [ ] Create Board separation
-    - [ ] Create Board bolors
+    - [x] Create Board bolors
 
 # OPPONENT ACTIONS
 ---
@@ -164,9 +164,9 @@
 
 # AI ACTIONS
 ---
-- [ ] Handle Mulligan
-    - [ ] Determine if there right cards in hand
-    - [ ] Perform mulligan action
+- [x] Handle Mulligan
+    - [x] Determine if there right cards in hand
+    - [x] Perform mulligan action
 
 # IMPROVEMENTS
 ---

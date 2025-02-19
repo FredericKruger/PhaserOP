@@ -59,6 +59,26 @@ class GameScene extends Phaser.Scene {
         // Center the image
         backgroundImage.setPosition(this.screenCenterX, this.screenCenterY);
 
+        // Create a canvas with a gradient
+        let canvas = document.createElement('canvas');
+        canvas.width = this.screenWidth;
+        canvas.height = this.screenHeight;
+        let ctx = canvas.getContext('2d');
+
+        let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(128, 53, 14, 0.6)'); // Red at the top
+        gradient.addColorStop(1, 'rgba(0, 32, 96, 0.6)'); // Blue at the bottom
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Create a texture from the canvas
+        this.textures.addCanvas('gradientTexture', canvas);
+
+        // Create a sprite with the gradient texture
+        let gradientSprite = this.add.sprite(this.screenCenterX, this.screenCenterY, 'gradientTexture').setOrigin(0.5).setDepth(0);
+        this.obj.push(gradientSprite);
+
         this.activePlayerScene.create();
         this.passivePlayerScene.create();
         this.gameStateUI.create();

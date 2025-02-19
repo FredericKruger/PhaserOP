@@ -38,6 +38,12 @@ class ActionLibrary {
         if(phase === GAME_PHASES.MULLIGAN_PHASE) tweens = this.scene.animationLibrary.animation_move_card_deck2mulligan(card, config.mulliganPosition, animationConfig.delay);
         //else this.scene.animations.animationMoveCardFromDeckToHand(card, delay); TODO
 
+        if(animationConfig.startAnimationCallback) {
+            tweens = tweens.concat({
+                duration: 10,
+                onComplete: () => { animationConfig.startAnimationCallback(); }
+            });
+        }
         if(config.waitForAnimationToComplete) {
             tweens = tweens.concat({
                 duration: 10,
