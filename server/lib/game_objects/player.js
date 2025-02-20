@@ -24,6 +24,7 @@ class Player {
         this.bot = false;
 
         this.currentMatchPlayer = null;
+        this.currentOpponentPlayer = null;
 
         this.settings = {};
         this.collection = new CardCollection(this);

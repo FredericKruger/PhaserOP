@@ -1,3 +1,4 @@
+const { MatchFlags } = require('../game_objects/state_manager.js');
 const { MatchDonCard } = require('./match_card.js');
 const MatchDeck = require('./match_deck.js');
 
@@ -18,6 +19,8 @@ class MatchPlayer {
 
         this.isFirstTurn = true;
         this.isFirstPlayer = false;
+
+        this.matchFlags = new MatchFlags();
 
         this.deck = new MatchDeck();
     }

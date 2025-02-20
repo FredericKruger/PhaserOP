@@ -3,6 +3,7 @@ const Player = require("../game_objects/player");
 const {MatchState, MATCH_PHASES} = require("./match_state");
 const { request } = require("express");
 const AI_Instance = require("../ai_engine/ai_instance");
+const { FlagManager } = require("../game_objects/state_manager");
 
 class Match {
 
@@ -30,21 +31,11 @@ class Match {
         this.player1.currentMatchPlayer = this.state.player1;
         this.player2.currentMatchPlayer = this.state.player2;
 
-        this.gameFlags = {
-            READY_SETUP: [false, false],
+        //Assign opponents
+        this.player1.currentOpponentPlayer = this.player2;
+        this.player2.currentOpponentPlayer = this.player1;
 
-            READY_MULLIGAN: [false, false],
-            MULLIGAN_SWAPPED_CARDS: [false, false],
-            MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER: [false, false],
-            MULLIGAN_OVER: [false, false],
-
-            READY_FIRST_TURN_STEP: [false, false],
-            FIRST_TURN_PREP_COMPLETE: [false, false],
-            FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE: [false, false],
-
-            DON_PHASE_COMPLETE: [false, false],
-            DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: [false, false],
-        }
+        this.flagManager = new FlagManager(this); //Create a new state manager
 
         this.firstPlayer = null; //Pointer to the first player
     }
@@ -64,11 +55,7 @@ class Match {
      * @param {Player} requestingPlayer
      */
     startSetup (requestingPlayer) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.READY_SETUP);
-
-        if(this.botMatch) {
-            this.setPlayerReadyForPhase(this.player2, this.gameFlags.READY_SETUP); //Set the bot to ready
-
+        if(this.flagManager.checkFlags(['READY_SETUP'])){
             this.state.current_phase = MATCH_PHASES.SETUP;
             let player1Leader = this.state.player1.deck.leader;
             let player2Leader = this.state.player2.deck.leader;
@@ -77,10 +64,8 @@ class Match {
             this.state.player1.inLeaderLocation = player1Leader;
             this.state.player2.inLeaderLocation = player2Leader;
 
-            //Start the intro animation
-            this.player1.socket.emit('start_game_intro', player1Leader, player2Leader);
-        } else {
-
+            if(!this.player1.bot) this.player1.socket.emit('start_game_intro', player1Leader, player2Leader);
+            if(!this.player2.bot) this.player2.socket.emit('start_game_intro', player2Leader, player1Leader);
         }
     }
 
@@ -88,12 +73,7 @@ class Match {
      * @param {Player} requestingPlayer
      */
     startMulliganPhase (requestingPlayer) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.READY_MULLIGAN);
-
-        if(this.botMatch) {
-            this.setPlayerReadyForPhase(this.player2, this.gameFlags.READY_MULLIGAN); //Set the bot to ready
-
-            //Start hte mulligan phase in the match engine and get cards drawn for mulligan
+        if(this.flagManager.checkFlags(['READY_MULLIGAN'])){
             this.state.current_phase = MATCH_PHASES.MULLIGAN_PHASE;
 
             //Draw the cards
@@ -101,7 +81,8 @@ class Match {
             let player2Cards = this.state.drawCards(this.player2.currentMatchPlayer, 5);
 
             //Send cards to client
-            this.player1.socket.emit('game_start_mulligan', player1Cards, player2Cards);
+            if(!this.player1.bot) this.player1.socket.emit('game_start_mulligan', player1Cards, player2Cards);
+            if(!this.player2.bot) this.player1.socket.emit('game_start_mulligan', player2Cards, player1Cards);
         }
     }
 
@@ -110,12 +91,11 @@ class Match {
      * @param {Array<number>} cards
      */
     mulliganCards(requestingPlayer, cards) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.MULLIGAN_SWAPPED_CARDS);
         let newCards = [];
         if(cards.length > 0) newCards = this.state.mulliganCards(requestingPlayer.currentMatchPlayer, cards);
 
         //Update the other players ui that cards where mulligan
-        if(this.botMatch) {
+        if(requestingPlayer.currentOpponentPlayer.bot) {
             //let AI do the mulligan
             
             let newCardsAI = this.ai.mulligan();
@@ -126,95 +106,39 @@ class Match {
         requestingPlayer.socket.emit('game_mulligan_cards', newCards);
     }
 
-    /** Function to complete the Mulligan Phase
-     * @param {Player} requestingPlayer
-     */
-    mulliganComplete(requestingPlayer) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.MULLIGAN_OVER);
-
-        if(this.botMatch) {
-            this.setPlayerReadyForPhase(this.player2, this.gameFlags.MULLIGAN_OVER); //Set the bot to ready
-
-            this.endMulliganPhase();
-        }
-    }
-
-    /** Function to complete the mulligan animation for the passive player
-     * @param {Player} requestingPlayer
-     */
-    mulliganAnimationPassivePlayerComplete(requestingPlayer) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER);
-
-        if(this.botMatch) {
-            this.setPlayerReadyForPhase(this.player2, this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER); //Set the bot to ready
-
-            this.endMulliganPhase();
-        }
-    }
-
     /** Function to end the mulligan phase */
     endMulliganPhase() {
         //Only end mulligan if both player have completed the mulligan and the animation phase
-        if(this.gameFlags.MULLIGAN_OVER[0] && this.gameFlags.MULLIGAN_OVER[1]
-            && this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER[0] && this.gameFlags.MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER[1]
-        ) {
+        if(this.flagManager.checkFlags(['MULLIGAN_OVER', 'MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER'])){
             //Start hte mulligan phase in the match engine and get cards drawn for mulligan
             this.state.current_phase = MATCH_PHASES.MULLIGAN_PHASE_OVER;
 
             // Delay the call to game_end_mulligan by 1 second
             setTimeout(() => {
                 //Send cards to client
-                this.player1.socket.emit('game_end_mulligan');
+                if(!this.player1.bot) this.player1.socket.emit('game_end_mulligan');
+                if(!this.player2.bot) this.player2.socket.emit('game_end_mulligan');
             }, 1000);
         }
     }
 
     /** Function to set up the first turn */
     firstTurnSetup(requestingPlayer) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.READY_FIRST_TURN_STEP);
-
-        if(this.botMatch) {
-            this.setPlayerReadyForPhase(this.player2, this.gameFlags.READY_FIRST_TURN_STEP); //Set the bot to ready
-
+        if(this.flagManager.checkFlags(['READY_FIRST_TURN_STEP'])){
             this.state.current_phase = MATCH_PHASES.PREPARING_FIRST_TURN;
             
             //Get Cards for life decks
             let player1Cards = this.state.addCardToLifeDeck(this.player1.currentMatchPlayer);
             let player2Cards = this.state.addCardToLifeDeck(this.player2.currentMatchPlayer);
 
-            this.player1.socket.emit('game_first_turn_setup', player1Cards, player2Cards); //Send to client
-        }
-    }
-
-    /** Function to handle the competion of the first turn setup 
-     * @param {Player} requestingPlayer
-    */
-    firstTurnSetupComplete(requestingPlayer) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.FIRST_TURN_PREP_COMPLETE);
-
-        if(this.botMatch) {
-            this.setPlayerReadyForPhase(this.player2, this.gameFlags.FIRST_TURN_PREP_COMPLETE); //Set the bot to ready
-
-            this.endFirstTurnSetup();
-        }
-    }
-
-    /** Function to handle the completion of the animation of the pasive player for the competion of the first turn setup */
-    firstTurnSetupPassivePlayerAnimationComplete(requestingPlayer) {
-        this.setPlayerReadyForPhase(requestingPlayer, this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE);
-
-        if(this.botMatch) {
-            this.setPlayerReadyForPhase(this.player2, this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE); //Set the bot to ready
-
-            this.endFirstTurnSetup();
+            if(!this.player1.bot) this.player1.socket.emit('game_first_turn_setup', player1Cards, player2Cards); //Send to client
+            if(!this.player2.bot) this.player2.socket.emit('game_first_turn_setup', player2Cards, player1Cards); //Send to client
         }
     }
 
     /** Function to complete the setup once player and animation are ready on both sides */
     endFirstTurnSetup() {
-        if(this.gameFlags.FIRST_TURN_PREP_COMPLETE[0] && this.gameFlags.FIRST_TURN_PREP_COMPLETE[1]
-            && this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE[0] && this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE[1]
-        ) {
+        if(this.flagManager.checkFlags(['FIRST_TURN_PREP_COMPLETE', 'FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE'])){
             //Determine the first player
             let firstPlayer = 0; //should be randomized TODO
             if(firstPlayer === 0) {
@@ -231,7 +155,7 @@ class Match {
             let donCards = this.state.startDonPhase(this.state.current_active_player.currentMatchPlayer);
             
             //Send signal to client
-            this.state.current_active_player.socket.emit('game_start_don_phase', donCards);
+            if(!this.player1.bot) this.state.current_active_player.socket.emit('game_start_don_phase', donCards);
             /*if(!this.state.current_passive_player.bot) {
                 this.state.current_passive_player.socket.emit('game_start_don_phase_passive_player', donCards);
             }*/

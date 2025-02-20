@@ -198,14 +198,14 @@ io.on('connection', function (/** @type {object} */ socket) {
     });
 
     /** GAME REQUESTS */
-    socket.on('player_match_scene_ready', () => {socket.player.match.startSetup(socket.player);});
-    socket.on('player_match_start_mulligan_phase', () => {socket.player.match.startMulliganPhase(socket.player);});
-    socket.on('player_mulligan_cards', (cards) => {socket.player.match.mulliganCards(socket.player, cards);});
-    socket.on('player_match_end_mulligan_phase', () => {socket.player.match.mulliganComplete(socket.player);});
-    socket.on('player_mulligan_animation_passiveplayer_complete', () => {socket.player.match.mulliganAnimationPassivePlayerComplete(socket.player);});
-    socket.on('player_first_turn_setup', () => {socket.player.match.firstTurnSetup(socket.player);});
-    socket.on('player_first_turn_setup_complete', () => {socket.player.match.firstTurnSetupComplete(socket.player);});
-    socket.on('player_first_turn_setup_passiveplayer_animation_complete', () => {socket.player.match.firstTurnSetupPassivePlayerAnimationComplete(socket.player);});
+    socket.on('player_match_scene_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'READY_SETUP');}); 
+    socket.on('player_match_start_mulligan_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'READY_MULLIGAN');}); 
+    socket.on('player_mulligan_cards', (cards) => {socket.player.match.flagManager.handleFlag(socket.player, 'MULLIGAN_SWAPPED_CARDS', {cards: cards});});
+    socket.on('player_match_end_mulligan_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'MULLIGAN_OVER');});
+    socket.on('player_mulligan_animation_passiveplayer_complete', () => {socket.player.match.flagManager.handleFlag(socket.player, 'MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER');});
+    socket.on('player_first_turn_setup', () => {socket.player.match.flagManager.handleFlag(socket.player, 'READY_FIRST_TURN_STEP');});
+    socket.on('player_first_turn_setup_complete', () => {socket.player.match.flagManager.handleFlag(socket.player, 'FIRST_TURN_PREP_COMPLETE');});
+    socket.on('player_first_turn_setup_passiveplayer_animation_complete', () => {socket.player.match.flagManager.handleFlag(socket.player, 'FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE');});
 
 });
 
