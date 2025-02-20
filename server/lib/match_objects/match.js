@@ -41,6 +41,9 @@ class Match {
             READY_FIRST_TURN_STEP: [false, false],
             FIRST_TURN_PREP_COMPLETE: [false, false],
             FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE: [false, false],
+
+            DON_PHASE_COMPLETE: [false, false],
+            DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: [false, false],
         }
 
         this.firstPlayer = null; //Pointer to the first player
@@ -212,7 +215,26 @@ class Match {
         if(this.gameFlags.FIRST_TURN_PREP_COMPLETE[0] && this.gameFlags.FIRST_TURN_PREP_COMPLETE[1]
             && this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE[0] && this.gameFlags.FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE[1]
         ) {
-            console.log("READY TO START GAME");
+            //Determine the first player
+            let firstPlayer = 0; //should be randomized TODO
+            if(firstPlayer === 0) {
+                this.player1.currentMatchPlayer.isFirstPlayer = true;
+                this.state.current_active_player = this.player1;
+                this.state.current_passive_player = this.player2;
+            } else {
+                this.player2.currentMatchPlayer.isFirstPlayer = true;
+                this.state.current_active_player = this.player2;
+                this.state.current_passive_player = this.player1;
+            }
+
+            //Start the new turn
+            let donCards = this.state.startDonPhase(this.state.current_active_player.currentMatchPlayer);
+            
+            //Send signal to client
+            this.state.current_active_player.socket.emit('game_start_don_phase', donCards);
+            /*if(!this.state.current_passive_player.bot) {
+                this.state.current_passive_player.socket.emit('game_start_don_phase_passive_player', donCards);
+            }*/
         }
     }
 }

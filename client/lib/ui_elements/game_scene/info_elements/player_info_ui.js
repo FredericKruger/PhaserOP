@@ -39,10 +39,10 @@ class PlayerInfoUI extends BaseComponentUI{
         this.posHeight = this.playerInfoBackground.displayHeight;
 
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
-            this.activeDonPlaceholder = this.scene.add.image(this.posX + this.posWidth*0.24, this.posY - this.posHeight*0.04, ASSET_ENUMS.DON_CARD).setOrigin(0.5).setScale(0.09).setAngle(15);
+            this.activeDonPlaceholder = this.scene.add.image(this.posX + this.posWidth*0.24, this.posY - this.posHeight*0.04, ASSET_ENUMS.DON_CARD).setOrigin(0.5).setScale(CARD_SCALE.DON_IN_ACTIVE_DON).setAngle(15);
             this.restingDonplaceholder = this.scene.add.image(this.posX + this.posWidth*0.46, this.posY + this.posHeight*0.02, ASSET_ENUMS.DON_CARD).setOrigin(0.5).setScale(0.075).setAngle(80);
         } else if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) {
-            this.activeDonPlaceholder = this.scene.add.image(this.posX - this.posWidth*0.01, this.posY - this.posHeight*0.05, ASSET_ENUMS.DON_CARD).setOrigin(0.5).setScale(0.09).setAngle(15);
+            this.activeDonPlaceholder = this.scene.add.image(this.posX - this.posWidth*0.01, this.posY - this.posHeight*0.05, ASSET_ENUMS.DON_CARD).setOrigin(0.5).setScale(CARD_SCALE.DON_IN_ACTIVE_DON).setAngle(15);
             this.restingDonplaceholder = this.scene.add.image(this.posX + this.posWidth*0.175, this.posY + this.posHeight*0.01, ASSET_ENUMS.DON_CARD).setOrigin(0.5).setScale(0.075).setAngle(80);
         }
         this.activeDonPlaceholder.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 5);
@@ -93,4 +93,9 @@ class PlayerInfoUI extends BaseComponentUI{
      * @param {number} life
      */
     setLifePoints(life) {this.lifeAmountText.setText(life);}
+
+    /** Function to update the text for the amount of active don cards */
+    updateActiveCardAmountText() {
+        this.activeDonCardAmountText.setText(this.playerScene.activeDonDeck.getNumberOfActiveCards());
+    }
 }

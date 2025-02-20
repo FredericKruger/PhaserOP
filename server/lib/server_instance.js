@@ -172,6 +172,10 @@ class ServerInstance {
         match.state.player1.deck.fromJSON(playerDeck, this.cardIndex);
         match.state.player2.deck.fromJSON(aiDeck, this.cardIndex);
 
+        //Fill the don deck
+        match.state.player1.fillDonDeck(10);
+        match.state.player2.fillDonDeck(10);
+
         //Shuffle the decks
         match.state.player1.deck.shuffle();
         match.state.player2.deck.shuffle();

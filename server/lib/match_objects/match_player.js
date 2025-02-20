@@ -1,3 +1,4 @@
+const { MatchDonCard } = require('./match_card.js');
 const MatchDeck = require('./match_deck.js');
 
 class MatchPlayer {
@@ -12,7 +13,11 @@ class MatchPlayer {
         this.inCharacterArea = [];
         this.inDiscard = [];
         this.inDon = [];
+        this.inActiveDon = [];
         this.inLifeDeck = [];
+
+        this.isFirstTurn = true;
+        this.isFirstPlayer = false;
 
         this.deck = new MatchDeck();
     }
@@ -22,6 +27,13 @@ class MatchPlayer {
     */
     removeCardFromHand(Card) {
         this.inHand = this.inHand.filter(c => c.id !== Card.id);
+    }
+
+    /** Function that fills the Don Deck at setup 
+     * @param {number} amount - amount of cards to be added to deck
+    */
+    fillDonDeck(amount) {
+        for(let i=0; i<amount; i++) this.inDon.push(new MatchDonCard(i));
     }
 
 }

@@ -60,17 +60,17 @@
 - [x] Write DeckEntry
 - [x] Write Selection Behaviour
 - [x] Write Game Summary Panel
-- [ ] Write Server Logic to start a Match
+- [x] Write Server Logic to start a Match
 - [ ] Make Start game button more interactive by greying if not deck selected and glowing if deck selected
 
 # WRITE GAME PANEL
 ---
 - [x] Draw the board
 - [ ] Make tilted Camera for board effet
-- [ ] Create Game Manager UI
+- [x] Create Game Manager UI
     - [x] Create Phase displayer
-    - [ ] Create Seperation line
-    - [ ] Create next turn button
+    - [x] Create Seperation line
+    - [x] Create next turn button
 - [ ] Create Player UI
     - [x] Create Main UI
     - [x] Create life text
@@ -103,7 +103,7 @@
     - [x] Create Area
     - [x] Create logic to add card
     - [ ] Create logic to remove card if card is added
-- [ ] Draw Leader Location
+- [x] Draw Leader Location
     - [x] Create Area
     - [x] Create entering logic to add leader
 - [x] Create Mulligan
@@ -124,13 +124,26 @@
 - [ ] Life Card UI
     - [ ] Create interactive with life ui (clicking on the life)
     - [ ] Fan available cards
-- [ ] Prepare first turn
+- [x] Prepare first turn
     - [x] Show Phase Element
     - [x] Show Next turn button
-    - [ ] Create player turn art
+    - [x] Create player turn art
     - [x] Create Board separation
     - [x] Create Board bolors
     - [x] Send life cards to life ui
+
+# GAME PHASES
+---
+- [ ] Create Refresh Phase
+    - [ ] Return Don Cards to cost area
+    - [ ] Create animation
+    - [ ] Set All Characters to Active
+    - [ ] Create animation (exerted characters should have a greyscale pipeline)
+    - [ ] Refresh UI
+- [ ] Create Don Phase
+    - [ ] Draw Don Cards and add to the cost area
+    - [ ] Create Animation
+    - [ ] Refresh UI
 
 # OPPONENT ACTIONS
 ---

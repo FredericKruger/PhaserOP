@@ -150,16 +150,6 @@ class GameStateManager {
                 //Draw the passive player's cards
                 for(let i=0; i<passivePlayerCards.length; i++)
                     this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.MULLIGAN_PHASE, {delay: i*300}, {mulliganPosition: i, waitForAnimationToComplete: false, isServerRequest: false});
-
-                //Create action to start at the end to show the bbuttons
-                /*let action = new Action();
-                action.start = () => {
-                    this.gameStateUI.mulliganUI.keepButton.setVisible(true);
-                    this.gameStateUI.mulliganUI.mulliganButton.setVisible(true);
-                }
-                action.isPlayerAction = true;
-                action.waitForAnimationToComplete = false;
-                this.scene.actionManager.addAction(action);*/
             }
         });
     }
@@ -279,6 +269,38 @@ class GameStateManager {
         for(let i=0; i<passivePlayerCards.length; i++) {
             let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
             this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+        }
+    }
+
+    /** Function to start the Don Phase
+     * @param {Array<number>} donCards - The cards to be used in the Don Phase
+    */
+    startDonPhase(donCards) {
+        this.setPhase(GAME_PHASES.DON_PHASE); //Set the phase to Don Phase
+
+        for(let i=0; i<donCards.length; i++) {
+            this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300}, {waitForAnimationToComplete: false});
+        
+            //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
+            let donImage = this.scene.add.image(
+                this.scene.screenWidth*0.4 + i * this.scene.screenWidth,
+                this.scene.screenCenterY - 100 + i * 200,
+                ASSET_ENUMS.GAME_DON_BIG
+            ).setOrigin(0.5).setDepth(2).setScale(1).setVisible(false).setAngle(-10 + i*20);
+            this.scene.tweens.add({
+                targets: donImage,
+                delay: i*300,
+                onComplete: () => {
+                    donImage.setVisible(true);
+                    this.scene.tweens.add({
+                        targets: donImage,
+                        delay: 1000,
+                        alpha: {from: 1, to: 0},
+                        duration: 750,
+                        onComplete: () => {donImage.destroy();}
+                    });
+                }
+            });
         }
     }
 

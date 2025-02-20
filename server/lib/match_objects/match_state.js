@@ -7,6 +7,7 @@ const MATCH_PHASES = Object.freeze({
     MULLIGAN_PHASE: 'MULLIGAN_PHASE',
     MULLIGAN_PHASE_OVER: 'MULLIGAN_PHASE_OVER',
     PREPARING_FIRST_TURN: 'PREPARING_FIRST_TURN',
+    DON_PHASE: 'DON_PHASE',
 })
 
 class MatchState {
@@ -18,7 +19,8 @@ class MatchState {
     constructor(match) {
         this.match = match;
 
-        this.current_player_turn = null;
+        this.current_active_player = null;
+        this.current_passive_player = null;
         this.current_phase = MATCH_PHASES.WAITING_TO_START;
 
         this.player1 = new MatchPlayer();
@@ -78,6 +80,40 @@ class MatchState {
             player.inLifeDeck.push(card);
         }
         return cards;
+    }
+
+    /** Function that does the house keeping or the current player */
+    newTurn(player) {
+        //Need to return don cards to the don deck
+
+    }
+
+
+    /**
+     * Function that runs the Don Phase
+     * @param {MatchPlayer} player 
+     */
+    startDonPhase(player) {
+        //During the don phase the player draws a certain amount of don cards from the pile to the don area
+        let donCards = [];
+        console.log(player.isFirstPlayer + ' ' + player.isFirstTurn)
+        if(player.isFirstPlayer && player.isFirstTurn) { //If the player is the first player and its the firs turn only draw a single DON
+            let donCard = player.inDon.pop();
+            player.inActiveDon.push(donCard);
+            donCards.push(donCard.id);
+        } else {
+            //If not draw up to 2 cards if possible
+            for(let i=0; i<2; i++) {
+                if(player.inDon.length > 0) {
+                    let donCard = player.inDon.pop();
+                    player.inActiveDon.push(donCard);
+                    donCards.push(donCard.id);
+                }
+            }
+        }
+
+        //Returns cards to the match
+        return donCards;
     }
 }
 

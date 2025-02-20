@@ -17,6 +17,7 @@ class PlayerScene {
         this.discard = new CardDiscardUI(scene, this);
         this.deck = new CardDeckUI(scene, this);
         this.lifeDeck = new CardLifePileUI(scene, this);
+        this.activeDonDeck = new ActiveDonDeckUI(scene, this, []);
 
         this.leaderLocation = new CardLocationUI(scene, this, CARD_TYPES.LEADER);
         this.stageLocation = new CardLocationUI(scene, this, CARD_TYPES.STAGE);
@@ -55,7 +56,7 @@ class PlayerScene {
         this.deck.setVisible(visible);
         this.leaderLocation.setVisible(visible);
         this.stageLocation.setVisible(visible);
-        //this.hand.setVisible(visible);
+
         this.characterArea.setVisible(visible);
         this.playerInfo.setVisible(visible);    
     }

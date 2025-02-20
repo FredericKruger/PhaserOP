@@ -297,6 +297,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.GAME_ONOMATOPE_IMAGE, `${assetPath}/onomatope.png`);
         this.load.image(ASSET_ENUMS.GAME_NEXT_TURN_IMAGE, `${assetPath}/nextTurnIcon.png`);
         this.load.image(ASSET_ENUMS.GAME_START_TURN_IMAGE, `${assetPath}/startTurnIcon.png`);
+        this.load.image(ASSET_ENUMS.GAME_DON_BIG, `${assetPath}/don_big.png`);
 
         assetPath = 'assets/cardart';
         this.load.image(ASSET_ENUMS.DON_CARD, `${assetPath}/don.png`);

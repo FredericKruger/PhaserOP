@@ -103,6 +103,8 @@ class Client {
         this.socket.on('game_mulligan_cards_passiveplayer', (newCards) => {this.gameScene.gameStateManager.mulliganCardsPassivePlayer(newCards);});
         this.socket.on('game_end_mulligan', () => {this.gameScene.gameStateManager.endMulligan();});
         this.socket.on('game_first_turn_setup', (activePlayerCards, passivePlayerCards) => {this.gameScene.gameStateManager.firstTurnSetup(activePlayerCards, passivePlayerCards);});
+
+        this.socket.on('game_start_don_phase', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards);});
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -132,15 +134,9 @@ class Client {
         this.username = null;
     }
 
-    /** Function that request entering the matchmaking */
-    requestEnterMatchmaking (selectedDeck) {
-        this.socket.emit('player_enter_matchmaking', selectedDeck);
-    }
-
-    /** Function that request leaving the matchmaking */
-    requestLeaveMatchmaking() {
-        this.socket.emit('player_leave_matchmaking');
-    }
+    /** MATCHMAKING */
+    requestEnterMatchmaking (selectedDeck) {this.socket.emit('player_enter_matchmaking', selectedDeck);}
+    requestLeaveMatchmaking() {this.socket.emit('player_leave_matchmaking');}
 
     /** GAME COMMUNICATION */
     requestMatchSceneReady () {this.socket.emit('player_match_scene_ready');}

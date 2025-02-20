@@ -140,4 +140,42 @@ class AnimationLibrary {
         ];
         return tweens;
     }
+
+    /** Animation that moves a don card from the don deck to the active don area
+     * @param {DonCardUI} card - card to be moved from the don deck to the active don area
+     * @param {number} delay - delay with which to start the tweens
+     */
+    animation_move_don_deck2activearea(card, delay) {
+        //Get final positions and angles
+        let posX = card.playerScene.playerInfo.activeDonPlaceholder.x;
+        let posY = card.playerScene.playerInfo.activeDonPlaceholder.y;
+        let angle = card.playerScene.playerInfo.activeDonPlaceholder.angle;
+
+        let tweens = [
+            { //tween1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function
+                scaleX: CARD_SCALE.IN_DON_DECK,
+                scaleY: 0,
+                y: card.y + GAME_UI_CONSTANTS.CARD_ART_HEIGHT*CARD_SCALE.IN_DON_DECK/2,
+                duration: 150,
+                delay: delay,
+                onComplete: () => {card.flipCard();}
+            }, { //tween2: move slightly more to the left of the deck pile and increase the y scale
+                scaleX: CARD_SCALE.IN_DON_DECK,
+                scaleY: CARD_SCALE.IN_DON_DECK,
+                y: card.y + GAME_UI_CONSTANTS.CARD_ART_HEIGHT*CARD_SCALE.IN_DON_DECK + 20,
+                ease: 'quart.out',
+                duration: 150,
+            }, { //tween3: move the card to the mulligan card position
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON,
+                x: posX,
+                y: posY,
+                angle: angle,
+                duration: 750,
+                onComplete: () => {
+                    this.scene.children.moveBelow(card, card.playerScene.playerInfo.activeDonCardAmountText);
+                }
+            }
+        ];
+        return tweens;
+    }
 }

@@ -23,7 +23,17 @@ class MatchCard {
 
 }
 
+class MatchDonCard {
+
+    constructor(id) {
+        this.id = id;
+        
+        this.state = CARD_STATES.READY;
+    }
+}
+
 module.exports = {
     MatchCard: MatchCard,
+    MatchDonCard: MatchDonCard,
     CARD_STATES: CARD_STATES
 };
