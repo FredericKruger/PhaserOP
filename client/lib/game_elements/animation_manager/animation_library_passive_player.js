@@ -117,4 +117,37 @@ class AnimationLibraryPassivePlayer {
         return tweens;
     }
 
+    /** Animation to move a card from the deck to the hand for the pasive player
+     * @param {GameCardUI} card - card to be moved from the deck to the hand
+     * @param {number} delay - delay with which to start the tweens
+     */
+    animation_move_card_deck2hand(card, delay) {
+        let animation = [
+            { //tween 1: move slightly to the right of the deckpile while reducing x scale to 0. At the end flip the card
+                scaleX: 0,
+                scaleY: CARD_SCALE.IN_DECK,
+                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.2/2,
+                duration: 250,
+                delay: delay,
+                onComplete: () => {
+                    card.state = CARD_STATES.TRAVELLING_DECK_HAND;
+                }
+            }, { //tween 2: move slightly to the right of the deckpile while increasing the x scale to match the y scale
+                scaleX: 0.28,
+                scaleY: 0.28,
+                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.28 - 20,
+                y: card.y - 100,
+                ease: 'quart.out',
+                duration: 500,
+            }, {
+                delay: 400,
+                duration: 10,
+                onComplete: () => {
+                }
+            }
+        ];
+
+        return animation;
+    }
+
 }

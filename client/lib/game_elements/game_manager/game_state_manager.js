@@ -251,7 +251,7 @@ class GameStateManager {
      */
     firstTurnSetup(activePlayerCards, passivePlayerCards) {
         //Start the step with a bit of delay to not appear too rushed
-        this.scene.time.delayedCall(1500, () => {
+        this.scene.time.delayedCall(100, () => {
             //Show ui
             this.gameStateUI.setVisible(true);
 
@@ -272,7 +272,7 @@ class GameStateManager {
                 this.scene.game.gameClient.requestFirstTurnSetupPassivePlayerAnimationComplete();
             };
             for(let i=0; i<passivePlayerCards.length; i++) {
-                let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
+                let callback = (i === (passivePlayerCards.length-1) ? animationCallback : null);
                 this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
             }
         });
@@ -285,7 +285,7 @@ class GameStateManager {
      * @param {Array<number>} refreshCards - The cards to be set to active
      */
     startRefreshPhase(refreshDon, refreshCards) {
-        this.scene.time.delayedCall(1000, () => {
+        this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE); //Set the phase to Refresh Phase
 
             //Refresh the nextTurn Button
@@ -314,7 +314,7 @@ class GameStateManager {
      * @param {Array<number>} refreshCards - The cards to be set
      */
     startRefreshPhasePassivePlayer(refreshDon, refreshCards) {
-        this.scene.time.delayedCall(1000, () => {
+        this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE);
 
             //TODO Create Action calls for Don Refresh
@@ -328,18 +328,22 @@ class GameStateManager {
     /**  Function that start the draw phase
      * @param {Array<Object>} newCards - The card to be drawn
      */
-    startDrawPhase(newCards) {
-        this.scene.time.delayedCall(1000, () => {
+    startDrawPhase(newCards, isPlayerTurn) {
+        this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.DRAW_PHASE); //Set the phase to Draw Phase
 
             for(let card of newCards) {
                 //Create a Draw action for each card (should be a single card)
-                this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, card, GAME_PHASES.DRAW_PHASE, {delay: 0}, {waitForAnimationToComplete: true});
+                if(isPlayerTurn) this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, card, GAME_PHASES.DRAW_PHASE, {delay: 0}, {waitForAnimationToComplete: true});
+                else this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, card, GAME_PHASES.DRAW_PHASE, {delay: 0}, {waitForAnimationToComplete: true, isServerRequest: false});
             }
     
             //Create a last action to call the server
             let endDrawPhaseAction = new Action();
-            endDrawPhaseAction.start = () => {this.scene.game.gameClient.requestEndDrawPhase();}
+            endDrawPhaseAction.start = () => {
+                if(isPlayerTurn ) this.scene.game.gameClient.requestEndDrawPhase();
+                else this.scene.game.gameClient.requestEndPassivePlayerAnimationDrawPhase();
+            };
             endDrawPhaseAction.isPlayerAction = true;
             endDrawPhaseAction.waitForAnimationToComplete = false;
             this.scene.actionManager.addAction(endDrawPhaseAction);
@@ -350,7 +354,7 @@ class GameStateManager {
      * @param {Array<number>} donCards - The cards to be used in the Don Phase
     */
     startDonPhase(donCards) {
-        this.scene.time.delayedCall(1000, () => {
+        this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.DON_PHASE); //Set the phase to Don Phase
 
             //Draw the active player's cards

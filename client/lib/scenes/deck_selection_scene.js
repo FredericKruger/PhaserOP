@@ -227,13 +227,14 @@ class DeckSelectionScene extends Phaser.Scene {
 
         /** Function to start the matchmaking */
         startGame() {
-            if(this.playerDeckSelectionPanel.selectedEntry !== null)
-                this.game.gameClient.requestEnterMatchmaking(this.playerDeckSelectionPanel.getSelectedDeckID());
+            //if(this.playerDeckSelectionPanel.selectedEntry !== null)
+            //    this.game.gameClient.requestEnterMatchmaking(this.playerDeckSelectionPanel.getSelectedDeckID());
+            this.scene.start(SCENE_ENUMS.GAME_SEARCHING_SCENE, {selectedDeck: this.playerDeckSelectionPanel.getSelectedDeckID()});
         }
 
         /** Function that start the game searching scene */
-        startGameSearchingScene() {
-            this.scene.start(SCENE_ENUMS.GAME_SEARCHING_SCENE);
-        }
+        /*startGameSearchingScene() {
+            this.scene.start(SCENE_ENUMS.GAME_SEARCHING_SCENE, );
+        }*/
 
 }

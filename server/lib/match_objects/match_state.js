@@ -105,9 +105,9 @@ class MatchState {
     startDrawPhase(player) {
         let playerCards = [];
         //TODO: this is just a test remove after completion of test
-        //if(!(player.isFirstPlayer && player.isFirstTurn)) {
+        if(!(player.isFirstPlayer && player.isFirstTurn)) {
             playerCards = this.drawCards(player, 1);
-        //}
+        }
 
         return playerCards;
     }

@@ -117,12 +117,13 @@ class ServerInstance {
 
     /** Function that finds a match between 2 players
      * @param {Player} player - Player object
+     * @returns {Player}
      */
     findMatch(player) {
         let n = 0;
         let p = null;
         let attempts = 0;
-        const maxAttempts = 10;
+        const maxAttempts = 100;
         let matchFound = false;
 
         do {
@@ -188,6 +189,55 @@ class ServerInstance {
         //Send the client messages to 
         // 1: Load the match ui, provided the number of cards in each deck
         player.socket.emit('start_game_scene', 
+            match.state.player1.deck.cards.length, match.state.player2.deck.cards.length, 
+            "", 
+            board);
+    }
+
+    /** Create a match between two players
+     * @param {Player} player1 - Player object
+     * @param {Player} player2 - Player object
+     */
+    async createMatch(player1, player2) {
+        //Disable cancel button
+        player1.socket.emit('match_found_disable_cancel');
+        player2.socket.emit('match_found_disable_cancel');
+
+        //Create the match
+        let match = new Match(player1, player2, this, false); //Create a new match
+        match.id = this.lastMatchID++; //Assign a match id
+        this.lastMatchID += 1;
+        this.matches.push(match); //Add match to list
+
+         //Assign match to players
+        player1.match = match;
+        player2.match = match;
+
+        //Retrieve the decks. This needs to happen synchronously. Eventually, player user name will be use. FOR NOW HARDCODED
+        let player1Deck = player1.decklist[player1.selectedDeck];
+        let player2Deck = player2.decklist[player2.selectedDeck];
+
+        //Fill the deck from the JSON decklist provided
+        match.state.player1.deck.fromJSON(player1Deck, this.cardIndex);
+        match.state.player2.deck.fromJSON(player2Deck, this.cardIndex);
+
+        //Fill the don deck
+        match.state.player1.fillDonDeck(10);
+        match.state.player2.fillDonDeck(10);
+
+        //Shuffle the decks
+        match.state.player1.deck.shuffle();
+        match.state.player2.deck.shuffle();
+
+        let board = this.getRandomInt(0, 2); //Randomly select the board
+       
+        //Send the client messages to 
+        // 1: Load the match ui, provided the number of cards in each deck
+        player1.socket.emit('start_game_scene', 
+            match.state.player1.deck.cards.length, match.state.player2.deck.cards.length, 
+            "", 
+            board);
+        player2.socket.emit('start_game_scene', 
             match.state.player1.deck.cards.length, match.state.player2.deck.cards.length, 
             "", 
             board);

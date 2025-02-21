@@ -1,8 +1,14 @@
+const Player = require("./player");
+
 class CardCollection {
 
+    /** Constructor
+     * @param {Player} player - The player object
+     */
     constructor(player) {
         this.collection = [];
 
+        /** @type {Player} */
         this.player = player;
     }
 

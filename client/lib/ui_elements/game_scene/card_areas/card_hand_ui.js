@@ -78,7 +78,11 @@ class CardHandUI extends CardPileUI {
 
                 currentIndex++;
             }
-            if(card.playerScene.player.isActivePlayer) this.scene.children.bringToTop(card); //reorder the cards if they are in the main player's hand and not in the mulligan
+            this.scene.children.bringToTop(card); //TODO FIX THIS
+            //if(card.playerScene.player.isActivePlayer) this.scene.children.bringToTop(card);
+            //else {
+            //    if(i>0) this.scene.children.moveAbove(card, this.cards[i-1]);
+            //} //reorder the cards if they are in the main player's hand and not in the mulligan
         }
     }
 

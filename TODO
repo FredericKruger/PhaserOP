@@ -134,7 +134,7 @@
 
 # GAME PHASES
 ---
-- [ ] Create animation to signal current player turn
+- [x] Create animation to signal current player turn
 - [ ] Create Refresh Phase
     - [ ] Return Don Cards to cost area
     - [ ] Create animation
@@ -145,7 +145,7 @@
     - [x] Draw Don Cards and add to the cost area
     - [x] Create Animation
     - [x] Refresh UI
-- [ ] Create Draw Phase
+- [x] Create Draw Phase
 
 # OPPONENT ACTIONS
 ---
@@ -166,6 +166,11 @@
     - [ ] Create logic to grey out button if game is found
     - [x] Create logic to cancel search and go back to deck selection
     - [ ] Improvement: blend gif more with background
+
+# OPPONENT ANIMATIONS
+---
+- [ ] Create Draw DON Animation
+- [ ] Create Card Hovering animation
 
 # GAME ENGINE
 ---

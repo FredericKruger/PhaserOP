@@ -174,6 +174,7 @@ class GameScene extends Phaser.Scene {
      * @param {Object} passivePlayerLeader
      */
     startIntroAnimation(activePlayerLeader, passivePlayerLeader) {
+        console.log("Starting Intro")
         for(let obj of this.obj) {
             obj.setVisible(true);
         }
@@ -192,7 +193,7 @@ class GameScene extends Phaser.Scene {
         this.cameras.main.fadeIn(1000, 0, 0, 0); // Fade in over 1 second
 
         this.cameras.main.once('camerafadeincomplete', () => {
-            this.time.delayedCall(1000, () => {
+            this.time.delayedCall(250, () => {
                 let introAnimation = new IntroAnimation(this, activePlayerLeader, passivePlayerLeader);
                 introAnimation.startAnimation();
             });

@@ -48,17 +48,6 @@ class Match {
         this.flagManager = new FlagManager(this); //Create a new state manager
     }
 
-    /** Set the readiness of the plauer
-     * @param {Player} player
-     */
-    setPlayerReadyForPhase(player, phase) {
-        if(player === this.player1) {
-            phase[0] = true;
-        } else if(player === this.player2) {
-            phase[1] = true;
-        }
-    }
-
     /** Function to start the game setup
      * @param {Player} requestingPlayer
      */
@@ -90,7 +79,7 @@ class Match {
 
             //Send cards to client
             if(!this.player1.bot) this.player1.socket.emit('game_start_mulligan', player1Cards, player2Cards);
-            if(!this.player2.bot) this.player1.socket.emit('game_start_mulligan', player2Cards, player1Cards);
+            if(!this.player2.bot) this.player2.socket.emit('game_start_mulligan', player2Cards, player1Cards);
         }
     }
 
@@ -111,7 +100,8 @@ class Match {
         }
 
         //Send new cards to clients
-        requestingPlayer.socket.emit('game_mulligan_cards', newCards);
+        if(!requestingPlayer.bot) requestingPlayer.socket.emit('game_mulligan_cards', newCards);
+        if(!requestingPlayer.currentOpponentPlayer.bot) requestingPlayer.currentOpponentPlayer.socket.emit('game_mulligan_cards_passiveplayer', newCards);
     }
 
     /** Function to end the mulligan phase */
@@ -187,6 +177,7 @@ class Match {
         if(this.flagManager.checkFlag('REFRESH_PHASE_COMPLETE', this.state.current_active_player)
             && this.flagManager.checkFlag('REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
             
+            console.log("STARTING DRAW PHASE");
             //Start the draw phase
             this.state.current_phase = MATCH_PHASES.DRAW_PHASE;
 
@@ -205,8 +196,8 @@ class Match {
         if(this.flagManager.checkFlag('DRAW_PHASE_COMPLETE', this.state.current_active_player)
             && this.flagManager.checkFlag('DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
             
-            console.log("HERE")
-                //Start the DON Phase
+            console.log("STARTING DON PHASE");    
+            //Start the DON Phase
             this.state.current_phase = MATCH_PHASES.DON_PHASE
 
             //Get the don cards
@@ -222,6 +213,8 @@ class Match {
     startMainPhase() {
         if(this.flagManager.checkFlag('DON_PHASE_COMPLETE', this.state.current_active_player)
             && this.flagManager.checkFlag('DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
+            
+            console.log("STARTING MAIN PHASE");
             //Start the main phase
             this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
 

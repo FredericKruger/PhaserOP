@@ -146,9 +146,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     });
 
     /** When a player buys an item in the shop */
-    socket.on('player_buy_item', (item, itemType) => {
-        socket.player.buyItem(item, itemType);
-    });
+    socket.on('player_buy_item', (item, itemType) => {socket.player.buyItem(item, itemType);});
 
     /** update player settings */
     socket.on('update_player_settings', (/** @type {string} */ playerSettings) => {
@@ -167,12 +165,12 @@ io.on('connection', function (/** @type {object} */ socket) {
         serverInstance.addToWaitingPlayers(socket.player);
 
         //Start the waiting scene
-        socket.emit('start_game_searching_scene');
+        //socket.emit('start_game_searching_scene');
 
         //See if you can find a match
-        if(serverInstance.findMatch(socket.player)) {
-            socket.emit('match_found_disable_cancel');
-            console.log("Start Match");
+        let playerMatch = serverInstance.findMatch(socket.player);
+        if(playerMatch) {
+            serverInstance.createMatch(socket.player, playerMatch);
         } else { //If not create a timeout by witch an AI game will be created
             setTimeout(() => {
                 if(!socket.player.matchFound) {
@@ -183,7 +181,7 @@ io.on('connection', function (/** @type {object} */ socket) {
                     socket.emit('match_found_disable_cancel');
                     serverInstance.createAIMatch(socket.player);
                 }
-            }, 2000); //2 seconds for now TODO
+            }, 20000); //TODO Change to 20000
         }
     });
 

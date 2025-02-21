@@ -35,7 +35,7 @@ class ActionLibraryPassivePlayer {
         let tweens = [];
         if(phase === GAME_PHASES.MULLIGAN_PHASE) tweens = this.scene.animationLibraryPassivePlayer.animation_move_card_deck2mulligan(card, config.mulliganPosition, animationConfig.delay); //Use DeckToMulligan is mulligan
         if(phase === GAME_PHASES.PREPARING_FIRST_TURN) tweens = this.scene.animationLibraryPassivePlayer.animation_move_card_deck2lifedeck(card, animationConfig.delay); //Use DeckToLifeDeck if first turn
-        //else tweens = this.animationMoveCardFromDeckToHand(card, 0); //Use DeckToHand
+        else tweens = this.scene.animationLibraryPassivePlayer.animation_move_card_deck2hand(card, 0); //Use DeckToHand
         
         //to be able to execute a custom call at the end of the animation
         if(animationConfig.startAnimationCallback) {
@@ -60,9 +60,7 @@ class ActionLibraryPassivePlayer {
         // end: pop the deckpile card placeholder and comlete server request if needed
         let drawAction = new Action();
         drawAction.start = () => { //Action start
-            if(phase === GAME_PHASES.MULLIGAN_PHASE) card.setDepth(1);
-            else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) card.setDepth(1);  
-            else this.scene.children.bringToTop(card);
+            card.setDepth(1); 
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
                 card.setState(CARD_STATES.IN_MULLIGAN);
@@ -72,7 +70,6 @@ class ActionLibraryPassivePlayer {
                 playerScene.lifeDeck.addCard(card);
             } else {
                 card.setState(CARD_STATES.TRAVELLING_DECK_HAND);
-                playerScene.hand.addCards([card]);
             }
         }
         drawAction.start_animation = start_animation; //play animation
@@ -81,8 +78,7 @@ class ActionLibraryPassivePlayer {
                 card.setDepth(2);
             } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
             } else {
-                card.setState(CARD_STATES.IN_HAND);
-                card.setScale(CARD_SCALE.IN_HAND_PASSIVE_PLAYER);
+                playerScene.hand.addCards([card], {setCardState: false, setCardDepth: false, setCardInteractive: false, setCardDraggable: false, updateUI: true});
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visualif(isServerRequest) this.scene.actions.completeServerRequest(); //Call completeServerRequest
 

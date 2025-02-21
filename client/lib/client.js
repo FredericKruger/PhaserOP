@@ -86,9 +86,11 @@ class Client {
         });
 
         /** MATCHMAKING LISTENERS */
-        this.socket.on('start_game_searching_scene', () => {this.deckSelectionScene.startGameSearchingScene();});
+        //this.socket.on('start_game_searching_scene', () => {this.deckSelectionScene.startGameSearchingScene();});
         this.socket.on('matchmaking_stopped', () => {this.gameSearchingScene.goBackToDeckSelection();});
-        this.socket.on('match_found_disable_cancel', () => {this.gameSearchingScene.disableCancelButton();});
+        this.socket.on('match_found_disable_cancel', () => {
+            console.log(this.username);
+            this.gameSearchingScene.disableCancelButton();});
 
         /** GAME LISTENERS */
         this.socket.on('start_game_scene', (activePlayerNumberCards, passivePlayerNumberCards, passivePlayerName, board) => {
@@ -106,10 +108,13 @@ class Client {
 
         this.socket.on('game_start_refresh_phase', (refreshDon, refreshCards) => {this.gameScene.gameStateManager.startRefreshPhase(refreshDon, refreshCards);});
         this.socket.on('game_start_refresh_phase_passive_player', (refreshDon, refreshCards) => {this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards);});
-        this.socket.on('game_start_draw_phase', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards);});
+        this.socket.on('game_start_draw_phase', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, true);});
+        this.socket.on('game_start_draw_phase_passive_player', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, false);});
         this.socket.on('game_start_don_phase', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards);});
 
         this.socket.on('game_start_main_phase', () => {this.gameScene.gameStateManager.startMainPhase();});
+
+        /** OPPONENT ACTION LISTENERS */
     }
 
     /** Function that tells the server a new deck was chosen */

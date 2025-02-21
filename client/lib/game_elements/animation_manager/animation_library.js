@@ -146,8 +146,6 @@ class AnimationLibrary {
      * @param {number} delay - delay with which to start the tweens 
      */
     animation_move_card_deck2hand(card, delay) {
-        //let futureCardPosition = this.scene.hand.getFutureCardPosition();
-        
         let animation = [
             { //tween 1: move slightly to the right of the deckpile while reducing x scale to 0. At the end flip the card
                 scaleX: 0,

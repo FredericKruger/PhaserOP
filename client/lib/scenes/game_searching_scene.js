@@ -7,7 +7,7 @@ class GameSearchingScene extends Phaser.Scene {
     this.game.gameClient.gameSearchingScene = this;
   }
 
-  create() {
+  create(data) {
     this.screenCenterX = this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.height / 2;
 
@@ -84,6 +84,9 @@ class GameSearchingScene extends Phaser.Scene {
     this.cancelButton.on("pointerdown", () => {
         this.game.gameClient.requestLeaveMatchmaking();
     });
+
+    //Send message to server to start matchmaking
+    this.game.gameClient.requestEnterMatchmaking(data.selectedDeck);
   }
 
   //Function to go back to deck selection

@@ -9,15 +9,21 @@ class WaitFlag {
      * @param {boolean} isActionBased - If the flag is action based
      */
     constructor(flag, isTurnBased, isActionBased) {
+        /** @type {boolean} */
         this.value = false;
+        /** @type {string} */
         this.flag = flag;
 
+        /** @type {boolean} */
         this.isActionBased = isActionBased;
+        /** @type {boolean} */
         this.isTurnBased = isTurnBased
     }
 }
 
 class MatchFlags {
+
+    /** Constructor */
     constructor() {
         this.flags = {
             READY_SETUP: new WaitFlag("READY_SETUP", false, false),
@@ -71,6 +77,7 @@ class FlagManager {
      * @param {Match} match - The match to be managed
      */
     constructor(match) {
+        /** @type {Match} */
         this.match = match;
     }
 
@@ -137,7 +144,10 @@ class FlagManager {
         return result;
     }
 
-    /** Gets flag value for a specific flag for a specific player */
+    /** Gets flag value for a specific flag for a specific player 
+     * @param {string} flag - The flag to be checked
+     * @param {Player} player - The player to be checked
+    */
     checkFlag(flag, player) {
         return player.currentMatchPlayer.matchFlags.getFlag(flag);
     }
