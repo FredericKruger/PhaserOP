@@ -353,19 +353,21 @@ class GameStateManager {
     /** Function to start the Don Phase
      * @param {Array<number>} donCards - The cards to be used in the Don Phase
     */
-    startDonPhase(donCards) {
+    startDonPhase(donCards, isPlayerTurn) {
         this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.DON_PHASE); //Set the phase to Don Phase
 
             //Draw the active player's cards
             let animationCallback = () => {
-                this.scene.game.gameClient.requestEndDonPhase();
+                if(isPlayerTurn) this.scene.game.gameClient.requestEndDonPhase();
+                else this.scene.game.gameClient.requestEndPassivePlayerAnimationDonPhase();
             };
 
             for(let i=0; i<donCards.length; i++) {
                 let callback = (i === (donCards.length-1) ? animationCallback : null);
-                this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
-            
+                if(isPlayerTurn) this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
+                else this.scene.actionLibraryPassivePlayer.drawDonCardAction(this.scene.passivePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+
                 //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
                 let donImage = this.scene.add.image(
                     this.scene.screenWidth*0.4 + i * this.scene.screenWidth,

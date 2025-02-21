@@ -110,8 +110,8 @@ class Client {
         this.socket.on('game_start_refresh_phase_passive_player', (refreshDon, refreshCards) => {this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards);});
         this.socket.on('game_start_draw_phase', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, true);});
         this.socket.on('game_start_draw_phase_passive_player', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, false);});
-        this.socket.on('game_start_don_phase', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards);});
-
+        this.socket.on('game_start_don_phase', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, true);});
+        this.socket.on('game_start_don_phase_passive_player', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, false);});
         this.socket.on('game_start_main_phase', () => {this.gameScene.gameStateManager.startMainPhase();});
 
         /** OPPONENT ACTION LISTENERS */

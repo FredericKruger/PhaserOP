@@ -139,4 +139,69 @@ class ActionLibraryPassivePlayer {
         this.actionManager.addAction(action);
     }
 
+    /** Creates an Action to draw a card from the Don Deck 
+     * @param {PlayerScene} playerScene
+     * @param {number} cardid
+     * @param {string} phase
+     * @param {Object} animationConfig
+     * @param {Object} config
+    */
+    drawDonCardAction(playerScene, cardid, phase, animationConfig, config) {
+        let deckVisual = playerScene.donDeck.getTopCardVisual();
+
+        //Create a new Duel Card
+        let card = new DonCardUI(this.scene, playerScene, {
+            x: deckVisual.x,
+            y: deckVisual.y,
+            state: CARD_STATES.DON_IN_DON_DECK,
+            scale: CARD_SCALE.DON_IN_DON_DECK,
+            artVisible: false,
+            id: cardid,
+            depth: 1
+        });
+
+        //Prepare Tweens
+        let tweens = this.scene.animationLibraryPassivePlayer.animation_move_don_deck2activearea(card, animationConfig.delay);
+
+        if(animationConfig.startAnimationCallback) {
+            tweens = tweens.concat({
+                duration: 10,
+                onComplete: () => { animationConfig.startAnimationCallback(); }
+            });
+        }
+        if(config.waitForAnimationToComplete) {
+            tweens = tweens.concat({
+                duration: 10,
+                onComplete: () => { this.scene.actionManager.completeAction(); }
+            });
+        }
+        let start_animation = this.scene.tweens.chain({ //Create tween chain
+            targets: card,
+            tweens: tweens
+        }).pause();
+
+        //Create Action
+        let drawAction = new Action();
+        drawAction.start = () => {
+            card.setDepth(1);
+            card.setState(CARD_STATES.DON_ACTIVE);
+            card.playerScene.activeDonDeck.addCard(card);
+
+            card.playerScene.playerInfo.updateActiveCardAmountText(); //udpate the ui
+        };
+        drawAction.start_animation = start_animation;
+        drawAction.end = () => {
+            card.makeInteractive(true);
+            card.makeDraggable(true);
+            playerScene.donDeck.popTopCardVisual(); //Remove the top Card Visual
+        }
+        drawAction.finally = () => {deckVisual.destroy();};
+        drawAction.isPlayerAction = true;
+        drawAction.waitForAnimationToComplete = config.waitForAnimationToComplete;
+        drawAction.name = "DRAW DON ACTION";
+
+        //Add Action to the action stack
+        this.actionManager.addAction(drawAction);
+    }
+
 }
