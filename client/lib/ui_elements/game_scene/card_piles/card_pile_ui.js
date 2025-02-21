@@ -6,4 +6,11 @@ class CardPileUI extends BaseComponentUI{
         //Pile of Cards
         this.cards = [];
     }
+
+    /** Function to get a card from the ID
+     * @param {number} cardID
+     */
+    getCard(cardID) {
+        return this.cards.filter(card => card.id === cardID)[0];
+    }
 }

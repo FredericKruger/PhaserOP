@@ -285,7 +285,7 @@ class GameStateManager {
      * @param {Array<number>} refreshCards - The cards to be set to active
      */
     startRefreshPhase(refreshDon, refreshCards) {
-        this.scene.time.delayedCall(100, () => {
+        this.scene.time.delayedCall(1000, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE); //Set the phase to Refresh Phase
 
             //Refresh the nextTurn Button
@@ -329,7 +329,7 @@ class GameStateManager {
      * @param {Array<Object>} newCards - The card to be drawn
      */
     startDrawPhase(newCards, isPlayerTurn) {
-        this.scene.time.delayedCall(100, () => {
+        this.scene.time.delayedCall(1000, () => {
             this.setPhase(GAME_PHASES.DRAW_PHASE); //Set the phase to Draw Phase
 
             for(let card of newCards) {
@@ -354,7 +354,7 @@ class GameStateManager {
      * @param {Array<number>} donCards - The cards to be used in the Don Phase
     */
     startDonPhase(donCards, isPlayerTurn) {
-        this.scene.time.delayedCall(100, () => {
+        this.scene.time.delayedCall(1000, () => {
             this.setPhase(GAME_PHASES.DON_PHASE); //Set the phase to Don Phase
 
             //Draw the active player's cards
@@ -410,6 +410,80 @@ class GameStateManager {
     setPhase(phase) {
         this.currentGamePhase = phase;
         this.gameStateUI.udpatePhase(phase);
+    }
+
+    /** PASSIVE PLAYER CARD MOVEMENTS */
+
+    /** Function to handle the dragging of a card from the opponent player
+     * @param {number} cardID
+     * @param {string} cardType  
+     */
+    passivePlayerCardDragStart(cardID, cardType) {
+        if(cardType === 'GameCardUI') {
+            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            card.setState(CARD_STATES.TRAVELLING_FROM_HAND);
+            card.setAngle(0);
+            this.scene.passivePlayerScene.hand.update();
+        } else if(cardType === 'DonCardUI') {
+            let card = this.scene.passivePlayerScene.activeDonDeck.getCard(cardID);
+            card.setState(CARD_STATES.DON_DRAGGED);
+            card.setAngle(0);
+        }
+    }
+
+    /** Function to handle the draggong from the opponent player
+     * @param {number} cardID
+     * @param {string} cardType
+     * @param {number} posX
+     * @param {number} poY
+     */
+    passivePlayerCardDragPosition(cardID, cardType, posX, posY) {
+        let newY = this.scene.screenHeight - posY;
+        if(cardType === 'GameCardUI') {
+            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            card.x = posX;
+            card.y = newY;
+        } else if(cardType === 'DonCardUI') {
+            let card = this.scene.passivePlayerScene.activeDonDeck.getCard(cardID);
+            card.x = posX;
+            card.y = newY;
+        }
+    }
+
+    /** Function to handle the dragging of a card from the opponent player
+     * @param {number} cardID
+     * @param {string} cardType  
+     */
+    passivePlayerCardDragEnd(cardID, cardType) {
+        if(cardType === 'GameCardUI') {
+            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            card.setState(CARD_STATES.IN_HAND);
+            card.hideGlow();
+            this.scene.passivePlayerScene.hand.update();
+        } else if(cardType === 'DonCardUI') {
+            let card = this.scene.passivePlayerScene.activeDonDeck.getCard(cardID);
+            card.setState(CARD_STATES.DON_ACTIVE);
+        }
+    }
+
+    /** Function that handles when a players card is hovered over
+     * @param {number} CardID
+     */
+    passivePlayerCardPointerOver(cardID) {
+        let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+        card.setState(CARD_STATES.IN_HAND_HOVERED_PASSIVEPLAYER);
+        card.showGlow(COLOR_ENUMS.OP_WHITE);
+        this.scene.passivePlayerScene.hand.update();
+    }
+
+    /** Function that handles when a players card isnt hovered anymore
+     * @param {number} CardID
+     */
+    passivePlayerCardPointerOut(cardID) {
+        let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+        card.setState(CARD_STATES.IN_HAND);
+        card.hideGlow();
+        this.scene.passivePlayerScene.hand.update();
     }
 
 }

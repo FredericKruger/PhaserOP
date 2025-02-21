@@ -100,6 +100,8 @@ class GameScene extends Phaser.Scene {
                 if(card.state === CARD_STATES.IN_HAND) {
                     card.setState(CARD_STATES.IN_HAND_HOVERED);
                     card.playerScene.hand.update();
+
+                    this.game.gameClient.sendCardPointerOver(card.id);
                 }
             }
         });
@@ -113,6 +115,8 @@ class GameScene extends Phaser.Scene {
                 if(card.state === CARD_STATES.IN_HAND_HOVERED) {
                     card.setState(CARD_STATES.IN_HAND);
                     card.playerScene.hand.update();
+
+                    this.game.gameClient.sendCardPointerOut(card.id);
                 }
             }
         });
@@ -124,19 +128,31 @@ class GameScene extends Phaser.Scene {
 
         /** HANDLER FOR DRAG START */
         this.input.on('dragstart', (pointer, gameObject) => {
-            this.children.bringToTop(gameObject);
-            this.dragginCard = true;
+            if(gameObject instanceof GameCardUI) {
+                this.children.bringToTop(gameObject);
+                this.dragginCard = true;
+    
+                gameObject.setState(CARD_STATES.TRAVELLING_FROM_HAND);
+                gameObject.scaleTo(CARD_SCALE.TRAVELLING_FROM_HAND, true, false, false);
+                gameObject.angleTo(0, true, false, false);
+    
+                gameObject.playerScene.hand.update();
 
-            gameObject.setState(CARD_STATES.TRAVELLING_FROM_HAND);
-            gameObject.scaleTo(CARD_SCALE.TRAVELLING_FROM_HAND, true, false, false);
-            gameObject.angleTo(0, true, false, false);
+                this.game.gameClient.sendCardDragStart(gameObject.id, 'GameCardUI');
+            } else if(gameObject instanceof DonCardUI) {
+                gameObject.setState(CARD_STATES.TRAVELLING_FROM_HAND);
 
-            gameObject.playerScene.hand.update();
+                this.game.gameClient.sendCardDragStart(gameObject.id, 'DonCardUI');
+            }
+
         });
 
         /** HANDLDER FOR DRAG */
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.setPosition(dragX, dragY);
+
+            if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragPosition(gameObject.id, 'GameCardUI', dragX, dragY);
+            else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragPosition(gameObject.id, 'DonCardUI', dragX, dragY);
         });
 
         /** HANDLER FOR DRAGEN */
@@ -151,6 +167,9 @@ class GameScene extends Phaser.Scene {
                 gameObject.playerScene.hand.update();
 
                 this.dragginCard = false;
+
+                if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
+                else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
         });
 
@@ -161,6 +180,9 @@ class GameScene extends Phaser.Scene {
             }
 
             this.dragginCard = false;
+
+            if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
+            else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
         });
 
         this.setVisible(false);

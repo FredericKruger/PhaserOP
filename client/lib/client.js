@@ -88,9 +88,14 @@ class Client {
         /** MATCHMAKING LISTENERS */
         //this.socket.on('start_game_searching_scene', () => {this.deckSelectionScene.startGameSearchingScene();});
         this.socket.on('matchmaking_stopped', () => {this.gameSearchingScene.goBackToDeckSelection();});
-        this.socket.on('match_found_disable_cancel', () => {
-            console.log(this.username);
-            this.gameSearchingScene.disableCancelButton();});
+        this.socket.on('match_found_disable_cancel', () => {this.gameSearchingScene.disableCancelButton();});
+
+        /** CARD MOVEMENTS */
+        this.socket.on('passiveplayer_card_drag_start', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragStart(cardID, cardType);});
+        this.socket.on('passiveplayer_card_drag_position', (cardID, cardType, posX, posY) => {this.gameScene.gameStateManager.passivePlayerCardDragPosition(cardID, cardType, posX, posY);});
+        this.socket.on('passiveplayer_card_drag_end', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragEnd(cardID, cardType);});
+        this.socket.on('passiveplayer_card_pointer_over', (cardID) => {this.gameScene.gameStateManager.passivePlayerCardPointerOver(cardID);});
+        this.socket.on('passiveplayer_card_pointer_out', (cardID) => {this.gameScene.gameStateManager.passivePlayerCardPointerOut(cardID);});
 
         /** GAME LISTENERS */
         this.socket.on('start_game_scene', (activePlayerNumberCards, passivePlayerNumberCards, passivePlayerName, board) => {
@@ -144,9 +149,16 @@ class Client {
         this.username = null;
     }
 
+    /** CARD MOVEMENTS */
+    sendCardDragStart (cardID, cardType) {this.socket.emit('player_card_drag_start', cardID, cardType);}
+    sendCardDragPosition (cardID, cardType, posX, posY) {this.socket.emit('player_card_drag_position', cardID, cardType, posX, posY);}
+    sendCardDragEnd (cardID, cardType) {this.socket.emit('player_card_drag_end', cardID, cardType);}
+    sendCardPointerOver (cardID) {this.socket.emit('player_card_pointer_over', cardID);}
+    sendCardPointerOut (cardID) {this.socket.emit('player_card_pointer_out', cardID);}
+
     /** MATCHMAKING */
     requestEnterMatchmaking (selectedDeck) {this.socket.emit('player_enter_matchmaking', selectedDeck);}
-    requestLeaveMatchmaking() {this.socket.emit('player_leave_matchmaking');}
+    requestLeaveMatchmaking () {this.socket.emit('player_leave_matchmaking');}
 
     /** GAME COMMUNICATION */
     requestMatchSceneReady () {this.socket.emit('player_match_scene_ready');}
@@ -157,16 +169,16 @@ class Client {
     requestFirstTurnSetup () {this.socket.emit('player_first_turn_setup');}
     requestReadyFirstTurn () {this.socket.emit('player_ready_first_turn');}
     requestFirstTurnSetupComplete() {this.socket.emit('player_first_turn_setup_complete');};
-    requestFirstTurnSetupPassivePlayerAnimationComplete() {this.socket.emit('player_first_turn_setup_passiveplayer_animation_complete');};
+    requestFirstTurnSetupPassivePlayerAnimationComplete () {this.socket.emit('player_first_turn_setup_passiveplayer_animation_complete');};
 
-    requestEndRefreshPhase() {this.socket.emit('player_end_refresh_phase');}
-    requestEndPassivePlayerAnimationRefreshPhase() {this.socket.emit('player_end_passiveplayer_animation_refresh_phase');}
-    requestEndDrawPhase() {this.socket.emit('player_end_draw_phase');}
-    requestEndPassivePlayerAnimationDrawPhase() {this.socket.emit('player_end_passiveplayer_animation_draw_phase');}
-    requestEndDonPhase() {this.socket.emit('player_end_don_phase');}
-    requestEndPassivePlayerAnimationDonPhase() {this.socket.emit('player_end_passiveplayer_animation_don_phase');}
+    requestEndRefreshPhase () {this.socket.emit('player_end_refresh_phase');}
+    requestEndPassivePlayerAnimationRefreshPhase () {this.socket.emit('player_end_passiveplayer_animation_refresh_phase');}
+    requestEndDrawPhase () {this.socket.emit('player_end_draw_phase');}
+    requestEndPassivePlayerAnimationDrawPhase () {this.socket.emit('player_end_passiveplayer_animation_draw_phase');}
+    requestEndDonPhase () {this.socket.emit('player_end_don_phase');}
+    requestEndPassivePlayerAnimationDonPhase () {this.socket.emit('player_end_passiveplayer_animation_don_phase');}
 
     /** Function that tells the server to update the player settings */
-    updatePlayerSettings() {this.socket.emit('update_player_settings', this.playerSettings);}
+    updatePlayerSettings () {this.socket.emit('update_player_settings', this.playerSettings);}
     
 }

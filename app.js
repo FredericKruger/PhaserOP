@@ -195,6 +195,13 @@ io.on('connection', function (/** @type {object} */ socket) {
         }
     });
 
+    /** CARD MOVEMENTS */
+    socket.on('player_card_drag_start', (cardID, cardType) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_drag_start', cardID, cardType);});
+    socket.on('player_card_drag_position', (cardID, cardType, posX, posY) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_drag_position', cardID, cardType, posX, posY);});
+    socket.on('player_card_drag_end', (cardID, cardType) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_drag_end', cardID, cardType);});
+    socket.on('player_card_pointer_over', (cardID) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_pointer_over', cardID);});
+    socket.on('player_card_pointer_out', (cardID) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_pointer_out', cardID);});
+
     /** GAME REQUESTS */
     socket.on('player_match_scene_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'READY_SETUP');}); 
     socket.on('player_match_start_mulligan_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'READY_MULLIGAN');}); 
