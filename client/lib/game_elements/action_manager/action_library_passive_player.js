@@ -78,7 +78,7 @@ class ActionLibraryPassivePlayer {
                 card.setDepth(2);
             } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
             } else {
-                playerScene.hand.addCards([card], {setCardState: false, setCardDepth: false, setCardInteractive: false, setCardDraggable: false, updateUI: true});
+                playerScene.hand.addCards([card], {setCardState: false, setCardDepth: true, setCardInteractive: false, setCardDraggable: false, updateUI: true});
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visualif(isServerRequest) this.scene.actions.completeServerRequest(); //Call completeServerRequest
 
