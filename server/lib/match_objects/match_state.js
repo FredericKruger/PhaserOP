@@ -7,6 +7,9 @@ const MATCH_PHASES = Object.freeze({
     MULLIGAN_PHASE: 'MULLIGAN_PHASE',
     MULLIGAN_PHASE_OVER: 'MULLIGAN_PHASE_OVER',
     PREPARING_FIRST_TURN: 'PREPARING_FIRST_TURN',
+
+    REFRESH_PHASE: 'REFRESH_PHASE',
+    DRAW_PHASE: 'DRAW_PHASE',
     DON_PHASE: 'DON_PHASE',
 })
 
@@ -82,12 +85,32 @@ class MatchState {
         return cards;
     }
 
-    /** Function that does the house keeping or the current player */
-    newTurn(player) {
-        //Need to return don cards to the don deck
-
+    /** Function that returns all attached DON cards to the don Area
+     * @param {MatchPlayer} player - player object
+     */
+    refreshDon(player) { //TODO: Implement refresh Don
+        return [];
     }
 
+    /** Function that refreshed all exerted charactes to active
+     * @param {MatchPlayer} player - player object
+     */
+    refreshCards(player) { //TODO: Implement refresh Cards
+        return [];
+    }
+
+    /** Start Draw Phase. First players do not draw a card on their first turn
+     * @param {MatchPlayer} player
+     */
+    startDrawPhase(player) {
+        let playerCards = [];
+        //TODO: this is just a test remove after completion of test
+        //if(!(player.isFirstPlayer && player.isFirstTurn)) {
+            playerCards = this.drawCards(player, 1);
+        //}
+
+        return playerCards;
+    }
 
     /**
      * Function that runs the Don Phase
@@ -96,7 +119,6 @@ class MatchState {
     startDonPhase(player) {
         //During the don phase the player draws a certain amount of don cards from the pile to the don area
         let donCards = [];
-        console.log(player.isFirstPlayer + ' ' + player.isFirstTurn)
         if(player.isFirstPlayer && player.isFirstTurn) { //If the player is the first player and its the firs turn only draw a single DON
             let donCard = player.inDon.pop();
             player.inActiveDon.push(donCard);

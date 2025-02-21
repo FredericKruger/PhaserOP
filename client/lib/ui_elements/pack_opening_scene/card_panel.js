@@ -148,7 +148,6 @@ class CardOpeningPanelCardPanel {
         });
         cardVisual.on('pointerdown', () => {
             if(cardVisual.showingBack) {
-                // TODO make intensity dependant on rarity
                 let intensity = this.scene.game.utilFunctions.getShakeIntensity(cardVisual.rarity);
                 this.scene.cameras.main.shake(100, intensity);
                 cardVisual.flipCard();

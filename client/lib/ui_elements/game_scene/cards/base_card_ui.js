@@ -91,16 +91,21 @@ class BaseCardUI extends Phaser.GameObjects.Container {
     moveTo(x, y, useTween, chainTween, clearPreviousTween) {
         if(clearPreviousTween) this.scene.tweens.killTweensOf(this);
 
+        let duration = 200;
+        if(this.state === CARD_STATES.TRAVELLING_DECK_HAND) duration = 700;
+
         if(useTween) {
             this.scene.tweens.add({
                 targets: this,
                 x: x,
                 y: y,
-                duration: 200,
+                duration: duration,
                 ease: 'linear',
                 onComplete: () => {
                     this.x = x;
                     this.y = y;
+
+                    if(this.state === CARD_STATES.TRAVELLING_DECK_HAND) this.setState(CARD_STATES.IN_HAND);
                 }
             });
         } else {

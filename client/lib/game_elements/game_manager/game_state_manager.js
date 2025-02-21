@@ -250,58 +250,152 @@ class GameStateManager {
      * @param {Array<number>} passivePlayerCards - The passive player's cards
      */
     firstTurnSetup(activePlayerCards, passivePlayerCards) {
-        //Show ui
-        this.gameStateUI.setVisible(true);
-        
-        //Draw the active player's cards
-        let animationCallback = () => {
-            this.scene.game.gameClient.requestFirstTurnSetupComplete();
-        };
-        for(let i=0; i<activePlayerCards.length; i++) {
-            let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
-            this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, {id:activePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
-        }
-        
-        //Draw the passive player's cards
-        animationCallback = () => {
-            this.scene.game.gameClient.requestFirstTurnSetupPassivePlayerAnimationComplete();
-        };
-        for(let i=0; i<passivePlayerCards.length; i++) {
-            let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
-            this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
-        }
+        //Start the step with a bit of delay to not appear too rushed
+        this.scene.time.delayedCall(1500, () => {
+            //Show ui
+            this.gameStateUI.setVisible(true);
+
+            //Set Game phase
+            this.setPhase(GAME_PHASES.PREPARING_FIRST_TURN);
+            
+            //Draw the active player's cards
+            let animationCallback = () => {
+                this.scene.game.gameClient.requestFirstTurnSetupComplete();
+            };
+            for(let i=0; i<activePlayerCards.length; i++) {
+                let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
+                this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, {id:activePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
+            }
+            
+            //Draw the passive player's cards
+            animationCallback = () => {
+                this.scene.game.gameClient.requestFirstTurnSetupPassivePlayerAnimationComplete();
+            };
+            for(let i=0; i<passivePlayerCards.length; i++) {
+                let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
+                this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+            }
+        });
+    }
+
+    /** Function that performs  the refresh of the don and the characters
+     * All Animation can happen simultaniously
+     * Start by showing the "you turn" image
+     * @param {Array<number>} refreshDon - The Don cards to be moved or added to the pool
+     * @param {Array<number>} refreshCards - The cards to be set to active
+     */
+    startRefreshPhase(refreshDon, refreshCards) {
+        this.scene.time.delayedCall(1000, () => {
+            this.setPhase(GAME_PHASES.REFRESH_PHASE); //Set the phase to Refresh Phase
+
+            //Refresh the nextTurn Button
+            this.gameStateUI.nextTurnbutton.setState(NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE);  
+            this.gameStateUI.yourTurnImage.setAlpha(1); 
+    
+            //Start with showing the "Your Turn" image
+            this.scene.add.tween({
+                targets: this.gameStateUI.yourTurnImage,
+                delay: 2000,
+                alpha: {from: 1, to: 0},
+                duration: 1500,
+                onComplete: () => {
+                    //TODO Create Action calls for Don Refresh
+                    //TODO Create Action calls for Character Refresh
+                    //TODO Create way to communicate end of all animations and send message back to the server
+                    this.scene.game.gameClient.requestEndRefreshPhase();
+                }
+            });
+        });
+    }
+
+    /** Function that performs the refresh of teh don and characters for the passive player
+     * All animations can happen sumultaniously
+     * @param {Array<number>} refreshDon - The Don cards to be moved or added to the pool
+     * @param {Array<number>} refreshCards - The cards to be set
+     */
+    startRefreshPhasePassivePlayer(refreshDon, refreshCards) {
+        this.scene.time.delayedCall(1000, () => {
+            this.setPhase(GAME_PHASES.REFRESH_PHASE);
+
+            //TODO Create Action calls for Don Refresh
+            //TODO Create Action calls for Character Refresh
+            //TODO Create way to communicate end of all animations and send message back to the server
+    
+            this.scene.game.gameClient.requestEndPassivePlayerAnimationRefreshPhase();
+        });
+    }
+
+    /**  Function that start the draw phase
+     * @param {Array<Object>} newCards - The card to be drawn
+     */
+    startDrawPhase(newCards) {
+        this.scene.time.delayedCall(1000, () => {
+            this.setPhase(GAME_PHASES.DRAW_PHASE); //Set the phase to Draw Phase
+
+            for(let card of newCards) {
+                //Create a Draw action for each card (should be a single card)
+                this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, card, GAME_PHASES.DRAW_PHASE, {delay: 0}, {waitForAnimationToComplete: true});
+            }
+    
+            //Create a last action to call the server
+            let endDrawPhaseAction = new Action();
+            endDrawPhaseAction.start = () => {this.scene.game.gameClient.requestEndDrawPhase();}
+            endDrawPhaseAction.isPlayerAction = true;
+            endDrawPhaseAction.waitForAnimationToComplete = false;
+            this.scene.actionManager.addAction(endDrawPhaseAction);
+        });
     }
 
     /** Function to start the Don Phase
      * @param {Array<number>} donCards - The cards to be used in the Don Phase
     */
     startDonPhase(donCards) {
-        this.setPhase(GAME_PHASES.DON_PHASE); //Set the phase to Don Phase
+        this.scene.time.delayedCall(1000, () => {
+            this.setPhase(GAME_PHASES.DON_PHASE); //Set the phase to Don Phase
 
-        for(let i=0; i<donCards.length; i++) {
-            this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300}, {waitForAnimationToComplete: false});
-        
-            //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
-            let donImage = this.scene.add.image(
-                this.scene.screenWidth*0.4 + i * this.scene.screenWidth,
-                this.scene.screenCenterY - 100 + i * 200,
-                ASSET_ENUMS.GAME_DON_BIG
-            ).setOrigin(0.5).setDepth(2).setScale(1).setVisible(false).setAngle(-10 + i*20);
-            this.scene.tweens.add({
-                targets: donImage,
-                delay: i*300,
-                onComplete: () => {
-                    donImage.setVisible(true);
-                    this.scene.tweens.add({
-                        targets: donImage,
-                        delay: 1000,
-                        alpha: {from: 1, to: 0},
-                        duration: 750,
-                        onComplete: () => {donImage.destroy();}
-                    });
-                }
-            });
-        }
+            //Draw the active player's cards
+            let animationCallback = () => {
+                this.scene.game.gameClient.requestEndDonPhase();
+            };
+
+            for(let i=0; i<donCards.length; i++) {
+                let callback = (i === (donCards.length-1) ? animationCallback : null);
+                this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
+            
+                //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
+                let donImage = this.scene.add.image(
+                    this.scene.screenWidth*0.4 + i * this.scene.screenWidth,
+                    this.scene.screenCenterY - 100 + i * 200,
+                    ASSET_ENUMS.GAME_DON_BIG
+                ).setOrigin(0.5).setDepth(2).setScale(1.5).setVisible(false).setAngle(-10 + i*20);
+                this.scene.tweens.add({
+                    targets: donImage,
+                    delay: i*300,
+                    onComplete: () => {
+                        donImage.setVisible(true);
+                        this.scene.tweens.add({
+                            targets: donImage,
+                            delay: 1500,
+                            alpha: {from: 1, to: 0},
+                            duration: 1500,
+                            onComplete: () => {donImage.destroy();}
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    /** Function to start the main phase */
+    startMainPhase() {
+        this.setPhase(GAME_PHASES.MAIN_PHASE); //Set the phase to Main Phase
+
+        //Make the cards draggable in the hand and in the don deck
+        this.scene.activePlayerScene.hand.makeCardDraggable(true);
+        this.scene.activePlayerScene.activeDonDeck.makeCardDraggable(true);
+
+        //Change state of the next turn button
+        this.scene.gameStateUI.nextTurnbutton.setState(NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE);
     }
 
     /** Function to set the phase of the game 

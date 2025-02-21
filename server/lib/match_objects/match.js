@@ -4,6 +4,7 @@ const {MatchState, MATCH_PHASES} = require("./match_state");
 const { request } = require("express");
 const AI_Instance = require("../ai_engine/ai_instance");
 const { FlagManager } = require("../game_objects/state_manager");
+const MatchPlayer = require("./match_player");
 
 class Match {
 
@@ -18,26 +19,33 @@ class Match {
         this.serverInstance = serverInstance; //Pointer to the server
 
         this.id = -1; //Match ID
+        /** @type {boolean} */
         this.botMatch = botMatch; //Flag to keep track if the match is against a bot
         /** @type {AI_Instance} */
         this.ai = null; //Pointer to the AI instance
 
+        /** @type {MatchState} */
         this.state = new MatchState(this); //Create a new match state
 
+        /** @type {Player} */
         this.player1 = player1; //Assign the players
+        /** @type {Player} */
         this.player2 = player2;
 
         //Assign pointers
+        /** @type {MatchPlayer} */
         this.player1.currentMatchPlayer = this.state.player1;
+        /** @type {MatchPlayer} */
         this.player2.currentMatchPlayer = this.state.player2;
 
         //Assign opponents
+        /** @type {Player} */
         this.player1.currentOpponentPlayer = this.player2;
+        /** @type {Player} */
         this.player2.currentOpponentPlayer = this.player1;
 
+        /** @type {FlagManager} */
         this.flagManager = new FlagManager(this); //Create a new state manager
-
-        this.firstPlayer = null; //Pointer to the first player
     }
 
     /** Set the readiness of the plauer
@@ -152,13 +160,73 @@ class Match {
             }
 
             //Start the new turn
+            this.startNewTurn();
+        }
+    }
+
+    /** Function that starts a new turn */
+    startNewTurn() {
+        //Start the refresh phase
+        this.state.current_phase = MATCH_PHASES.REFRESH_PHASE;
+
+        //Refresh all the game flags all players (this has to be done for the passsive player animation flags)
+        this.state.current_active_player.currentMatchPlayer.matchFlags.resetTurnFlags();
+        this.state.current_passive_player.currentMatchPlayer.matchFlags.resetTurnFlags();
+
+        //Get the cards that need to be refreshed
+        let refreshedDon = this.state.refreshDon(this.state.current_active_player.currentMatchPlayer); //Bring dons back to don area
+        let refreshedCard = this.state.refreshCards(this.state.current_active_player.currentMatchPlayer); //Change status of cards
+
+        //Send signal to client
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_refresh_phase', refreshedDon, refreshedCard);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_refresh_phase_passive_player', refreshedDon, refreshedCard);
+    }
+
+    /** Function that start the draw Phase */
+    startDrawPhase() {
+        if(this.flagManager.checkFlag('REFRESH_PHASE_COMPLETE', this.state.current_active_player)
+            && this.flagManager.checkFlag('REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
+            
+            //Start the draw phase
+            this.state.current_phase = MATCH_PHASES.DRAW_PHASE;
+
+            //Draw the cards
+            let playerCards = this.state.startDrawPhase(this.state.current_active_player.currentMatchPlayer);
+
+            //Send signals to the client
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_draw_phase', playerCards);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_draw_phase_passive_player', playerCards);
+        }
+    }
+
+    /** Function that starts the don phase */
+    startDonPhase() {
+        console.log('Start Don Phase');
+        if(this.flagManager.checkFlag('DRAW_PHASE_COMPLETE', this.state.current_active_player)
+            && this.flagManager.checkFlag('DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
+            
+            console.log("HERE")
+                //Start the DON Phase
+            this.state.current_phase = MATCH_PHASES.DON_PHASE
+
+            //Get the don cards
             let donCards = this.state.startDonPhase(this.state.current_active_player.currentMatchPlayer);
             
             //Send signal to client
             if(!this.player1.bot) this.state.current_active_player.socket.emit('game_start_don_phase', donCards);
-            /*if(!this.state.current_passive_player.bot) {
-                this.state.current_passive_player.socket.emit('game_start_don_phase_passive_player', donCards);
-            }*/
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_don_phase_passive_player', donCards);
+        }
+    }
+
+    /** Function that stats the main phase */
+    startMainPhase() {
+        if(this.flagManager.checkFlag('DON_PHASE_COMPLETE', this.state.current_active_player)
+            && this.flagManager.checkFlag('DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
+            //Start the main phase
+            this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
+
+            //Start the main phase
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_main_phase');
         }
     }
 }

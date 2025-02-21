@@ -207,6 +207,13 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_first_turn_setup_complete', () => {socket.player.match.flagManager.handleFlag(socket.player, 'FIRST_TURN_PREP_COMPLETE');});
     socket.on('player_first_turn_setup_passiveplayer_animation_complete', () => {socket.player.match.flagManager.handleFlag(socket.player, 'FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE');});
 
+    socket.on('player_end_refresh_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'REFRESH_PHASE_COMPLETE');});
+    socket.on('player_end_passiveplayer_animation_refresh_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE');});
+    socket.on('player_end_draw_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'DRAW_PHASE_COMPLETE');});
+    socket.on('player_end_passiveplayer_animation_draw_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE');});
+    socket.on('player_end_don_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'DON_PHASE_COMPLETE');});
+    socket.on('player_end_passiveplayer_animation_don_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE');});
+
 });
 
 //START LISTENING

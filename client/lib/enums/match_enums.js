@@ -69,6 +69,9 @@ const CARD_SCALE = Object.freeze({
 const GAME_PHASES = Object.freeze({
     SETUP: 'Setup',
     MULLIGAN_PHASE: 'Mulligan Phase',
-    PREPARING_FIRST_TURN: 'Preparing First Turn',
+    PREPARING_FIRST_TURN: 'Setup Phase',
+    REFRESH_PHASE: 'Refresh Phase',
+    DRAW_PHASE: 'Draw Phase',
     DON_PHASE: 'Don Phase',
+    MAIN_PHASE: 'Main Phase',
 });

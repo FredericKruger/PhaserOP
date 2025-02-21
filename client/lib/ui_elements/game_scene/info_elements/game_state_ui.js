@@ -30,6 +30,11 @@ class GameStateUI {
         this.nextTurnbutton.setDepth(1);
         this.obj.push(this.nextTurnbutton);
 
+        //Your turn image
+        this.yourTurnImage = this.scene.add.image(this.scene.screenCenterX, this.scene.screenCenterY, ASSET_ENUMS.GAME_START_TURN_IMAGE).setAlpha(0);
+        this.yourTurnImage.setOrigin(0.5).setScale(0.5);
+        this.yourTurnImage.setDepth(4);
+
         // Create the dashed line with a sketched look
         this.createSketchedDashedLine();
 

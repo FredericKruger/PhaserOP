@@ -95,7 +95,7 @@ class GameSearchingScene extends Phaser.Scene {
   disableCancelButton() {
     console.log("TODO BUG: CANCEL BUTTON NOT DISABLING");
     this.cancelButton.removeInteractive();
-    this.cancelButton.setPostPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE); //TODO NOT WORKING
+    this.cancelButton.setPostPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE); //FIXME: Fix greyscalling button when disabled
   }
 
   startGameScene(board) {

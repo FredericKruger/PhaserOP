@@ -31,13 +31,15 @@ class ActionLibrary {
             id: serverCard.id,
             depth: 4
         });
-        if(serverCard.cardData) card.updateCardData(serverCard.cardData, false); //in some case we only pass the id
+        if(serverCard.cardData) {
+            card.updateCardData(serverCard.cardData, false); //in some case we only pass the id
+        };
 
         //Prepare Tweens
         let tweens = [];
         if(phase === GAME_PHASES.MULLIGAN_PHASE) tweens = this.scene.animationLibrary.animation_move_card_deck2mulligan(card, config.mulliganPosition, animationConfig.delay);
         else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) tweens = this.scene.animationLibrary.animation_move_card_deck2lifedeck(card, animationConfig.delay);
-        //else this.scene.animations.animationMoveCardFromDeckToHand(card, delay); TODO
+        else tweens = this.scene.animationLibrary.animation_move_card_deck2hand(card, animationConfig.delay);
 
         if(animationConfig.startAnimationCallback) {
             tweens = tweens.concat({
@@ -59,9 +61,10 @@ class ActionLibrary {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            if(phase === GAME_PHASES.MULLIGAN_PHASE) card.setDepth(1);
+            card.setDepth(1);
+            /*if(phase === GAME_PHASES.MULLIGAN_PHASE) card.setDepth(1);
             else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) card.setDepth(1);
-            else this.scene.children.bringToTop(card);
+            else card.setDepth(1)//this.scene.children.bringToTop(card);*/
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
                 card.setState(CARD_STATES.IN_MULLIGAN);
@@ -71,7 +74,6 @@ class ActionLibrary {
                 playerScene.lifeDeck.addCard(card);
             } else {
                 card.setState(CARD_STATES.TRAVELLING_DECK_HAND);
-                playerScene.hand.addCards([card]);
             }
         };
         drawAction.start_animation = start_animation;
@@ -79,11 +81,7 @@ class ActionLibrary {
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {card.setDepth(4);} 
             else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {} 
             else {
-                card.makeInteractive(true);
-                card.makeDraggable(true);
-
-                card.setState(CARD_STATES.IN_HAND);
-                card.setScale(CARD_SCALE.IN_HAND);
+                playerScene.hand.addCards([card], {setCardState: false, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: true});
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
         }

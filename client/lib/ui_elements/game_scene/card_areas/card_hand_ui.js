@@ -49,7 +49,7 @@ class CardHandUI extends CardPileUI {
         //Iterate through cards
         for(let i=0; i<this.cards.length; i++) {
             let card = this.cards[i];
-            if(card.state === CARD_STATES.IN_HAND) {
+            if(card.state === CARD_STATES.IN_HAND || card.state === CARD_STATES.TRAVELLING_DECK_HAND) {
                 let cardX = this.posX + currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * currentScale);
                 let cardY = this.posY + Math.abs(currentIndex) * this.heightStep;
                 let cardAngle = currentIndex * this.angleStep;
@@ -124,6 +124,12 @@ class CardHandUI extends CardPileUI {
         this.update();
     }
 
+    /** Function that makes all the cards in than draggable 
+     * @param {boolean} draggable
+    */
+    makeCardDraggable(draggable) {
+        for(let card of this.cards) card.makeDraggable(draggable);
+    }
 
 
 }

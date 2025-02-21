@@ -30,18 +30,38 @@ class MatchFlags {
             READY_FIRST_TURN_STEP: new WaitFlag("READY_FIRST_TURN_STEP", false, false),
             FIRST_TURN_PREP_COMPLETE: new WaitFlag("FIRST_TURN_PREP_COMPLETE", false, false),
             FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE: new WaitFlag("FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE", false, false),
+
+            REFRESH_PHASE_COMPLETE: new WaitFlag("REFRESH_PHASE_COMPLETE", true, false),
+            REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: new WaitFlag("REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE", true, false),
+
+            DRAW_PHASE_COMPLETE: new WaitFlag("DRAW_PHASE_COMPLETE", true, false),
+            DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: new WaitFlag("DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE", true, false),
             
             DON_PHASE_COMPLETE: new WaitFlag("DON_PHASE_COMPLETE", true, false),
             DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: new WaitFlag("DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE", true, false)
         }   
     }
 
+    /** Function that sets the flag to the corresponding value
+     * @param {string} flag - The flag to be set
+     * @param {boolean} value - The value to be set
+     */
     setFlag(flag, value) {
         this.flags[flag].value = value;
     }
 
+    /** Function that retrieves the value of given flag
+     * @param {string} flag - The flag to be retrieved
+     */
     getFlag(flag) {
         return this.flags[flag].value;
+    }
+
+    /** Function that resets all the flags for the turn to false */
+    resetTurnFlags() {
+        for(let flag in this.flags) {
+            if(this.flags[flag].isTurnBased) this.flags[flag].value = false;
+        }
     }
 }
 
@@ -74,8 +94,6 @@ class FlagManager {
                 this.match.mulliganCards(player, args.cards);
                 break;
             case 'MULLIGAN_OVER':
-                this.match.endMulliganPhase();
-                break;
             case 'MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER':
                 this.match.endMulliganPhase();
                 break;
@@ -83,10 +101,23 @@ class FlagManager {
                 this.match.firstTurnSetup(player);
                 break;
             case 'FIRST_TURN_PREP_COMPLETE':
-                this.match.endFirstTurnSetup();
-                break;
             case 'FIRST_TURN_PREP_ANIMATION_PASSIVEPLAYER_COMPLETE':
                 this.match.endFirstTurnSetup();
+                break;
+            case 'REFRESH_PHASE_COMPLETE':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', true);
+            case 'REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE':
+                this.match.startDrawPhase();
+                break;
+            case 'DRAW_PHASE_COMPLETE':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', true);
+            case 'DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE':
+                this.match.startDonPhase();
+                break;
+            case 'DON_PHASE_COMPLETE':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', true);
+            case 'DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE':
+                this.match.startMainPhase();
                 break;
         }
     }
@@ -104,6 +135,11 @@ class FlagManager {
 
         let result = flagValues.every(v => v === true);
         return result;
+    }
+
+    /** Gets flag value for a specific flag for a specific player */
+    checkFlag(flag, player) {
+        return player.currentMatchPlayer.matchFlags.getFlag(flag);
     }
 
 }
