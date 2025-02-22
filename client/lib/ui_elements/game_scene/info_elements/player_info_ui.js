@@ -51,12 +51,12 @@ class PlayerInfoUI extends BaseComponentUI{
         this.backgroundObj.push(this.restingDonplaceholder);
 
         //Save the positions
-        this.acticePlaceholderPos = {x: this.activeDonPlaceholder.x, y: this.activeDonPlaceholder.y};
+        this.activePlaceholderPos = {x: this.activeDonPlaceholder.x, y: this.activeDonPlaceholder.y};
         this.restingDonplaceholderPos = {x: this.restingDonplaceholder.x, y: this.restingDonplaceholder.y};
         
         let color = (this.playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) ? COLOR_ENUMS_CSS.OP_BLUE : COLOR_ENUMS_CSS.OP_RED;
         //Active Don Card Amount
-        this.activeDonCardAmountText = this.scene.add.text(this.acticePlaceholderPos.x, this.acticePlaceholderPos.y, "0", 
+        this.activeDonCardAmountText = this.scene.add.text(this.activePlaceholderPos.x, this.activePlaceholderPos.y, "0", 
             {font: "1000 40px OnePieceTCGFont", color: color, stroke: COLOR_ENUMS_CSS.OP_WHITE, strokeThickness: 4}
         ).setOrigin(0.5).setDepth(1);
         this.obj.push(this.activeDonCardAmountText);

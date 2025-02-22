@@ -3,8 +3,9 @@ class GameSearchingScene extends Phaser.Scene {
     super({ key: SCENE_ENUMS.GAME_SEARCHING_SCENE });
   }
 
-  init() {
+  init(data) {
     this.game.gameClient.gameSearchingScene = this;
+    this.vsAI = data.vsAI;
   }
 
   create(data) {
@@ -86,7 +87,7 @@ class GameSearchingScene extends Phaser.Scene {
     });
 
     //Send message to server to start matchmaking
-    this.game.gameClient.requestEnterMatchmaking(data.selectedDeck);
+    this.game.gameClient.requestEnterMatchmaking(data.selectedDeck, this.vsAI);
   }
 
   //Function to go back to deck selection

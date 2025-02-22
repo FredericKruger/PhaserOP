@@ -392,16 +392,20 @@ class GameStateManager {
         });
     }
 
-    /** Function to start the main phase */
-    startMainPhase() {
+    /** Function to start the main phase 
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+    */
+    startMainPhase(isPlayerTurn) {
         this.setPhase(GAME_PHASES.MAIN_PHASE); //Set the phase to Main Phase
 
+        if(isPlayerTurn) {
         //Make the cards draggable in the hand and in the don deck
         this.scene.activePlayerScene.hand.makeCardDraggable(true);
         this.scene.activePlayerScene.activeDonDeck.makeCardDraggable(true);
 
         //Change state of the next turn button
         this.scene.gameStateUI.nextTurnbutton.setState(NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE);
+        }
     }
 
     /** Function to set the phase of the game 
@@ -412,7 +416,37 @@ class GameStateManager {
         this.gameStateUI.udpatePhase(phase);
     }
 
-    /** PASSIVE PLAYER CARD MOVEMENTS */
+    /*** PLAY CARDS */
+
+    /** Function to handle playing a card that is too expensive */
+    playCardNotEnoughDon(actionInfos, isPLayerTurn) {
+        //Get the card
+        let player = this.scene.activePlayerScene;
+        if(!isPLayerTurn) player = this.scene.passivePlayerScene;
+        
+        let card = player.hand.getCard(actionInfos.playedCard);
+        //Change card state to in hand
+        card.setState(CARD_STATES.IN_HAND);
+        card.hideGlow();
+        player.hand.update();
+
+        if(isPLayerTurn) {
+            player.playerInfo.activeDonCardAmountText.setScale(1.2);
+            this.scene.tweens.add({
+                targets: player.playerInfo.activeDonPlaceholder,
+                x: { from: player.playerInfo.activeDonPlaceholder.x - 10, to: player.playerInfo.activeDonPlaceholder.x + 10 }, // Move left and right
+                duration: 100, // Duration of each shake
+                yoyo: true, // Move back to the original position
+                repeat: 2, // Repeat the shake 2 times
+                onComplete: () => {
+                    player.playerInfo.activeDonPlaceholder.x = player.playerInfo.activePlaceholderPos.x;
+                    player.playerInfo.activeDonCardAmountText.setScale(1);
+                }
+            });
+        }
+    }
+
+    /*** PASSIVE PLAYER CARD MOVEMENTS **/
 
     /** Function to handle the dragging of a card from the opponent player
      * @param {number} cardID
@@ -469,21 +503,57 @@ class GameStateManager {
     /** Function that handles when a players card is hovered over
      * @param {number} CardID
      */
-    passivePlayerCardPointerOver(cardID) {
-        let card = this.scene.passivePlayerScene.hand.getCard(cardID);
-        card.setState(CARD_STATES.IN_HAND_HOVERED_PASSIVEPLAYER);
-        card.showGlow(COLOR_ENUMS.OP_WHITE);
-        this.scene.passivePlayerScene.hand.update();
+    passivePlayerCardPointerOver(cardID, state, activePlayer) {
+        if(state === CARD_STATES.IN_HAND) {
+            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            card.setState(CARD_STATES.IN_HAND_HOVERED_PASSIVEPLAYER);
+            card.showGlow(COLOR_ENUMS.OP_WHITE);
+            this.scene.passivePlayerScene.hand.update();
+        } else if(state === CARD_STATES.IN_PLAY) {
+            let card = null;
+            if(activePlayer) {
+                if(this.scene.passivePlayerScene.leaderLocation.cards[0].id === cardID) card = this.scene.passivePlayerScene.leaderLocation.cards[0];
+                else if(this.scene.passivePlayerScene.stageLocation.cards.length>0 && this.scene.passivePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.passivePlayerScene.stageLocation.cards[0];
+                else card = this.scene.passivePlayerScene.characterArea.cards.find((card) => card.id === cardID);
+
+                card.showGlow(COLOR_ENUMS.OP_WHITE);
+            } else {
+                if(this.scene.activePlayerScene.leaderLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.leaderLocation.cards[0];
+                else if(this.scene.activePlayerScene.stageLocation.cards.length>0 && this.scene.activePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.stageLocation.cards[0];
+                else card = this.scene.activePlayerScene.characterArea.cards.find((card) => card.id === cardID);
+
+                card.showGlow(COLOR_ENUMS.OP_WHITE);
+            }
+        }
+
     }
 
     /** Function that handles when a players card isnt hovered anymore
      * @param {number} CardID
      */
-    passivePlayerCardPointerOut(cardID) {
-        let card = this.scene.passivePlayerScene.hand.getCard(cardID);
-        card.setState(CARD_STATES.IN_HAND);
-        card.hideGlow();
-        this.scene.passivePlayerScene.hand.update();
+    passivePlayerCardPointerOut(cardID, state, activePlayer) {
+        if(state === CARD_STATES.IN_HAND) {
+            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            card.setState(CARD_STATES.IN_HAND);
+            card.hideGlow();
+            this.scene.passivePlayerScene.hand.update();
+        } else if(state === CARD_STATES.IN_PLAY) {
+            let card = null;
+            if(activePlayer) {
+                if(this.scene.passivePlayerScene.leaderLocation.cards[0].id === cardID) card = this.scene.passivePlayerScene.leaderLocation.cards[0];
+                else if(this.scene.passivePlayerScene.stageLocation.cards.length>0 && this.scene.passivePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.passivePlayerScene.stageLocation.cards[0];
+                else card = this.scene.passivePlayerScene.characterArea.cards.find((card) => card.id === cardID);
+
+                card.hideGlow();
+            } else {
+                if(this.scene.activePlayerScene.leaderLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.leaderLocation.cards[0];
+                else if(this.scene.activePlayerScene.stageLocation.cards.length>0 && this.scene.activePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.stageLocation.cards[0];
+                else card = this.scene.activePlayerScene.characterArea.cards.find((card) => card.id === cardID);
+
+                card.hideGlow();
+            }
+        }
+
     }
 
 }

@@ -101,7 +101,10 @@ class GameScene extends Phaser.Scene {
                     card.setState(CARD_STATES.IN_HAND_HOVERED);
                     card.playerScene.hand.update();
 
-                    this.game.gameClient.sendCardPointerOver(card.id);
+                    this.game.gameClient.sendCardPointerOver(card.id, CARD_STATES.IN_HAND, card.playerScene === this.activePlayerScene);
+                } else if(card.state.startsWith('IN_PLAY')) {
+                    card.showGlow(COLOR_ENUMS.OP_WHITE);
+                    this.game.gameClient.sendCardPointerOver(card.id, CARD_STATES.IN_PLAY, card.playerScene === this.activePlayerScene);
                 }
             }
         });
@@ -116,7 +119,10 @@ class GameScene extends Phaser.Scene {
                     card.setState(CARD_STATES.IN_HAND);
                     card.playerScene.hand.update();
 
-                    this.game.gameClient.sendCardPointerOut(card.id);
+                    this.game.gameClient.sendCardPointerOut(card.id, CARD_STATES.IN_HAND, card.playerScene === this.activePlayerScene);
+                } else if(card.state.startsWith('IN_PLAY')) {
+                    card.hideGlow();
+                    this.game.gameClient.sendCardPointerOut(card.id, CARD_STATES.IN_PLAY, card.playerScene === this.activePlayerScene);
                 }
             }
         });
@@ -176,7 +182,8 @@ class GameScene extends Phaser.Scene {
         /** HANDLER FOR DROP */
         this.input.on('drop', (pointer, gameObject, dropZone) => {
             if(dropZone.getData('name') === 'CharacterArea') {
-                gameObject.playerScene.playCard(gameObject);
+                //gameObject.playerScene.playCard(gameObject);
+                this.game.gameClient.requestPlayerPlayCard(gameObject.id);
             }
 
             this.dragginCard = false;

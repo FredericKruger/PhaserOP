@@ -73,7 +73,7 @@ class ActionLibrary {
                 card.setState(CARD_STATES.IN_LIFEDECK);
                 playerScene.lifeDeck.addCard(card);
             } else {
-                card.setState(CARD_STATES.TRAVELLING_DECK_HAND);
+                card.setState(CARD_STATES.TRAVELLING_TO_HAND);
             }
         };
         drawAction.start_animation = start_animation;

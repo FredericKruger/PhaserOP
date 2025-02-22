@@ -1,4 +1,5 @@
-const Match = require('./match')
+const Match = require('./match');
+const { PLAY_CARD_STATES, CARD_TYPES } = require('./match_enums');
 const MatchPlayer = require('./match_player')
 
 const MATCH_PHASES = Object.freeze({
@@ -136,6 +137,42 @@ class MatchState {
 
         //Returns cards to the match
         return donCards;
+    }
+
+    /** Function that determines if a card can be played
+     * @param {MatchPlayer} player - player object
+     * @param {number} cardId - card id
+     */
+    playCard(player, cardId) {
+        //Check the card cost and wether there are enough resources to play the card
+        console.log(cardId)
+        let card = player.inHand.find(card => card.id === cardId);
+        let cardCost = card.cardData.cost;
+        let availableActiveDon = player.inActiveDon.length;
+
+        if(cardCost>availableActiveDon) return {actionResult: PLAY_CARD_STATES.NOT_ENOUGH_DON, actionInfos: {playedCard: cardId}};
+
+        let actionInfos = {};
+        //If the player has enough resources remove the resources and play the card
+        if(card.card === CARD_TYPES.STAGE) {
+            if(!player.inStageLocation) { //If the state
+                actionInfos = player.playStage(card, false);
+                return {actionResult: PLAY_CARD_STATES.STAGE_PLAYED, actionInfos: actionInfos};
+            } else {
+                actionInfos = player.playStage(card, true);
+                return {actionResult: PLAY_CARD_STATES.STAGE_REPLACED_AND_PLAYED, actionInfos: actionInfos};
+            };
+        } else if(card.card === CARD_TYPES.CHARACTER) {
+            if(player.inCharacterArea.length < 5) {
+                actionInfos = player.playCharacter(card, false);
+                return {actionResult: PLAY_CARD_STATES.CHARACTER_PLAYED, actionInfos: actionInfos};
+            } else {
+                actionInfos = {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {playedCard: cardId}};
+                return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos};
+            }
+        } else if(card.card === CARD_TYPES.EVENT) {
+        }
+
     }
 }
 

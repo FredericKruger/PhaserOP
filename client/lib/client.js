@@ -94,8 +94,8 @@ class Client {
         this.socket.on('passiveplayer_card_drag_start', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragStart(cardID, cardType);});
         this.socket.on('passiveplayer_card_drag_position', (cardID, cardType, posX, posY) => {this.gameScene.gameStateManager.passivePlayerCardDragPosition(cardID, cardType, posX, posY);});
         this.socket.on('passiveplayer_card_drag_end', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragEnd(cardID, cardType);});
-        this.socket.on('passiveplayer_card_pointer_over', (cardID) => {this.gameScene.gameStateManager.passivePlayerCardPointerOver(cardID);});
-        this.socket.on('passiveplayer_card_pointer_out', (cardID) => {this.gameScene.gameStateManager.passivePlayerCardPointerOut(cardID);});
+        this.socket.on('passiveplayer_card_pointer_over', (cardID, state, activePlayer) => {this.gameScene.gameStateManager.passivePlayerCardPointerOver(cardID, state, activePlayer);});
+        this.socket.on('passiveplayer_card_pointer_out', (cardID, state, activePlayer) => {this.gameScene.gameStateManager.passivePlayerCardPointerOut(cardID, state, activePlayer);});
 
         /** GAME LISTENERS */
         this.socket.on('start_game_scene', (activePlayerNumberCards, passivePlayerNumberCards, passivePlayerName, board) => {
@@ -117,7 +117,12 @@ class Client {
         this.socket.on('game_start_draw_phase_passive_player', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, false);});
         this.socket.on('game_start_don_phase', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, true);});
         this.socket.on('game_start_don_phase_passive_player', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, false);});
-        this.socket.on('game_start_main_phase', () => {this.gameScene.gameStateManager.startMainPhase();});
+        this.socket.on('game_start_main_phase', () => {this.gameScene.gameStateManager.startMainPhase(true);});
+        this.socket.on('game_start_main_phase_passive_player', () => {this.gameScene.gameStateManager.startMainPhase(false);});
+
+        /** CARD PLAY */
+        this.socket.on('game_play_card_not_enough_don', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, true);});
+        this.socket.on('game_play_card_not_enough_don_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, false);});
 
         /** OPPONENT ACTION LISTENERS */
     }
@@ -153,11 +158,11 @@ class Client {
     sendCardDragStart (cardID, cardType) {this.socket.emit('player_card_drag_start', cardID, cardType);}
     sendCardDragPosition (cardID, cardType, posX, posY) {this.socket.emit('player_card_drag_position', cardID, cardType, posX, posY);}
     sendCardDragEnd (cardID, cardType) {this.socket.emit('player_card_drag_end', cardID, cardType);}
-    sendCardPointerOver (cardID) {this.socket.emit('player_card_pointer_over', cardID);}
-    sendCardPointerOut (cardID) {this.socket.emit('player_card_pointer_out', cardID);}
+    sendCardPointerOver (cardID, state, activePlayer) {this.socket.emit('player_card_pointer_over', cardID, state, activePlayer);}
+    sendCardPointerOut (cardID, state, activePlayer) {this.socket.emit('player_card_pointer_out', cardID, state, activePlayer);}
 
     /** MATCHMAKING */
-    requestEnterMatchmaking (selectedDeck) {this.socket.emit('player_enter_matchmaking', selectedDeck);}
+    requestEnterMatchmaking (selectedDeck, vsAI) {this.socket.emit('player_enter_matchmaking', selectedDeck, vsAI);}
     requestLeaveMatchmaking () {this.socket.emit('player_leave_matchmaking');}
 
     /** GAME COMMUNICATION */
@@ -177,6 +182,8 @@ class Client {
     requestEndPassivePlayerAnimationDrawPhase () {this.socket.emit('player_end_passiveplayer_animation_draw_phase');}
     requestEndDonPhase () {this.socket.emit('player_end_don_phase');}
     requestEndPassivePlayerAnimationDonPhase () {this.socket.emit('player_end_passiveplayer_animation_don_phase');}
+
+    requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings () {this.socket.emit('update_player_settings', this.playerSettings);}

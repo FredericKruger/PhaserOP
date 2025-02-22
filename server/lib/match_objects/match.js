@@ -5,6 +5,7 @@ const { request } = require("express");
 const AI_Instance = require("../ai_engine/ai_instance");
 const { FlagManager } = require("../game_objects/state_manager");
 const MatchPlayer = require("./match_player");
+const { PLAY_CARD_STATES } = require("./match_enums");
 
 class Match {
 
@@ -220,6 +221,20 @@ class Match {
 
             //Start the main phase
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_main_phase');
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_main_phase_passive_player');
+        }
+    }
+
+    /** Function that handles playing a card
+     * @param {Player} player
+     * @param {number} cardID
+     */
+    startPlayCard(player, cardID) {
+        let result = this.state.playCard(player.currentMatchPlayer, cardID);
+
+        if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
+            if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don_passive_player', result.actionInfos);
         }
     }
 }

@@ -3,7 +3,24 @@ const CARD_STATES = Object.freeze({
     EXERTED: 'EXERTED',
 });
 
-class MatchCard {
+class Card {
+
+    /** Constructor
+     * @param {number} id - card id
+     */
+    constructor(id) {
+        this.id = id;
+        
+        this.state = CARD_STATES.READY;
+    }
+
+    /** Function to set the state of the card
+     * @param {string} state - state of the card
+     */
+    setState(state) {this.state = state;}
+}
+
+class MatchCard extends Card{
 
     /**
      * 
@@ -12,23 +29,20 @@ class MatchCard {
      * @param {Object} cardData 
      */
     constructor(cardIndex, id, cardData) {
-        this.cardIndex = cardIndex;
-        this.id = id;
-        this.cardData = cardData;
+        super(id);
 
-        this.state = CARD_STATES.READY;
+        this.cardIndex = cardIndex;
+        this.cardData = cardData;
 
         this.currentPower = cardData.power;
     }
 
 }
 
-class MatchDonCard {
+class MatchDonCard extends Card{
 
     constructor(id) {
-        this.id = id;
-        
-        this.state = CARD_STATES.READY;
+        super(id);
     }
 }
 

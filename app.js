@@ -156,33 +156,40 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     /** MATCHMAKING REQUESTS */
     /** On entering matchmaking */
-    socket.on('player_enter_matchmaking', (selectedDeckID) => {
+    socket.on('player_enter_matchmaking', (selectedDeckID, vsAI) => {
         console.log('Entering matchmaking for player');
 
         socket.player.waitingForMatch = true;
         socket.player.selectedDeck = selectedDeckID;
 
-        serverInstance.addToWaitingPlayers(socket.player);
-
         //Start the waiting scene
-        //socket.emit('start_game_searching_scene');
-
-        //See if you can find a match
-        let playerMatch = serverInstance.findMatch(socket.player);
-        if(playerMatch) {
-            serverInstance.createMatch(socket.player, playerMatch);
-        } else { //If not create a timeout by witch an AI game will be created
-            setTimeout(() => {
-                if(!socket.player.matchFound) {
-                    serverInstance.removeFromWaitingPlayers(socket.player);
-                    socket.player.waitingForMatch = false;
-                    
-                    //Create AI Match
-                    socket.emit('match_found_disable_cancel');
-                    serverInstance.createAIMatch(socket.player);
-                }
-            }, 20000); //TODO Change to 20000
+        if(vsAI) {
+            serverInstance.removeFromWaitingPlayers(socket.player);
+            socket.player.waitingForMatch = false;
+            
+            //Create AI Match
+            socket.emit('match_found_disable_cancel');
+            serverInstance.createAIMatch(socket.player);
+        } else {
+            serverInstance.addToWaitingPlayers(socket.player);
+            //See if you can find a match
+            let playerMatch = serverInstance.findMatch(socket.player);
+            if(playerMatch) {
+                serverInstance.createMatch(socket.player, playerMatch);
+            } else { //If not create a timeout by witch an AI game will be created
+                setTimeout(() => {
+                    if(!socket.player.matchFound) {
+                        serverInstance.removeFromWaitingPlayers(socket.player);
+                        socket.player.waitingForMatch = false;
+                        
+                        //Create AI Match
+                        socket.emit('match_found_disable_cancel');
+                        serverInstance.createAIMatch(socket.player);
+                    }
+                }, 20000); //TODO Change to 20000
+            }
         }
+
     });
 
     socket.on('player_leave_matchmaking', () => {
@@ -199,8 +206,8 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_card_drag_start', (cardID, cardType) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_drag_start', cardID, cardType);});
     socket.on('player_card_drag_position', (cardID, cardType, posX, posY) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_drag_position', cardID, cardType, posX, posY);});
     socket.on('player_card_drag_end', (cardID, cardType) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_drag_end', cardID, cardType);});
-    socket.on('player_card_pointer_over', (cardID) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_pointer_over', cardID);});
-    socket.on('player_card_pointer_out', (cardID) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_pointer_out', cardID);});
+    socket.on('player_card_pointer_over', (cardID, state, activePlayer) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_pointer_over', cardID, state, activePlayer);});
+    socket.on('player_card_pointer_out', (cardID, state, activePlayer) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('passiveplayer_card_pointer_out', cardID, state, activePlayer);});
 
     /** GAME REQUESTS */
     socket.on('player_match_scene_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'READY_SETUP');}); 
@@ -219,6 +226,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_end_don_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'DON_PHASE_COMPLETE');});
     socket.on('player_end_passiveplayer_animation_don_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE');});
 
+    socket.on('player_play_card', (cardID) => {socket.player.match.startPlayCard(socket.player, cardID);});
 });
 
 //START LISTENING
