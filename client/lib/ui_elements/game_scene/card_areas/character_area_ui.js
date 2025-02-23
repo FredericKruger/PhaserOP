@@ -17,7 +17,7 @@ class CharacterAreaUI extends CardPileUI {
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.BOTTOM) {
             this.posY = this.scene.screenCenterY + GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.5 * CARD_SCALE.IN_LOCATION;
         } else {
-            this.posY = this.scene.screenCenterY - 20 - GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.5 * CARD_SCALE.IN_LOCATION;
+            this.posY = this.scene.screenCenterY - 30 - GAME_UI_CONSTANTS.CARD_ART_HEIGHT * 0.5 * CARD_SCALE.IN_LOCATION;
         }
     }
 

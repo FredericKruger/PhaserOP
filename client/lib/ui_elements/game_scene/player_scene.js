@@ -72,13 +72,13 @@ class PlayerScene {
      */
     getCard(cardId) {
         let card = this.hand.getCard(cardId);
-        if(card !== undefined || card !== null) return card;
+        if(card !== undefined && card !== null) return card;
 
         card = this.characterArea.getCard(cardId);
-        if(card !== undefined || card !== null) return card;
+        if(card !== undefined && card !== null) return card;
 
         card = this.stageLocation.getCard(cardId);
-        if(card !== undefined || card !== null) return card;
+        if(card !== undefined && card !== null) return card;
 
         card = this.discarded.getCard(cardId);
         return card;

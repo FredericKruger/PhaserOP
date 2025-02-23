@@ -20,7 +20,7 @@ class CardLocationUI extends CardPileUI {
                 this.posY = this.scene.screenHeight * 0.81;
             } else {
                 this.posX = this.scene.screenCenterX;
-                this.posY = this.scene.screenHeight * 0.19;
+                this.posY = this.scene.screenHeight * 0.17;
             }
         } else if(id === CARD_TYPES.STAGE) {
             this.posScale = CARD_SCALE.IN_LOCATION;
