@@ -19,19 +19,24 @@ class NextTurnButton extends Phaser.GameObjects.Container {
         this.scene = scene;
 
         this.backGround = this.scene.add.image(0, 0, ASSET_ENUMS.GAME_NEXT_TURN_IMAGE).setOrigin(0.5).setScale(0.35);
-        this.buttonText = this.scene.add.text(0, -10, '', 
+        this.buttonText = this.scene.add.text(0, 15, '', 
             {font: "600 30px OnePieceFont", color: COLOR_ENUMS_CSS.OP_WHITE}
         ).setOrigin(0.5);
 
         this.add([this.backGround, this.buttonText]);
-        this.setSize(this.backGround.displayWidth, this.backGround.displayHeight);
         this.scene.add.existing(this);
+
+        this.setSize(this.backGround.displayWidth, this.backGround.displayHeight);
 
         this.on('pointerdown', () => {
             this.scene.add.tween({
-                targets: this.backGround,
+                targets: this,
                 rotation: Math.PI*2,
-                duration: 500
+                duration: 500,
+                onComplete: () => {
+                    this.buttonText.setText("");
+                    this.scene.gameManager.triggerNnextTurn();
+                }
             });
         });
     }
@@ -56,8 +61,7 @@ class NextTurnButton extends Phaser.GameObjects.Container {
         switch(buttonState) {
             case NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE:
                 this.buttonText.setText("END TURN");
-                this.setInteractive(true);
-                this.addGlow(COLOR_ENUMS.OP_ORANGE, 3);
+                this.setGlow(COLOR_ENUMS.OP_ORANGE);
                 this.clearGreyscale();
                 break;
             case NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE:
@@ -69,14 +73,8 @@ class NextTurnButton extends Phaser.GameObjects.Container {
             case NEXT_TURN_BUTTON_STATES.PASS:
                 this.buttonText.setText("PASS");
                 this.setInteractive(true);
-                this.addGlow(COLOR_ENUMS.OP_ORANGE, 3);
+                this.setGlow(COLOR_ENUMS.OP_ORANGE);
                 this.clearGreyscale();
-                break;
-            case NEXT_TURN_BUTTON_STATES.OPPONENT_TURN:
-                this.buttonText.setText("OPPONENT TURN");
-                this.setInteractive(false);
-                this.clearGlow();
-                this.setGreyscale();
                 break;
             case NEXT_TURN_BUTTON_STATES.OPPONENT_ACTION:
                 this.buttonText.setText("OPPONENT ACTION");
