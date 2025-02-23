@@ -95,7 +95,14 @@ class PlayerInfoUI extends BaseComponentUI{
     setLifePoints(life) {this.lifeAmountText.setText(life);}
 
     /** Function to update the text for the amount of active don cards */
-    updateActiveCardAmountText() {
-        this.activeDonCardAmountText.setText(this.playerScene.activeDonDeck.getNumberOfActiveCards());
+    updateActiveCardAmountText() {this.activeDonCardAmountText.setText(this.playerScene.activeDonDeck.getNumberOfActiveCards());}
+
+    /** Function that updates the text for the amounts to resting don cards */
+    updateRestingCardAmountText() {this.restingDonCardAmountText.setText(this.playerScene.activeDonDeck.getNumberOfRestingCards());}
+
+    /** Function that updates both text amounts */
+    updateCardAmountTexts() {
+        this.updateActiveCardAmountText();
+        this.updateRestingCardAmountText();
     }
 }

@@ -3,6 +3,7 @@ const CARD_STATES = Object.freeze({
     EXERTED: 'EXERTED',
 });
 
+/** Base Card Class */
 class Card {
 
     /** Constructor
@@ -20,6 +21,7 @@ class Card {
     setState(state) {this.state = state;}
 }
 
+/** Plaing card class */
 class MatchCard extends Card{
 
     /**
@@ -39,6 +41,7 @@ class MatchCard extends Card{
 
 }
 
+/**Don Card Class */
 class MatchDonCard extends Card{
 
     constructor(id) {

@@ -65,7 +65,7 @@ class MatchState {
 
         //Empty the hand and add new cards
         player.inHand = [];
-        player.inHand.concat(newCards);
+        for(let card of newCards) player.inHand.push(card);
 
         //reshuffle the deck
         player.deck.shuffle();
@@ -145,7 +145,6 @@ class MatchState {
      */
     playCard(player, cardId) {
         //Check the card cost and wether there are enough resources to play the card
-        console.log(cardId)
         let card = player.inHand.find(card => card.id === cardId);
         let cardCost = card.cardData.cost;
         let availableActiveDon = player.inActiveDon.length;
@@ -154,23 +153,26 @@ class MatchState {
 
         let actionInfos = {};
         //If the player has enough resources remove the resources and play the card
-        if(card.card === CARD_TYPES.STAGE) {
+        if(card.cardData.card === CARD_TYPES.STAGE) {
             if(!player.inStageLocation) { //If the state
-                actionInfos = player.playStage(card, false);
+                actionInfos = player.playStage(cardId, false);
                 return {actionResult: PLAY_CARD_STATES.STAGE_PLAYED, actionInfos: actionInfos};
             } else {
-                actionInfos = player.playStage(card, true);
+                actionInfos = player.playStage(cardId, true);
                 return {actionResult: PLAY_CARD_STATES.STAGE_REPLACED_AND_PLAYED, actionInfos: actionInfos};
             };
-        } else if(card.card === CARD_TYPES.CHARACTER) {
+        } else if(card.cardData.card === CARD_TYPES.CHARACTER) { //If the card is a character
+            console.log("CHARACTER")
             if(player.inCharacterArea.length < 5) {
-                actionInfos = player.playCharacter(card, false);
+                console.log("PLAY CARD");
+                actionInfos = player.playCharacter(cardId, false);
                 return {actionResult: PLAY_CARD_STATES.CHARACTER_PLAYED, actionInfos: actionInfos};
             } else {
+                console.log("TARGETING")
                 actionInfos = {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {playedCard: cardId}};
                 return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos};
             }
-        } else if(card.card === CARD_TYPES.EVENT) {
+        } else if(card.cardData.card === CARD_TYPES.EVENT) { //TODO: Implement event card
         }
 
     }

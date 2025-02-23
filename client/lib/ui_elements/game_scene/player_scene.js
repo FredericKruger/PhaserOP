@@ -40,13 +40,27 @@ class PlayerScene {
     }
 
     /** Function that handles when a card is played
-     * @param {GameCardUI} card
+     * @param {Object} actionInfos
+     * @param {boolean} startTargeting
      */
-    playCard(card) {
-        if(card.cardData.card === CARD_TYPES.STAGE
-            || card.cardData.card === CARD_TYPES.CHARACTER
-        ) {
-            this.scene.actionLibrary.playCardAction(card, this);
+    playCard(actionInfos, startTargeting) {
+        //get the card from the hand
+        let card = this.hand.getCard(actionInfos.playedCard);
+
+        let replaceCard = null;
+        if(actionInfos.replacedCard !== -1) {
+            if(card.cardData.card === CARD_TYPES.STAGE) replaceCard = this.stageLocation.getCard(actionInfos.replacedCard);
+            else replaceCard = this.characterArea.getCard(actionInfos.replacedCard);
+
+            //Create a discard Action
+            //TODO: Implement discard action
+        }
+
+        //Play the card
+        if(!startTargeting) {
+            this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds);
+        } else {
+
         }
     }
 

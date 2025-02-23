@@ -20,6 +20,20 @@ class ActiveDonDeckUI extends CardPileUI {
     /** Function that gives the number of active don cards in the pile */
     getNumberOfActiveCards() {return this.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length;}
 
+    /** Function that gives the number of don cards in the pile that are not active */
+    getNumberOfRestingCards() {return this.cards.filter(card => card.state !== CARD_STATES.DON_ACTIVE).length;}
+
+    /** Function to pay cost of an action
+     * @param {Array<number>} spendDonIds
+     */
+    payCost(spentDonIds) {
+        for(let don of spentDonIds) {
+            let card = this.getCard(don);
+            card.setState(CARD_STATES.DON_EXERTED);
+            card.setVisible(false);
+        }
+    }
+
     /** Function to make all the cards draggable 
      * @param {boolean} draggable
     */

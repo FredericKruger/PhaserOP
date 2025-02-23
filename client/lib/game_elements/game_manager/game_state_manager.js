@@ -446,6 +446,13 @@ class GameStateManager {
         }
     }
 
+    playCard(actionInfos, isPlayerTurn, startTargeting) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        player.playCard(actionInfos, startTargeting);
+    }
+
     /*** PASSIVE PLAYER CARD MOVEMENTS **/
 
     /** Function to handle the dragging of a card from the opponent player

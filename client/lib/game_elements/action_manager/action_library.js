@@ -210,13 +210,14 @@ class ActionLibrary {
     /** Creates the Play Card Action.
          * @param {GameCardUI} card - Card that is being played.
          * @param {PlayerScene} playerScene - Player Scene that is playing the card.
+         * @param {Array<number>} spentDonIds
          * This action takes a card, and adds it to the playarea. The card will initially be drying unless it has rush.
          * This will remove the draggable state of the card and only show the card art
          * Action:
          *  start: Pay Cost, Remove from hand, add to playarea
          *  end: play exert animation to show card is drying. Send Server a message about card being played
         */
-    playCardAction(playerScene, card) {
+    playCardAction(playerScene, card, spentDonIds) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
         let displayY = this.scene.screenCenterY;
 
@@ -253,14 +254,8 @@ class ActionLibrary {
         //Create the action
         let action = new Action();
         action.start = () => { //Start function
-            //let cardCost = card.cardInfo.cost; 
-            
             //PAY COST
-            /*if(card.hasAction("SHIFT") && shifter !== null){
-                this.scene.inkwell.payCost(card.cardInfo.actions.SHIFT); //Pay shifting cost
-            } else {
-                this.scene.inkwell.payCost(cardCost); //Pay card cost on the inkwell
-            }*/
+            playerScene.activeDonDeck.payCost(spentDonIds);
 
             playerScene.hand.removeCard(card); //Remove the card form the hand
 
@@ -277,6 +272,9 @@ class ActionLibrary {
         action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
+
+            //Refresh GameStateUI
+            playerScene.playerInfo.updateCardAmountTexts();
         
             card.setState(CARD_STATES.IN_LOCATION); //Set the card state to in play
             card.makeInteractive(true);//required to reshape the bounds of the interaction
