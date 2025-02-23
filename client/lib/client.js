@@ -124,7 +124,7 @@ class Client {
         this.socket.on('game_play_card_not_enough_don', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, true);});
         this.socket.on('game_play_card_not_enough_don_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, false);});
         this.socket.on('game_play_card_character_played', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, true, false);});
-
+        this.socket.on('game_play_card_character_played_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, false, false);});
         /** OPPONENT ACTION LISTENERS */
     }
 

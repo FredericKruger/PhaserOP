@@ -204,4 +204,85 @@ class ActionLibraryPassivePlayer {
         this.actionManager.addAction(drawAction);
     }
 
+    /** Function that plays a card for the opponent
+     * @param {GameCardUI} card - Card that is being played.
+    * @param {PlayerScene} playerScene - Player Scene that is playing the card.
+    * @param {Array<number>} spentDonIds
+     * This function is call from a server request
+     * It creates an action to execute the inking and do the animation
+     * Calls the completeServerRequest at the end
+     */
+    playCardAction(playerScene, card, spentDonIds) {
+        let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_PLAY_ANIMATION/2;
+        let displayY = this.scene.screenCenterY;
+
+        //Create tweens
+        let tweens = [];
+        tweens.push({ //Tween 1: Bring card to top, then move it to center and scale up. On complete redraw the hand
+            onStart: () => {this.scene.children.bringToTop(card);},
+            x: displayX,
+            y: displayY,
+            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            duration: 400,
+            onComplete: () => { playerScene.hand.update(); }
+        });
+        tweens.push({ //Tween 3: empty tween to show the player the card for 2 seconds
+            onStart: () => {card.flipCard();},
+            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            duration: 1000
+        });
+        if(card.cardData.card === CARD_TYPES.CHARACTER) tweens = tweens.concat(playerScene.characterArea.addCardAnimation(card));
+        else tweens = tweens.concat(playerScene.stageLocation.addCardAnimation(card));
+        tweens.push({ //Tween 5: empty tween to call completeActin
+            duration: 100,
+            onComplete: () => {this.scene.actionManager.completeAction();}
+        });
+        //Create tween chain
+        let animation = this.scene.tweens.chain({
+            targets: card,
+            tweens: tweens
+        }).pause();
+
+
+        //Create the action
+        let action = new Action();
+        action.start = () => { //Action start: pay card cost in inkwell. Remove card from hand and add it to the playarea
+            //PAY COST
+            playerScene.activeDonDeck.payCost(spentDonIds);
+            
+            playerScene.hand.removeCard(card); //Remove the card form the hand
+
+            card.isInPlayAnimation = true;
+            if(card.cardData.card === CARD_TYPES.CHARACTER)
+                playerScene.characterArea.addCard(card); //Add the card to the play area
+            else if(card.cardData.card === CARD_TYPES.STAGE)
+                playerScene.stageLocation.addCard(card); //Add the card to the play area
+        };
+        action.start_animation = animation; //play animation
+        action.end = () => { //Action end: play exert animation, set interactive to let player hover over it, and completeServerRequest
+        };
+        action.finally = () => {
+            card.isInPlayAnimation = false;
+
+            //Refresh GameStateUI
+            playerScene.playerInfo.updateCardAmountTexts();
+        
+            card.setState(CARD_STATES.IN_LOCATION); //Set the card state to in play
+        }
+        action.isPlayerAction = false; //This is not a player action
+        action.waitForAnimation = true; //Should wait for animation to complete
+        action.name = "PLAY CARD OPPONENT";
+
+        //Add action to action stack
+        this.scene.actionManager.addAction(action);
+
+        //Update playArea action
+        let updateAction = new Action();
+        updateAction.start = () => {playerScene.characterArea.update();};
+        updateAction.isPlayerAction = true; //This is a player triggered action
+        updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
+        //Add action to the action stack
+        this.actionManager.addAction(updateAction);
+    }
+
 }

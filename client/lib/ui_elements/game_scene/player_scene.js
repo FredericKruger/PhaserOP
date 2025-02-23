@@ -41,13 +41,15 @@ class PlayerScene {
 
     /** Function that handles when a card is played
      * @param {Object} actionInfos
+     * @param {boolean} isPlayerTurn
      * @param {boolean} startTargeting
      */
-    playCard(actionInfos, startTargeting) {
+    playCard(actionInfos, isPlayerTurn, startTargeting) {
         //get the card from the hand
         let card = this.hand.getCard(actionInfos.playedCard);
+        if(!isPlayerTurn) card.updateCardData(actionInfos.playedCardData); //Need to pass the cardData to the passive player as for now only has ID
 
-        let replaceCard = null;
+        let replacedCard = null;
         if(actionInfos.replacedCard !== -1) {
             if(card.cardData.card === CARD_TYPES.STAGE) replaceCard = this.stageLocation.getCard(actionInfos.replacedCard);
             else replaceCard = this.characterArea.getCard(actionInfos.replacedCard);
@@ -58,10 +60,28 @@ class PlayerScene {
 
         //Play the card
         if(!startTargeting) {
-            this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds);
+            if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds);
+            else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds);
         } else {
 
         }
+    }
+
+    /** Function to get a card from the player
+     * @param {number} cardId
+     */
+    getCard(cardId) {
+        let card = this.hand.getCard(cardId);
+        if(card !== undefined || card !== null) return card;
+
+        card = this.characterArea.getCard(cardId);
+        if(card !== undefined || card !== null) return card;
+
+        card = this.stageLocation.getCard(cardId);
+        if(card !== undefined || card !== null) return card;
+
+        card = this.discarded.getCard(cardId);
+        return card;
     }
 
     setVisible(visible) {

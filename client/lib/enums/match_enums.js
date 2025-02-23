@@ -56,7 +56,7 @@ const CARD_SCALE = Object.freeze({
 
     IN_DISCARD: 0.11,
     IN_LOCATION: 0.18,
-    IN_PLAY_ANIMATION: 0.25,
+    IN_PLAY_ANIMATION: 0.3,
 
     IN_LOCATION_LEADER: 0.23, 
 

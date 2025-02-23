@@ -450,7 +450,7 @@ class GameStateManager {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
-        player.playCard(actionInfos, startTargeting);
+        player.playCard(actionInfos, isPlayerTurn, startTargeting);
     }
 
     /*** PASSIVE PLAYER CARD MOVEMENTS **/
@@ -461,7 +461,7 @@ class GameStateManager {
      */
     passivePlayerCardDragStart(cardID, cardType) {
         if(cardType === 'GameCardUI') {
-            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            let card = this.scene.passivePlayerScene.getCard(cardID);
             card.setState(CARD_STATES.TRAVELLING_FROM_HAND);
             card.setAngle(0);
             this.scene.passivePlayerScene.hand.update();
@@ -481,7 +481,7 @@ class GameStateManager {
     passivePlayerCardDragPosition(cardID, cardType, posX, posY) {
         let newY = this.scene.screenHeight - posY;
         if(cardType === 'GameCardUI') {
-            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            let card = this.scene.passivePlayerScene.getCard(cardID);
             card.x = posX;
             card.y = newY;
         } else if(cardType === 'DonCardUI') {
@@ -497,10 +497,12 @@ class GameStateManager {
      */
     passivePlayerCardDragEnd(cardID, cardType) {
         if(cardType === 'GameCardUI') {
-            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
-            card.setState(CARD_STATES.IN_HAND);
-            card.hideGlow();
-            this.scene.passivePlayerScene.hand.update();
+            let card = this.scene.passivePlayerScene.getCard(cardID);
+            if(card !== null) {
+                card.setState(CARD_STATES.IN_HAND);
+                card.hideGlow();
+                this.scene.passivePlayerScene.hand.update();
+            }
         } else if(cardType === 'DonCardUI') {
             let card = this.scene.passivePlayerScene.activeDonDeck.getCard(cardID);
             card.setState(CARD_STATES.DON_ACTIVE);

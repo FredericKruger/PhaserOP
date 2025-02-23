@@ -98,8 +98,8 @@ class MatchPlayer {
         }
 
         //Return the info for the client
-        if(replacePreviousCard) return {playedCard: cardID, replacedCard: replacedCardID, spentDonIds: donIDs};
-        else return {playedCard: cardID, replacedCard: replacedCardID, spentDonIds: donIDs};
+        if(replacePreviousCard) return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
+        else return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
     }
 
 }

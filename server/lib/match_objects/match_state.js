@@ -162,9 +162,7 @@ class MatchState {
                 return {actionResult: PLAY_CARD_STATES.STAGE_REPLACED_AND_PLAYED, actionInfos: actionInfos};
             };
         } else if(card.cardData.card === CARD_TYPES.CHARACTER) { //If the card is a character
-            console.log("CHARACTER")
             if(player.inCharacterArea.length < 5) {
-                console.log("PLAY CARD");
                 actionInfos = player.playCharacter(cardId, false);
                 return {actionResult: PLAY_CARD_STATES.CHARACTER_PLAYED, actionInfos: actionInfos};
             } else {
