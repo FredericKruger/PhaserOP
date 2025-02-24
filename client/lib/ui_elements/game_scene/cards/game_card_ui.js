@@ -66,10 +66,12 @@ class GameCardUI extends BaseCardUI{
         this.obj.push(this.counterIcon);
 
         //Text for the attached don amount
+        let textStyle =  {font: "1000 200px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLUE, align: "center"};
+        if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) textStyle = {font: "1000 200px OnePieceFont", color: COLOR_ENUMS_CSS.OP_RED, align: "center"};
         this.attachedDonText = this.scene.add.text(
             - this.backArt.displayWidth*0.5 - GAME_UI_CONSTANTS.CARD_ART_WIDTH/2*CARD_SCALE.DON_IN_ACTIVE_DON, 
             - GAME_UI_CONSTANTS.CARD_ART_HEIGHT*CARD_SCALE.DON_IN_ACTIVE_DON, 'x', 
-            {font: "1000 200px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLUE, align: "center"}
+            textStyle
         ).setOrigin(0.5);
         this.attachedDonText.setAngle(-20);
         this.attachedDonText.setVisible(false);
