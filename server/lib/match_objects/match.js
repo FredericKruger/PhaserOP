@@ -5,7 +5,7 @@ const { request } = require("express");
 const AI_Instance = require("../ai_engine/ai_instance");
 const { FlagManager } = require("../game_objects/state_manager");
 const MatchPlayer = require("./match_player");
-const { PLAY_CARD_STATES } = require("./match_enums");
+const { PLAY_CARD_STATES, ATTACH_DON_TO_CHAR_STATES } = require("./match_enums");
 
 class Match {
 
@@ -255,6 +255,23 @@ class Match {
         } else if(result.actionResult === PLAY_CARD_STATES.CHARACTER_PLAYED) {
             if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played_passive_player', result.actionInfos);
+        }
+    }
+
+    /** Function that handles attaching a don card to a character
+     * @param {Player} player
+     * @param {number} donID
+     * @param {number} characterID
+     */
+    startAttachDonToCharacter(player, donID, characterID) {
+        let result = this.state.startAttachDonToCharacter(player.currentMatchPlayer, donID, characterID);
+
+        if(result.actionResult === ATTACH_DON_TO_CHAR_STATES.DON_NOT_READY) {
+            if(!player.bot) player.socket.emit('game_attach_don_to_character_failure', result.actionInfos);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character_failure_passive_player', result.actionInfos);
+        } else if(result.actionResult === ATTACH_DON_TO_CHAR_STATES.DON_ATTACHED) {
+            if(!player.bot) player.socket.emit('game_attach_don_to_character_success', result.actionInfos);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character_success_passive_player', result.actionInfos);
         }
     }
 }

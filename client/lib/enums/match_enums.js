@@ -67,7 +67,19 @@ const CARD_SCALE = Object.freeze({
 
     DON_IN_DON_DECK: 0.11,
     DON_IN_ACTIVE_DON: 0.09,
+    DON_OVER_CHARACTER: 0.05,
     
+});
+
+const DEPTH_VALUES = Object.freeze({
+    DON_IN_PILE: 1,
+    DON_DRAGGED: 2,
+
+    CARD_IN_DECK: 1,
+    CARD_IN_HAND: 2,
+    CARD_IN_PLAY: 1,
+    CARD_IN_MULLIGAN: 4,
+    CARD_IN_MULLIGAN_PASSIVE_PLAYER: 2,
 });
 
 const GAME_PHASES = Object.freeze({

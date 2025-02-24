@@ -77,11 +77,36 @@ class PlayerScene {
         card = this.characterArea.getCard(cardId);
         if(card !== undefined && card !== null) return card;
 
+        card = this.leaderLocation.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
         card = this.stageLocation.getCard(cardId);
         if(card !== undefined && card !== null) return card;
 
-        card = this.discarded.getCard(cardId);
+        card = this.discard.getCard(cardId);
         return card;
+    }
+
+    /** Function the pointer is over a character card
+     * @param {number} pointerX
+     * @param {number} pointerY
+     */
+    donDraggedOverCharacter(pointerX, pointerY) {
+        //Start with leader
+        for(let card of this.leaderLocation.cards) {
+            if(card.getBounds().contains(pointerX, pointerY)) {
+                return card;
+            }
+        }
+
+        //Then check the characters
+        for(let card of this.characterArea.cards) {
+            if(card.getBounds().contains(pointerX, pointerY)) {
+                return card;
+            }
+        }
+
+        return null;
     }
 
     setVisible(visible) {

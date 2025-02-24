@@ -300,10 +300,19 @@ class GameStateManager {
                 duration: 1000,
                 onComplete: () => {
                     //Refresh DON Cards
+                    let numberOfAnimations = 0;
                     for(let i=0; i<refreshDon.length; i++) {
                         let donCard = this.scene.activePlayerScene.activeDonDeck.getCard(refreshDon[i]);
                         if(donCard.state === CARD_STATES.DON_ATTACHED) {
-                            //TODO create animation to move the card to the pool
+                            donCard.setState(CARD_STATES.DON_ACTIVE);
+                            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                    
+                            this.scene.tweens.chain({
+                                targets: donCard,
+                                tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(donCard, numberOfAnimations*300)
+                            });
+
+                            numberOfAnimations++;
                         } else {
                             donCard.setState(CARD_STATES.DON_ACTIVE);
                         }
@@ -314,6 +323,18 @@ class GameStateManager {
                     for(let i=0; i<refreshCards.length; i++) {
                         let card = this.scene.activePlayerScene.getCard(refreshCards[i]);
                         card.setState(CARD_STATES.IN_PLAY);
+                    }
+
+                    //Refresh the attached don array
+                    for(let card of this.scene.activePlayerScene.characterArea.cards) {
+                        card.attachedDon = [];
+                        card.updateAttachedDonPosition();
+                        card.updatePowerText();
+                    }
+                    for(let card of this.scene.activePlayerScene.leaderLocation.cards) {
+                        card.attachedDon = [];
+                        card.updateAttachedDonPosition();
+                        card.updatePowerText();
                     }
 
                     //Tell server refresh complete
@@ -490,6 +511,53 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         player.playCard(actionInfos, isPlayerTurn, startTargeting);
+    }
+
+    /** Function to trigger failure of attaching a card
+     * @param {Object} actionInfos - The action infos
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    attachDonToCharacterFailure(actionInfos, isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let donCard = player.activeDonDeck.getCard(actionInfos.attachedDonCard);
+        donCard.setState(CARD_STATES.DON_ACTIVE);
+        donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+
+        let animation = this.scene.animationLibrary.animation_move_don_characterarea2activearea(donCard, 0);
+        if(!isPlayerTurn) animation = this.scene.animationLibraryPassivePlayer.animation_move_don_characterarea2activearea(donCard, 0);
+
+        this.tweens.chain({
+            targets: donCard,
+            tweens: animation
+        });
+    }
+
+    /** Function to trigger the succes of attaching a card
+     * @param {Object} actionInfos - The action infos
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    attachDonToCharacterSuccess(actionInfos, isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let donCard = player.activeDonDeck.getCard(actionInfos.attachedDonCard); //Get the don Card
+        let character = player.getCard(actionInfos.receivingCharacter); //Get the character Card
+
+        //Remove Don card from pile
+        player.activeDonDeck.attachDon(donCard.id);
+        donCard.setState(CARD_STATES.DON_ATTACHED);
+        donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+        donCard.makeDraggable(false);
+        character.attachedDon.push(donCard); //Add to character pile
+
+        //Animate
+        character.updateAttachedDonPosition();
+
+        //Update the UI
+        player.playerInfo.updateCardAmountTexts();
+        character.updatePowerText();
     }
 
     /** Function to trigger a next turn. Triggered on next turn button press */

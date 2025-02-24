@@ -29,7 +29,7 @@ class ActionLibrary {
             scale: CARD_SCALE.IN_DECK,
             artVisible: false,
             id: serverCard.id,
-            depth: 4
+            depth: DEPTH_VALUES.CARD_IN_MULLIGAN
         });
         if(serverCard.cardData) {
             card.updateCardData(serverCard.cardData, false); //in some case we only pass the id
@@ -61,12 +61,10 @@ class ActionLibrary {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            card.setDepth(1);
-            /*if(phase === GAME_PHASES.MULLIGAN_PHASE) card.setDepth(1);
-            else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) card.setDepth(1);
-            else card.setDepth(1)//this.scene.children.bringToTop(card);*/
+            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
+                card.setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
                 card.setState(CARD_STATES.IN_MULLIGAN);
                 this.scene.gameStateUI.mulliganUI.addCard(card);
             } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
@@ -78,7 +76,7 @@ class ActionLibrary {
         };
         drawAction.start_animation = start_animation;
         drawAction.end = () => {
-            if(phase === GAME_PHASES.MULLIGAN_PHASE) {card.setDepth(4);} 
+            if(phase === GAME_PHASES.MULLIGAN_PHASE) {card.setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);} 
             else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {} 
             else {
                 playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: true});
@@ -86,9 +84,6 @@ class ActionLibrary {
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
         }
         drawAction.finally = () => {
-            if(phase !== GAME_PHASES.PREPARING_FIRST_TURN) {
-                card.showGlow(COLOR_ENUMS.OP_WHITE);
-            }
             deckVisual.destroy();
         };
         drawAction.isPlayerAction = true;
@@ -117,7 +112,7 @@ class ActionLibrary {
             scale: CARD_SCALE.DON_IN_DON_DECK,
             artVisible: false,
             id: cardid,
-            depth: 1
+            depth: DEPTH_VALUES.DON_IN_PILE
         });
 
         //Prepare Tweens
@@ -143,7 +138,7 @@ class ActionLibrary {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            card.setDepth(1);
+            card.setDepth(DEPTH_VALUES.DON_IN_PILE);
             card.playerScene.activeDonDeck.addCard(card);
         };
         drawAction.start_animation = start_animation;
@@ -182,7 +177,7 @@ class ActionLibrary {
 
         let action = new Action();
         action.start = () => {
-            card.setDepth(1);
+            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
             card.setState(CARD_STATES.TRAVELLING_TO_DECK);
             card.hideGlow();
         };
@@ -256,7 +251,7 @@ class ActionLibrary {
             playerScene.activeDonDeck.payCost(spentDonIds);
 
             playerScene.hand.removeCard(card); //Remove the card form the hand
-            card.setDepth(1);
+            card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
 
             card.isInPlayAnimation = true;
             if(card.cardData.card === CARD_TYPES.CHARACTER)

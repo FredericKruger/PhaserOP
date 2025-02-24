@@ -125,6 +125,12 @@ class Client {
         this.socket.on('game_play_card_not_enough_don_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, false);});
         this.socket.on('game_play_card_character_played', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, true, false);});
         this.socket.on('game_play_card_character_played_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, false, false);});
+       
+        /** ATTACH DON TO CHARACTER */
+        this.socket.on('game_attach_don_to_character_failure', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, true);});
+        this.socket.on('game_attach_don_to_character_failure_passive_player', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, false);});
+        this.socket.on('game_attach_don_to_character_success', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, true);});
+
         /** OPPONENT ACTION LISTENERS */
 
         this.socket.on('game_complete_current_turn', () => {this.gameScene.gameStateManager.completeCurrentTurn();});
@@ -187,6 +193,7 @@ class Client {
     requestEndPassivePlayerAnimationDonPhase () {this.socket.emit('player_end_passiveplayer_animation_don_phase');}
 
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
+    requestPlayerAttachDonToCharacter (donID, characterID) {this.socket.emit('player_attach_don_to_character', donID, characterID);}
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}

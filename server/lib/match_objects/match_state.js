@@ -1,6 +1,6 @@
 const Match = require('./match');
 const { CARD_STATES } = require('./match_card');
-const { PLAY_CARD_STATES, CARD_TYPES } = require('./match_enums');
+const { PLAY_CARD_STATES, CARD_TYPES, ATTACH_DON_TO_CHAR_STATES } = require('./match_enums');
 const MatchPlayer = require('./match_player')
 
 const MATCH_PHASES = Object.freeze({
@@ -95,6 +95,7 @@ class MatchState {
         let numberOfExertedDon = player.inExertenDon.length; //Need to save initial value or the loop will break
         for(let i=0; i<numberOfExertedDon; i++) {
             let card = player.inExertenDon.pop();
+            card.setState(CARD_STATES.READY);
             player.inActiveDon.push(card);
             cards.push(card.id);
         }
@@ -111,7 +112,15 @@ class MatchState {
             if(card.state === CARD_STATES.EXERTED) {
                 card.setState(CARD_STATES.READY);
                 cards.push(card.id);
+
+                card.attachedDon = []; //Reset the attach don pointer
             }
+        }
+        if(player.inLeaderLocation.state === CARD_STATES.EXERTED) {
+            player.inLeaderLocation.setState(CARD_STATES.READY);
+            cards.push(player.inLeaderLocation.id);
+
+            player.inLeaderLocation.attachedDon = []; //Reset the attach don pointer
         }
         return cards;
     }
@@ -187,7 +196,31 @@ class MatchState {
             }
         } else if(card.cardData.card === CARD_TYPES.EVENT) { //TODO: Implement event card
         }
+    }
 
+    /** Function that handles attaching a don card to a character
+     * @param {MatchPlayer} player - player object
+     * @param {number} donID - don card id
+     * @param {number} characterID - character card id
+     */
+    startAttachDonToCharacter(player, donID, characterID) {
+        let donCard = player.inActiveDon.find(card => card.id === donID);
+
+        if(donCard.state === CARD_STATES.READY) {
+            let characterCard = null;
+            if(player.inLeaderLocation.id === characterID) characterCard = player.inLeaderLocation; //First look in the leader location
+            else characterCard = player.inCharacterArea.find(card => card.id === characterID); //If not found then look in the character area
+
+            //Attach the don card to the character and modify the state
+            player.inActiveDon.filter(card => card.id !== donID);
+            donCard.setState(CARD_STATES.EXERTED);
+            player.inExertenDon.push(donCard);
+            characterCard.attachedDon.push(donID);
+
+            return {actionResult: ATTACH_DON_TO_CHAR_STATES.DON_ATTACHED, actionInfos: {attachedDonCard: donID, receivingCharacter: characterID}};
+        } else {
+            return {actionResult: ATTACH_DON_TO_CHAR_STATES.DON_NOT_READY, actionInfos: {attachedDonCard: donID, receivingCharacter: characterID}};
+        }
     }
 }
 

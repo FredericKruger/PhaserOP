@@ -12,6 +12,10 @@ class GameCardUI extends BaseCardUI{
         this.cardData = config.cardData;
         this.id = config.id;
 
+        //Attahed Cards
+        this.attachedDon = [];
+        this.attachedCounter = null;
+
         //STATE VARIABLES
         this.isInPlayAnimation = false;
     }
@@ -61,6 +65,16 @@ class GameCardUI extends BaseCardUI{
         this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND);
         this.obj.push(this.counterIcon);
 
+        //Text for the attached don amount
+        this.attachedDonText = this.scene.add.text(
+            - this.backArt.displayWidth*0.5 - GAME_UI_CONSTANTS.CARD_ART_WIDTH/2*CARD_SCALE.DON_IN_ACTIVE_DON, 
+            - GAME_UI_CONSTANTS.CARD_ART_HEIGHT*CARD_SCALE.DON_IN_ACTIVE_DON, 'x', 
+            {font: "1000 200px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLUE, align: "center"}
+        ).setOrigin(0.5);
+        this.attachedDonText.setAngle(-20);
+        this.attachedDonText.setVisible(false);
+        this.obj.push(this.attachedDonText);
+
         this.setScale(this.currentScale);
     }
 
@@ -109,6 +123,20 @@ class GameCardUI extends BaseCardUI{
         this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));       
     }
 
+    /** Function to reposition all the attached don cards */
+    updateAttachedDonPosition() {
+        for(let don of this.attachedDon) {
+            this.scene.children.moveBelow(don, this);
+            don.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);
+            don.moveTo(this.x - this.displayWidth/2, this.y, true, false, false);
+            don.angleTo(-20, true, false, false);
+        }
+        
+        this.attachedDonText.setText("x" + this.attachedDon.length);
+        this.attachedDonText.setVisible(this.attachedDon.length > 1);
+        //this.scene.children.bringToTop(this.attachedDonText);
+    }
+
     /** Function to set the exert art
      * @param {string} state
      */
@@ -133,5 +161,7 @@ class GameCardUI extends BaseCardUI{
         this.exertCard(this.state);
     }
 
+    /** Function to update the power of the card */
+    updatePowerText() {this.locationPowerText.setText(this.cardData.power + this.attachedDon.length*1000);}
 
 }

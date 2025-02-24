@@ -36,6 +36,9 @@ class MatchCard extends Card{
         this.cardIndex = cardIndex;
         this.cardData = cardData;
 
+        this.attachedDon = [];
+        this.attachedCounter = null;
+
         this.currentPower = cardData.power;
     }
 

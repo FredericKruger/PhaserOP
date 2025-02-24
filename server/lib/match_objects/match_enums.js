@@ -7,6 +7,11 @@ const PLAY_CARD_STATES = Object.freeze({
     SELECT_REPLACEMENT_TARGET: 'SELECT_REPLACEMENT_TARGET',
 });
 
+const ATTACH_DON_TO_CHAR_STATES = Object.freeze({
+    DON_NOT_READY: 'DON_NOT_READY',
+    DON_ATTACHED: 'DON_ATTACHED',
+});
+
 const CARD_TYPES = Object.freeze({
     CHARACTER: 'CHARACTER',
     STAGE: 'STAGE',
@@ -17,4 +22,5 @@ const CARD_TYPES = Object.freeze({
 module.exports = {
     PLAY_CARD_STATES: PLAY_CARD_STATES,
     CARD_TYPES: CARD_TYPES,
+    ATTACH_DON_TO_CHAR_STATES: ATTACH_DON_TO_CHAR_STATES,
 };

@@ -213,4 +213,29 @@ class AnimationLibrary {
         ];
         return tweens;
     }
+
+    /** Animation that moves a don card from the character area to the active don area
+     * @param {DonCardUI} card - card to be moved from the don deck to the active don area
+     * @param {number} delay - delay with which to start the tweens
+     */
+    animation_move_don_characterarea2activearea(card, delay) {
+        //Get final positions and angles
+        let posX = card.playerScene.playerInfo.activeDonPlaceholder.x;
+        let posY = card.playerScene.playerInfo.activeDonPlaceholder.y;
+        let angle = card.playerScene.playerInfo.activeDonPlaceholder.angle;
+
+        let tweens = [
+            { //tween3: move the card to the mulligan card position
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON,
+                x: posX,
+                y: posY,
+                angle: angle,
+                duration: 750,
+                onComplete: () => {
+                    this.scene.children.moveBelow(card, card.playerScene.playerInfo.activeDonCardAmountText);
+                }
+            }
+        ];
+        return tweens;
+    }
 }

@@ -33,6 +33,14 @@ class ActiveDonDeckUI extends CardPileUI {
         }
     }
 
+    /** Function to attac a don to a card
+     * @param {number} cardID
+     */
+    attachDon(cardID) {
+        let card = this.getCard(cardID);
+        card.setState(CARD_STATES.DON_ATTACHED);
+    }
+
     /** Function to make all the cards draggable 
      * @param {boolean} draggable
     */

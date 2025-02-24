@@ -28,7 +28,7 @@ class ActionLibraryPassivePlayer {
             scale: CARD_SCALE.IN_DECK,
             artVisible: false,
             id: serverCard.id,
-            depth: 2
+            depth: DEPTH_VALUES.CARD_IN_HAND
         });
 
         //Prepare the animation
@@ -60,7 +60,7 @@ class ActionLibraryPassivePlayer {
         // end: pop the deckpile card placeholder and comlete server request if needed
         let drawAction = new Action();
         drawAction.start = () => { //Action start
-            card.setDepth(1); 
+            card.setDepth(DEPTH_VALUES.CARD_IN_DECK); 
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
                 card.setState(CARD_STATES.IN_MULLIGAN);
@@ -75,7 +75,7 @@ class ActionLibraryPassivePlayer {
         drawAction.start_animation = start_animation; //play animation
         drawAction.end = () => { //Action end
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
-                card.setDepth(2);
+                card.setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN_PASSIVE_PLAYER);
             } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
             } else {
                 playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, setCardInteractive: false, setCardDraggable: false, updateUI: true});
@@ -119,7 +119,7 @@ class ActionLibraryPassivePlayer {
 
         let action = new Action();
         action.start = () => {
-            card.setDepth(1);
+            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
             card.setState(CARD_STATES.TRAVELLING_TO_DECK);
         };
         action.start_animation = start_animation;
@@ -157,7 +157,7 @@ class ActionLibraryPassivePlayer {
             scale: CARD_SCALE.DON_IN_DON_DECK,
             artVisible: false,
             id: cardid,
-            depth: 1
+            depth: DEPTH_VALUES.CARD_IN_DECK
         });
 
         //Prepare Tweens
@@ -183,7 +183,7 @@ class ActionLibraryPassivePlayer {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            card.setDepth(1);
+            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
             card.setState(CARD_STATES.DON_ACTIVE);
             card.playerScene.activeDonDeck.addCard(card);
 
@@ -256,7 +256,7 @@ class ActionLibraryPassivePlayer {
             playerScene.activeDonDeck.payCost(spentDonIds);
             
             playerScene.hand.removeCard(card); //Remove the card form the hand
-            card.setDepth(1);
+            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
 
             card.isInPlayAnimation = true;
             if(card.cardData.card === CARD_TYPES.CHARACTER)

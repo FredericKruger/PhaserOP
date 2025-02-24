@@ -146,7 +146,12 @@ class GameScene extends Phaser.Scene {
 
                 this.game.gameClient.sendCardDragStart(gameObject.id, 'GameCardUI');
             } else if(gameObject instanceof DonCardUI) {
+                gameObject.setDepth(DEPTH_VALUES.DON_DRAGGED);
+                this.children.bringToTop(gameObject);
+                this.dragginCard = true;
+
                 gameObject.setState(CARD_STATES.TRAVELLING_FROM_HAND);
+                gameObject.angleTo(0, true, false, false);
 
                 this.game.gameClient.sendCardDragStart(gameObject.id, 'DonCardUI');
             }
@@ -156,6 +161,14 @@ class GameScene extends Phaser.Scene {
         /** HANDLDER FOR DRAG */
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.setPosition(dragX, dragY);
+
+            if(gameObject instanceof DonCardUI) {
+                if(this.activePlayerScene.donDraggedOverCharacter(pointer.position.x, pointer.position.y)) {
+                    gameObject.scaleTo(CARD_SCALE.DON_OVER_CHARACTER, true, false, false);
+                } else {
+                    gameObject.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);
+                }
+            }
 
             if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragPosition(gameObject.id, 'GameCardUI', dragX, dragY);
             else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragPosition(gameObject.id, 'DonCardUI', dragX, dragY);
@@ -168,9 +181,25 @@ class GameScene extends Phaser.Scene {
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
 
-                //Reset card state
-                gameObject.setState(CARD_STATES.IN_HAND);
-                gameObject.playerScene.hand.update();
+                //check if this is a don card dropped over a character
+                if(gameObject instanceof DonCardUI) {
+                    let character = this.activePlayerScene.donDraggedOverCharacter(pointer.position.x, pointer.position.y);
+                    if(character !== null) {
+                        this.game.gameClient.requestPlayerAttachDonToCharacter(gameObject.id, character.id);
+                    } else {
+                        //Reset card state
+                        gameObject.setState(CARD_STATES.DON_ACTIVE);
+                        gameObject.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                        this.tweens.chain({
+                            targets: gameObject,
+                            tweens: this.animationLibrary.animation_move_don_characterarea2activearea(gameObject)
+                        });
+                    }
+                } else {
+                    //Reset card state
+                    gameObject.setState(CARD_STATES.IN_HAND);
+                    gameObject.playerScene.hand.update();
+                }
 
                 this.dragginCard = false;
 
@@ -181,9 +210,22 @@ class GameScene extends Phaser.Scene {
 
         /** HANDLER FOR DROP */
         this.input.on('drop', (pointer, gameObject, dropZone) => {
-            if(dropZone.getData('name') === 'CharacterArea') {
+            if(dropZone.getData('name') === 'CharacterArea' && gameObject instanceof GameCardUI) {
                 //gameObject.playerScene.playCard(gameObject);
                 this.game.gameClient.requestPlayerPlayCard(gameObject.id);
+            } else if(dropZone.getData('name') === 'CharacterArea' && gameObject instanceof DonCardUI) {
+                let character = this.activePlayerScene.donDraggedOverCharacter(pointer.position.x, pointer.position.y);
+                if(character !== null) {
+                    this.game.gameClient.requestPlayerAttachDonToCharacter(gameObject.id, character.id);
+                } else {
+                    //Reset card state
+                    gameObject.setState(CARD_STATES.DON_ACTIVE);
+                    gameObject.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                    this.tweens.chain({
+                        targets: gameObject,
+                        tweens: this.animationLibrary.animation_move_don_characterarea2activearea(gameObject)
+                    });
+                }
             }
 
             this.dragginCard = false;
