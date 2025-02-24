@@ -26,7 +26,7 @@ class DonCardUI extends BaseCardUI {
                 this.makeInteractive(false);
                 //this.makeDraggable(false);
                 this.setVisible(false);
-            }
+            } 
         }
     }
 

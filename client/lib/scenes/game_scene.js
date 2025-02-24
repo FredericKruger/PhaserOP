@@ -23,6 +23,9 @@ class GameScene extends Phaser.Scene {
         this.activePlayerScene = new PlayerScene(this, PLAYER_POSITIONS.BOTTOM, this.activePlayer);
         this.passivePlayerScene = new PlayerScene(this, PLAYER_POSITIONS.TOP, this.passivePlayer);
 
+        this.activePlayerScene.opponentPlayerScene = this.passivePlayerScene;
+        this.passivePlayerScene.opponentPlayerScene = this.activePlayerScene;
+
         //Set Engines
         this.actionManager = new ActionManager(this);
         this.actionLibrary = new ActionLibrary(this);
@@ -225,13 +228,16 @@ class GameScene extends Phaser.Scene {
                         targets: gameObject,
                         tweens: this.animationLibrary.animation_move_don_characterarea2activearea(gameObject)
                     });
+
+                    this.dragginCard = false;
+                    this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
                 }
+            } else {
+                this.dragginCard = false;
+
+                if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
+                else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
-
-            this.dragginCard = false;
-
-            if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
-            else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
         });
 
         this.setVisible(false);

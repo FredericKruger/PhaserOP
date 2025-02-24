@@ -205,6 +205,7 @@ class AnimationLibraryPassivePlayer {
                 y: posY,
                 angle: angle,
                 duration: 750,
+                delay: delay,
                 onComplete: () => {
                     this.scene.children.moveBelow(card, card.playerScene.playerInfo.activeDonCardAmountText);
                 }

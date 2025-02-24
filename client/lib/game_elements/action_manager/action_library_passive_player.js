@@ -61,6 +61,7 @@ class ActionLibraryPassivePlayer {
         let drawAction = new Action();
         drawAction.start = () => { //Action start
             card.setDepth(DEPTH_VALUES.CARD_IN_DECK); 
+            this.scene.children.bringToTop(card);
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
                 card.setState(CARD_STATES.IN_MULLIGAN);

@@ -161,7 +161,12 @@ class GameCardUI extends BaseCardUI{
         this.exertCard(this.state);
     }
 
-    /** Function to update the power of the card */
-    updatePowerText() {this.locationPowerText.setText(this.cardData.power + this.attachedDon.length*1000);}
+    /** Function to update the power of the card 
+     * DON cards are only counted during tje players active turn
+    */
+    updatePowerText() {
+        if(this.playerScene.isPlayerTurn) this.locationPowerText.setText(this.cardData.power + this.attachedDon.length*1000);
+        else this.locationPowerText.setText(this.cardData.power);
+    }
 
 }

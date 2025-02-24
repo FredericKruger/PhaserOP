@@ -130,6 +130,7 @@ class Client {
         this.socket.on('game_attach_don_to_character_failure', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, true);});
         this.socket.on('game_attach_don_to_character_failure_passive_player', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, false);});
         this.socket.on('game_attach_don_to_character_success', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, true);});
+        this.socket.on('game_attach_don_to_character_success_passive_player', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, false);});
 
         /** OPPONENT ACTION LISTENERS */
 

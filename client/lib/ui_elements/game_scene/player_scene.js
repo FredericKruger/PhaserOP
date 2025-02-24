@@ -12,6 +12,9 @@ class PlayerScene {
 
         this.playerPosition = playerPosition;
 
+        this.opponentPlayerScene = null;
+        this.isPlayerTurn = false;
+
         //Initialize player UI Components
         this.donDeck = new DonDeckUI(scene, this);
         this.discard = new CardDiscardUI(scene, this);
