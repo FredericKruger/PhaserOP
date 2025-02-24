@@ -81,7 +81,7 @@ class ActionLibrary {
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {card.setDepth(4);} 
             else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {} 
             else {
-                playerScene.hand.addCards([card], {setCardState: false, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: true});
+                playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: true});
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
         }
@@ -113,7 +113,7 @@ class ActionLibrary {
         let card = new DonCardUI(this.scene, playerScene, {
             x: deckVisual.x,
             y: deckVisual.y,
-            state: CARD_STATES.DON_IN_DON_DECK,
+            state: CARD_STATES.IN_DON_DECK,
             scale: CARD_SCALE.DON_IN_DON_DECK,
             artVisible: false,
             id: cardid,
@@ -144,15 +144,13 @@ class ActionLibrary {
         let drawAction = new Action();
         drawAction.start = () => {
             card.setDepth(1);
-            card.setState(CARD_STATES.DON_ACTIVE);
             card.playerScene.activeDonDeck.addCard(card);
-
-            card.playerScene.playerInfo.updateActiveCardAmountText(); //udpate the ui
         };
         drawAction.start_animation = start_animation;
         drawAction.end = () => {
-            card.makeInteractive(true);
-            card.makeDraggable(true);
+            card.setState(CARD_STATES.DON_ACTIVE);
+            card.playerScene.playerInfo.updateActiveCardAmountText(); //udpate the ui
+            
             playerScene.donDeck.popTopCardVisual(); //Remove the top Card Visual
         }
         drawAction.finally = () => {deckVisual.destroy();};
@@ -185,7 +183,7 @@ class ActionLibrary {
         let action = new Action();
         action.start = () => {
             card.setDepth(1);
-            card.setState(CARD_STATES.TRAVELLING_MULLIGAN_DECK);
+            card.setState(CARD_STATES.TRAVELLING_TO_DECK);
             card.hideGlow();
         };
         action.start_animation = start_animation;
@@ -258,6 +256,7 @@ class ActionLibrary {
             playerScene.activeDonDeck.payCost(spentDonIds);
 
             playerScene.hand.removeCard(card); //Remove the card form the hand
+            card.setDepth(1);
 
             card.isInPlayAnimation = true;
             if(card.cardData.card === CARD_TYPES.CHARACTER)
@@ -276,7 +275,9 @@ class ActionLibrary {
             //Refresh GameStateUI
             playerScene.playerInfo.updateCardAmountTexts();
         
-            card.setState(CARD_STATES.IN_LOCATION); //Set the card state to in play
+            //TODO add check for rush
+            if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
+            else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
             card.makeInteractive(true);//required to reshape the bounds of the interaction
             card.makeDraggable(false); //Remove the draggable state of the card
         };

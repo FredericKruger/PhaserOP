@@ -132,17 +132,17 @@
     - [x] Create Board separation
     - [x] Create Board bolors
     - [x] Send life cards to life ui
-- [ ] Create Next Turn button Interactivity
+- [x] Create Next Turn button Interactivity
 
 # GAME PHASES
 ---
 - [x] Create animation to signal current player turn
 - [ ] Create Refresh Phase
-    - [ ] Return Don Cards to cost area
+    - [x] Return Don Cards to cost area
     - [ ] Create animation
-    - [ ] Set All Characters to Active
-    - [ ] Create animation (exerted characters should have a greyscale pipeline)
-    - [ ] Refresh UI
+    - [x] Set All Characters to Active
+    - [x] Create animation (exerted characters should have a greyscale pipeline)
+    - [x] Refresh UI
 - [x] Create Don Phase
     - [x] Draw Don Cards and add to the cost area
     - [x] Create Animation
@@ -200,6 +200,8 @@
 - [x] Handle Mulligan
     - [x] Determine if there right cards in hand
     - [x] Perform mulligan action
+- [x] Play Card
+    - [x] Create order of priority for the AI to make a decision: First Check if card with cost available, then check if character available, then stage
 
 # IMPROVEMENTS
 ---

@@ -227,6 +227,12 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_end_passiveplayer_animation_don_phase', () => {socket.player.match.flagManager.handleFlag(socket.player, 'DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE');});
 
     socket.on('player_play_card', (cardID) => {socket.player.match.startPlayCard(socket.player, cardID);});
+
+    socket.on('player_start_next_turn', () => {
+        if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_complete_current_turn');
+        else socket.player.match.completeCurrentTurn();
+    }); //Ask the passive player to send a message when all pending action are complete
+    socket.on('player_current_turn_completed_passiveplayer', () => {socket.player.match.completeCurrentTurn();});
 });
 
 //START LISTENING

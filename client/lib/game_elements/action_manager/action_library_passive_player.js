@@ -66,10 +66,10 @@ class ActionLibraryPassivePlayer {
                 card.setState(CARD_STATES.IN_MULLIGAN);
                 this.scene.gameStateUI.mulliganUI.addCard(card, false);
             } else if (phase === GAME_PHASES.PREPARING_FIRST_TURN) {
-                card.setState(CARD_STATES.IN_LIFE_DECK);
+                card.setState(CARD_STATES.IN_LIFEDECK);
                 playerScene.lifeDeck.addCard(card);
             } else {
-                card.setState(CARD_STATES.TRAVELLING_DECK_HAND);
+                card.setState(CARD_STATES.TRAVELLING_TO_HAND);
             }
         }
         drawAction.start_animation = start_animation; //play animation
@@ -78,7 +78,7 @@ class ActionLibraryPassivePlayer {
                 card.setDepth(2);
             } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
             } else {
-                playerScene.hand.addCards([card], {setCardState: false, setCardDepth: true, setCardInteractive: false, setCardDraggable: false, updateUI: true});
+                playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, setCardInteractive: false, setCardDraggable: false, updateUI: true});
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visualif(isServerRequest) this.scene.actions.completeServerRequest(); //Call completeServerRequest
 
@@ -120,7 +120,7 @@ class ActionLibraryPassivePlayer {
         let action = new Action();
         action.start = () => {
             card.setDepth(1);
-            card.setState(CARD_STATES.TRAVELLING_MULLIGAN_DECK);
+            card.setState(CARD_STATES.TRAVELLING_TO_DECK);
         };
         action.start_animation = start_animation;
         action.finally = () => {
@@ -153,7 +153,7 @@ class ActionLibraryPassivePlayer {
         let card = new DonCardUI(this.scene, playerScene, {
             x: deckVisual.x,
             y: deckVisual.y,
-            state: CARD_STATES.DON_IN_DON_DECK,
+            state: CARD_STATES.IN_DON_DECK,
             scale: CARD_SCALE.DON_IN_DON_DECK,
             artVisible: false,
             id: cardid,
@@ -223,16 +223,21 @@ class ActionLibraryPassivePlayer {
             x: displayX,
             y: displayY,
             scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            angle: 0,
             duration: 400,
             onComplete: () => { playerScene.hand.update(); }
+        });
+        tweens.push({
+            scaleX: 0,
+            duration: 300
         });
         tweens.push({ //Tween 3: empty tween to show the player the card for 2 seconds
             onStart: () => {card.flipCard();},
             scale: CARD_SCALE.IN_PLAY_ANIMATION,
-            duration: 1000
+            duration: 300
         });
-        if(card.cardData.card === CARD_TYPES.CHARACTER) tweens = tweens.concat(playerScene.characterArea.addCardAnimation(card));
-        else tweens = tweens.concat(playerScene.stageLocation.addCardAnimation(card));
+        //if(card.cardData.card === CARD_TYPES.CHARACTER) tweens = tweens.concat(playerScene.characterArea.addCardAnimation(card));
+        //else tweens = tweens.concat(playerScene.stageLocation.addCardAnimation(card));
         tweens.push({ //Tween 5: empty tween to call completeActin
             duration: 100,
             onComplete: () => {this.scene.actionManager.completeAction();}
@@ -251,6 +256,7 @@ class ActionLibraryPassivePlayer {
             playerScene.activeDonDeck.payCost(spentDonIds);
             
             playerScene.hand.removeCard(card); //Remove the card form the hand
+            card.setDepth(1);
 
             card.isInPlayAnimation = true;
             if(card.cardData.card === CARD_TYPES.CHARACTER)
@@ -267,7 +273,9 @@ class ActionLibraryPassivePlayer {
             //Refresh GameStateUI
             playerScene.playerInfo.updateCardAmountTexts();
         
-            card.setState(CARD_STATES.IN_LOCATION); //Set the card state to in play
+            //TODO add check for rush
+            if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
+            else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
         }
         action.isPlayerAction = false; //This is not a player action
         action.waitForAnimation = true; //Should wait for animation to complete

@@ -29,8 +29,7 @@ class ActiveDonDeckUI extends CardPileUI {
     payCost(spentDonIds) {
         for(let don of spentDonIds) {
             let card = this.getCard(don);
-            card.setState(CARD_STATES.DON_EXERTED);
-            card.setVisible(false);
+            card.setState(CARD_STATES.DON_RESTED);
         }
     }
 
@@ -40,6 +39,15 @@ class ActiveDonDeckUI extends CardPileUI {
     makeCardDraggable(draggable) {
         this.cards.forEach(card => {
             card.makeDraggable(draggable);
+        });
+    }
+
+        /** Function to make all the cards Interactive 
+     * @param {boolean} interactive
+    */
+    makeInteractive(interactive) {
+        this.cards.forEach(card => {
+            card.makeInteractive(interactive);
         });
     }
 

@@ -1,5 +1,6 @@
 const ServerInstance = require("../server_instance");
 const Match = require("../match_objects/match");
+const { CARD_TYPES } = require("../match_objects/match_enums");
 
 class AI_Instance {
 
@@ -37,6 +38,81 @@ class AI_Instance {
 
             return newCards;
         }
+    }
+
+    /** Function that performs the AI turn */
+    play() {
+        let action = this.canTakeAction();
+        while(action.canTakeAction) {
+            this.playAction(action.action); //Play the action
+            action = this.canTakeAction();
+        }
+
+        this.endTurn();
+    }
+
+    /** Function that checks if the AI can take an action
+     * Action Priority:
+     * 1. Play a card
+     * 3. Attach Don card
+     * 2. Attack with a card
+     */
+    canTakeAction() {
+        //Create an action object
+        let action = {
+            canTakeAction: false,
+            action: {}
+        };
+
+        //Check if a card can be played (has enough active DON) and return an action if yes
+        let playableCard = this.getPlayableCard();
+        if(playableCard > -1) {
+            action.canTakeAction = true;
+            action.action = {
+                function: 'playCard',
+                arg: playableCard
+            };
+            return action;
+        }
+
+        return action;
+    }
+
+    /** Function called by the ai to finish his turn. Tells the game engine to start the next turn */
+    endTurn(){
+        this.match.state.current_passive_player.socket.emit('game_complete_current_turn');
+    }
+
+    /** Function that executes an action 
+     * @param {Object} action
+    */
+    playAction(action) {
+        if(action.function === 'playCard') {
+            let cardid = action.arg;
+            this.match.startPlayCard(this.match.state.current_active_player, cardid);
+        }
+    }
+
+    /** Function that lets the ai determin if a card can be played */
+    getPlayableCard() {
+        let card = -1;
+        //Look for playable character
+        for(let c of this.matchPlayer.inHand) {
+            if(c.cardData.cost <= this.matchPlayer.inActiveDon.length && c.cardData.card === CARD_TYPES.CHARACTER && this.matchPlayer.inCharacterArea.length < 5) {
+                card = c.id;
+                break;
+            }
+        }
+        if(card > -1) return card;
+
+        //If no playble character is found, look for a stage
+        for(let c of this.matchPlayer.inHand) {
+            if(c.cardData.cost <= this.matchPlayer.inActiveDon.length && c.cardData.card === CARD_TYPES.STAGE && this.matchPlayer.inStageLocation === null) {
+                card = c.id;
+                break;
+            }
+        }
+        return card;
     }
 
 }

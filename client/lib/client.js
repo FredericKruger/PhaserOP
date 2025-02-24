@@ -126,6 +126,8 @@ class Client {
         this.socket.on('game_play_card_character_played', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, true, false);});
         this.socket.on('game_play_card_character_played_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, false, false);});
         /** OPPONENT ACTION LISTENERS */
+
+        this.socket.on('game_complete_current_turn', () => {this.gameScene.gameStateManager.completeCurrentTurn();});
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -188,6 +190,7 @@ class Client {
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}
+    requestCurrentTurnCompletedPassivePlayer() {this.socket.emit('player_current_turn_completed_passiveplayer');}
 
     /** Function that tells the server to update the player settings */
     updatePlayerSettings () {this.socket.emit('update_player_settings', this.playerSettings);}

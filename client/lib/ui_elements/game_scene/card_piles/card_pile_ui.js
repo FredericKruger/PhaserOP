@@ -11,6 +11,6 @@ class CardPileUI extends BaseComponentUI{
      * @param {number} cardID
      */
     getCard(cardID) {
-        return this.cards.filter(card => card.id === cardID)[0];
+        return this.cards.find(card => card.id === cardID);
     }
 }

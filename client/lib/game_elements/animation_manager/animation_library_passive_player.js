@@ -130,13 +130,13 @@ class AnimationLibraryPassivePlayer {
                 duration: 250,
                 delay: delay,
                 onComplete: () => {
-                    card.state = CARD_STATES.TRAVELLING_DECK_HAND;
+                    card.state = CARD_STATES.TRAVELLING_TO_HAND;
                 }
             }, { //tween 2: move slightly to the right of the deckpile while increasing the x scale to match the y scale
                 scaleX: 0.28,
                 scaleY: 0.28,
                 x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.28 - 20,
-                y: card.y - 100,
+                y: card.y + 100,
                 ease: 'quart.out',
                 duration: 500,
             }, {

@@ -113,17 +113,26 @@ class FlagManager {
                 break;
             case 'REFRESH_PHASE_COMPLETE':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', true);
+                this.match.startDrawPhase();
+                break;
             case 'REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('REFRESH_PHASE_COMPLETE', true);
                 this.match.startDrawPhase();
                 break;
             case 'DRAW_PHASE_COMPLETE':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', true);
+                this.match.startDonPhase();
+                break;
             case 'DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('DRAW_PHASE_COMPLETE', true);
                 this.match.startDonPhase();
                 break;
             case 'DON_PHASE_COMPLETE':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', true);
+                this.match.startMainPhase();
+                break;
             case 'DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('DON_PHASE_COMPLETE', true);
                 this.match.startMainPhase();
                 break;
         }

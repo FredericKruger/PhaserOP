@@ -88,12 +88,15 @@ class GameCardUI extends BaseCardUI{
 
         let callback = () => {
             this.frontArt.setTexture(this.cardData.art);
-            this.costIcon.setTexture(this.scene.game.utilFunctions.getCardCost(this.cardData.colors, this.cardData.cost));
-            this.drawPowerBox(this.scene.game.utilFunctions.getCardColor(this.cardData.colors[0]));
-            this.powerText.setText(this.cardData.power);
-            this.counterIcon.setVisible(this.cardData.counter && this.state === CARD_STATES.IN_HAND);
+            if(this.playerScene.player.isActivePlayer) {
+                this.costIcon.setTexture(this.scene.game.utilFunctions.getCardCost(this.cardData.colors, this.cardData.cost));
+                this.drawPowerBox(this.scene.game.utilFunctions.getCardColor(this.cardData.colors[0]));
+                this.powerText.setText(this.cardData.power);
+                this.counterIcon.setVisible(this.cardData.counter && this.state === CARD_STATES.IN_HAND);
+            }
+
             this.locationPowerText.setText(this.cardData.power);
-            this.locationPowerText.setVisible(this.state === CARD_STATES.IN_LOCATION);
+            this.locationPowerText.setVisible(this.state === CARD_STATES.IN_PLAY || this.state === CARD_STATES.IN_PLAY_RESTED);
             if(flipCard) this.flipCard();
 
             this.setDepth(this.cardDepth);
@@ -106,7 +109,13 @@ class GameCardUI extends BaseCardUI{
         this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));       
     }
 
-
+    /** Function to set the exert art
+     * @param {string} state
+     */
+    exertCard(state) {
+        if(state === CARD_STATES.IN_PLAY_RESTED) this.frontArt.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
+        else this.frontArt.resetPipeline();
+    }
 
     /** Set card state */
     setState(state) {
@@ -119,7 +128,9 @@ class GameCardUI extends BaseCardUI{
             this.powerText.setVisible(this.state === CARD_STATES.IN_HAND);
             this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND && this.cardData.counter);
         }
-        this.locationPowerText.setVisible(this.state === CARD_STATES.IN_LOCATION);
+        this.locationPowerText.setVisible(this.state === CARD_STATES.IN_PLAY || this.state === CARD_STATES.IN_PLAY_RESTED);
+
+        this.exertCard(this.state);
     }
 
 

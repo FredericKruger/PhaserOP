@@ -155,6 +155,21 @@ class Match {
         }
     }
 
+    /** Function to ask wait for the passive player to complete all the pending action 
+    */
+    completeCurrentTurn() {
+        //Remove first turn flag
+        this.state.current_active_player.currentMatchPlayer.isFirstTurn = false;
+
+        //Switch the active and passive player
+        let temp = this.state.current_active_player;
+        this.state.current_active_player = this.state.current_passive_player;
+        this.state.current_passive_player = temp;
+
+        //Start the new turn
+        this.startNewTurn();
+    }
+
     /** Function that starts a new turn */
     startNewTurn() {
         //Start the refresh phase
@@ -178,7 +193,6 @@ class Match {
         if(this.flagManager.checkFlag('REFRESH_PHASE_COMPLETE', this.state.current_active_player)
             && this.flagManager.checkFlag('REFRESH_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
             
-            console.log("STARTING DRAW PHASE");
             //Start the draw phase
             this.state.current_phase = MATCH_PHASES.DRAW_PHASE;
 
@@ -193,11 +207,9 @@ class Match {
 
     /** Function that starts the don phase */
     startDonPhase() {
-        console.log('Start Don Phase');
         if(this.flagManager.checkFlag('DRAW_PHASE_COMPLETE', this.state.current_active_player)
             && this.flagManager.checkFlag('DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
-            
-            console.log("STARTING DON PHASE");    
+              
             //Start the DON Phase
             this.state.current_phase = MATCH_PHASES.DON_PHASE
 
@@ -205,7 +217,7 @@ class Match {
             let donCards = this.state.startDonPhase(this.state.current_active_player.currentMatchPlayer);
             
             //Send signal to client
-            if(!this.player1.bot) this.state.current_active_player.socket.emit('game_start_don_phase', donCards);
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_don_phase', donCards);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_don_phase_passive_player', donCards);
         }
     }
@@ -215,13 +227,18 @@ class Match {
         if(this.flagManager.checkFlag('DON_PHASE_COMPLETE', this.state.current_active_player)
             && this.flagManager.checkFlag('DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE', this.state.current_passive_player)){
             
-            console.log("STARTING MAIN PHASE");
             //Start the main phase
             this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
 
             //Start the main phase
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_main_phase');
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_main_phase_passive_player');
+
+            //If the active player is a bot, let the AI play
+            if(this.state.current_active_player.bot) {
+                //Let the AI play
+                this.ai.play();
+            }
         }
     }
 

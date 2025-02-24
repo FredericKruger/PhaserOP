@@ -1,6 +1,6 @@
 const NEXT_TURN_BUTTON_STATES = Object.freeze({
     YOUR_TURN_ACTIVE: 'END TURN',
-    YOUR_TURN_PASSIVE: 'END TURN',
+    YOUR_TURN_PASSIVE: 'OPPONENT TURN',
     PASS: 'PASS',
     OPPONENT_ACTION: 'OPPONENT ACTION',
     OPPONENT_TURN: 'OPPONENT TURN'
@@ -35,7 +35,7 @@ class NextTurnButton extends Phaser.GameObjects.Container {
                 duration: 500,
                 onComplete: () => {
                     this.buttonText.setText("");
-                    this.scene.gameManager.triggerNnextTurn();
+                    this.scene.gameStateManager.triggerNextTurn();
                 }
             });
         });
@@ -61,27 +61,38 @@ class NextTurnButton extends Phaser.GameObjects.Container {
         switch(buttonState) {
             case NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE:
                 this.buttonText.setText("END TURN");
-                this.setGlow(COLOR_ENUMS.OP_ORANGE);
                 this.clearGreyscale();
                 break;
             case NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE:
-                this.buttonText.setText("END TURN");
-                this.setInteractive(false);
-                this.clearGlow();
+                this.buttonText.setText("OPPONENT TURN");
+                this.makeInteractive(false);
                 this.setGreyscale();
                 break;
             case NEXT_TURN_BUTTON_STATES.PASS:
                 this.buttonText.setText("PASS");
-                this.setInteractive(true);
-                this.setGlow(COLOR_ENUMS.OP_ORANGE);
                 this.clearGreyscale();
+                this.makeInteractive(true);
                 break;
             case NEXT_TURN_BUTTON_STATES.OPPONENT_ACTION:
                 this.buttonText.setText("OPPONENT ACTION");
-                this.setInteractive(false);
-                this.clearGlow();
+                this.makeInteractive(false);
                 this.setGreyscale();
                 break;
         }
+    }
+
+    /** Make Interactive
+     * @param {boolean} interactive
+     */
+    makeInteractive(interactive) {
+        if(interactive) {
+            this.setInteractive();
+            this.setGlow(COLOR_ENUMS.OP_ORANGE);
+        } 
+        else {
+            this.removeInteractive();
+            this.clearGlow();
+        }
+        
     }
 }

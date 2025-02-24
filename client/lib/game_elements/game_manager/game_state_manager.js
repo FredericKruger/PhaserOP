@@ -77,7 +77,7 @@ class GameStateManager {
                     ease: 'easeIn',
                     onComplete: () => {
                         this.scene.activePlayerScene.leaderLocation.addCard(activePlayerLeaderCard);
-                        activePlayerLeaderCard.setState(CARD_STATES.IN_LOCATION);
+                        activePlayerLeaderCard.setState(CARD_STATES.IN_PLAY);
                         this.activePlayerReadyForMulligan = true;
                         this.startMulliganPhase();
                     }
@@ -102,7 +102,7 @@ class GameStateManager {
                     ease: 'easeIn',
                     onComplete: () => {
                         this.scene.passivePlayerScene.leaderLocation.addCard(passivePlayerLeaderCard);
-                        passivePlayerLeaderCard.setState(CARD_STATES.IN_LOCATION);
+                        passivePlayerLeaderCard.setState(CARD_STATES.IN_PLAY);
                         this.passivePlayerReadyForMulligan = true;
                         this.startMulliganPhase();
                     }
@@ -295,13 +295,28 @@ class GameStateManager {
             //Start with showing the "Your Turn" image
             this.scene.add.tween({
                 targets: this.gameStateUI.yourTurnImage,
-                delay: 2000,
+                delay: 1000,
                 alpha: {from: 1, to: 0},
-                duration: 1500,
+                duration: 1000,
                 onComplete: () => {
-                    //TODO Create Action calls for Don Refresh
-                    //TODO Create Action calls for Character Refresh
-                    //TODO Create way to communicate end of all animations and send message back to the server
+                    //Refresh DON Cards
+                    for(let i=0; i<refreshDon.length; i++) {
+                        let donCard = this.scene.activePlayerScene.activeDonDeck.getCard(refreshDon[i]);
+                        if(donCard.state === CARD_STATES.DON_ATTACHED) {
+                            //TODO create animation to move the card to the pool
+                        } else {
+                            donCard.setState(CARD_STATES.DON_ACTIVE);
+                        }
+                    }
+                    this.scene.activePlayerScene.playerInfo.updateCardAmountTexts(); //Update the ui
+
+                    //Refresh Character Cards
+                    for(let i=0; i<refreshCards.length; i++) {
+                        let card = this.scene.activePlayerScene.getCard(refreshCards[i]);
+                        card.setState(CARD_STATES.IN_PLAY);
+                    }
+
+                    //Tell server refresh complete
                     this.scene.game.gameClient.requestEndRefreshPhase();
                 }
             });
@@ -319,12 +334,25 @@ class GameStateManager {
 
             //Refresh the nextTurn Button
             this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE);  
-            this.gameStateUI.yourTurnImage.setAlpha(1); 
 
-            //TODO Create Action calls for Don Refresh
-            //TODO Create Action calls for Character Refresh
-            //TODO Create way to communicate end of all animations and send message back to the server
-    
+            //Refresh Don Cards
+            for(let i=0; i<refreshDon.length; i++) {
+                let donCard = this.scene.passivePlayerScene.activeDonDeck.getCard(refreshDon[i]);
+                if(donCard.state === CARD_STATES.DON_ATTACHED) {
+                    //TODO create animation to move the card to the pool
+                } else {
+                    donCard.setState(CARD_STATES.DON_ACTIVE);
+                }
+            }
+            this.scene.passivePlayerScene.playerInfo.updateCardAmountTexts(); //Update the ui
+
+            //Refresh Character Cards
+            for(let i=0; i<refreshCards.length; i++) {
+                let card = this.scene.passivePlayerScene.getCard(refreshCards[i]);
+                card.setState(CARD_STATES.IN_PLAY);
+            }
+
+            //Tell server refresh complete
             this.scene.game.gameClient.requestEndPassivePlayerAnimationRefreshPhase();
         });
     }
@@ -369,25 +397,26 @@ class GameStateManager {
 
             for(let i=0; i<donCards.length; i++) {
                 let callback = (i === (donCards.length-1) ? animationCallback : null);
-                if(isPlayerTurn) this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
-                else this.scene.actionLibraryPassivePlayer.drawDonCardAction(this.scene.passivePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+                if(isPlayerTurn) this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*500, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
+                else this.scene.actionLibraryPassivePlayer.drawDonCardAction(this.scene.passivePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*500, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
 
                 //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
                 let donImage = this.scene.add.image(
-                    this.scene.screenWidth*0.4 + i * this.scene.screenWidth,
+                    this.scene.screenWidth*0.35 + i * this.scene.screenWidth * 0.3,
                     this.scene.screenCenterY - 100 + i * 200,
                     ASSET_ENUMS.GAME_DON_BIG
-                ).setOrigin(0.5).setDepth(2).setScale(1.5).setVisible(false).setAngle(-10 + i*20);
+                ).setOrigin(0.5).setDepth(2).setScale(1).setVisible(false).setAngle(-10 + i*20);
                 this.scene.tweens.add({
+                    onStart: () => {donImage.setVisible(true);},
                     targets: donImage,
-                    delay: i*300,
+                    delay: i*500,
+                    alpha: 1,
+                    duration: 1000,
                     onComplete: () => {
-                        donImage.setVisible(true);
                         this.scene.tweens.add({
                             targets: donImage,
-                            delay: 1500,
                             alpha: {from: 1, to: 0},
-                            duration: 1500,
+                            duration: 1000,
                             onComplete: () => {donImage.destroy();}
                         });
                     }
@@ -405,10 +434,11 @@ class GameStateManager {
         if(isPlayerTurn) {
             //Make the cards draggable in the hand and in the don deck
             this.scene.activePlayerScene.hand.makeCardDraggable(true);
+            this.scene.activePlayerScene.activeDonDeck.makeInteractive(true);
             this.scene.activePlayerScene.activeDonDeck.makeCardDraggable(true);
 
             //Change state of the next turn button
-            this.scene.gameStateUI.nextTurnbutton.setInteractive();
+            this.scene.gameStateUI.nextTurnbutton.makeInteractive(true);
         }
     }
 
@@ -463,8 +493,23 @@ class GameStateManager {
     }
 
     /** Function to trigger a next turn. Triggered on next turn button press */
-    triggerNnextTurn() {
+    triggerNextTurn() {
+        // Trigers the end of the turn. Cards should not be draggable anymore. Next turn button should not be draggable anymore
+        this.scene.activePlayerScene.hand.makeCardDraggable(false);
+        this.scene.activePlayerScene.activeDonDeck.makeInteractive(false);
+        this.scene.gameStateUI.nextTurnbutton.removeInteractive();
 
+        //Send message to server    
+        this.scene.game.gameClient.requestStartNextTurn();
+    }
+
+    /** Function that creates an action to send a message to the server when all other actions have been completed */
+    completeCurrentTurn() {
+        let action = new Action();
+        action.start = () => {this.scene.game.gameClient.requestCurrentTurnCompletedPassivePlayer();}
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(action);
     }
 
     /*** PASSIVE PLAYER CARD MOVEMENTS **/

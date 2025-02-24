@@ -1,4 +1,5 @@
 const Match = require('./match');
+const { CARD_STATES } = require('./match_card');
 const { PLAY_CARD_STATES, CARD_TYPES } = require('./match_enums');
 const MatchPlayer = require('./match_player')
 
@@ -89,15 +90,30 @@ class MatchState {
     /** Function that returns all attached DON cards to the don Area
      * @param {MatchPlayer} player - player object
      */
-    refreshDon(player) { //TODO: Implement refresh Don
-        return [];
+    refreshDon(player) { //TODO handle cards attached
+        let cards = [];
+        let numberOfExertedDon = player.inExertenDon.length; //Need to save initial value or the loop will break
+        for(let i=0; i<numberOfExertedDon; i++) {
+            let card = player.inExertenDon.pop();
+            player.inActiveDon.push(card);
+            cards.push(card.id);
+        }
+        return cards;
     }
 
     /** Function that refreshed all exerted charactes to active
      * @param {MatchPlayer} player - player object
      */
-    refreshCards(player) { //TODO: Implement refresh Cards
-        return [];
+    refreshCards(player) {
+        let cards = [];
+        for(let i=0; i<player.inCharacterArea.length; i++) {
+            let card = player.inCharacterArea[i];
+            if(card.state === CARD_STATES.EXERTED) {
+                card.setState(CARD_STATES.READY);
+                cards.push(card.id);
+            }
+        }
+        return cards;
     }
 
     /** Start Draw Phase. First players do not draw a card on their first turn
@@ -105,7 +121,6 @@ class MatchState {
      */
     startDrawPhase(player) {
         let playerCards = [];
-        //TODO: this is just a test remove after completion of test
         if(!(player.isFirstPlayer && player.isFirstTurn)) {
             playerCards = this.drawCards(player, 1);
         }
