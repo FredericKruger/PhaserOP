@@ -186,6 +186,9 @@ class Client {
 
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
 
+    /** NEXT TURN COMMUNICATION */
+    requestStartNextTurn () {this.socket.emit('player_start_next_turn');}
+
     /** Function that tells the server to update the player settings */
     updatePlayerSettings () {this.socket.emit('update_player_settings', this.playerSettings);}
     

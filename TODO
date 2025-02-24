@@ -15,11 +15,12 @@
 # WRITE FIRST LOGIN ANIMATION
 ---
 - [ ] Add message that berries were given to help start
+- [ ] Create more of a tutorial
 
 # WRITE COLLECTION BOOK
 ---
 - [x] Refactor Tooltip to be permanent and not destroyed (causes bugs)
-- [ ] BUG: Fix bug on wrong depth of filter button for sets
+- [x] BUG: Fix bug on wrong depth of filter button for sets
 
 # WRITE OPEN PACK PANEL
 ---
@@ -85,10 +86,10 @@
     - [x] Dragging logic
     - [x] Animation for card movement and scaling
     - [x] Create Card fan with tilt and height
-- [ ] Draw DON Area
+- [x] Draw DON Area
     - [x] Draw Area
     - [x] Draw card pile
-    - [ ] Create animation for card moving from pile to don stack
+    - [x] Create animation for card moving from pile to don stack
 - [ ] Draw Discard Pile
     - [x] Draw Area
     - [ ] Create logic to move card to area
@@ -99,10 +100,10 @@
     - [x] Create logic to display max cards
     - [ ] Create tooltip when hovering over card
     - [ ] Create possibility to attach don card to character
-- [ ] Draw Stage Location
+- [x] Draw Stage Location
     - [x] Create Area
     - [x] Create logic to add card
-    - [ ] Create logic to remove card if card is added
+    - [x] Create logic to remove card if card is added
 - [x] Draw Leader Location
     - [x] Create Area
     - [x] Create entering logic to add leader
@@ -131,6 +132,7 @@
     - [x] Create Board separation
     - [x] Create Board bolors
     - [x] Send life cards to life ui
+- [ ] Create Next Turn button Interactivity
 
 # GAME PHASES
 ---
@@ -155,6 +157,12 @@
     - [x] Transfer to Opponent Hand
 - [x] Opponent Hand
     - [x] Create Opponent Hand
+- [ ] Create Opponent play card animations
+    - [x] Animation for case card cannot be played
+    - [x] Animation for case card player
+    - [ ] Animation for case targetting required
+    - [ ] Animation for case card sent to discard
+    - [ ] Animation for case card is an event
 
 # GAME LOADING SCENE
 ---
@@ -169,8 +177,8 @@
 
 # OPPONENT ANIMATIONS
 ---
-- [ ] Create Draw DON Animation
-- [ ] Create Card Hovering animation
+- [x] Create Draw DON Animation
+- [x] Create Card Hovering animation
 
 # GAME ENGINE
 ---
@@ -213,5 +221,5 @@
     - [ ] Open Pack Panel
     - [ ] Shop Panel
     - [ ] Collection
-    - [ ] Fix mouse movement paqssive player differet screen config
+    - [ ] Fix mouse movement passive player differet screen config
     
