@@ -289,7 +289,7 @@ class GameStateManager {
             this.setPhase(GAME_PHASES.REFRESH_PHASE); //Set the phase to Refresh Phase
 
             //Refresh the nextTurn Button
-            this.gameStateUI.nextTurnbutton.setState(NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE);  
+            this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE);  
             this.gameStateUI.yourTurnImage.setAlpha(1); 
     
             //Start with showing the "Your Turn" image
@@ -316,6 +316,10 @@ class GameStateManager {
     startRefreshPhasePassivePlayer(refreshDon, refreshCards) {
         this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE);
+
+            //Refresh the nextTurn Button
+            this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE);  
+            this.gameStateUI.yourTurnImage.setAlpha(1); 
 
             //TODO Create Action calls for Don Refresh
             //TODO Create Action calls for Character Refresh
@@ -399,12 +403,12 @@ class GameStateManager {
         this.setPhase(GAME_PHASES.MAIN_PHASE); //Set the phase to Main Phase
 
         if(isPlayerTurn) {
-        //Make the cards draggable in the hand and in the don deck
-        this.scene.activePlayerScene.hand.makeCardDraggable(true);
-        this.scene.activePlayerScene.activeDonDeck.makeCardDraggable(true);
+            //Make the cards draggable in the hand and in the don deck
+            this.scene.activePlayerScene.hand.makeCardDraggable(true);
+            this.scene.activePlayerScene.activeDonDeck.makeCardDraggable(true);
 
-        //Change state of the next turn button
-        this.scene.gameStateUI.nextTurnbutton.setState(NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE);
+            //Change state of the next turn button
+            this.scene.gameStateUI.nextTurnbutton.setInteractive();
         }
     }
 
@@ -446,11 +450,21 @@ class GameStateManager {
         }
     }
 
+    /** Function to play a card
+     * @param {Object} actionInfos - The action infos
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {boolean} startTargeting - If the targeting should start
+     */
     playCard(actionInfos, isPlayerTurn, startTargeting) {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         player.playCard(actionInfos, isPlayerTurn, startTargeting);
+    }
+
+    /** Function to trigger a next turn. Triggered on next turn button press */
+    triggerNnextTurn() {
+
     }
 
     /*** PASSIVE PLAYER CARD MOVEMENTS **/
@@ -534,7 +548,6 @@ class GameStateManager {
                 card.showGlow(COLOR_ENUMS.OP_WHITE);
             }
         }
-
     }
 
     /** Function that handles when a players card isnt hovered anymore
