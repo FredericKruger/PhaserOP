@@ -45,9 +45,12 @@ class AI_Instance {
         console.log("AI TURN");
         let action = this.canTakeAction();
         while(action.canTakeAction) {
-            console.log(action.action.function);
             this.playAction(action.action); //Play the action
             action = this.canTakeAction();
+
+            //FIXME for now only allow 1 action until being able to target
+            this.endTurn();
+            return;
         }
 
         console.log("AI END TURN");

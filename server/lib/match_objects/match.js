@@ -249,8 +249,6 @@ class Match {
     startPlayCard(player, cardID) {
         let result = this.state.playCard(player.currentMatchPlayer, cardID);
 
-        console.log(result);
-
         if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
             if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don_passive_player', result.actionInfos);
