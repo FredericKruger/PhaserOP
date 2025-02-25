@@ -1,6 +1,6 @@
 const Match = require('./match');
 const { CARD_STATES } = require('./match_card');
-const { PLAY_CARD_STATES, CARD_TYPES, ATTACH_DON_TO_CHAR_STATES } = require('./match_enums');
+const { PLAY_CARD_STATES, CARD_TYPES, ATTACH_DON_TO_CHAR_STATES, MATCH_CONSTANTS, TARGET_ACTION } = require('./match_enums');
 const MatchPlayer = require('./match_player')
 
 const MATCH_PHASES = Object.freeze({
@@ -175,6 +175,8 @@ class MatchState {
 
         if(cardCost>availableActiveDon) return {actionResult: PLAY_CARD_STATES.NOT_ENOUGH_DON, actionInfos: {playedCard: cardId}};
 
+        //FIXME Problems with AI going tinto SELECT_REPLACEMENT_TARGET
+
         let actionInfos = {};
         //If the player has enough resources remove the resources and play the card
         if(card.cardData.card === CARD_TYPES.STAGE) {
@@ -186,13 +188,13 @@ class MatchState {
                 return {actionResult: PLAY_CARD_STATES.STAGE_REPLACED_AND_PLAYED, actionInfos: actionInfos};
             };
         } else if(card.cardData.card === CARD_TYPES.CHARACTER) { //If the card is a character
-            if(player.inCharacterArea.length < 5) {
+            if(player.inCharacterArea.length < MATCH_CONSTANTS.MAX_CHARACTERS_IN_AREA) { //If there is space in the character area
                 actionInfos = player.playCharacter(cardId, false);
                 return {actionResult: PLAY_CARD_STATES.CHARACTER_PLAYED, actionInfos: actionInfos};
             } else {
-                console.log("TARGETING")
-                actionInfos = {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {playedCard: cardId}};
-                return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos};
+                let cardData = player.getCardFromHand(cardId);
+                actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
+                return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetAction: TARGET_ACTION.PLAY_CARD_ACTION};
             }
         } else if(card.cardData.card === CARD_TYPES.EVENT) { //TODO: Implement event card
         }

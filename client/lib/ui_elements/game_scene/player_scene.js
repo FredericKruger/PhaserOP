@@ -14,6 +14,7 @@ class PlayerScene {
 
         this.opponentPlayerScene = null;
         this.isPlayerTurn = false;
+        this.isTargetting = false;
 
         //Initialize player UI Components
         this.donDeck = new DonDeckUI(scene, this);
@@ -66,7 +67,10 @@ class PlayerScene {
             if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds);
             else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds);
         } else {
-
+            if(isPlayerTurn) {
+                this.scene.actionLibrary.startPlayCardTargetingAction(this, card);
+                this.scene.actionLibrary.startTargettingAction(this, card);
+            }
         }
     }
 

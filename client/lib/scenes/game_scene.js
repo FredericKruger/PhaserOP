@@ -38,6 +38,9 @@ class GameScene extends Phaser.Scene {
         this.gameStateUI = new GameStateUI(this);
         this.gameStateManager = new GameStateManager(this, this.gameStateUI);
 
+        //Ready the targetting arrow
+        this.targettingArrow = new TargettingArrow(this);
+
         //Game state variables
         this.dragginCard = false;
     }
@@ -82,9 +85,11 @@ class GameScene extends Phaser.Scene {
         let gradientSprite = this.add.sprite(this.screenCenterX, this.screenCenterY, 'gradientTexture').setOrigin(0.5).setDepth(0);
         this.obj.push(gradientSprite);
 
+        //Create some game elements
         this.activePlayerScene.create();
         this.passivePlayerScene.create();
         this.gameStateUI.create();
+        this.targettingArrow.create();
 
         //Create mask Panel
         this.maskPanel = this.add.rectangle(
@@ -98,6 +103,7 @@ class GameScene extends Phaser.Scene {
         this.input.on('pointerover', (pointer, gameObject) => {
             if(gameObject[0] instanceof GameCardUI
                 && !this.dragginCard
+                && !this.activePlayerScene.isTargetting
             ) {
                 let card = gameObject[0];
                 if(card.state === CARD_STATES.IN_HAND) {
@@ -116,6 +122,7 @@ class GameScene extends Phaser.Scene {
         this.input.on('pointerout', (pointer, gameObject) => {
             if(gameObject[0] instanceof GameCardUI
                 && !this.dragginCard
+                && !this.activePlayerScene.isTargetting
             ) {
                 let card = gameObject[0];
                 if(card.state === CARD_STATES.IN_HAND_HOVERED) {
@@ -204,11 +211,10 @@ class GameScene extends Phaser.Scene {
                     gameObject.playerScene.hand.update();
                 }
 
-                this.dragginCard = false;
-
                 if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
                 else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
+            this.dragginCard = false;
         });
 
         /** HANDLER FOR DROP */
@@ -229,21 +235,33 @@ class GameScene extends Phaser.Scene {
                         tweens: this.animationLibrary.animation_move_don_characterarea2activearea(gameObject)
                     });
 
-                    this.dragginCard = false;
                     this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
                 }
             } else {
-                this.dragginCard = false;
-
                 if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
                 else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
+            this.dragginCard = false;
         });
 
         this.setVisible(false);
 
         //tell the server the scene is ready
         this.game.gameClient.requestMatchSceneReady();
+    }
+
+    /** Funciton that handles the constant update of the GameScene */
+    update() {
+        //TODO create a function to figure if cards in the character area can do actions and adds a glow
+
+        //TODO create a function to handle determining if a card in the hand can be player and adds the glow
+
+        //Handle the targetting arrow
+        if(this.activePlayerScene.isTargetting) {
+            if(this.targettingArrow.isTargetting) {
+                this.targettingArrow.update(this.input.mousePointer.x, this.input.mousePointer.y);
+            }
+        }
     }
 
     /** Starts the intro animation

@@ -3,7 +3,7 @@
   folder_path <- "c:/Users/Kruger_F1/Pictures/newtmp/"
   files <- list.files(folder_path)
   
-  file <- "ST04-001.png"
+  file <- "OP01-001.png"
   
   img <- image_read(paste0("c:/Users/Kruger_F1/Pictures/newtmp/", file))
   
@@ -33,4 +33,4 @@
   resized_img <- image_scale(circular_image, paste0("x", resize_radius))
   print(resized_img)
   
-  image_write(resized_img, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/leaderart_ST04-001.png"))
+  image_write(resized_img, paste0("c:/Users/Kruger_F1/Pictures/resizedtmp/leaderart_OP01-001.png"))

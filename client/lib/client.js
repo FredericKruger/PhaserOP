@@ -37,6 +37,8 @@ class Client {
         this.passivePlayerNumberCards = null;
         this.passivePlayerName = "";
 
+        this.currentTargetingAction = null; //variable that stores the current targeting action coming from the server
+
         /** Listen to the signal from the server that the player has successfully connected */
         this.socket.on('player_connected', (success, playerSetting, cardList, playerCollection, newPlayer, shopData) => {
             if(success) {
@@ -125,7 +127,11 @@ class Client {
         this.socket.on('game_play_card_not_enough_don_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, false);});
         this.socket.on('game_play_card_character_played', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, true, false);});
         this.socket.on('game_play_card_character_played_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, false, false);});
-       
+        this.socket.on('game_play_card_select_replacement_target', (actionInfos, targetAction) => {
+            this.currentTargetingAction = targetAction;
+            this.gameScene.gameStateManager.playCard(actionInfos, true, true);
+        });
+
         /** ATTACH DON TO CHARACTER */
         this.socket.on('game_attach_don_to_character_failure', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, true);});
         this.socket.on('game_attach_don_to_character_failure_passive_player', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, false);});

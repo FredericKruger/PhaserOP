@@ -295,4 +295,67 @@ class ActionLibrary {
     }
 
 
+    /** function to move the targeting area
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} card
+      */
+    startPlayCardTargetingAction(playerScene, card) {
+        let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
+        let displayY = this.scene.screenCenterY;
+
+        //play animation to show card
+        let start_animation = this.scene.tweens.chain({
+            targets: card,
+            tweens: [
+                {
+                    scale: {value: CARD_SCALE.IN_PLAY_ANIMATION, duration: 150},
+                    x: {value: displayX, duration: 150},
+                    y: {value: displayY, duration: 150}
+                }, {
+                    scale: CARD_SCALE.IN_PLAY_ANIMATION,
+                    duration: 750,
+                    onComplete: () => {this.actionManager.completeAction();}
+                }
+            ]
+        }).pause();
+
+        //Create the action
+        let action = new Action();
+        action.start = () => { //Start function
+            card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
+            card.isInPlayAnimation = true;
+            card.makeDraggable(false); //Remove the draggable state of the card
+            card.setState(CARD_STATES.IN_PLAY_TARGETTING);
+        };
+        action.start_animation = start_animation; //Play animation
+        action.end = () => {};
+        action.finally = () => {
+            card.isInPlayAnimation = false;
+        };
+
+        action.isPlayerAction = true; //This is a player triggered action
+        action.waitForAnimationToComplete = true; //Should wait for the endof the animation
+        action.name = "PLAY TARGETTING";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
+    /** Function to start the targetting arrow
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} card
+     */
+    startTargettingAction(playerScene, card) {
+        let action = new Action();
+        action.start = () => {
+            playerScene.isTargetting = true;
+            this.scene.targettingArrow.startTargetting(card);
+        };
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+        action.name = "START TARGETTING";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
 }

@@ -249,12 +249,17 @@ class Match {
     startPlayCard(player, cardID) {
         let result = this.state.playCard(player.currentMatchPlayer, cardID);
 
+        console.log(result);
+
         if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
             if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don_passive_player', result.actionInfos);
         } else if(result.actionResult === PLAY_CARD_STATES.CHARACTER_PLAYED) {
             if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played_passive_player', result.actionInfos);
+        } else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
+            if(!player.bot) player.socket.emit('game_play_card_select_replacement_target', result.actionInfos, result.targetAction);
+            //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_select_replacement_target_passive_player', result.actionInfos);
         }
     }
 

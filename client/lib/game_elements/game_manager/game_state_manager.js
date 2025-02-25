@@ -112,7 +112,8 @@ class GameStateManager {
 
     }
 
-    /** START MULLIGAN */
+    //#region MULLIGAN FUNCTIONS
+    
     startMulliganPhase() {
         //Check if animations have completed
         if(this.activePlayerReadyForMulligan && this.passivePlayerReadyForMulligan) {
@@ -245,6 +246,9 @@ class GameStateManager {
         });      
     }
 
+    //#endregion
+
+    //#region FIRST TURN FUNCTIONS
     /** Function that prepares the ui for the first turn. Distributes life cards from the deck
      * @param {Array<number>} activePlayerCards - The active player's cards
      * @param {Array<number>} passivePlayerCards - The passive player's cards
@@ -277,6 +281,9 @@ class GameStateManager {
             }
         });
     }
+    //#endregion
+
+    //#region REFRESH PHASE FUNCTIONS
 
     /** Function that performs  the refresh of the don and the characters
      * All Animation can happen simultaniously
@@ -305,18 +312,19 @@ class GameStateManager {
                 onComplete: () => {
                     //Refresh DON Cards
                     let numberOfAnimations = 0;
-                    for(let i=0; i<refreshDon.length; i++) {
-                        let donCard = this.scene.activePlayerScene.activeDonDeck.getCard(refreshDon[i]);
-                        if(donCard.state === CARD_STATES.DON_ATTACHED) {
-                            donCard.setState(CARD_STATES.DON_ACTIVE);
-                            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                    for(let i=0; i<refreshDon.length; i++) { //For all the don cards
+                        let donCard = this.scene.activePlayerScene.activeDonDeck.getCard(refreshDon[i]); //Get the card
+                        if(donCard.state === CARD_STATES.DON_ATTACHED) { //If the don card is attached
+                            donCard.setState(CARD_STATES.DON_ACTIVE); //Change state
+                            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
                     
+                            //Create tween to bring it back to the area
                             this.scene.tweens.chain({
                                 targets: donCard,
                                 tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(donCard, numberOfAnimations*300)
                             });
 
-                            numberOfAnimations = numberOfAnimations + 1;
+                            numberOfAnimations = numberOfAnimations + 1; //Increase animation delay tracker
                         } else {
                             donCard.setState(CARD_STATES.DON_ACTIVE);
                         }
@@ -326,7 +334,7 @@ class GameStateManager {
                     //Refresh Character Cards
                     for(let i=0; i<refreshCards.length; i++) {
                         let card = this.scene.activePlayerScene.getCard(refreshCards[i]);
-                        card.setState(CARD_STATES.IN_PLAY);
+                        card.setState(CARD_STATES.IN_PLAY); //Make characters in play
                     }
 
                     //Refresh the attached don array
@@ -341,7 +349,7 @@ class GameStateManager {
                         card.updatePowerText();
                     }
 
-                    //Refresh all passive player Card Power
+                    //Refresh all passive player Card Power as attached dons only give power during the active player's turn
                     for(let card of this.scene.passivePlayerScene.characterArea.cards) card.updatePowerText();
                     for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.updatePowerText();
 
@@ -370,18 +378,19 @@ class GameStateManager {
 
             //Refresh Don Cards
             let numberOfAnimations = 0;
-            for(let i=0; i<refreshDon.length; i++) {
+            for(let i=0; i<refreshDon.length; i++) { //For all the don cards in the pile
                 let donCard = this.scene.passivePlayerScene.activeDonDeck.getCard(refreshDon[i]);
-                if(donCard.state === CARD_STATES.DON_ATTACHED) {
-                    donCard.setState(CARD_STATES.DON_ACTIVE);
-                    donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                if(donCard.state === CARD_STATES.DON_ATTACHED) { //If the don is attached
+                    donCard.setState(CARD_STATES.DON_ACTIVE); //Set the state to active
+                    donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Change the depth
                     
+                    //Create tween chain to move the cardto the pile
                     this.scene.tweens.chain({
                         targets: donCard,
                         tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(donCard, numberOfAnimations*300)
                     });
 
-                    numberOfAnimations = numberOfAnimations + 1;
+                    numberOfAnimations = numberOfAnimations + 1; //Increase animation counter
                 } else {
                     donCard.setState(CARD_STATES.DON_ACTIVE);
                 }
@@ -390,7 +399,7 @@ class GameStateManager {
 
             //Refresh Character Cards
             for(let i=0; i<refreshCards.length; i++) {
-                let card = this.scene.passivePlayerScene.getCard(refreshCards[i]);
+                let card = this.scene.passivePlayerScene.getCard(refreshCards[i]); //Set all character cards to ready
                 card.setState(CARD_STATES.IN_PLAY);
             }
 
@@ -406,7 +415,7 @@ class GameStateManager {
                 card.updatePowerText();
             }
 
-            //Refresh all activePlayer Card Power
+            //Refresh all activePlayer Card Power as don cards only give power during the active player's turn
             for(let card of this.scene.activePlayerScene.characterArea.cards) card.updatePowerText();
             for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.updatePowerText();
 
@@ -414,6 +423,10 @@ class GameStateManager {
             this.scene.game.gameClient.requestEndPassivePlayerAnimationRefreshPhase();
         });
     }
+
+    //#endregion
+
+    //#region PHASE FUNCTIONS 
 
     /**  Function that start the draw phase
      * @param {Array<Object>} newCards - The card to be drawn
@@ -508,8 +521,9 @@ class GameStateManager {
         this.gameStateUI.udpatePhase(phase);
     }
 
-    /*** PLAY CARDS */
+    //#endregion
 
+    //#region PLAY CARD FUNCTIONS
     /** Function to handle playing a card that is too expensive */
     playCardNotEnoughDon(actionInfos, isPLayerTurn) {
         //Get the card
@@ -550,6 +564,9 @@ class GameStateManager {
         player.playCard(actionInfos, isPlayerTurn, startTargeting);
     }
 
+    //#endregion
+
+    //#region ATTACH DON FUNCTIONS
     /** Function to trigger failure of attaching a card
      * @param {Object} actionInfos - The action infos
      * @param {boolean} isPlayerTurn - If it is the player's turn
@@ -599,6 +616,10 @@ class GameStateManager {
         console.log(player.activeDonDeck.cards);
     }
 
+    //#endregion
+
+    //#region END TURN FUNCTIONS
+
     /** Function to trigger a next turn. Triggered on next turn button press */
     triggerNextTurn() {
         // Trigers the end of the turn. Cards should not be draggable anymore. Next turn button should not be draggable anymore
@@ -619,7 +640,9 @@ class GameStateManager {
         this.scene.actionManager.addAction(action);
     }
 
-    /*** PASSIVE PLAYER CARD MOVEMENTS **/
+    //#endregion
+
+    //#region PASSIVE PLAYER MOUSE HANDLING FUNCTION
 
     /** Function to handle the dragging of a card from the opponent player
      * @param {number} cardID
@@ -736,5 +759,7 @@ class GameStateManager {
         }
 
     }
+
+    //#endregion
 
 }

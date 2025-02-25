@@ -34,6 +34,11 @@ class MatchPlayer {
         this.inHand = this.inHand.filter(c => c.id !== card.id);
     }
 
+    /** Function that returns a card from Hand from the card id
+     * @param {number} cardid - ID of the card to be returned
+     */
+    getCardFromHand(cardid) {return this.inHand.find(c => c.id === cardid);}
+
     /** Function that fills the Don Deck at setup 
      * @param {number} amount - amount of cards to be added to deck
     */

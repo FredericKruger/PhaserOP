@@ -42,12 +42,15 @@ class AI_Instance {
 
     /** Function that performs the AI turn */
     play() {
+        console.log("AI TURN");
         let action = this.canTakeAction();
         while(action.canTakeAction) {
+            console.log(action.action.function);
             this.playAction(action.action); //Play the action
             action = this.canTakeAction();
         }
 
+        console.log("AI END TURN");
         this.endTurn();
     }
 
@@ -106,12 +109,12 @@ class AI_Instance {
         if(card > -1) return card;
 
         //If no playble character is found, look for a stage
-        for(let c of this.matchPlayer.inHand) {
+        /*for(let c of this.matchPlayer.inHand) {
             if(c.cardData.cost <= this.matchPlayer.inActiveDon.length && c.cardData.card === CARD_TYPES.STAGE && this.matchPlayer.inStageLocation === null) {
                 card = c.id;
                 break;
             }
-        }
+        }*/
         return card;
     }
 
