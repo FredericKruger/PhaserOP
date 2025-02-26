@@ -212,6 +212,7 @@
 - [x] Assign Texture Manager to game object
 - [ ] Modify first login behaviour to only change flag when deck was selected./ Currently if logged out not working
 - [ ] Convert art to SVG to improve scaling ?
+- [x] Refactor interaction through Final State Machine
 
 # UI IMPROVEMENTS
 ---

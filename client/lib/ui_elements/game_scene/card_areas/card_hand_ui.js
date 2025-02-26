@@ -49,7 +49,8 @@ class CardHandUI extends CardPileUI {
         //Iterate through cards
         for(let i=0; i<this.cards.length; i++) {
             let card = this.cards[i];
-            if(card.state === CARD_STATES.IN_HAND || card.state === CARD_STATES.TRAVELLING_TO_HAND || card.state === CARD_STATES.IN_HAND_HOVERED_PASSIVEPLAYER) {
+            if(card.state === CARD_STATES.IN_HAND || card.state === CARD_STATES.TRAVELLING_TO_HAND 
+                || card.state === CARD_STATES.IN_HAND_PASSIVE_PLAYER || card.state === CARD_STATES.IN_HAND_HOVERED_PASSIVEPLAYER) {
                 let cardX = this.posX + currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * GAME_UI_CONSTANTS.HAND_CARD_SEPARATION * currentScale);
                 let cardY = this.posY + Math.abs(currentIndex) * this.heightStep;
                 let cardAngle = currentIndex * this.angleStep;
@@ -95,7 +96,8 @@ class CardHandUI extends CardPileUI {
     getNumberCardsInHand() {
         let numberCards = 0;
         for(let card of this.cards) {
-            if(card.state === CARD_STATES.IN_HAND) {
+            //if(card.state === CARD_STATES.IN_HAND) {
+            if(card.state.startsWith('IN_HAND')) {                
                 numberCards++;
             }   
         }
@@ -112,7 +114,10 @@ class CardHandUI extends CardPileUI {
             if(config.setCardDepth) card.setDepth(2);
             if(config.setCardInteractive) card.makeInteractive(true);
             if(config.setCardDraggable) card.makeDraggable(true);
-            if(config.setCardState) card.setState(CARD_STATES.IN_HAND);
+            if(config.setCardState) {
+                if(card.playerScene.player.isActivePlayer) card.setState(CARD_STATES.IN_HAND);
+                else card.setState(CARD_STATES.IN_HAND_PASSIVE_PLAYER);
+            }
             this.cards.push(card);
         } 
 

@@ -1,4 +1,4 @@
-class TargettingArrow {
+class TargetingArrow {
 
     /** Constructor
      * @param {GameScene} scene - The scene this arrow will be displayed in
@@ -7,7 +7,7 @@ class TargettingArrow {
         this.scene = scene;
 
         this.originatorObject = null;
-        this.isTargetting = false;
+        this.isTargeting = false;
     }
 
     /** Function to create the arrow */
@@ -127,17 +127,17 @@ class TargettingArrow {
     /** function to start the targetting
      * @param {Object} originatorObject - The object that is targetting
      */
-    startTargetting(originatorObject) {
+    startTargeting(originatorObject) {
         this.originatorObject = originatorObject;
         this.setVisible(true);
-        this.isTargetting = true;
+        this.isTargeting = true;
     }  
     
     /** Function to stop targetting */
-    stopTargetting() {
+    stopTargeting() {
         this.originatorObject = null;
         this.setVisible(false);
-        this.isTargetting = false;
+        this.isTargeting = false;
     }
 
 }

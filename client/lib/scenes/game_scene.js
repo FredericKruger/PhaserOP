@@ -1,11 +1,14 @@
 class GameScene extends Phaser.Scene {
 
+    //#region CONSTRUCTOR
     constructor() {
         super(SCENE_ENUMS.GAME_SCENE);
 
         this.obj = [];
     }
+    //#endregion
 
+    //#region INIT FUNCTION
     init(data) {
         this.game.gameClient.gameScene = this;
 
@@ -39,12 +42,13 @@ class GameScene extends Phaser.Scene {
         this.gameStateManager = new GameStateManager(this, this.gameStateUI);
 
         //Ready the targetting arrow
-        this.targettingArrow = new TargettingArrow(this);
+        this.targetingArrow = new TargetingArrow(this);
 
-        //Game state variables
-        this.dragginCard = false;
+        this.gameState = new NoInteractionState(this);
     }
+    //#endregion
 
+    //#region CREATE FUNCTION
     create() {
         //Prepare the background
         let backgroundImage = this.add.image(
@@ -89,7 +93,7 @@ class GameScene extends Phaser.Scene {
         this.activePlayerScene.create();
         this.passivePlayerScene.create();
         this.gameStateUI.create();
-        this.targettingArrow.create();
+        this.targetingArrow.create();
 
         //Create mask Panel
         this.maskPanel = this.add.rectangle(
@@ -101,7 +105,10 @@ class GameScene extends Phaser.Scene {
         /** LISTENERS */
         /** Hander for when the poinster enters a card */
         this.input.on('pointerover', (pointer, gameObject) => {
-            if(gameObject[0] instanceof GameCardUI
+            if(gameObject[0] instanceof BaseCardUI) {
+                this.gameState.onPointerOver(pointer, gameObject[0]);
+            }
+            /*if(gameObject[0] instanceof GameCardUI
                 && !this.dragginCard
                 && !this.activePlayerScene.isTargetting
             ) {
@@ -115,12 +122,15 @@ class GameScene extends Phaser.Scene {
                     card.showGlow(COLOR_ENUMS.OP_WHITE);
                     this.game.gameClient.sendCardPointerOver(card.id, CARD_STATES.IN_PLAY, card.playerScene === this.activePlayerScene);
                 }
-            }
+            }*/
         });
 
         /** Handler for when the pointer leaves a card */
         this.input.on('pointerout', (pointer, gameObject) => {
-            if(gameObject[0] instanceof GameCardUI
+            if(gameObject[0] instanceof BaseCardUI) {
+                this.gameState.onPointerOut(pointer, gameObject[0]);
+            }
+           /* if(gameObject[0] instanceof GameCardUI
                 && !this.dragginCard
                 && !this.activePlayerScene.isTargetting
             ) {
@@ -134,17 +144,21 @@ class GameScene extends Phaser.Scene {
                     card.hideGlow();
                     this.game.gameClient.sendCardPointerOut(card.id, CARD_STATES.IN_PLAY, card.playerScene === this.activePlayerScene);
                 }
-            }
+            }*/
         });
 
         /** HANLDER FOR CLICKING */
         this.input.on('pointerdown', (pointer, gameObject) => {
+            if(gameObject instanceof BaseCardUI) {
+                this.gameState.onPointerOut(pointer, gameObject);
+            }
         });    
 
 
         /** HANDLER FOR DRAG START */
         this.input.on('dragstart', (pointer, gameObject) => {
-            if(gameObject instanceof GameCardUI) {
+            this.gameState.onDragStart(pointer, gameObject);
+            /*if(gameObject instanceof GameCardUI) {
                 this.children.bringToTop(gameObject);
                 this.dragginCard = true;
     
@@ -165,12 +179,13 @@ class GameScene extends Phaser.Scene {
 
                 this.game.gameClient.sendCardDragStart(gameObject.id, 'DonCardUI');
             }
-
+*/
         });
 
         /** HANDLDER FOR DRAG */
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-            gameObject.setPosition(dragX, dragY);
+            this.gameState.onDrag(pointer, gameObject, dragX, dragY);
+            /*gameObject.setPosition(dragX, dragY);
 
             if(gameObject instanceof DonCardUI) {
                 if(this.activePlayerScene.donDraggedOverCharacter(pointer.position.x, pointer.position.y)) {
@@ -181,12 +196,13 @@ class GameScene extends Phaser.Scene {
             }
 
             if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragPosition(gameObject.id, 'GameCardUI', dragX, dragY);
-            else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragPosition(gameObject.id, 'DonCardUI', dragX, dragY);
+            else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragPosition(gameObject.id, 'DonCardUI', dragX, dragY);*/
         });
 
         /** HANDLER FOR DRAGEN */
         this.input.on('dragend', (pointer, gameObject, dropped) => {
-            if(!dropped) {
+            this.gameState.onDragEnd(pointer, gameObject, dropped);
+            /*if(!dropped) {
                 //Reset the cards position
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
@@ -214,12 +230,13 @@ class GameScene extends Phaser.Scene {
                 if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
                 else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
-            this.dragginCard = false;
+            this.dragginCard = false;*/
         });
 
         /** HANDLER FOR DROP */
         this.input.on('drop', (pointer, gameObject, dropZone) => {
-            if(dropZone.getData('name') === 'CharacterArea' && gameObject instanceof GameCardUI) {
+            this.gameState.onDrop(pointer, gameObject, dropZone);
+            /*if(dropZone.getData('name') === 'CharacterArea' && gameObject instanceof GameCardUI) {
                 //gameObject.playerScene.playCard(gameObject);
                 this.game.gameClient.requestPlayerPlayCard(gameObject.id);
             } else if(dropZone.getData('name') === 'CharacterArea' && gameObject instanceof DonCardUI) {
@@ -241,29 +258,34 @@ class GameScene extends Phaser.Scene {
                 if(gameObject instanceof GameCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
                 else if(gameObject instanceof DonCardUI) this.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
-            this.dragginCard = false;
+            this.dragginCard = false;*/
         });
 
         this.setVisible(false);
 
         //tell the server the scene is ready
-        this.game.gameClient.requestMatchSceneReady();
+        this.game.gameClient.requestMatchSceneReady();   
     }
+    //#endregion
 
+    //#region UPDATE FUNCTION
     /** Funciton that handles the constant update of the GameScene */
     update() {
         //TODO create a function to figure if cards in the character area can do actions and adds a glow
 
         //TODO create a function to handle determining if a card in the hand can be player and adds the glow
 
+        this.gameState.update();
         //Handle the targetting arrow
-        if(this.activePlayerScene.isTargetting) {
+        /*if(this.activePlayerScene.isTargetting) {
             if(this.targettingArrow.isTargetting) {
                 this.targettingArrow.update(this.input.mousePointer.x, this.input.mousePointer.y);
             }
-        }
+        }*/
     }
+    //#endregion
 
+    //#region INTRO ANIMATION
     /** Starts the intro animation
      * @param {Object} activePlayerLeader
      * @param {Object} passivePlayerLeader
@@ -294,7 +316,9 @@ class GameScene extends Phaser.Scene {
             });
         });
     }
+    //#endregion
 
+    //#region UTILS
     /** Function that set the panel invisible
      * @param {boolean} visible
      */
@@ -306,5 +330,6 @@ class GameScene extends Phaser.Scene {
         this.activePlayerScene.playerInfo.setBackgroundVisible(visible);
         this.passivePlayerScene.playerInfo.setBackgroundVisible(visible);
     }
+    //#endregion
 
 }

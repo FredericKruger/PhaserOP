@@ -1,5 +1,6 @@
 class GameCardUI extends BaseCardUI{
 
+    //#region CONSTRUCTOR
     /**
      * 
      * @param {GameScene} scene 
@@ -17,9 +18,12 @@ class GameCardUI extends BaseCardUI{
         this.attachedCounter = null;
 
         //STATE VARIABLES
+        this.fsmState = new InDeckState(this);
         this.isInPlayAnimation = false;
     }
+    //#endregion
 
+    //#region CREATE FUNCTION
     /**Function to create the card */
     create() {
         //Call Parent create
@@ -91,7 +95,9 @@ class GameCardUI extends BaseCardUI{
             this.backArt.displayHeight, 
             {tl: 10, tr: 0, br: 0, bl:10}); // 10 is padding, 15 is corner
     }
+    //#endregion
 
+    //#region UPDATE CARD DATA
     /** Update Card Data 
      * @param {Object} cardData
      * @param {boolean} flipCard
@@ -124,6 +130,68 @@ class GameCardUI extends BaseCardUI{
         });
         this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));       
     }
+    //#endregion
+
+    //#region STATE FUNCTIONS
+    /** Set card state
+     * @param {string} state
+     */
+    setState(state) {
+        this.state = state;
+        this.setFSMState(state);
+
+        //Only show the art if ths card is from the active player
+        if(this.playerScene.player.isActivePlayer) {
+            this.powerBox.setVisible(this.state === CARD_STATES.IN_HAND);
+            this.costIcon.setVisible(this.state === CARD_STATES.IN_HAND);
+            this.powerText.setVisible(this.state === CARD_STATES.IN_HAND);
+            this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND && this.cardData.counter);
+        }
+        this.locationPowerText.setVisible(this.state === CARD_STATES.IN_PLAY || this.state === CARD_STATES.IN_PLAY_RESTED);
+
+        this.exertCard(this.state);
+    }
+
+
+    /** Set the Final State Machine state from the state
+     * @param {string} state
+     */
+    setFSMState(state) {
+        switch(state) {
+            case CARD_STATES.IN_DECK:
+                this.fsmState.exit(GAME_CARD_STATES.IN_DECK);
+                break;
+            case CARD_STATES.IN_HAND:
+            case CARD_STATES.IN_HAND_HOVERED:
+                this.fsmState.exit(GAME_CARD_STATES.IN_HAND);
+                break;
+            case CARD_STATES.IN_HAND_PASSIVE_PLAYER:
+            case CARD_STATES.IN_HAND_HOVERED_PASSIVE_PLAYER:
+                this.fsmState.exit(GAME_CARD_STATES.IN_DECK);
+                break;
+            case CARD_STATES.TRAVELLING_FROM_HAND:
+            case CARD_STATES.TRAVELLING_TO_DECK:
+            case CARD_STATES.LEADER_TRAVELLING_TO_LOCATION:
+            case CARD_STATES.TRAVELLING_TO_HAND:
+            case CARD_STATES.IN_MULLIGAN: 
+                this.fsmState.exit(GAME_CARD_STATES.TRAVELLING);
+                break;
+            case CARD_STATES.IN_PLAY:
+            case CARD_STATES.IN_PLAY_RESTED:
+                this.fsmState.exit(GAME_CARD_STATES.IN_PLAY);
+                break;
+        }
+    }
+    //#endregion
+
+    //#region UPDATE UI FUNCTIONS
+    /** Function to update the power of the card 
+     * DON cards are only counted during tje players active turn
+    */
+    updatePowerText() {
+        if(this.playerScene.isPlayerTurn) this.locationPowerText.setText(this.cardData.power + this.attachedDon.length*1000);
+        else this.locationPowerText.setText(this.cardData.power);
+    }
 
     /** Function to reposition all the attached don cards */
     updateAttachedDonPosition() {
@@ -138,7 +206,9 @@ class GameCardUI extends BaseCardUI{
         this.attachedDonText.setVisible(this.attachedDon.length > 1);
         //this.scene.children.bringToTop(this.attachedDonText);
     }
+    //#endregion
 
+    //#region UTIL FUNCTIONS
     /** Function to set the exert art
      * @param {string} state
      */
@@ -146,29 +216,6 @@ class GameCardUI extends BaseCardUI{
         if(state === CARD_STATES.IN_PLAY_RESTED) this.frontArt.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
         else this.frontArt.resetPipeline();
     }
-
-    /** Set card state */
-    setState(state) {
-        this.state = state;
-
-        //Only show the art if ths card is from the active player
-        if(this.playerScene.player.isActivePlayer) {
-            this.powerBox.setVisible(this.state === CARD_STATES.IN_HAND);
-            this.costIcon.setVisible(this.state === CARD_STATES.IN_HAND);
-            this.powerText.setVisible(this.state === CARD_STATES.IN_HAND);
-            this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND && this.cardData.counter);
-        }
-        this.locationPowerText.setVisible(this.state === CARD_STATES.IN_PLAY || this.state === CARD_STATES.IN_PLAY_RESTED);
-
-        this.exertCard(this.state);
-    }
-
-    /** Function to update the power of the card 
-     * DON cards are only counted during tje players active turn
-    */
-    updatePowerText() {
-        if(this.playerScene.isPlayerTurn) this.locationPowerText.setText(this.cardData.power + this.attachedDon.length*1000);
-        else this.locationPowerText.setText(this.cardData.power);
-    }
+    //#endregion
 
 }
