@@ -19,4 +19,12 @@ class ActiveInteractionState extends GameState {
         gameObject.fsmState.onDragStart(pointer, gameObject);
         this.exit(GAME_STATES.DRAGGING);
     }
+
+    update() {
+        //Update all cards in the hand to reflect if they can take an action
+        for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.update(); 
+        for(let card of this.scene.activePlayerScene.characterArea.cards) card.fsmState.update();
+        for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.fsmState.update();
+        for(let card of this.scene.activePlayerScene.stageLocation.cards) card.fsmState.update();
+    }
 }

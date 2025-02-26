@@ -331,8 +331,6 @@ class ActionLibrary {
         let action = new Action();
         action.start = () => { //Start function
             card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
-            card.isInPlayAnimation = true;
-            card.makeDraggable(false); //Remove the draggable state of the card
             card.setState(CARD_STATES.IN_PLAY_TARGETTING);
         };
         action.start_animation = start_animation; //Play animation
@@ -350,7 +348,7 @@ class ActionLibrary {
     }
     //#endregion
 
-    //#region START TARGETING ACTION
+    //#region TARGETING ACTION
     /** Function to start the targetting arrow
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
@@ -364,6 +362,30 @@ class ActionLibrary {
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
         action.name = "START TARGETING";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
+    cancelTargetingAction() {
+        let action = new Action();
+        action.start = () => {
+            let card = this.scene.targetingArrow.originatorObject;
+
+            this.scene.targetingArrow.stopTargeting();
+
+            card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+            card.setState(CARD_STATES.IN_HAND);
+            card.playerScene.hand.update();
+
+            this.scene.game.gameClient.requestCancelTargeting(this.scene.targetManager.targetData);
+            this.scene.targetManager.reset();
+
+            this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+        }
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+        action.name = "CANCEL TARGETING";
 
         //Add action to the action stack
         this.actionManager.addAction(action);

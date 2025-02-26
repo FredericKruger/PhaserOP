@@ -35,4 +35,11 @@ class InHandState extends GameCardState {
 
         gameObject.scene.game.gameClient.sendCardDragStart(gameObject.id, 'GameCardUI');
     }
+
+    //#region UPDATE FUNCTION
+    update() {
+        if(this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
+        else this.card.hideGlow();
+    }
+    //#endregion
 }

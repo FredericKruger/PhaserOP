@@ -1,12 +1,15 @@
 class AnimationLibraryPassivePlayer {
 
+    //#region CONSTRUCTOR
     /** Constructor
      * @param {GameScene} scene - The scene that will contain the animation manager
      */
     constructor(scene) {
         this.scene = scene;
     }
+    //#endregion
 
+    //#region MOVE CARD FUNCTIONS
     /** Returns a tween chain that moves a card from the deck to the mulligan
      * @param {GameCardUI} card - Card to be moved from deck to mulligan
      * @param {number} mulliganPosition - Position in the mulligan
@@ -123,7 +126,7 @@ class AnimationLibraryPassivePlayer {
      */
     animation_move_card_deck2hand(card, delay) {
         let animation = [
-            { //tween 1: move slightly to the right of the deckpile while reducing x scale to 0. At the end flip the card
+            /*{ //tween 1: move slightly to the right of the deckpile while reducing x scale to 0. At the end flip the card
                 scaleX: 0,
                 scaleY: CARD_SCALE.IN_DECK,
                 x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.2/2,
@@ -132,7 +135,9 @@ class AnimationLibraryPassivePlayer {
                 onComplete: () => {
                     card.state = CARD_STATES.TRAVELLING_TO_HAND;
                 }
-            }, { //tween 2: move slightly to the right of the deckpile while increasing the x scale to match the y scale
+            }, */
+            { //tween 2: move slightly to the right of the deckpile while increasing the x scale to match the y scale
+                onStart: () => {card.state = CARD_STATES.TRAVELLING_TO_HAND;},
                 scaleX: 0.28,
                 scaleY: 0.28,
                 x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.28 - 20,

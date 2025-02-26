@@ -1,5 +1,6 @@
 class BaseCardUI extends Phaser.GameObjects.Container {
 
+    //#region CONSTRUCTOR
     /** COnstructor
      * @param {GameScene} scene - The scene where the card is going to be
      * @param {PlayerScene} playerScene - The player scene where the card is going to be
@@ -18,6 +19,8 @@ class BaseCardUI extends Phaser.GameObjects.Container {
 
         this.obj = [];
 
+        this.hasGlow = false;
+
         //Create card
         this.create();
         this.add(this.obj);
@@ -31,7 +34,9 @@ class BaseCardUI extends Phaser.GameObjects.Container {
         this.makeInteractive(true);
         if(playerScene.player.isActivePlayer) this.makeDraggable(true);
     }
+    //#endregion
 
+    //#region CREATE FUNCTION
     /** Function to create the card */
     create() {
         //Prepare backart
@@ -46,7 +51,18 @@ class BaseCardUI extends Phaser.GameObjects.Container {
 
         this.setScale(this.currentScale);
     }
+    //#endregion
 
+    //#region FLIP FUNCTION
+    /** Function that flips the card */
+    flipCard() {
+        this.artVisible = !this.artVisible;
+        this.frontArt.setVisible(this.artVisible);
+        this.backArt.setVisible(!this.artVisible);
+    }
+    //#endregion
+
+    //#region UTILS
     /** Function that makes a card interactive
      * @param {boolean} interactive
      */
@@ -75,15 +91,9 @@ class BaseCardUI extends Phaser.GameObjects.Container {
         this.currentScale = scale;
         this.setScale(scale);
     }
+    //#endregion
 
-
-    /** Function that flips the card */
-    flipCard() {
-        this.artVisible = !this.artVisible;
-        this.frontArt.setVisible(this.artVisible);
-        this.backArt.setVisible(!this.artVisible);
-    }
-
+    //#region TWEEN FUNCTIONS
     /** Function that moves the card to a location
      * @param {number} x
      * @param {number} y
@@ -168,15 +178,25 @@ class BaseCardUI extends Phaser.GameObjects.Container {
             this.setScale(currentScale);
         }
     }
+    //#endregion
        
-    /** preFX Function */
-
+    //#region FX FUNCTIONS
     /** Show Glow
      * 
      */
-    showGlow(color) {this.postFX.addGlow(color, 4);}
+    showGlow(color) {
+        if(!this.hasGlow) {
+            this.postFX.addGlow(color, 6);
+            this.hasGlow = true;
+        }
+    }
 
     /** Hide Glow */
-    hideGlow() {this.postFX.clear();}
-
+    hideGlow() {
+        if(this.hasGlow) {
+            this.postFX.clear();
+            this.hasGlow = false;
+        }
+    }
+    //#endregion
 }

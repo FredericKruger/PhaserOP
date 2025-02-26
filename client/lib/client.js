@@ -37,8 +37,6 @@ class Client {
         this.passivePlayerNumberCards = null;
         this.passivePlayerName = "";
 
-        this.currentTargetingAction = null; //variable that stores the current targeting action coming from the server
-
         /** Listen to the signal from the server that the player has successfully connected */
         this.socket.on('player_connected', (success, playerSetting, cardList, playerCollection, newPlayer, shopData) => {
             if(success) {
@@ -127,8 +125,8 @@ class Client {
         this.socket.on('game_play_card_not_enough_don_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, false);});
         this.socket.on('game_play_card_character_played', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, true, false);});
         this.socket.on('game_play_card_character_played_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, false, false);});
-        this.socket.on('game_play_card_select_replacement_target', (actionInfos, targetAction) => {
-            this.currentTargetingAction = targetAction;
+        this.socket.on('game_play_card_select_replacement_target', (actionInfos, targetData) => {
+            this.gameScene.targetManager.loadFromTargetData(targetData);
             this.gameScene.gameStateManager.playCard(actionInfos, true, true);
         });
 
@@ -201,6 +199,8 @@ class Client {
 
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
     requestPlayerAttachDonToCharacter (donID, characterID) {this.socket.emit('player_attach_don_to_character', donID, characterID);}
+
+    requestCancelTargeting (targetData) {this.socket.emit('player_cancel_targeting', targetData);}
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}

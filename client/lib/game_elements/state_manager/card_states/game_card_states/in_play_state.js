@@ -17,4 +17,14 @@ class InPlayState extends GameCardState {
         gameObject.scene.game.gameClient.sendCardPointerOut(gameObject.id, CARD_STATES.IN_PLAY, gameObject.playerScene === gameObject.scene.activePlayerScene);
     }
 
+    update() {
+        this.card.hideGlow();
+    }
+
+    isValidTarget() {
+        let isValid = this.card.scene.targetManager.isValidTarget(this.card);
+        if(isValid) this.card.showGlow(COLOR_ENUMS.OP_GREEN);
+        else this.card.hideGlow();
+    }
+
 }

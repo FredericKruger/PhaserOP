@@ -194,7 +194,17 @@ class MatchState {
             } else {
                 let cardData = player.getCardFromHand(cardId);
                 actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
-                return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetAction: TARGET_ACTION.PLAY_CARD_ACTION};
+                let targetData = {
+                    targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
+                    targets: [
+                        {
+                            player: ["active"],
+                            cardtypes: [CARD_TYPES.CHARACTER],
+                            states: ["IN_PLAY", "IN_PLAY_RESTED"],
+                        }
+                    ]
+                }
+                return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetData: targetData};
             }
         } else if(card.cardData.card === CARD_TYPES.EVENT) { //TODO: Implement event card
         }

@@ -256,7 +256,7 @@ class Match {
             if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played_passive_player', result.actionInfos);
         } else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
-            if(!player.bot) player.socket.emit('game_play_card_select_replacement_target', result.actionInfos, result.targetAction);
+            if(!player.bot) player.socket.emit('game_play_card_select_replacement_target', result.actionInfos, result.targetData);
             //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_select_replacement_target_passive_player', result.actionInfos);
         }
     }
