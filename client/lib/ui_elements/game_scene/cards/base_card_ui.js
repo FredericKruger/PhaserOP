@@ -27,6 +27,9 @@ class BaseCardUI extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
 
         this.setDepth(this.cardDepth);
+
+        this.makeInteractive(true);
+        if(playerScene.player.isActivePlayer) this.makeDraggable(true);
     }
 
     /** Function to create the card */

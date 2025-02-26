@@ -231,6 +231,10 @@ class GameStateManager {
         //Add Mulligan cards to the hand
         this.scene.activePlayerScene.hand.addCards(this.gameStateUI.mulliganUI.cards, {setCardState: true, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: false});
         this.scene.passivePlayerScene.hand.addCards(this.gameStateUI.mulliganUI.card_passivePlayer, {setCardState: true, setCardDepth: false, setCardInteractive: false, setCardDraggable: false, updateUI: false});
+
+        //Set Game State to passive
+        this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+
         //Create tween to remove mulligan UI
         this.scene.add.tween({
             targets: this.scene.maskPanel,
@@ -504,12 +508,12 @@ class GameStateManager {
 
         if(isPlayerTurn) {
             //Make the cards draggable in the hand and in the don deck
-            this.scene.activePlayerScene.hand.makeCardDraggable(true);
-            this.scene.activePlayerScene.activeDonDeck.makeInteractive(true);
-            this.scene.activePlayerScene.activeDonDeck.makeCardDraggable(true);
+            this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
 
             //Change state of the next turn button
             this.scene.gameStateUI.nextTurnbutton.makeInteractive(true);
+        } else {
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
         }
     }
 
@@ -623,8 +627,7 @@ class GameStateManager {
     /** Function to trigger a next turn. Triggered on next turn button press */
     triggerNextTurn() {
         // Trigers the end of the turn. Cards should not be draggable anymore. Next turn button should not be draggable anymore
-        this.scene.activePlayerScene.hand.makeCardDraggable(false);
-        this.scene.activePlayerScene.activeDonDeck.makeInteractive(false);
+        this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
         this.scene.gameStateUI.nextTurnbutton.removeInteractive();
 
         //Send message to server    

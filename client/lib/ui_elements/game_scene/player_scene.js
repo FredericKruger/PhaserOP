@@ -1,5 +1,6 @@
 class PlayerScene {
 
+    //#region CONSTRUCTOR
     /**
      * 
      * @param {GameScene} scene 
@@ -14,7 +15,6 @@ class PlayerScene {
 
         this.opponentPlayerScene = null;
         this.isPlayerTurn = false;
-        this.isTargetting = false;
 
         //Initialize player UI Components
         this.donDeck = new DonDeckUI(scene, this);
@@ -30,7 +30,9 @@ class PlayerScene {
         this.characterArea = new CharacterAreaUI(scene, this);
         this.playerInfo = new PlayerInfoUI(scene, this);
     }
+    //#endregion
 
+    //#region CREATE FUNCTION
     /** Draw all the elements */
     create() {
         this.donDeck.create();
@@ -42,7 +44,9 @@ class PlayerScene {
 
         this.playerInfo.create();
     }
+    //#endregion
 
+    //#region PLAY CARD FUNCTION
     /** Function that handles when a card is played
      * @param {Object} actionInfos
      * @param {boolean} isPlayerTurn
@@ -69,31 +73,13 @@ class PlayerScene {
         } else {
             if(isPlayerTurn) {
                 this.scene.actionLibrary.startPlayCardTargetingAction(this, card);
-                this.scene.actionLibrary.startTargettingAction(this, card);
+                this.scene.actionLibrary.startTargetingAction(this, card);
             }
         }
     }
+    //#endregion
 
-    /** Function to get a card from the player
-     * @param {number} cardId
-     */
-    getCard(cardId) {
-        let card = this.hand.getCard(cardId);
-        if(card !== undefined && card !== null) return card;
-
-        card = this.characterArea.getCard(cardId);
-        if(card !== undefined && card !== null) return card;
-
-        card = this.leaderLocation.getCard(cardId);
-        if(card !== undefined && card !== null) return card;
-
-        card = this.stageLocation.getCard(cardId);
-        if(card !== undefined && card !== null) return card;
-
-        card = this.discard.getCard(cardId);
-        return card;
-    }
-
+    //#region CHECKER FUNCTIONS
     /** Function the pointer is over a character card
      * @param {number} pointerX
      * @param {number} pointerY
@@ -115,7 +101,32 @@ class PlayerScene {
 
         return null;
     }
+    //#endregion
 
+    //#region UTIL FUNCTIONS
+    /** Function to get a card from the player
+     * @param {number} cardId
+     */
+    getCard(cardId) {
+        let card = this.hand.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
+        card = this.characterArea.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
+        card = this.leaderLocation.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
+        card = this.stageLocation.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
+        card = this.discard.getCard(cardId);
+        return card;
+    }
+
+    /** Function to set visibility 
+     * @param {boolean} visible
+     */
     setVisible(visible) {
         this.donDeck.setVisible(visible);
         this.discard.setVisible(visible);
@@ -126,4 +137,5 @@ class PlayerScene {
         this.characterArea.setVisible(visible);
         this.playerInfo.setVisible(visible);    
     }
+    //#endregion
 }

@@ -10,6 +10,7 @@ class ActionLibrary {
         this.actionManager = this.scene.actionManager;
     }
 
+    //#region DRAW CARD ACTION
     /**
      * Createss an action to draw a card
      * @param {PlayerScene} playerScene 
@@ -94,7 +95,9 @@ class ActionLibrary {
         //Add Action to the action stack
         this.actionManager.addAction(drawAction);
     }
+    //#endregion
 
+    //#region DRAW DON CARD ACTION
     /** Creates an Action to draw a card from the Don Deck 
      * @param {PlayerScene} playerScene
      * @param {number} cardid
@@ -140,11 +143,11 @@ class ActionLibrary {
         let drawAction = new Action();
         drawAction.start = () => {
             card.setDepth(DEPTH_VALUES.DON_IN_PILE);
-            card.playerScene.activeDonDeck.addCard(card);
+            card.setState(CARD_STATES.DON_TRAVELLING);
         };
         drawAction.start_animation = start_animation;
         drawAction.end = () => {
-            card.setState(CARD_STATES.DON_ACTIVE);
+            card.playerScene.activeDonDeck.addCard(card);
             card.playerScene.playerInfo.updateActiveCardAmountText(); //udpate the ui
             
             playerScene.donDeck.popTopCardVisual(); //Remove the top Card Visual
@@ -157,7 +160,9 @@ class ActionLibrary {
         //Add Action to the action stack
         this.actionManager.addAction(drawAction);
     }
+    //#endregion
 
+    //#region MOVE CARD FROM MULLIGAN TO DECK ACTION
     /** Creates an Action to move a card from the mulligan UI to the deck
      * @param {PlayerScene} playerScene 
      * @param {GameCardUI} card 
@@ -200,7 +205,9 @@ class ActionLibrary {
         //Add Action to the action stack
         this.actionManager.addAction(action);
     }
+    //#end region
 
+    //#region PLAY CARD ACTION
     /** Creates the Play Card Action.
          * @param {GameCardUI} card - Card that is being played.
          * @param {PlayerScene} playerScene - Player Scene that is playing the card.
@@ -293,8 +300,9 @@ class ActionLibrary {
         //Add action to the action stack
         this.actionManager.addAction(updateAction);
     }
+    //#endregion
 
-
+    //#region PLAY CARD TARGETING ACTION
     /** function to move the targeting area
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
@@ -340,22 +348,25 @@ class ActionLibrary {
         //Add action to the action stack
         this.actionManager.addAction(action);
     }
+    //#endregion
 
+    //#region START TARGETING ACTION
     /** Function to start the targetting arrow
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
      */
-    startTargettingAction(playerScene, card) {
+    startTargetingAction(playerScene, card) {
         let action = new Action();
         action.start = () => {
-            playerScene.isTargetting = true;
-            this.scene.targettingArrow.startTargetting(card);
+            this.scene.gameState.exit(GAME_STATES.TARGETING);
+            this.scene.targetingArrow.startTargeting(card);
         };
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
-        action.name = "START TARGETTING";
+        action.name = "START TARGETING";
 
         //Add action to the action stack
         this.actionManager.addAction(action);
     }
+    //#endregion
 }
