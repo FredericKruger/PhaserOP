@@ -111,30 +111,28 @@ class Client {
         this.socket.on('game_end_mulligan', () => {this.gameScene.gameStateManager.endMulligan();});
         this.socket.on('game_first_turn_setup', (activePlayerCards, passivePlayerCards) => {this.gameScene.gameStateManager.firstTurnSetup(activePlayerCards, passivePlayerCards);});
 
-        this.socket.on('game_start_refresh_phase', (refreshDon, refreshCards) => {this.gameScene.gameStateManager.startRefreshPhase(refreshDon, refreshCards);});
-        this.socket.on('game_start_refresh_phase_passive_player', (refreshDon, refreshCards) => {this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards);});
-        this.socket.on('game_start_draw_phase', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, true);});
-        this.socket.on('game_start_draw_phase_passive_player', (newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, false);});
-        this.socket.on('game_start_don_phase', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, true);});
-        this.socket.on('game_start_don_phase_passive_player', (donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, false);});
-        this.socket.on('game_start_main_phase', () => {this.gameScene.gameStateManager.startMainPhase(true);});
-        this.socket.on('game_start_main_phase_passive_player', () => {this.gameScene.gameStateManager.startMainPhase(false);});
+        this.socket.on('game_start_refresh_phase', (activePlayer, refreshDon, refreshCards) => {
+            if(activePlayer) this.gameScene.gameStateManager.startRefreshPhase(refreshDon, refreshCards);
+            else this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards);
+        });
+        this.socket.on('game_start_draw_phase', (activePlayer, newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, activePlayer);});
+        this.socket.on('game_start_don_phase', (activePlayer, donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, activePlayer);});
+        this.socket.on('game_start_main_phase', (activePlayer) => {this.gameScene.gameStateManager.startMainPhase(activePlayer);});
 
         /** CARD PLAY */
-        this.socket.on('game_play_card_not_enough_don', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, true);});
-        this.socket.on('game_play_card_not_enough_don_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, false);});
-        this.socket.on('game_play_card_character_played', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, true, false);});
-        this.socket.on('game_play_card_character_played_passive_player', (actionInfos) => {this.gameScene.gameStateManager.playCard(actionInfos, false, false);});
-        this.socket.on('game_play_card_select_replacement_target', (actionInfos, targetData) => {
-            this.gameScene.targetManager.loadFromTargetData(targetData);
-            this.gameScene.gameStateManager.playCard(actionInfos, true, true);
+        this.socket.on('game_play_card_not_enough_don', (actionInfos, activePlayer) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, activePlayer);});
+        this.socket.on('game_play_card_character_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
+            if(activePlayer && requiresTargeting) this.gameScene.targetManager.loadFromTargetData(targetData);
+
+            this.gameScene.gameStateManager.playCard(actionInfos, activePlayer, requiresTargeting);
         });
+        this.socket.on('game_play_card_cancel_replacement_target', (cardID, activePlayer) => {this.gameScene.gameStateManager.cancelReplacementTarget(cardID, activePlayer);});
 
         /** ATTACH DON TO CHARACTER */
-        this.socket.on('game_attach_don_to_character_failure', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, true);});
-        this.socket.on('game_attach_don_to_character_failure_passive_player', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, false);});
-        this.socket.on('game_attach_don_to_character_success', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, true);});
-        this.socket.on('game_attach_don_to_character_success_passive_player', (actionInfos) => {this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, false);});
+        this.socket.on('game_attach_don_to_character', (actionInfos, activePlayer, attachDonSuccessful) => {
+            if(attachDonSuccessful) this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, activePlayer);
+            else this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, activePlayer);
+        });
 
         /** OPPONENT ACTION LISTENERS */
 
@@ -190,17 +188,14 @@ class Client {
     requestFirstTurnSetupComplete() {this.socket.emit('player_first_turn_setup_complete');};
     requestFirstTurnSetupPassivePlayerAnimationComplete () {this.socket.emit('player_first_turn_setup_passiveplayer_animation_complete');};
 
-    requestEndRefreshPhase () {this.socket.emit('player_end_refresh_phase');}
-    requestEndPassivePlayerAnimationRefreshPhase () {this.socket.emit('player_end_passiveplayer_animation_refresh_phase');}
-    requestEndDrawPhase () {this.socket.emit('player_end_draw_phase');}
-    requestEndPassivePlayerAnimationDrawPhase () {this.socket.emit('player_end_passiveplayer_animation_draw_phase');}
-    requestEndDonPhase () {this.socket.emit('player_end_don_phase');}
-    requestEndPassivePlayerAnimationDonPhase () {this.socket.emit('player_end_passiveplayer_animation_don_phase');}
+    requestEndRefreshPhase (activePlayer) {this.socket.emit('player_end_refresh_phase', activePlayer);}
+    requestEndDrawPhase (activePlayer) {this.socket.emit('player_end_draw_phase', activePlayer);}
+    requestEndDonPhase (activePlayer) {this.socket.emit('player_end_don_phase', activePlayer);}
 
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
     requestPlayerAttachDonToCharacter (donID, characterID) {this.socket.emit('player_attach_don_to_character', donID, characterID);}
 
-    requestCancelTargeting (targetData) {this.socket.emit('player_cancel_targeting', targetData);}
+    requestCancelTargeting (targetData) {this.socket.emit('player_cancel_targeting');}
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}

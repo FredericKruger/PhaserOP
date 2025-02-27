@@ -9,6 +9,7 @@ const { PLAY_CARD_STATES, ATTACH_DON_TO_CHAR_STATES } = require("./match_enums")
 
 class Match {
 
+    //#region CONSTRUCTOR
     /**
      * 
      * @param {Player} player1 
@@ -48,7 +49,9 @@ class Match {
         /** @type {FlagManager} */
         this.flagManager = new FlagManager(this); //Create a new state manager
     }
+    //#endregion
 
+    //#region START SETUP
     /** Function to start the game setup
      * @param {Player} requestingPlayer
      */
@@ -66,7 +69,9 @@ class Match {
             if(!this.player2.bot) this.player2.socket.emit('start_game_intro', player2Leader, player1Leader);
         }
     }
+    //#nedregion
 
+    //#region MULLIGAN FUNCTIONS
     /** Function to state the mulligan phase
      * @param {Player} requestingPlayer
      */
@@ -120,7 +125,9 @@ class Match {
             }, 1000);
         }
     }
+    //#endregion
 
+    //#region FIRST TURN SETUP
     /** Function to set up the first turn */
     firstTurnSetup(requestingPlayer) {
         if(this.flagManager.checkFlags(['READY_FIRST_TURN_STEP'])){
@@ -154,7 +161,10 @@ class Match {
             this.startNewTurn();
         }
     }
+    //#endregion
 
+
+    //#region TURN FUNCTIONS
     /** Function to ask wait for the passive player to complete all the pending action 
     */
     completeCurrentTurn() {
@@ -184,10 +194,12 @@ class Match {
         let refreshedCard = this.state.refreshCards(this.state.current_active_player.currentMatchPlayer); //Change status of cards
 
         //Send signal to client
-        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_refresh_phase', refreshedDon, refreshedCard);
-        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_refresh_phase_passive_player', refreshedDon, refreshedCard);
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_refresh_phase', true, refreshedDon, refreshedCard);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_refresh_phase', false, refreshedDon, refreshedCard);
     }
+    //#endregion
 
+    //#region PHASE FUNCTIONS
     /** Function that start the draw Phase */
     startDrawPhase() {
         if(this.flagManager.checkFlag('REFRESH_PHASE_COMPLETE', this.state.current_active_player)
@@ -200,8 +212,8 @@ class Match {
             let playerCards = this.state.startDrawPhase(this.state.current_active_player.currentMatchPlayer);
 
             //Send signals to the client
-            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_draw_phase', playerCards);
-            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_draw_phase_passive_player', playerCards);
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_draw_phase', true, playerCards);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_draw_phase', false, playerCards);
         }
     }
 
@@ -217,8 +229,8 @@ class Match {
             let donCards = this.state.startDonPhase(this.state.current_active_player.currentMatchPlayer);
             
             //Send signal to client
-            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_don_phase', donCards);
-            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_don_phase_passive_player', donCards);
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_don_phase', true, donCards);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_don_phase', false, donCards);
         }
     }
 
@@ -231,8 +243,8 @@ class Match {
             this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
 
             //Start the main phase
-            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_main_phase');
-            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_main_phase_passive_player');
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_main_phase', true);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_main_phase', false);
 
             //If the active player is a bot, let the AI play
             if(this.state.current_active_player.bot) {
@@ -241,7 +253,9 @@ class Match {
             }
         }
     }
+    //#endregion
 
+    //#region ACTION FUNCTIONS
     /** Function that handles playing a card
      * @param {Player} player
      * @param {number} cardID
@@ -250,14 +264,14 @@ class Match {
         let result = this.state.playCard(player.currentMatchPlayer, cardID);
 
         if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
-            if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don_passive_player', result.actionInfos);
+            if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don', result.actionInfos, false);
         } else if(result.actionResult === PLAY_CARD_STATES.CHARACTER_PLAYED) {
-            if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played_passive_player', result.actionInfos);
+            if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos, true, false, {});
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played', result.actionInfos, false, false, {});
         } else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
-            if(!player.bot) player.socket.emit('game_play_card_select_replacement_target', result.actionInfos, result.targetData);
-            //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_select_replacement_target_passive_player', result.actionInfos);
+            if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos, true, true, result.targetData);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played', result.actionInfos, false, true, {});
         }
     }
 
@@ -270,11 +284,31 @@ class Match {
         let result = this.state.startAttachDonToCharacter(player.currentMatchPlayer, donID, characterID);
 
         if(result.actionResult === ATTACH_DON_TO_CHAR_STATES.DON_NOT_READY) {
-            if(!player.bot) player.socket.emit('game_attach_don_to_character_failure', result.actionInfos);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character_failure_passive_player', result.actionInfos);
+            if(!player.bot) player.socket.emit('game_attach_don_to_character', result.actionInfos, true, false);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character', result.actionInfos, false, true);
         } else if(result.actionResult === ATTACH_DON_TO_CHAR_STATES.DON_ATTACHED) {
-            if(!player.bot) player.socket.emit('game_attach_don_to_character_success', result.actionInfos);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character_success_passive_player', result.actionInfos);
+            if(!player.bot) player.socket.emit('game_attach_don_to_character', result.actionInfos, true, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character', result.actionInfos, false, true);
+        }
+    }
+    //#endregion
+
+    //#region RESOLVE ACTION FUNCTION
+    /** Function to revolve the current pending action. Big switch that will redirect to the approriate function 
+     * @param {Player} player
+     * @param {Array<number>} targets
+    */
+    resolvePendingAction(player, cancel = false, targets = []) {
+        switch (this.state.pending_action.actionResult) {
+            case PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET:
+                if(cancel) {
+                    let cardID = this.state.cancelPlayCard(player.currentMatchPlayer);
+                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
+                }
+                else this.state.resolvePlayCardSelectReplacementTarget(player, targets);
+                break;
+            default:
+                break;
         }
     }
 }

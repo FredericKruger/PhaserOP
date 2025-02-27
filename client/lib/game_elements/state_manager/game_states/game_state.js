@@ -16,6 +16,16 @@ class GameState {
     constructor(scene, name) {
         this.scene = scene;
         this.name = name;
+        
+        this.enter();
+    }
+
+    enter() {
+        //Reset glows of all cards
+        for(let card of this.scene.activePlayerScene.hand.cards) card.hideGlow();
+        for(let card of this.scene.activePlayerScene.characterArea.cards) card.hideGlow();
+        for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.hideGlow();
+        for(let card of this.scene.activePlayerScene.stageLocation.cards) card.hideGlow();
     }
 
     exit(newState) {

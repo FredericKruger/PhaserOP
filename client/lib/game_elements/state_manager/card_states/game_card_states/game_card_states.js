@@ -17,6 +17,12 @@ class GameCardState {
     constructor(card, name) {
         this.card = card;
         this.name = name;
+
+        this.enter();
+    }
+
+    enter() {
+        this.card.hideGlow();
     }
 
     /** Function to exit one state to another

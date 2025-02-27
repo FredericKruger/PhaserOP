@@ -3,6 +3,7 @@ const { CARD_STATES } = require('./match_card');
 const { PLAY_CARD_STATES, CARD_TYPES, ATTACH_DON_TO_CHAR_STATES, MATCH_CONSTANTS, TARGET_ACTION } = require('./match_enums');
 const MatchPlayer = require('./match_player')
 
+//#region MATCH PHASES OBJECT
 const MATCH_PHASES = Object.freeze({
     WAITING_TO_START: 'WAITING_TO_START',
     SETUP: 'SETUP',
@@ -14,9 +15,11 @@ const MATCH_PHASES = Object.freeze({
     DRAW_PHASE: 'DRAW_PHASE',
     DON_PHASE: 'DON_PHASE',
 })
+//#endregion
 
 class MatchState {
 
+    //#region CONSTRUCTOR
     /**
      * Constructor on the Match State class
      * @param {Match} match 
@@ -28,10 +31,15 @@ class MatchState {
         this.current_passive_player = null;
         this.current_phase = MATCH_PHASES.WAITING_TO_START;
 
+        this.resolving_pending_action = false;
+        this.pending_action = null;
+
         this.player1 = new MatchPlayer();
         this.player2 = new MatchPlayer();
     }
+    //#endregion
 
+    //#region DRAW FUNCTION
     /** Function that makes a player draw a number of cards
      * @param {number} numberCards - number of cards to be drawn
      * @param {MatchPlayer} player - player: either 'a' or 'b'
@@ -48,7 +56,9 @@ class MatchState {
         }
         return cards;
     }
+    //#endregion
 
+    //#region MULLIGAN FUNCTIONS
     /** Function that mulligans the cards
      * @param {MatchPlayer} player - player object
      * @param {Array<number>} cards - list of card ids to be mulliganed
@@ -73,7 +83,9 @@ class MatchState {
 
         return newCards;
     }
+    //#endregion
 
+    //#region SETUP FUNCTIONS
     /** Function that distributes cards in the life pool for the player 
      * @param {MatchPlayer} player - player object
      */
@@ -86,7 +98,9 @@ class MatchState {
         }
         return cards;
     }
+    //#endregion
 
+    //#region REFRESH FUNCTIONS
     /** Function that returns all attached DON cards to the don Area
      * @param {MatchPlayer} player - player object
      */
@@ -124,7 +138,9 @@ class MatchState {
         }
         return cards;
     }
+    //#endregion
 
+    //#region PHASE FUNCTIONS
     /** Start Draw Phase. First players do not draw a card on their first turn
      * @param {MatchPlayer} player
      */
@@ -162,7 +178,9 @@ class MatchState {
         //Returns cards to the match
         return donCards;
     }
+    //#endregion
 
+    //#region PLAY CARD FUNCTIONS
     /** Function that determines if a card can be played
      * @param {MatchPlayer} player - player object
      * @param {number} cardId - card id
@@ -204,12 +222,29 @@ class MatchState {
                         }
                     ]
                 }
-                return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetData: targetData};
+                this.pending_action = {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetData: targetData};
+                this.resolving_pending_action = true;
+                return this.pending_action;
             }
         } else if(card.cardData.card === CARD_TYPES.EVENT) { //TODO: Implement event card
         }
     }
 
+    /** Function to cancel the playing of a card
+     * @param {MatchPlayer} player - player object
+     */
+    cancelPlayCard(player) {
+        let cardID = this.pending_action.actionInfos.playedCard; //Get Card ID
+        
+        this.pending_action = null; //Reset pending action variables
+        this.resolving_pending_action = false;
+
+        return cardID;
+    }
+
+    //#endregion
+
+    //#region ATTACH DON FUNCTIONS
     /** Function that handles attaching a don card to a character
      * @param {MatchPlayer} player - player object
      * @param {number} donID - don card id
@@ -234,6 +269,7 @@ class MatchState {
             return {actionResult: ATTACH_DON_TO_CHAR_STATES.DON_NOT_READY, actionInfos: {attachedDonCard: donID, receivingCharacter: characterID}};
         }
     }
+    //#endregion
 }
 
 module.exports = {

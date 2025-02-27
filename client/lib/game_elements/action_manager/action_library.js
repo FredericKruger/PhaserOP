@@ -367,6 +367,7 @@ class ActionLibrary {
         this.actionManager.addAction(action);
     }
 
+    /** Function to stop the targeting */
     cancelTargetingAction() {
         let action = new Action();
         action.start = () => {

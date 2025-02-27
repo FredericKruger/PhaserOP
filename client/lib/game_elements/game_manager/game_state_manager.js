@@ -358,7 +358,7 @@ class GameStateManager {
                     for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.updatePowerText();
 
                     //Tell server refresh complete
-                    this.scene.game.gameClient.requestEndRefreshPhase();
+                    this.scene.game.gameClient.requestEndRefreshPhase(true);
                 }
             });
         });
@@ -424,7 +424,7 @@ class GameStateManager {
             for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.updatePowerText();
 
             //Tell server refresh complete
-            this.scene.game.gameClient.requestEndPassivePlayerAnimationRefreshPhase();
+            this.scene.game.gameClient.requestEndRefreshPhase(false);
         });
     }
 
@@ -447,10 +447,7 @@ class GameStateManager {
     
             //Create a last action to call the server
             let endDrawPhaseAction = new Action();
-            endDrawPhaseAction.start = () => {
-                if(isPlayerTurn ) this.scene.game.gameClient.requestEndDrawPhase();
-                else this.scene.game.gameClient.requestEndPassivePlayerAnimationDrawPhase();
-            };
+            endDrawPhaseAction.start = () => {this.scene.game.gameClient.requestEndDrawPhase(isPlayerTurn);};
             endDrawPhaseAction.isPlayerAction = true;
             endDrawPhaseAction.waitForAnimationToComplete = false;
             this.scene.actionManager.addAction(endDrawPhaseAction);
@@ -465,10 +462,7 @@ class GameStateManager {
             this.setPhase(GAME_PHASES.DON_PHASE); //Set the phase to Don Phase
 
             //Draw the active player's cards
-            let animationCallback = () => {
-                if(isPlayerTurn) this.scene.game.gameClient.requestEndDonPhase();
-                else this.scene.game.gameClient.requestEndPassivePlayerAnimationDonPhase();
-            };
+            let animationCallback = () => {this.scene.game.gameClient.requestEndDonPhase(isPlayerTurn);};
 
             for(let i=0; i<donCards.length; i++) {
                 let callback = (i === (donCards.length-1) ? animationCallback : null);
@@ -566,6 +560,18 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         player.playCard(actionInfos, isPlayerTurn, startTargeting);
+    }
+
+    /** Function to cancel the playing of a card
+     * @param {number} cardID - The card ID
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    cancelReplacementTarget(cardID, isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let card = player.hand.getCard(cardID);
+        if(!isPlayerTurn) this.scene.actionLibraryPassivePlayer.cancelReplacementTarget(this.scene.passivePlayerScene, card);
     }
 
     //#endregion

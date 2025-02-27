@@ -1,5 +1,6 @@
 class ActionLibraryPassivePlayer {
 
+    //#region CONSTRUCTOR
     /** Constructor
      * @param {GameScene} scene - The scene that will contain the action manager
      */
@@ -8,7 +9,9 @@ class ActionLibraryPassivePlayer {
         
         this.actionManager = this.scene.actionManager;
     }
+    //#endregion
 
+    //#region DRAW CARD ACTIONS
     /** Function that draws a card for the opponent
      * @param {PlayerScene} playerScene 
      * @param {Object} serverCard
@@ -95,51 +98,6 @@ class ActionLibraryPassivePlayer {
         this.scene.actionManager.addAction(drawAction);
     }
 
-    /**
-     * Action to move a card from the mulligan back to the deck
-     * @param {PlayerScene} playerScene 
-     * @param {GameCardUI} card 
-     */
-    moveCardsMulliganToDeckAction(playerScene, card, animationConfig, config) {
-        //Prepare Tweens
-        let tweens = this.scene.animationLibraryPassivePlayer.animation_move_card_mulligan2deck(card, animationConfig.delay);
-        tweens = tweens.concat({
-            duration: 10,
-            onComplete: () => { card.destroy(); }
-        });
-        if(config.waitForAnimationToComplete) {
-            tweens = tweens.concat({
-                duration: 10,
-                onComplete: () => { this.scene.actionManager.completeAction(); }
-            });
-        }
-        let start_animation = this.scene.tweens.chain({ //Create tween chain
-            targets: card,
-            tweens: tweens
-        }).pause();
-
-        let action = new Action();
-        action.start = () => {
-            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
-            card.setState(CARD_STATES.TRAVELLING_TO_DECK);
-        };
-        action.start_animation = start_animation;
-        action.finally = () => {
-            //Delete the card
-            card.setState(CARD_STATES.IN_DECK);
-
-            //Add new Card Visual to deck
-            playerScene.deck.addDeckVisual();
-            playerScene.deck.updateCardAmountText();
-        };
-        action.isPlayerAction = true;
-        action.waitForAnimationToComplete = config.waitForAnimationToComplete;
-        action.name = "MOVE CARD MULLIGAN TO DECK ACTION";
-
-        //Add Action to the action stack
-        this.actionManager.addAction(action);
-    }
-
     /** Creates an Action to draw a card from the Don Deck 
      * @param {PlayerScene} playerScene
      * @param {number} cardid
@@ -197,14 +155,63 @@ class ActionLibraryPassivePlayer {
             playerScene.donDeck.popTopCardVisual(); //Remove the top Card Visual
         }
         drawAction.finally = () => {deckVisual.destroy();};
-        drawAction.isPlayerAction = true;
+        drawAction.isPlayerAction = false;
         drawAction.waitForAnimationToComplete = config.waitForAnimationToComplete;
         drawAction.name = "DRAW DON ACTION";
 
         //Add Action to the action stack
         this.actionManager.addAction(drawAction);
     }
+    //#endregion
 
+    //#region MULLIGAN ACTIONS
+    /**
+     * Action to move a card from the mulligan back to the deck
+     * @param {PlayerScene} playerScene 
+     * @param {GameCardUI} card 
+     */
+    moveCardsMulliganToDeckAction(playerScene, card, animationConfig, config) {
+        //Prepare Tweens
+        let tweens = this.scene.animationLibraryPassivePlayer.animation_move_card_mulligan2deck(card, animationConfig.delay);
+        tweens = tweens.concat({
+            duration: 10,
+            onComplete: () => { card.destroy(); }
+        });
+        if(config.waitForAnimationToComplete) {
+            tweens = tweens.concat({
+                duration: 10,
+                onComplete: () => { this.scene.actionManager.completeAction(); }
+            });
+        }
+        let start_animation = this.scene.tweens.chain({ //Create tween chain
+            targets: card,
+            tweens: tweens
+        }).pause();
+
+        let action = new Action();
+        action.start = () => {
+            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
+            card.setState(CARD_STATES.TRAVELLING_TO_DECK);
+        };
+        action.start_animation = start_animation;
+        action.finally = () => {
+            //Delete the card
+            card.setState(CARD_STATES.IN_DECK);
+
+            //Add new Card Visual to deck
+            playerScene.deck.addDeckVisual();
+            playerScene.deck.updateCardAmountText();
+        };
+        action.isPlayerAction = false;
+        action.waitForAnimationToComplete = config.waitForAnimationToComplete;
+        action.name = "MOVE CARD MULLIGAN TO DECK ACTION";
+
+        //Add Action to the action stack
+        this.actionManager.addAction(action);
+    }
+    //#endregion
+
+    //#region PLAY CARD ACTIONS
     /** Function that plays a card for the opponent
      * @param {GameCardUI} card - Card that is being played.
     * @param {PlayerScene} playerScene - Player Scene that is playing the card.
@@ -266,8 +273,6 @@ class ActionLibraryPassivePlayer {
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
         };
         action.start_animation = animation; //play animation
-        action.end = () => { //Action end: play exert animation, set interactive to let player hover over it, and completeServerRequest
-        };
         action.finally = () => {
             card.isInPlayAnimation = false;
 
@@ -288,10 +293,68 @@ class ActionLibraryPassivePlayer {
         //Update playArea action
         let updateAction = new Action();
         updateAction.start = () => {playerScene.characterArea.update();};
-        updateAction.isPlayerAction = true; //This is a player triggered action
+        updateAction.isPlayerAction = false; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
         //Add action to the action stack
         this.actionManager.addAction(updateAction);
     }
+
+    //#region PLAY CARD TARGETING ACTION
+    /** function to move the targeting area
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} card
+      */
+    startPlayCardTargetingAction(playerScene, card) {
+        let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
+        let displayY = this.scene.screenCenterY;
+
+        //play animation to show card
+        let start_animation = this.scene.tweens.chain({
+            targets: card,
+            tweens: [
+                {
+                    scale: {value: CARD_SCALE.IN_PLAY_ANIMATION, duration: 150},
+                    x: {value: displayX, duration: 150},
+                    y: {value: displayY, duration: 150}
+                }, {
+                    scale: CARD_SCALE.IN_PLAY_ANIMATION,
+                    duration: 750,
+                    onComplete: () => {this.actionManager.completeAction();}
+                }
+            ]
+        }).pause();
+
+        //Create the action
+        let action = new Action();
+        action.start = () => { //Start function
+            card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
+            card.setState(CARD_STATES.IN_PLAY_TARGETTING);
+        };
+        action.start_animation = start_animation; //Play animation
+
+        action.isPlayerAction = false; //This is a player triggered action
+        action.waitForAnimationToComplete = true; //Should wait for the endof the animation
+        action.name = "PLAY TARGETTING";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
+    cancelReplacementTarget(playerScene, card) {
+        let action = new Action();
+        action.start = () => { //Start function
+            card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+            card.setState(CARD_STATES.IN_HAND);
+            //playerScene.hand.update();
+        };
+
+        action.isPlayerAction = false; //This is a player triggered action
+        action.waitForAnimationToComplete = false; //Should wait for the endof the animation
+        action.name = "PLAY TARGETTING";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+    //#endregion
 
 }

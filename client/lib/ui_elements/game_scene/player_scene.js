@@ -55,7 +55,7 @@ class PlayerScene {
     playCard(actionInfos, isPlayerTurn, startTargeting) {
         //get the card from the hand
         let card = this.hand.getCard(actionInfos.playedCard);
-        if(!isPlayerTurn) card.updateCardData(actionInfos.playedCardData); //Need to pass the cardData to the passive player as for now only has ID
+        if(!isPlayerTurn && !startTargeting) card.updateCardData(actionInfos.playedCardData); //Need to pass the cardData to the passive player as for now only has ID
 
         let replacedCard = null;
         if(actionInfos.replacedCard !== -1) {
@@ -74,6 +74,8 @@ class PlayerScene {
             if(isPlayerTurn) {
                 this.scene.actionLibrary.startPlayCardTargetingAction(this, card);
                 this.scene.actionLibrary.startTargetingAction(this, card);
+            } else {
+                this.scene.actionLibraryPassivePlayer.startPlayCardTargetingAction(this, card);
             }
         }
     }
