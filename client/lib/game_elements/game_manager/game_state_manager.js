@@ -768,7 +768,18 @@ class GameStateManager {
         }
 
     }
+    //#endregion
 
+    //#region UTILS
+    changeGameStateActive() {
+        let action = new Action();
+
+        action.start = () => {this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);}
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+
+        this.scene.actionManager.addAction(action);
+    }
     //#endregion
 
 }

@@ -31,9 +31,26 @@ class TargetManager {
 
         for (let target of this.targets) {
             isValid = isValid || target.isValidTarget(card);
+            if(isValid) return {isValid, target};
         }
 
-        return isValid;
+        return {isValid, target: null};
+    }
+
+    /** Function to add a card to the target 
+     * @param {GameCardUI} card - The card to add
+    */
+    addTarget(card) {
+        let isValid = this.isValidTarget(card); //Test if the card is valid for any target
+        if(isValid.isValid) { //If yes add to the targetids and remove from the targets
+            this.targetIDs.push(card.id);
+            this.targets.splice(this.targets.indexOf(isValid.target), 1);
+        }
+
+        //If all targets are selected, send the targets to the server
+        if(this.targetIDs.length === this.targetData.targets.length) {
+            this.scene.game.gameClient.requestSendTargets(this.targetIDs);
+        }
     }
 
     /** Resets the object */

@@ -9,17 +9,17 @@ class MatchDeck {
     }
 
     /** Construct Deck from JSO */
-    fromJSON(json, cardIndex) {
-        let counter = 0;
+    fromJSON(json, cardIndex, startID, player) {
         for(let i of json.cards){
-            let c = new MatchCard(i, counter, cardIndex[i-1]);
+            let c = new MatchCard(i, startID, cardIndex[i-1], player);
             if(cardIndex[i-1].card === 'LEADER') {
                 this.leader = c;
             } else {
                 this.add(c);
             }
-            counter++;
+            startID++;
         }
+        return startID;
     }
 
     /** Add Card to the list

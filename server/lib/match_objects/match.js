@@ -3,9 +3,10 @@ const Player = require("../game_objects/player");
 const {MatchState, MATCH_PHASES} = require("./match_state");
 const { request } = require("express");
 const AI_Instance = require("../ai_engine/ai_instance");
-const { FlagManager } = require("../game_objects/state_manager");
+const { FlagManager } = require("../managers/state_manager");
 const MatchPlayer = require("./match_player");
 const { PLAY_CARD_STATES, ATTACH_DON_TO_CHAR_STATES } = require("./match_enums");
+const TargetingManager = require("../managers/targeting_manager");
 
 class Match {
 
@@ -26,8 +27,13 @@ class Match {
         /** @type {AI_Instance} */
         this.ai = null; //Pointer to the AI instance
 
+        /** @type {number} */
+        this.lastCardID = 0; //Keep track of the last card id
+
         /** @type {MatchState} */
         this.state = new MatchState(this); //Create a new match state
+        /** @type {TargetingManager} */
+        this.targetingManager = new TargetingManager(this); //Create a new targeting manager
 
         /** @type {Player} */
         this.player1 = player1; //Assign the players
@@ -275,6 +281,29 @@ class Match {
         }
     }
 
+    /** Function that handles playing a card and replacing an old one
+     * @param {Player} player
+     * @param {number} cardID
+     * @param {Array<number>} replacementTargets
+     */
+    startPlayReplaceCard(player, cardID, replacementTargets=[]) {
+        if(replacementTargets.length === 0) return;
+
+        if(this.targetingManager.isValidTarget(player, replacementTargets[0], this.state.pending_action.targetData)) {
+            let result = this.state.playReplaceCard(player.currentMatchPlayer, cardID, replacementTargets[0]);
+
+            if(!player.bot) {
+                player.socket.emit('game_stop_targetting');
+                player.socket.emit('game_play_card_character_played', result.actionInfos, true, false, {});
+                player.socket.emit('game_change_state_active');
+            }
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played', result.actionInfos, false, false, {});
+        } else {
+            //TODO fix is not valid target
+            //this.resolvePendingAction(player, cancel = false, targets = [])
+        }
+    }
+
     /** Function that handles attaching a don card to a character
      * @param {Player} player
      * @param {number} donID
@@ -304,8 +333,8 @@ class Match {
                 if(cancel) {
                     let cardID = this.state.cancelPlayCard(player.currentMatchPlayer);
                     if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
-                }
-                else this.state.resolvePlayCardSelectReplacementTarget(player, targets);
+                } 
+                else this.startPlayReplaceCard(player, this.state.pending_action.actionInfos.playedCard, targets);
                 break;
             default:
                 break;

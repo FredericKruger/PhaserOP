@@ -15,6 +15,8 @@ class TargetingState extends GameState {
     onPointerDown(pointer, gameObject) {
         if(pointer.rightButtonDown()) {
             this.scene.actionLibrary.cancelTargetingAction();
+        } else {
+            if(gameObject instanceof GameCardUI) this.scene.targetManager.addTarget(gameObject);
         }
     }
 

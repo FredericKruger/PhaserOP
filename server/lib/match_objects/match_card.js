@@ -1,6 +1,19 @@
+const Player = require("../game_objects/player");
+
 const CARD_STATES = Object.freeze({
-    READY: 'READY',
-    EXERTED: 'EXERTED',
+    IN_DECK: 'IN_DECK',
+    IN_HAND: 'IN_HAND',
+    IN_DISCARD: 'IN_DISCARD',
+    IN_LIFEDECK: 'IN_LIFEDECK',
+
+    IN_PLAY: 'IN_PLAY',
+    IN_PLAY_RESTED: 'IN_PLAY_RESTED',
+    IN_PLAY_ATTACHED: 'IN_PLAY_ATTACHED',
+
+    IN_DON_DECK: 'IN_DON_DECK',
+    DON_ACTIVE: 'DON_ACTIVE',
+    DON_RESTED: 'DON_RESTED',
+    DON_ATTACHED: 'DON_ATTACHED',
 });
 
 /** Base Card Class */
@@ -39,6 +52,8 @@ class MatchCard extends Card{
         this.attachedDon = [];
         this.attachedCounter = null;
 
+        this.state = CARD_STATES.IN_DECK;
+
         this.currentPower = cardData.power;
     }
 
@@ -49,6 +64,8 @@ class MatchDonCard extends Card{
 
     constructor(id) {
         super(id);
+
+        this.state = CARD_STATES.IN_DON_DECK
     }
 }
 

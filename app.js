@@ -237,6 +237,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_attach_don_to_character', (donID, characterID) => {socket.player.match.startAttachDonToCharacter(socket.player, donID, characterID);});
 
     socket.on('player_cancel_targeting', () => {socket.player.match.resolvePendingAction(socket.player, true);});
+    socket.on('player_resolve_targeting', (targetIDs) => {socket.player.match.resolvePendingAction(socket.player, false, targetIDs);});
 
     socket.on('player_start_next_turn', () => {
         if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_complete_current_turn');

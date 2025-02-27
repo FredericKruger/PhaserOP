@@ -170,12 +170,12 @@ class ServerInstance {
         let playerDeck = player.decklist[player.selectedDeck];
 
         //Fill the deck from the JSON decklist provided
-        match.state.player1.deck.fromJSON(playerDeck, this.cardIndex);
-        match.state.player2.deck.fromJSON(aiDeck, this.cardIndex);
+        match.lastCardID = match.state.player1.deck.fromJSON(playerDeck, this.cardIndex, match.lastCardID);
+        match.lastCardID = match.state.player2.deck.fromJSON(aiDeck, this.cardIndex, match.lastCardID);
 
         //Fill the don deck
-        match.state.player1.fillDonDeck(10);
-        match.state.player2.fillDonDeck(10);
+        match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID);
+        match.lastCardID = match.state.player2.fillDonDeck(10, match.lastCardID);
 
         //Shuffle the decks
         match.state.player1.deck.shuffle();
@@ -204,6 +204,7 @@ class ServerInstance {
         player2.socket.emit('match_found_disable_cancel');
 
         //Create the match
+
         let match = new Match(player1, player2, this, false); //Create a new match
         match.id = this.lastMatchID++; //Assign a match id
         this.lastMatchID += 1;
@@ -218,12 +219,12 @@ class ServerInstance {
         let player2Deck = player2.decklist[player2.selectedDeck];
 
         //Fill the deck from the JSON decklist provided
-        match.state.player1.deck.fromJSON(player1Deck, this.cardIndex);
-        match.state.player2.deck.fromJSON(player2Deck, this.cardIndex);
+        match.lastCardID = match.state.player1.deck.fromJSON(player1Deck, this.cardIndex, match.lastCardID);
+        match.lastCardID = match.state.player2.deck.fromJSON(player2Deck, this.cardIndex, match.lastCardID);
 
         //Fill the don deck
-        match.state.player1.fillDonDeck(10);
-        match.state.player2.fillDonDeck(10);
+        match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID);
+        match.lastCardID = match.state.player2.fillDonDeck(10, match.lastCardID);
 
         //Shuffle the decks
         match.state.player1.deck.shuffle();

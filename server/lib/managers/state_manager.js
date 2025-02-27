@@ -1,5 +1,5 @@
 const Match = require('../match_objects/match');
-const Player = require('./player.js');
+const Player = require('../game_objects/player.js');
 
 class WaitFlag {
 

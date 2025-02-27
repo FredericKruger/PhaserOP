@@ -59,11 +59,12 @@ class PlayerScene {
 
         let replacedCard = null;
         if(actionInfos.replacedCard !== -1) {
-            if(card.cardData.card === CARD_TYPES.STAGE) replaceCard = this.stageLocation.getCard(actionInfos.replacedCard);
-            else replaceCard = this.characterArea.getCard(actionInfos.replacedCard);
+            if(card.cardData.card === CARD_TYPES.STAGE) replacedCard = this.stageLocation.getCard(actionInfos.replacedCard);
+            else replacedCard = this.characterArea.getCard(actionInfos.replacedCard);
 
             //Create a discard Action
             //TODO: Implement discard action
+            console.log("COUCOU");
         }
 
         //Play the card

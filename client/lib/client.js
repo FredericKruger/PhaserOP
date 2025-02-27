@@ -135,6 +135,13 @@ class Client {
         });
 
         /** OPPONENT ACTION LISTENERS */
+        this.socket.on('game_stop_targetting', () => {
+            this.gameScene.targetManager.reset();
+            this.gameScene.targetingArrow.stopTargeting();
+            this.gameScene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+        });
+
+        this.socket.on('game_change_state_active', () => {this.gameScene.gameStateManager.changeGameStateActive();});
 
         this.socket.on('game_complete_current_turn', () => {this.gameScene.gameStateManager.completeCurrentTurn();});
     }
@@ -195,7 +202,8 @@ class Client {
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
     requestPlayerAttachDonToCharacter (donID, characterID) {this.socket.emit('player_attach_don_to_character', donID, characterID);}
 
-    requestCancelTargeting (targetData) {this.socket.emit('player_cancel_targeting');}
+    requestCancelTargeting () {this.socket.emit('player_cancel_targeting');}
+    requestSendTargets (targetIDs) {this.socket.emit('player_resolve_targeting', targetIDs);}
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}

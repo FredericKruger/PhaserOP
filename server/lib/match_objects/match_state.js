@@ -53,6 +53,7 @@ class MatchState {
             let card = player.deck.draw(); //Remove from player deck
             cards.push(card); //Add to hand and return list
             player.inHand.push(card);
+            card.setState(CARD_STATES.IN_HAND);
         }
         return cards;
     }
@@ -70,13 +71,19 @@ class MatchState {
         for(let i=0; i<cards.length; i++) 
             newCards.push(player.deck.draw());
 
-        //Add the old cards to the hand
-        for(let card of player.inHand) 
+        //Add the old cards to the deck
+        for(let card of player.inHand) {
+            card.setState(CARD_STATES.IN_DECK);
             player.deck.add(card);
+        }
+
 
         //Empty the hand and add new cards
         player.inHand = [];
-        for(let card of newCards) player.inHand.push(card);
+        for(let card of newCards){
+            card.setState(CARD_STATES.IN_HAND);
+            player.inHand.push(card);
+        } 
 
         //reshuffle the deck
         player.deck.shuffle();
@@ -93,6 +100,7 @@ class MatchState {
         let cards = [];
         for(let i=0; i<player.inLeaderLocation.cardData.life; i++) {
             let card = player.deck.draw();
+            card.setState(CARD_STATES.IN_LIFEDECK);
             cards.push(card.id);
             player.inLifeDeck.push(card);
         }
@@ -109,7 +117,7 @@ class MatchState {
         let numberOfExertedDon = player.inExertenDon.length; //Need to save initial value or the loop will break
         for(let i=0; i<numberOfExertedDon; i++) {
             let card = player.inExertenDon.pop();
-            card.setState(CARD_STATES.READY);
+            card.setState(CARD_STATES.DON_ACTIVE);
             player.inActiveDon.push(card);
             cards.push(card.id);
         }
@@ -123,18 +131,22 @@ class MatchState {
         let cards = [];
         for(let i=0; i<player.inCharacterArea.length; i++) {
             let card = player.inCharacterArea[i];
-            if(card.state === CARD_STATES.EXERTED) {
-                card.setState(CARD_STATES.READY);
+            if(card.state === CARD_STATES.IN_PLAY_RESTED) {
+                card.setState(CARD_STATES.IN_PLAY);
                 cards.push(card.id);
 
                 card.attachedDon = []; //Reset the attach don pointer
             }
         }
-        if(player.inLeaderLocation.state === CARD_STATES.EXERTED) {
-            player.inLeaderLocation.setState(CARD_STATES.READY);
+        if(player.inLeaderLocation.state === CARD_STATES.IN_PLAY_RESTED) {
+            player.inLeaderLocation.setState(CARD_STATES.IN_PLAY);
             cards.push(player.inLeaderLocation.id);
 
             player.inLeaderLocation.attachedDon = []; //Reset the attach don pointer
+        }
+        if(player.inStageLocation!== null && player.inStageLocation.state === CARD_STATES.IN_PLAY_RESTED) {
+            player.inStageLocation.setState(CARD_STATES.IN_PLAY);
+            cards.push(player.inStageLocation.id);
         }
         return cards;
     }
@@ -164,6 +176,7 @@ class MatchState {
             let donCard = player.inDon.pop();
             player.inActiveDon.push(donCard);
             donCards.push(donCard.id);
+            donCard.setState(CARD_STATES.DON_ACTIVE);
         } else {
             //If not draw up to 2 cards if possible
             for(let i=0; i<2; i++) {
@@ -171,6 +184,7 @@ class MatchState {
                     let donCard = player.inDon.pop();
                     player.inActiveDon.push(donCard);
                     donCards.push(donCard.id);
+                    donCard.setState(CARD_STATES.DON_ACTIVE);
                 }
             }
         }
@@ -230,6 +244,20 @@ class MatchState {
         }
     }
 
+    /**Function to replace and play a card
+     * @param {MatchPlayer} player - player object
+     * @param {number} cardID - card id
+     * @param {Array<number>} replacementTargets - list of card ids to be replaced
+     */
+    playReplaceCard(player, cardID, replacementTargets) {
+        let actionInfos = player.playCharacter(cardID, true, replacementTargets);
+
+        //Once action complete reset the pending action
+        this.cancelPlayCard(player);
+
+        return {actionResult: PLAY_CARD_STATES.CHARACTER_PLAYED, actionInfos: actionInfos};
+    }
+
     /** Function to cancel the playing of a card
      * @param {MatchPlayer} player - player object
      */
@@ -253,14 +281,14 @@ class MatchState {
     startAttachDonToCharacter(player, donID, characterID) {
         let donCard = player.inActiveDon.find(card => card.id === donID);
 
-        if(donCard.state === CARD_STATES.READY) {
+        if(donCard.state === CARD_STATES.DON_ACTIVE) {
             let characterCard = null;
             if(player.inLeaderLocation.id === characterID) characterCard = player.inLeaderLocation; //First look in the leader location
             else characterCard = player.inCharacterArea.find(card => card.id === characterID); //If not found then look in the character area
 
             //Attach the don card to the character and modify the state
             player.inActiveDon.filter(card => card.id !== donID);
-            donCard.setState(CARD_STATES.EXERTED);
+            donCard.setState(CARD_STATES.DON_ATTACHED);
             player.inExertenDon.push(donCard);
             characterCard.attachedDon.push(donID);
 
