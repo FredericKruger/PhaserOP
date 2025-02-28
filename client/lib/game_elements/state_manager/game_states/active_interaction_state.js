@@ -20,6 +20,13 @@ class ActiveInteractionState extends GameState {
         this.exit(GAME_STATES.DRAGGING);
     }
 
+    onPointerDown(pointer, gameObject) {
+        if(gameObject === this.scene.gameStateUI.nextTurnbutton) {
+
+            this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
+        }
+    }
+
     update() {
         //Update all cards in the hand to reflect if they can take an action
         for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.update(); 

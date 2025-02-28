@@ -304,7 +304,8 @@ class GameStateManager {
             this.scene.passivePlayerScene.isPlayerTurn = false;
 
             //Refresh the nextTurn Button
-            this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE);  
+            //this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE);  
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
             this.gameStateUI.yourTurnImage.setAlpha(1); 
     
             //Start with showing the "Your Turn" image
@@ -378,7 +379,8 @@ class GameStateManager {
             this.scene.passivePlayerScene.isPlayerTurn = true;
 
             //Refresh the nextTurn Button
-            this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE);  
+            //this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE);  
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
 
             //Refresh Don Cards
             let numberOfAnimations = 0;
@@ -503,9 +505,11 @@ class GameStateManager {
         if(isPlayerTurn) {
             //Make the cards draggable in the hand and in the don deck
             this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
 
             //Change state of the next turn button
-            this.scene.gameStateUI.nextTurnbutton.makeInteractive(true);
+            //this.scene.gameStateUI.nextTurnbutton.makeInteractive(true);
+
         } else {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
         }
@@ -634,7 +638,7 @@ class GameStateManager {
     triggerNextTurn() {
         // Trigers the end of the turn. Cards should not be draggable anymore. Next turn button should not be draggable anymore
         this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
-        this.scene.gameStateUI.nextTurnbutton.removeInteractive();
+        this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
 
         //Send message to server    
         this.scene.game.gameClient.requestStartNextTurn();
@@ -642,10 +646,23 @@ class GameStateManager {
 
     /** Function that creates an action to send a message to the server when all other actions have been completed */
     completeCurrentTurn() {
+        let animation = this.scene.add.tween({
+            onStart: () => {
+                this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
+            },
+            targets: this.scene.gameStateUI.nextTurnbutton,
+            rotation: Math.PI*2,
+            duration: 500,
+            onComplete: () => {
+                this.scene.actionManager.completeAction();
+            }
+        }).pause();
+
         let action = new Action();
-        action.start = () => {this.scene.game.gameClient.requestCurrentTurnCompletedPassivePlayer();}
+        action.start_animation = animation;
+        action.end = () => {this.scene.game.gameClient.requestCurrentTurnCompletedPassivePlayer();}
         action.isPlayerAction = true;
-        action.waitForAnimationToComplete = false;
+        action.waitForAnimationToComplete = true;
         this.scene.actionManager.addAction(action);
     }
 

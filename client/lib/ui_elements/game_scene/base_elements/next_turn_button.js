@@ -18,6 +18,8 @@ class NextTurnButton extends Phaser.GameObjects.Container {
 
         this.scene = scene;
 
+        this.fsmState = new NextTurnButtonInitState(this);
+
         this.backGround = this.scene.add.image(0, 0, ASSET_ENUMS.GAME_NEXT_TURN_IMAGE).setOrigin(0.5).setScale(0.35);
         this.buttonText = this.scene.add.text(0, 15, '', 
             {font: "600 30px OnePieceFont", color: COLOR_ENUMS_CSS.OP_WHITE}
@@ -29,18 +31,7 @@ class NextTurnButton extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
 
         this.setSize(this.backGround.displayWidth, this.backGround.displayHeight);
-
-        this.on('pointerdown', () => {
-            this.scene.add.tween({
-                targets: this,
-                rotation: Math.PI*2,
-                duration: 500,
-                onComplete: () => {
-                    this.buttonText.setText("");
-                    this.scene.gameStateManager.triggerNextTurn();
-                }
-            });
-        });
+        this.setInteractive();
     }
 
     /** Sets the glow color
@@ -71,7 +62,7 @@ class NextTurnButton extends Phaser.GameObjects.Container {
     clearGreyscale() { this.backGround.resetPipeline(); }
 
     /** Function to set the button state */
-    setButtonText(buttonState) {
+    /*setButtonText(buttonState) {
         switch(buttonState) {
             case NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE:
                 this.buttonText.setText("END TURN");
@@ -93,20 +84,13 @@ class NextTurnButton extends Phaser.GameObjects.Container {
                 this.setGreyscale();
                 break;
         }
-    }
+    }*/
 
     /** Make Interactive
      * @param {boolean} interactive
      */
     makeInteractive(interactive) {
-        if(interactive) {
-            this.setInteractive();
-            this.setGlow(COLOR_ENUMS.OP_ORANGE);
-        } 
-        else {
-            this.removeInteractive();
-            this.clearGlow();
-        }
-        
+        if(interactive) this.setGlow(COLOR_ENUMS.OP_ORANGE); 
+        else this.clearGlow();
     }
 }
