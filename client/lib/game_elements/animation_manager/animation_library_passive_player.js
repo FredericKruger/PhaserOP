@@ -219,4 +219,23 @@ class AnimationLibraryPassivePlayer {
         return tweens;
     }
 
+    //#region TARGET ANIMATION
+    /** Animation that moves a card from the hand to the target area
+     * @param {GameCardUI} originator - card to be moved from the hand to the target area
+     * @param {GameCardUI} target - card to be moved from the hand to the target area
+     */
+    animation_target_card(originator, target) {
+        let tweens = [
+            {
+                onStart: () => {this.scene.targetingArrow.startManualTargeting(originator, target);},
+                target: originator,
+                scale: originator.scale,
+                duration: 1000,
+                onComplete: () => {this.scene.targetingArrow.stopTargeting();}
+            }
+        ]
+        return tweens;
+    }
+    //#endregion
+
 }

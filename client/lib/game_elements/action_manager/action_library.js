@@ -219,7 +219,7 @@ class ActionLibrary {
          *  start: Pay Cost, Remove from hand, add to playarea
          *  end: play exert animation to show card is drying. Send Server a message about card being played
         */
-    playCardAction(playerScene, card, spentDonIds, replacedCard = false) {
+    playCardAction(playerScene, card, spentDonIds, replacedCard = null) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
         let displayY = this.scene.screenCenterY;
 
@@ -268,7 +268,7 @@ class ActionLibrary {
             else if(card.cardData.card === CARD_TYPES.STAGE)
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
         };
-        if(!replacedCard) action.start_animation = start_animation; //Play animation
+        if(replacedCard !== null) action.start_animation = start_animation; //Play animation
         action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
@@ -277,7 +277,9 @@ class ActionLibrary {
             playerScene.playerInfo.updateCardAmountTexts();
         
             //TODO add check for rush
-            if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
+            if(card.cardData.card === CARD_TYPES.CHARACTER) {
+                card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
+            }
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
         };
 
@@ -290,7 +292,19 @@ class ActionLibrary {
 
         //Update playArea action
         let updateAction = new Action();
-        updateAction.start = () => {playerScene.characterArea.update();};
+        updateAction.start = () => {
+            playerScene.characterArea.update();
+
+            //Create small animation
+            this.scene.time.delayedCall(300, () => {
+                let restingAnimation = this.scene.add.sprite(
+                    card.x + card.displayWidth/2,
+                    card.y - card.displayHeight/2, 
+                    ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
+                restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
+                this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
+            });
+        };
         updateAction.isPlayerAction = true; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
         //Add action to the action stack

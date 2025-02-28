@@ -221,13 +221,13 @@ class ActionLibraryPassivePlayer {
      * It creates an action to execute the inking and do the animation
      * Calls the completeServerRequest at the end
      */
-    playCardAction(playerScene, card, spentDonIds, replacedCard) {
+    playCardAction(playerScene, card, spentDonIds, replacedCard = null) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_PLAY_ANIMATION/2;
         let displayY = this.scene.screenCenterY;
 
         //Create tweens
         let tweens = [];
-        tweens.push({ //Tween 1: Bring card to top, then move it to center and scale up. On complete redraw the hand
+        if(replacedCard === null) tweens.push({ //Tween 1: Bring card to top, then move it to center and scale up. On complete redraw the hand
             onStart: () => {this.scene.children.bringToTop(card);},
             x: displayX,
             y: displayY,
@@ -245,8 +245,9 @@ class ActionLibraryPassivePlayer {
             scale: CARD_SCALE.IN_PLAY_ANIMATION,
             duration: 300
         });
-        //if(card.cardData.card === CARD_TYPES.CHARACTER) tweens = tweens.concat(playerScene.characterArea.addCardAnimation(card));
-        //else tweens = tweens.concat(playerScene.stageLocation.addCardAnimation(card));
+
+        if(replacedCard !== null) tweens = tweens.concat(this.scene.animationLibraryPassivePlayer.animation_target_card(card, replacedCard)); //Tween 4: move replaced card to the deck
+
         tweens.push({ //Tween 5: empty tween to call completeActin
             duration: 100,
             onComplete: () => {this.scene.actionManager.completeAction();}
@@ -293,7 +294,19 @@ class ActionLibraryPassivePlayer {
 
         //Update playArea action
         let updateAction = new Action();
-        updateAction.start = () => {playerScene.characterArea.update();};
+        updateAction.start = () => {
+            playerScene.characterArea.update();
+        
+            //Create small animation
+            this.scene.time.delayedCall(300, () => {
+                let restingAnimation = this.scene.add.sprite(
+                    card.x + card.displayWidth/2,
+                    card.y - card.displayHeight/2, 
+                    ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
+                restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
+                this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
+            });
+        };
         updateAction.isPlayerAction = false; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
         //Add action to the action stack
@@ -352,6 +365,55 @@ class ActionLibraryPassivePlayer {
         action.isPlayerAction = false; //This is a player triggered action
         action.waitForAnimationToComplete = false; //Should wait for the endof the animation
         action.name = "PLAY TARGETTING";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+    //#endregion
+
+    //#region DISCARD CARD ACTION
+//#region DISCARD ACTION
+    /** Function to discard a card
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} card
+     */
+    discardCardAction(playerScene, card) {
+        //Get Start Animation
+        let startAnimation_tweens = this.scene.animationLibrary.desintegrationAnimation(card, 0);
+        startAnimation_tweens = startAnimation_tweens.concat({
+            targets: card,
+            duration: 10,
+            onComplete: () => {this.actionManager.completeAction();}
+        });
+        let start_animation = this.scene.tweens.chain({
+            tweens: startAnimation_tweens
+        }).pause();
+
+        //Get end animation
+        let endAnimation_tweens = this.scene.animationLibrary.integrationAnimation(card, 500);
+        endAnimation_tweens = endAnimation_tweens.concat({
+            targets: card,
+            duration: 10,
+            onComplete: () => {this.actionManager.finalizeAction();}
+        });
+        let end_animation = this.scene.tweens.chain({
+            tweens: endAnimation_tweens
+        }).pause();
+
+
+        let action = new Action();
+        action.start = () => {};
+        action.start_animation = start_animation;
+        action.end = () => {
+            playerScene.removeCard(card); //Remove this card from whaterever pile it is in
+            card.setPosition(playerScene.discard.posX, playerScene.discard.posY); //Move card to discard pile
+            playerScene.discard.addCard(card, {setCardState: true, setCardDepth: true, updateUI: true}); //Add card to dispacrd pile
+        };
+        action.end_animation = end_animation;
+
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = true;
+        action.name = "DISCARD";
 
         //Add action to the action stack
         this.actionManager.addAction(action);

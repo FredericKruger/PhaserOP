@@ -306,6 +306,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.spritesheet(ASSET_ENUMS.SKULL_SPRITESHEET, `${assetPath}/skull_spritesheet.png`, { frameWidth: 400, frameHeight: 300 });	
         this.load.spritesheet(ASSET_ENUMS.GOING_MERRY_SPRITESHEET, `${assetPath}/merry_loader.png`, { frameWidth: 524, frameHeight: 321 });
         this.load.spritesheet(ASSET_ENUMS.LOADING_SPRITESHEET, `${assetPath}/loading_gif.png`, { frameWidth: 479, frameHeight: 236 });
+        this.load.spritesheet(ASSET_ENUMS.SLEEPING_SPRITESHEET, `${assetPath}/sleeping_spritesheet.png`, { frameWidth: 480, frameHeight: 480 });
 
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
@@ -353,6 +354,13 @@ class LoaderScene extends Phaser.Scene {
             key: ANIMATION_ENUMS.LOADING_ANIMATION,
             frames: this.anims.generateFrameNumbers(ASSET_ENUMS.LOADING_SPRITESHEET, { start: 0, end: 114}),
             frameRate: 20,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: ANIMATION_ENUMS.SLEEPING_ANIMATION,
+            frames: this.anims.generateFrameNumbers(ASSET_ENUMS.SLEEPING_SPRITESHEET, { start: 0, end: 2}),
+            frameRate: 2,
             repeat: -1
         });
 

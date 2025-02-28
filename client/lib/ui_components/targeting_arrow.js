@@ -118,4 +118,15 @@ class TargetingArrow {
         this.isTargeting = false;
     }
 
+    /** Function to start manual targeting required in case of animations
+     * @param {Object} originatorObject - The object that is targetting
+     * @param {Object} targetObject - The object that is being target
+     */
+    startManualTargeting(originatorObject, targetObject) {
+        this.originatorObject = originatorObject;
+        this.update(targetObject.x, targetObject.y);
+
+        this.setVisible(true);
+    }
+
 }

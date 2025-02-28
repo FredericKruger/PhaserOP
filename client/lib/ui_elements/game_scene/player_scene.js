@@ -64,13 +64,13 @@ class PlayerScene {
 
             //Create a discard Action
             if(isPlayerTurn) this.scene.actionLibrary.discardCardAction(this, replacedCard);
-            //else 
+            else this.scene.actionLibraryPassivePlayer.discardCardAction(this, replacedCard);
         }
 
         //Play the card
         if(!startTargeting) {
-            if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds, replacedCard !== null);
-            else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds, replacedCard !== null);
+            if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds, replacedCard);
+            else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds, replacedCard);
         } else {
             if(isPlayerTurn) {
                 this.scene.actionLibrary.startPlayCardTargetingAction(this, card);
