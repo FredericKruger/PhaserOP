@@ -21,10 +21,7 @@ class ActiveInteractionState extends GameState {
     }
 
     onPointerDown(pointer, gameObject) {
-        if(gameObject === this.scene.gameStateUI.nextTurnbutton) {
-
-            this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
-        }
+        if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
     }
 
     update() {

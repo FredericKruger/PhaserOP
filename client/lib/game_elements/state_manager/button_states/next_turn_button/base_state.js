@@ -1,6 +1,7 @@
 const NEXT_TURN_BUTTON_FSM_STATES = Object.freeze({
     INIT: 'INIT',
     ACTIVE: 'ACTIVE',
+    CANCEL: 'CANCEL',
     PASS: 'PASS',
     PASSIVE: 'PASSIVE',
     OPPONENT_TURN: 'OPPONENT_TURN',
@@ -36,6 +37,9 @@ class NextTurnButtonState {
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.PASSIVE:
                 newFSMState = new NextTurnButtonPassiveState(this.button);
+                break;
+            case NEXT_TURN_BUTTON_FSM_STATES.CANCEL:
+                newFSMState = new NextTurnButtonCancelState(this.button);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.PASS:
                 newFSMState = new NextTurnButtonPassState(this.button);

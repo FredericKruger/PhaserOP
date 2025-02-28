@@ -26,6 +26,7 @@ class NextTurnButton extends Phaser.GameObjects.Container {
         ).setOrigin(0.5);
 
         this.glowAnimation = null;
+        this.glowVisible = false;
 
         this.add([this.backGround, this.buttonText]);
         this.scene.add.existing(this);
@@ -61,36 +62,19 @@ class NextTurnButton extends Phaser.GameObjects.Container {
     /** Function that clears the pipline */
     clearGreyscale() { this.backGround.resetPipeline(); }
 
-    /** Function to set the button state */
-    /*setButtonText(buttonState) {
-        switch(buttonState) {
-            case NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE:
-                this.buttonText.setText("END TURN");
-                this.clearGreyscale();
-                break;
-            case NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE:
-                this.buttonText.setText("OPPONENT TURN");
-                this.makeInteractive(false);
-                this.setGreyscale();
-                break;
-            case NEXT_TURN_BUTTON_STATES.PASS:
-                this.buttonText.setText("PASS");
-                this.clearGreyscale();
-                this.makeInteractive(true);
-                break;
-            case NEXT_TURN_BUTTON_STATES.OPPONENT_ACTION:
-                this.buttonText.setText("OPPONENT ACTION");
-                this.makeInteractive(false);
-                this.setGreyscale();
-                break;
-        }
-    }*/
-
     /** Make Interactive
      * @param {boolean} interactive
      */
     makeInteractive(interactive) {
-        if(interactive) this.setGlow(COLOR_ENUMS.OP_ORANGE); 
-        else this.clearGlow();
+        if(interactive) {
+            if(!this.glowVisible) {
+                this.setGlow(COLOR_ENUMS.OP_ORANGE);
+                this.glowVisible = true;
+            }
+        }
+        else {
+            this.clearGlow();
+            this.glowVisible = false;
+        }
     }
 }
