@@ -56,8 +56,8 @@ class ActionManager {
             if(this.currentAction.start !== null) this.currentAction.start();
     
             //Then execute the animation
-            if(this.currentAction.waitForAnimationToComplete) {
-                if(this.currentAction.start_animation !== null) this.scene.animationManager.addAnimation({animation: this.currentAction.start_animation, delay: 0});
+            if(this.currentAction.waitForAnimationToComplete && this.currentAction.start_animation !== null) {
+                this.scene.animationManager.addAnimation({animation: this.currentAction.start_animation, delay: 0});
             } else {
                 if(this.currentAction.start_animation !== null) this.currentAction.start_animation.restart();
                 this.completeAction();
@@ -108,7 +108,7 @@ class ActionManager {
 
     /** Function exected once the animation2 is finished. Needs to be calleds from animation2 */
     finalizeAction() {
-        let delay = 500;
+        let delay = 300;
         if(this.currentAction.isPlayerAction) delay = 0;
 
         if(this.currentAction.finally !== null) this.currentAction.finally();

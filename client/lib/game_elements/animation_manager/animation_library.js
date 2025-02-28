@@ -1,12 +1,15 @@
 class AnimationLibrary {
 
+    //#region CONSTRUCTOR
     /** Constructor
      * @param {GameScene} scene - The scene that will contain the animation manager
      */
     constructor(scene) {
         this.scene = scene;
     }
+    //#endregion
 
+    //#region MOVING CARD FUNCTIONS
     /** Animation that brings a card from the deck to the mulligan
      * Get future card position in the mulligan ui
      * tween1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function
@@ -239,4 +242,61 @@ class AnimationLibrary {
         ];
         return tweens;
     }
+    //#endregion
+
+    //#region APPREARING ANIMATIONS
+    /** FUNCTION TO MAKE THE CARD DISAPPEAR THROUGH BURNING 
+     * @param {GameCardUI} card - card to be destroyed
+     * @param {number} delay - delay with which to start the tweens
+     */
+    desintegrationAnimation(card, delay) {
+        const tempObj = { burnAmount: 0 };
+    
+        // Animate the burnAmount uniform to gradually increase the burn effect
+        let tweens = [{
+            onStart: () => {card.frontArt.setPipeline(PIPELINE_ENUMS.BURNING_PIPELINE);},
+            delay: delay || 0,
+            targets: tempObj,  // Use the temporary object as the target    
+            burnAmount: 1,
+            duration: 500,
+            ease: 'Power2',
+            onUpdate: (tween) => {
+                card.frontArt.pipeline.set1f('burnAmount', tempObj.burnAmount);
+            },
+            onComplete: () => {
+                card.frontArt.setAlpha(0);
+                card.frontArt.resetPipeline();
+            }
+        }];
+        return tweens;
+    }
+
+    /** FUNCTION TO MAKE THE CARD DISAPPEAR THROUGH BURNING 
+     * @param {GameCardUI} card - card to be destroyed
+     * @param {number} delay - delay with which to start the tweens
+     */
+    integrationAnimation(card, delay) {
+        // Create a temporary object to hold the animation value
+        const tempObj = { burnAmount: 1 };
+    
+        // Animate the burnAmount uniform to gradually increase the burn effect
+        let tweens = [{
+            onStart: () => {
+                card.frontArt.setPipeline(PIPELINE_ENUMS.BURNING_PIPELINE);
+                card.frontArt.pipeline.set1f('burnAmount', 1); // Start fully burned
+                card.frontArt.setAlpha(1);
+            },
+            delay: delay || 0,
+            targets: tempObj,  // Use the temporary object as the target
+            burnAmount: 0,  
+            duration: 500,
+            ease: 'Power2',
+            onUpdate: (tween) => {
+                card.frontArt.pipeline.set1f('burnAmount', tempObj.burnAmount);
+            },
+            onComplete: () => {card.frontArt.resetPipeline();}
+        }];
+        return tweens;
+    }
+    //#region 
 }

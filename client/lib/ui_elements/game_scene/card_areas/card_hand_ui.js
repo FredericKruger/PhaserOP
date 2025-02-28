@@ -109,11 +109,9 @@ class CardHandUI extends CardPileUI {
      * @param {Array<GameCardUI>} cards
     * @param {Object} config
      */
-    addCards(cards, config = {setCardState: false, setCardDepth: false, setCardInteractive: false, setCardDraggable: false, updateUI: false}) {
+    addCards(cards, config = {setCardState: false, setCardDepth: false, updateUI: false}) {
         for(let card of cards){
-            if(config.setCardDepth) card.setDepth(2);
-            if(config.setCardInteractive) card.makeInteractive(true);
-            if(config.setCardDraggable) card.makeDraggable(true);
+            if(config.setCardDepth) card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
             if(config.setCardState) {
                 if(card.playerScene.player.isActivePlayer) card.setState(CARD_STATES.IN_HAND);
                 else card.setState(CARD_STATES.IN_HAND_PASSIVE_PLAYER);
@@ -122,17 +120,6 @@ class CardHandUI extends CardPileUI {
         } 
 
         if(config.updateUI) this.update();
-    }
-
-    /** Function that removes a card from the hand
-     * @param {GameCardUI} card
-     */
-    removeCard(card) {
-        let index = this.cards.indexOf(card);
-        if(index > -1) {
-            this.cards.splice(index, 1);
-        }
-        this.update();
     }
 
     /** Function that makes all the cards in than draggable 

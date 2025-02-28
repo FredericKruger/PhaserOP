@@ -81,7 +81,7 @@ class ActionLibrary {
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {card.setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);} 
             else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {} 
             else {
-                playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, setCardInteractive: true, setCardDraggable: false, updateUI: true});
+                playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, updateUI: true});
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
         }
@@ -212,13 +212,14 @@ class ActionLibrary {
          * @param {GameCardUI} card - Card that is being played.
          * @param {PlayerScene} playerScene - Player Scene that is playing the card.
          * @param {Array<number>} spentDonIds
+         * @param {boolean} replacedCard 
          * This action takes a card, and adds it to the playarea. The card will initially be drying unless it has rush.
          * This will remove the draggable state of the card and only show the card art
          * Action:
          *  start: Pay Cost, Remove from hand, add to playarea
          *  end: play exert animation to show card is drying. Send Server a message about card being played
         */
-    playCardAction(playerScene, card, spentDonIds) {
+    playCardAction(playerScene, card, spentDonIds, replacedCard = false) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
         let displayY = this.scene.screenCenterY;
 
@@ -243,7 +244,7 @@ class ActionLibrary {
         if(card.cardData.card === CARD_TYPES.CHARACTER) tweens2 = playerScene.characterArea.addCardAnimation(card);
         else if(card.cardData.card === CARD_TYPES.STAGE) tweens2 = playerScene.stageLocation.addCardAnimation(card);
         tweens2 = tweens2.concat({ //concat additional tween to call the completeAction function
-            duration: 100,
+            duration: 10,
             onComplete: () => {this.actionManager.finalizeAction();}
         });
         //Create the tween chain
@@ -267,10 +268,7 @@ class ActionLibrary {
             else if(card.cardData.card === CARD_TYPES.STAGE)
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
         };
-        action.start_animation = start_animation; //Play animation
-        action.end = () => {
-        };
-
+        if(!replacedCard) action.start_animation = start_animation; //Play animation
         action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
@@ -281,8 +279,6 @@ class ActionLibrary {
             //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
-            card.makeInteractive(true);//required to reshape the bounds of the interaction
-            card.makeDraggable(false); //Remove the draggable state of the card
         };
 
         action.isPlayerAction = true; //This is a player triggered action
@@ -348,23 +344,76 @@ class ActionLibrary {
     }
     //#endregion
 
+    //#region DISCARD ACTION
+    /** Function to discard a card
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} card
+     */
+    discardCardAction(playerScene, card) {
+        //Get Start Animation
+        let startAnimation_tweens = this.scene.animationLibrary.desintegrationAnimation(card, 0);
+        startAnimation_tweens = startAnimation_tweens.concat({
+            targets: card,
+            duration: 10,
+            onComplete: () => {this.actionManager.completeAction();}
+        });
+        let start_animation = this.scene.tweens.chain({
+            tweens: startAnimation_tweens
+        }).pause();
+
+        //Get end animation
+        let endAnimation_tweens = this.scene.animationLibrary.integrationAnimation(card, 500);
+        endAnimation_tweens = endAnimation_tweens.concat({
+            targets: card,
+            duration: 10,
+            onComplete: () => {this.actionManager.finalizeAction();}
+        });
+        let end_animation = this.scene.tweens.chain({
+            tweens: endAnimation_tweens
+        }).pause();
+
+
+        let action = new Action();
+        action.start = () => {};
+        action.start_animation = start_animation;
+        action.end = () => {
+            playerScene.removeCard(card); //Remove this card from whaterever pile it is in
+            card.setPosition(playerScene.discard.posX, playerScene.discard.posY); //Move card to discard pile
+            playerScene.discard.addCard(card, {setCardState: true, setCardDepth: true, updateUI: true}); //Add card to dispacrd pile
+        };
+        action.end_animation = end_animation;
+
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = true;
+        action.name = "DISCARD";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+    //#endregion
+
     //#region TARGETING ACTION
     /** Function to start the targetting arrow
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
      */
-    startTargetingAction(playerScene, card) {
-        let action = new Action();
-        action.start = () => {
+    startTargetingAction(playerScene, card, startAsAction = true) {
+        if(startAsAction) {
+            let action = new Action();
+            action.start = () => {
+                this.scene.gameState.exit(GAME_STATES.TARGETING);
+                this.scene.targetingArrow.startTargeting(card);
+            };
+            action.isPlayerAction = true;
+            action.waitForAnimationToComplete = false;
+            action.name = "START TARGETING";
+
+            //Add action to the action stack
+            this.actionManager.addAction(action);
+        } else {
             this.scene.gameState.exit(GAME_STATES.TARGETING);
             this.scene.targetingArrow.startTargeting(card);
-        };
-        action.isPlayerAction = true;
-        action.waitForAnimationToComplete = false;
-        action.name = "START TARGETING";
-
-        //Add action to the action stack
-        this.actionManager.addAction(action);
+        }
     }
 
     /** Function to stop the targeting */

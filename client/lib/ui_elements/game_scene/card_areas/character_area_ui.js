@@ -55,6 +55,7 @@ class CharacterAreaUI extends CardPileUI {
      */
     addCard(card) {
         this.cards.push(card);
+        card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
     }
 
     /** ANIMATION */

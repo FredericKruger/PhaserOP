@@ -16,7 +16,7 @@ class TargetingArrow {
         this.arrowHead = this.scene.add.triangle(100, 100, 0, -20, 0, 20, 40, 0, COLOR_ENUMS.OP_ORANGE).setOrigin(0.5, 0.5).setVisible(false).setDepth(2);
     }*/
     create() {
-        this.arrowStem = this.scene.add.graphics();
+        this.arrowStem = this.scene.add.graphics().setDepth(2);
         this.arrowHead = this.scene.add.triangle(100, 100, 0, -30, 0, 30, 60, 0, COLOR_ENUMS.OP_ORANGE).setOrigin(0.5, 0.5).setVisible(false).setDepth(2);
     }
 
@@ -87,28 +87,6 @@ class TargetingArrow {
             this.arrowHead.rotation = angle;
         }
     }
-
-    /** Set location of the arrow and rotate according to the position of the target
-     * @param {number} x2 - x position of target
-     * @param {number} y2 - y position of target
-     */
-    /*update (x2, y2) {
-        let x1 = this.originatorObject.x;
-        let y1 = this.originatorObject.y;
-
-        let length = Phaser.Math.Distance.Between(x1, y1, x2, y2)-20;
-        let angle = Math.atan2(y2-y1, x2-x1);
-        let x = x1-10*Math.cos(angle);
-        let y = y1-10*Math.sin(angle);
-        this.arrowStem.x = x;
-        this.arrowStem.y = y;
-        this.arrowStem.width = length;
-        this.arrowStem.rotation = angle;
-
-        this.arrowHead.x = x2-20*Math.cos(angle)-20*Math.sin(angle);
-        this.arrowHead.y = y2-20*Math.sin(angle)+20*Math.cos(angle);
-        this.arrowHead.rotation = angle;
-    }*/
 
     /** function to set the visibilty of the arrow
      * @param {boolean} visible - The visibility

@@ -186,7 +186,16 @@ class BaseCardUI extends Phaser.GameObjects.Container {
      */
     showGlow(color) {
         if(!this.hasGlow) {
-            this.postFX.addGlow(color, 6);
+            this.fx = this.postFX.addGlow(color, 3);
+            this.glowAnimation = this.scene.tweens.add({
+                targets: this.fx,
+                outerStrength: 10,
+                duration:2000,
+                alpha:0.8,
+                ease: 'Sine.inout',
+                yoyo: true,
+                repeat: -1
+            });
             this.hasGlow = true;
         }
     }
@@ -195,6 +204,7 @@ class BaseCardUI extends Phaser.GameObjects.Container {
     hideGlow() {
         if(this.hasGlow) {
             this.postFX.clear();
+            this.glowAnimation.stop();
             this.hasGlow = false;
         }
     }

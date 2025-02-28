@@ -159,6 +159,7 @@ class GameCardUI extends BaseCardUI{
     setFSMState(state) {
         switch(state) {
             case CARD_STATES.IN_DECK:
+            case CARD_STATES.IN_DISCARD:
                 this.fsmState.exit(GAME_CARD_STATES.IN_DECK);
                 break;
             case CARD_STATES.IN_HAND:

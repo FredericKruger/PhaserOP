@@ -63,18 +63,18 @@ class PlayerScene {
             else replacedCard = this.characterArea.getCard(actionInfos.replacedCard);
 
             //Create a discard Action
-            //TODO: Implement discard action
-            console.log("COUCOU");
+            if(isPlayerTurn) this.scene.actionLibrary.discardCardAction(this, replacedCard);
+            //else 
         }
 
         //Play the card
         if(!startTargeting) {
-            if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds);
-            else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds);
+            if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds, replacedCard !== null);
+            else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds, replacedCard !== null);
         } else {
             if(isPlayerTurn) {
                 this.scene.actionLibrary.startPlayCardTargetingAction(this, card);
-                this.scene.actionLibrary.startTargetingAction(this, card);
+                this.scene.actionLibrary.startTargetingAction(this, card, false);
             } else {
                 this.scene.actionLibraryPassivePlayer.startPlayCardTargetingAction(this, card);
             }
@@ -125,6 +125,17 @@ class PlayerScene {
 
         card = this.discard.getCard(cardId);
         return card;
+    }
+
+    /** Function to remove card whereever it is
+     * @param {GameCardUI} card
+     */
+    removeCard(card) {
+        let cardRemoved = this.hand.removeCard(card);
+        if(!cardRemoved) cardRemoved = this.characterArea.removeCard(card);
+        if(!cardRemoved) cardRemoved = this.leaderLocation.removeCard(card);
+        if(!cardRemoved) cardRemoved = this.stageLocation.removeCard(card);
+        if(!cardRemoved) cardRemoved = this.discard.removeCard(card);
     }
 
     /** Function to set visibility 

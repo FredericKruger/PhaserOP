@@ -82,7 +82,7 @@ class ActionLibraryPassivePlayer {
                 card.setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN_PASSIVE_PLAYER);
             } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
             } else {
-                playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, setCardInteractive: false, setCardDraggable: false, updateUI: true});
+                playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, updateUI: true});
             }
             playerScene.deck.popTopCardVisual(); //Remove the top Card Visualif(isServerRequest) this.scene.actions.completeServerRequest(); //Call completeServerRequest
 
@@ -216,11 +216,12 @@ class ActionLibraryPassivePlayer {
      * @param {GameCardUI} card - Card that is being played.
     * @param {PlayerScene} playerScene - Player Scene that is playing the card.
     * @param {Array<number>} spentDonIds
+    * @param {GameCardUI} replacedCard
      * This function is call from a server request
      * It creates an action to execute the inking and do the animation
      * Calls the completeServerRequest at the end
      */
-    playCardAction(playerScene, card, spentDonIds) {
+    playCardAction(playerScene, card, spentDonIds, replacedCard) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_PLAY_ANIMATION/2;
         let displayY = this.scene.screenCenterY;
 
@@ -271,7 +272,7 @@ class ActionLibraryPassivePlayer {
                 playerScene.characterArea.addCard(card); //Add the card to the play area
             else if(card.cardData.card === CARD_TYPES.STAGE)
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
-        };
+        }
         action.start_animation = animation; //play animation
         action.finally = () => {
             card.isInPlayAnimation = false;

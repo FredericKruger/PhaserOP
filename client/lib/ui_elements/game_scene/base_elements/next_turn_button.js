@@ -45,11 +45,23 @@ class NextTurnButton extends Phaser.GameObjects.Container {
      * @param {number} glowColor
      */
     setGlow(glowColor) {
-        this.postFX.addGlow(glowColor, 3);
+        this.fx = this.postFX.addGlow(glowColor, 3);
+        this.glowAnimation = this.scene.tweens.add({
+            targets: this.fx,
+            outerStrength: 20,
+            duration:2000,
+            alpha:0.8,
+            ease: 'Sine.inout',
+            yoyo: true,
+            repeat: -1
+        });
     }
 
     /** Clears the glow */
-    clearGlow() { this.postFX.clear(); }
+    clearGlow() { 
+        this.postFX.clear(); 
+        this.glowAnimation.stop();
+    }
 
     /** Function that sets the backgorund image to greyscale */
     setGreyscale() { this.backGround.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);}

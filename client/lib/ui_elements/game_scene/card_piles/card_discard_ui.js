@@ -11,7 +11,7 @@ class CardDiscardUI extends CardPileUI {
 
         //Array of images to represent the cards
         this.obj = [];
-        this.cardVisuals = [];
+        //this.cardVisuals = [];
 
         //Prepare positionof the deck
         this.posX = this.posY = this.posWidth = this.posHeight = 0;
@@ -44,6 +44,29 @@ class CardDiscardUI extends CardPileUI {
         this.obj.push(this.discardText);
 
         this.setVisible(false);
+    }
+
+    /** Function to update the order of the card */
+    update() {
+        let step = -0.25;
+        for(let i = 0; i<this.cards.length; i++) {
+            this.cards[i].setPosition(this.posX-i*step, this.posY-i*step/2);
+            if(i>0) this.scene.children.moveAbove(this.cards[i], this.cards[i-1]);
+        }
+    }
+
+    /** Function to add a card 
+     * @param {GameCardUI} card - The card to add
+     * @param {Object} config - Configuration object
+    */
+    addCard(card, config = {setCardState: false, setCardDepth: false, updateUI: false}) {
+        if(config.setCardDepth) card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
+        if(config.setCardState) card.setState(CARD_STATES.IN_DISCARD);  
+        card.setScale(CARD_SCALE.IN_DISCARD);     
+
+        this.cards.push(card);
+
+        if(config.updateUI) this.update();
     }
 
 }
