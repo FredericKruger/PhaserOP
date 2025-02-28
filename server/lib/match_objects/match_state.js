@@ -212,17 +212,30 @@ class MatchState {
         let actionInfos = {};
         //If the player has enough resources remove the resources and play the card
         if(card.cardData.card === CARD_TYPES.STAGE) {
-            if(!player.inStageLocation) { //If the state
+            if(player.inStageLocation === null) { //If empty
                 actionInfos = player.playStage(cardId, false);
-                return {actionResult: PLAY_CARD_STATES.STAGE_PLAYED, actionInfos: actionInfos};
+                return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
             } else {
-                actionInfos = player.playStage(cardId, true);
-                return {actionResult: PLAY_CARD_STATES.STAGE_REPLACED_AND_PLAYED, actionInfos: actionInfos};
-            };
+                let cardData = player.getCardFromHand(cardId);
+                actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
+                let targetData = {
+                    targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
+                    targets: [
+                        {
+                            player: ["active"],
+                            cardtypes: [CARD_TYPES.STAGE],
+                            states: ["IN_PLAY"],
+                        }
+                    ]
+                }
+                this.pending_action = {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetData: targetData};
+                this.resolving_pending_action = true;
+                return this.pending_action;
+            }
         } else if(card.cardData.card === CARD_TYPES.CHARACTER) { //If the card is a character
             if(player.inCharacterArea.length < MATCH_CONSTANTS.MAX_CHARACTERS_IN_AREA) { //If there is space in the character area
                 actionInfos = player.playCharacter(cardId, false);
-                return {actionResult: PLAY_CARD_STATES.CHARACTER_PLAYED, actionInfos: actionInfos};
+                return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
             } else {
                 let cardData = player.getCardFromHand(cardId);
                 actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
@@ -250,12 +263,19 @@ class MatchState {
      * @param {Array<number>} replacementTargets - list of card ids to be replaced
      */
     playReplaceCard(player, cardID, replacementTargets) {
-        let actionInfos = player.playCharacter(cardID, true, replacementTargets);
+        let card = player.inHand.find(card => card.id === cardID);
+
+        let actionInfos = {};
+        if(card.cardData.card === CARD_TYPES.CHARACTER) {
+            actionInfos = player.playCharacter(cardID, true, replacementTargets);
+        } else {
+            actionInfos = player.playStage(cardID, true, replacementTargets);
+        }
 
         //Once action complete reset the pending action
         this.cancelPlayCard(player);
 
-        return {actionResult: PLAY_CARD_STATES.CHARACTER_PLAYED, actionInfos: actionInfos};
+        return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
     }
 
     /** Function to cancel the playing of a card

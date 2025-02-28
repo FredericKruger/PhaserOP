@@ -272,12 +272,12 @@ class Match {
         if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
             if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don', result.actionInfos, false);
-        } else if(result.actionResult === PLAY_CARD_STATES.CHARACTER_PLAYED) {
-            if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos, true, false, {});
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played', result.actionInfos, false, false, {});
+        } else if(result.actionResult === PLAY_CARD_STATES.CARD_PLAYED) {
+            if(!player.bot) player.socket.emit('game_play_card_played', result.actionInfos, true, false, {});
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
         } else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
-            if(!player.bot) player.socket.emit('game_play_card_character_played', result.actionInfos, true, true, result.targetData);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played', result.actionInfos, false, true, {});
+            if(!player.bot) player.socket.emit('game_play_card_played', result.actionInfos, true, true, result.targetData);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, true, {});
         }
     }
 
@@ -294,10 +294,10 @@ class Match {
 
             if(!player.bot) {
                 player.socket.emit('game_stop_targetting');
-                player.socket.emit('game_play_card_character_played', result.actionInfos, true, false, {});
+                player.socket.emit('game_play_card_played', result.actionInfos, true, false, {});
                 player.socket.emit('game_change_state_active');
             }
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_character_played', result.actionInfos, false, false, {});
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
         } else {
             //TODO fix is not valid target
             //this.resolvePendingAction(player, cancel = false, targets = [])

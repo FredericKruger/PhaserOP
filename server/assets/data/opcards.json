@@ -6256,7 +6256,7 @@
         "card":"STAGE",
         "type":["Straw Hat Crew"],
         "colors":["RED"],
-        "cost":2,
+        "cost":1,
         "attribute":"",
         "isleader":0,
         "rarity":"COMMON"

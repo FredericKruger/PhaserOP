@@ -69,11 +69,14 @@ class MatchPlayer {
      * @param {number} cardID - ID of the card to be played
      * @param {boolean} replacePreviousCard - flag to replace the
      */
-    playStage(cardID, replacePreviousCard) {
-        let card = this.inHand.filter(c => c.id === cardID)[0]; //Get the card
-        let previousCard = this.inStageLocation;    //Get the previous card
+    playStage(cardID, replacePreviousCard, replacedCardID = -1) {
+        let card = this.inHand.find(c => c.id === cardID); //Get the card
 
+        let previousCardID = -1;
         if(replacePreviousCard) {
+            let previousCard = this.inStageLocation;    //Get the previous card
+            if(previousCard !== null) previousCardID = previousCard.id; //Get the ID of the previous card
+
             this.inDiscard.push(previousCard); //push the previous card to the discard if it needs to be replaced
         }
 
@@ -87,10 +90,10 @@ class MatchPlayer {
             let donCard = this.inActiveDon.pop();
             donCard.setState(CARD_STATES.DON_RESTED);
             this.inExertenDon.push(donCard);
-            donIDs.push(donCard);
+            donIDs.push(donCard.id);
         }
 
-        return {playedCard: cardID, replacedCard: previousCard, spentDonIDs: donIDs};
+        return {playedCard: cardID, playedCardData: card.cardData, replacedCard: previousCardID, spentDonIds: donIDs};
     }
 
     /** Function to play a character

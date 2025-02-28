@@ -298,14 +298,16 @@ class ActionLibraryPassivePlayer {
             playerScene.characterArea.update();
         
             //Create small animation
-            this.scene.time.delayedCall(300, () => {
-                let restingAnimation = this.scene.add.sprite(
-                    card.x + card.displayWidth/2,
-                    card.y - card.displayHeight/2, 
-                    ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
-                restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
-                this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
-            });
+            if(card.cardData.card === CARD_TYPES.CHARACTER) {
+                this.scene.time.delayedCall(300, () => {
+                    let restingAnimation = this.scene.add.sprite(
+                        card.x + card.displayWidth/2,
+                        card.y - card.displayHeight/2, 
+                        ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
+                    restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
+                    this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
+                });
+            }
         };
         updateAction.isPlayerAction = false; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation

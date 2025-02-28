@@ -268,7 +268,7 @@ class ActionLibrary {
             else if(card.cardData.card === CARD_TYPES.STAGE)
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
         };
-        if(replacedCard !== null) action.start_animation = start_animation; //Play animation
+        if(replacedCard === null) action.start_animation = start_animation; //Play animation
         action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
@@ -296,14 +296,16 @@ class ActionLibrary {
             playerScene.characterArea.update();
 
             //Create small animation
-            this.scene.time.delayedCall(300, () => {
-                let restingAnimation = this.scene.add.sprite(
-                    card.x + card.displayWidth/2,
-                    card.y - card.displayHeight/2, 
-                    ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
-                restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
-                this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
-            });
+            if(card.cardData.card === CARD_TYPES.CHARACTER) {
+                this.scene.time.delayedCall(300, () => {
+                    let restingAnimation = this.scene.add.sprite(
+                        card.x + card.displayWidth/2,
+                        card.y - card.displayHeight/2, 
+                        ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
+                    restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
+                    this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
+                });
+            }
         };
         updateAction.isPlayerAction = true; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
