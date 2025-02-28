@@ -254,6 +254,8 @@ class MatchState {
                 return this.pending_action;
             }
         } else if(card.cardData.card === CARD_TYPES.EVENT) { //TODO: Implement event card
+            actionInfos = player.playEvent(cardId, false); //FIXME: Implement play event
+            return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
         }
     }
 

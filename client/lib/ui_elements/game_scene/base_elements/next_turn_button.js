@@ -23,6 +23,8 @@ class NextTurnButton extends Phaser.GameObjects.Container {
             {font: "600 30px OnePieceFont", color: COLOR_ENUMS_CSS.OP_WHITE}
         ).setOrigin(0.5);
 
+        this.glowAnimation = null;
+
         this.add([this.backGround, this.buttonText]);
         this.scene.add.existing(this);
 
@@ -60,7 +62,7 @@ class NextTurnButton extends Phaser.GameObjects.Container {
     /** Clears the glow */
     clearGlow() { 
         this.postFX.clear(); 
-        this.glowAnimation.stop();
+        if(this.glowAnimation !== null) this.glowAnimation.stop();
     }
 
     /** Function that sets the backgorund image to greyscale */

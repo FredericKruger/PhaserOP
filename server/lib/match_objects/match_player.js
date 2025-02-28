@@ -65,6 +65,28 @@ class MatchPlayer {
         return startID;
     }
 
+    /** Function that plays an event 
+     * @param {number} cardID - ID of the card to be played
+    */
+    playEvent(cardID) {
+        let card = this.inHand.find(c => c.id === cardID); //Get the card
+
+        this.removeCardFromHand(card); //remove the card from the hand
+        this.inDiscard.push(card); //push the card to the discard
+        card.setState(CARD_STATES.IN_DISCARD); //set the state
+
+        //Remove the resources from the active don
+        let donIDs = [];
+        for(let i=0; i<card.cardData.cost; i++) {
+            let donCard = this.inActiveDon.pop();
+            donCard.setState(CARD_STATES.DON_RESTED);
+            this.inExertenDon.push(donCard);
+            donIDs.push(donCard.id);
+        }
+
+        return {playedCard: cardID, playedCardData: card.cardData, replacedCard: -1, spentDonIds: donIDs};
+    }
+
     /** Function that plays a stage card and replaces the previous one if needed
      * @param {number} cardID - ID of the card to be played
      * @param {boolean} replacePreviousCard - flag to replace the
@@ -78,6 +100,7 @@ class MatchPlayer {
             if(previousCard !== null) previousCardID = previousCard.id; //Get the ID of the previous card
 
             this.inDiscard.push(previousCard); //push the previous card to the discard if it needs to be replaced
+            previousCard.setState(CARD_STATES.IN_DISCARD); //set the state  
         }
 
         this.inStageLocation = card; //Add stage to the location

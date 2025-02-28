@@ -243,12 +243,13 @@ class ActionLibrary {
         let tweens2 = null;
         if(card.cardData.card === CARD_TYPES.CHARACTER) tweens2 = playerScene.characterArea.addCardAnimation(card);
         else if(card.cardData.card === CARD_TYPES.STAGE) tweens2 = playerScene.stageLocation.addCardAnimation(card);
-        tweens2 = tweens2.concat({ //concat additional tween to call the completeAction function
+        if(tweens2 !== null) tweens2 = tweens2.concat({ //concat additional tween to call the completeAction function
             duration: 10,
             onComplete: () => {this.actionManager.finalizeAction();}
         });
         //Create the tween chain
-        let end_animation = this.scene.tweens.chain({
+        let end_animation = null;
+        if(tweens2 !== null) end_animation = this.scene.tweens.chain({
             targets: card,
             tweens: tweens2
         }).pause();
@@ -279,6 +280,9 @@ class ActionLibrary {
             //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) {
                 card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
+            } else if(card.cardData.card === CARD_TYPES.EVENT) {
+                //FIXME Events will be handled differently once first actions are implemented
+                this.scene.actionLibrary.discardCardAction(playerScene, card); //Create a discard Action
             }
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
         };
