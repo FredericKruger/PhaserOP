@@ -45,6 +45,9 @@ class TargetManager {
         if(isValid.isValid) { //If yes add to the targetids and remove from the targets
             this.targetIDs.push(card.id);
             this.targets.splice(this.targets.indexOf(isValid.target), 1);
+        } else {
+            //this.scene.animationLibrary.shakingAnimation(card); //Create a little animation to show it's not a right target
+            //TODO find small animation that shows it's not a right target (maybe a sound like MURI)
         }
 
         //If all targets are selected, send the targets to the server

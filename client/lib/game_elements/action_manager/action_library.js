@@ -444,9 +444,15 @@ class ActionLibrary {
 
             this.scene.targetingArrow.stopTargeting();
 
-            card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
-            card.setState(CARD_STATES.IN_HAND);
-            card.playerScene.hand.update();
+            switch(this.scene.targetManager.targetAction) {
+                case 'PLAY_CARD_ACTION':
+                    card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+                    card.setState(CARD_STATES.IN_HAND);
+                    card.playerScene.hand.update();
+                    break;
+                default:
+                    break;
+            }
 
             this.scene.game.gameClient.requestCancelTargeting(this.scene.targetManager.targetData);
             this.scene.targetManager.reset();

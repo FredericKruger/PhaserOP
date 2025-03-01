@@ -299,4 +299,18 @@ class AnimationLibrary {
         return tweens;
     }
     //#region 
+
+    shakingAnimation(card) {
+        //Save old positions
+        let posX = card.x;
+    
+        this.scene.tweens.add({
+            targets: card,
+            x: { from: posX - 5, to: posX + 5 }, // Move left and right
+            duration: 50, // Duration of each shake
+            yoyo: true, // Move back to the original position
+            repeat: 2, // Repeat the shake 2 times
+            onComplete: () => { card.x = posX; } // Reset the x position
+        });
+    }
 }
