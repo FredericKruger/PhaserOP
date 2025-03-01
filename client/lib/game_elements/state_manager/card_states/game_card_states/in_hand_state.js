@@ -25,6 +25,8 @@ class InHandState extends GameCardState {
     }
 
     onDragStart(pointer, gameObject) {
+        this.card.scene.gameState.exit(GAME_STATES.DRAGGING);
+
         gameObject.setState(CARD_STATES.TRAVELLING_FROM_HAND);
         gameObject.scene.children.bringToTop(gameObject);
 

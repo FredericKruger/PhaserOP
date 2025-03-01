@@ -279,7 +279,7 @@ class ActionLibrary {
         
             //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) {
-                card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
+                card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play
             } else if(card.cardData.card === CARD_TYPES.EVENT) {
                 //FIXME Events will be handled differently once first actions are implemented
                 this.scene.actionLibrary.discardCardAction(playerScene, card); //Create a discard Action

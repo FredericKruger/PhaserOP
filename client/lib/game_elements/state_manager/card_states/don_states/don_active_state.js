@@ -9,6 +9,8 @@ class DonActiveState extends DonCardState {
     }
 
     onDragStart(pointer, gameObject) {
+        this.card.scene.gameState.exit(GAME_STATES.DRAGGING);
+        
         gameObject.setState(CARD_STATES.DON_TRAVELLING);
 
         gameObject.setDepth(DEPTH_VALUES.DON_DRAGGED);

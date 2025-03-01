@@ -77,7 +77,7 @@ class GameStateManager {
                     ease: 'easeIn',
                     onComplete: () => {
                         this.scene.activePlayerScene.leaderLocation.addCard(activePlayerLeaderCard);
-                        activePlayerLeaderCard.setState(CARD_STATES.IN_PLAY);
+                        activePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
                         this.activePlayerReadyForMulligan = true;
                         this.startMulliganPhase();
                     }
@@ -102,7 +102,7 @@ class GameStateManager {
                     ease: 'easeIn',
                     onComplete: () => {
                         this.scene.passivePlayerScene.leaderLocation.addCard(passivePlayerLeaderCard);
-                        passivePlayerLeaderCard.setState(CARD_STATES.IN_PLAY);
+                        passivePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
                         this.passivePlayerReadyForMulligan = true;
                         this.startMulliganPhase();
                     }
@@ -628,6 +628,17 @@ class GameStateManager {
         character.updatePowerText();
 
         console.log(player.activeDonDeck.cards);
+    }
+
+    //#endregion
+
+    //#region ATTACK FUNCTIONS
+
+    selectAttackTarget(actionInfos, isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        player.selectAttackTarget(actionInfos, isPlayerTurn);
     }
 
     //#endregion

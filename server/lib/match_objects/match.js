@@ -5,8 +5,9 @@ const { request } = require("express");
 const AI_Instance = require("../ai_engine/ai_instance");
 const { FlagManager } = require("../managers/state_manager");
 const MatchPlayer = require("./match_player");
-const { PLAY_CARD_STATES, ATTACH_DON_TO_CHAR_STATES } = require("./match_enums");
+const { PLAY_CARD_STATES, ATTACH_DON_TO_CHAR_STATES, ATTACK_CARD_STATES, TARGET_ACTION, CARD_TYPES } = require("./match_enums");
 const TargetingManager = require("../managers/targeting_manager");
+const { CARD_STATES } = require("./match_card");
 
 class Match {
 
@@ -66,6 +67,10 @@ class Match {
             this.state.current_phase = MATCH_PHASES.SETUP;
             let player1Leader = this.state.player1.deck.leader;
             let player2Leader = this.state.player2.deck.leader;
+
+            //set the states for the first turn
+            player1Leader.state = CARD_STATES.IN_PLAY_FIRST_TURN;
+            player2Leader.state = CARD_STATES.IN_PLAY_FIRST_TURN;
 
             //Put in the location
             this.state.player1.inLeaderLocation = player1Leader;
@@ -319,6 +324,26 @@ class Match {
             if(!player.bot) player.socket.emit('game_attach_don_to_character', result.actionInfos, true, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character', result.actionInfos, false, true);
         }
+    }
+    //#endregion
+
+    //#region ATTACK FUNCTIONS
+    startTargetingAttack(player, cardId) {
+        let cardData = player.currentMatchPlayer.getCardFromHand(cardId);
+        let actionInfos = {playedCard: cardId, playedCardData: cardData};
+        let targetData = {
+            targetAction: TARGET_ACTION.ATTACK_CARD_ACTION,
+            targets: [
+                {
+                    player: ["passive"],
+                    cardtypes: [CARD_TYPES.CHARACTER],
+                    states: ["IN_PLAY_RESTED"],
+                }
+            ]
+        };
+        this.state.pending_action = {actionResult: ATTACK_CARD_STATES.SELECT_TARGET, actionInfos: actionInfos, targetData: targetData};
+        this.state.resolving_pending_action = true;
+        player.socket.emit('game_select_attack_target', actionInfos, true, targetData);
     }
     //#endregion
 

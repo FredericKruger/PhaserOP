@@ -282,7 +282,7 @@ class ActionLibraryPassivePlayer {
             playerScene.playerInfo.updateCardAmountTexts();
         
             //TODO add check for rush
-            if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_RESTED); //Set the card state to in play
+            if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play
             else if(card.cardData.card === CARD_TYPES.EVENT) {
                 //FIXME: Add event card logic
                 this.scene.actionLibraryPassivePlayer.discardCardAction(playerScene, card); //Create a discard Action 

@@ -131,14 +131,15 @@ class MatchState {
         let cards = [];
         for(let i=0; i<player.inCharacterArea.length; i++) {
             let card = player.inCharacterArea[i];
-            if(card.state === CARD_STATES.IN_PLAY_RESTED) {
+            if(card.state === CARD_STATES.IN_PLAY_RESTED || card.state === CARD_STATES.IN_PLAY_FIRST_TURN) {
                 card.setState(CARD_STATES.IN_PLAY);
                 cards.push(card.id);
 
                 card.attachedDon = []; //Reset the attach don pointer
             }
         }
-        if(player.inLeaderLocation.state === CARD_STATES.IN_PLAY_RESTED) {
+        if(!player.isFirstTurn && 
+            (player.inLeaderLocation.state === CARD_STATES.IN_PLAY_RESTED || player.inLeaderLocation.state === CARD_STATES.IN_PLAY_FIRST_TURN)) {
             player.inLeaderLocation.setState(CARD_STATES.IN_PLAY);
             cards.push(player.inLeaderLocation.id);
 

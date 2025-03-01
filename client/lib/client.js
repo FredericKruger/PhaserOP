@@ -134,6 +134,13 @@ class Client {
             else this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, activePlayer);
         });
 
+        /** ATTACK CHARACTER */
+        this.socket.on('game_select_attack_target', (actionInfos, activePlayer, targetData) => {
+            if(activePlayer) this.gameScene.targetManager.loadFromTargetData(targetData);
+
+            this.gameScene.gameStateManager.selectAttackTarget(actionInfos, activePlayer);
+        });
+
         /** OPPONENT ACTION LISTENERS */
         this.socket.on('game_stop_targetting', () => {
             this.gameScene.targetManager.reset();
@@ -204,6 +211,8 @@ class Client {
 
     requestCancelTargeting () {this.socket.emit('player_cancel_targeting');}
     requestSendTargets (targetIDs) {this.socket.emit('player_resolve_targeting', targetIDs);}
+
+    requestStartTargetingAttack (cardID) {this.socket.emit('player_start_targeting_attack', cardID);}
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}

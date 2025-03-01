@@ -82,6 +82,13 @@ class PlayerScene {
     }
     //#endregion
 
+    //#region ATTACK FUNCTIONS
+    selectAttackTarget(actionInfos, isPlayerTurn) {
+        let card = this.getCard(actionInfos.playedCard);
+        this.scene.actionLibrary.startTargetingAction(this, card, false);
+    }
+    //#endregion
+
     //#region CHECKER FUNCTIONS
     /** Function the pointer is over a character card
      * @param {number} pointerX

@@ -138,7 +138,7 @@ class MatchPlayer {
         //Add the card to the character area
         this.inCharacterArea.push(card); //add to the character area
         this.removeCardFromHand(card); //remove from the hand
-        card.setState(CARD_STATES.IN_PLAY_RESTED); //set the state
+        card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //set the state
 
         //Remove the resources from the active don
         let donIDs = [];

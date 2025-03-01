@@ -181,6 +181,9 @@ class GameCardUI extends BaseCardUI{
             case CARD_STATES.IN_PLAY_RESTED:
                 this.fsmState.exit(GAME_CARD_STATES.IN_PLAY);
                 break;
+            case CARD_STATES.IN_PLAY_FIRST_TURN:
+                this.fsmState.exit(GAME_CARD_STATES.FIRST_TURN);
+                break;
         }
     }
     //#endregion
@@ -214,8 +217,11 @@ class GameCardUI extends BaseCardUI{
      * @param {string} state
      */
     exertCard(state) {
-        if(state === CARD_STATES.IN_PLAY_RESTED) this.frontArt.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
-        else this.frontArt.resetPipeline();
+        //if(state === CARD_STATES.IN_PLAY_FIRST_TURN) this.frontArt.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
+        //else this.frontArt.resetPipeline();
+
+        if(state === CARD_STATES.IN_PLAY_RESTED) this.frontArt.angle = -90;
+        else if(state === CARD_STATES.IN_PLAY) this.frontArt.angle = 0;
     }
     //#endregion
 

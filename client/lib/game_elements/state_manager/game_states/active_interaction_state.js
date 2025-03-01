@@ -17,11 +17,12 @@ class ActiveInteractionState extends GameState {
 
     onDragStart(pointer, gameObject) {
         gameObject.fsmState.onDragStart(pointer, gameObject);
-        this.exit(GAME_STATES.DRAGGING);
     }
 
     onPointerDown(pointer, gameObject) {
         if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
+        else if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerDown(pointer, gameObject);
+       
     }
 
     update() {
