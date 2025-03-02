@@ -8,6 +8,7 @@ class TargetManager {
 
         this.targetData = {};
         this.targetAction = null;
+        this.requiredTargets = 0;
         this.targets = [];
         this.targetIDs = [];
     }
@@ -18,6 +19,7 @@ class TargetManager {
     loadFromTargetData(targetData) {
         this.targetData = targetData;
         this.targetAction = targetData.targetAction;
+        this.requiredTargets = targetData.requiredTargets;
         for(let el of targetData.targets)
             this.targets.push(new Target(el));
     }
@@ -42,18 +44,23 @@ class TargetManager {
     */
     addTarget(card) {
         let isValid = this.isValidTarget(card); //Test if the card is valid for any target
-        if(isValid.isValid) { //If yes add to the targetids and remove from the targets
+        //if(isValid.isValid) { //If yes add to the targetids and remove from the targets
             this.targetIDs.push(card.id);
             this.targets.splice(this.targets.indexOf(isValid.target), 1);
-        } else {
+        //} else {
             //this.scene.animationLibrary.shakingAnimation(card); //Create a little animation to show it's not a right target
             //TODO find small animation that shows it's not a right target (maybe a sound like MURI)
-        }
+        //}
 
         //If all targets are selected, send the targets to the server
-        if(this.targetIDs.length === this.targetData.targets.length) {
+        if(this.targetIDs.length === this.requiredTargets) {
             this.scene.game.gameClient.requestSendTargets(this.targetIDs);
         }
+    }
+
+    /** Reset Target IDs */
+    resetTargetIDs() {
+        this.targetIDs = [];
     }
 
     /** Resets the object */

@@ -221,8 +221,10 @@ class MatchState {
                 actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
                 let targetData = {
                     targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
+                    requiredTargets: 1,
                     targets: [
                         {
+                            minrequiredtargets: 0,
                             player: ["active"],
                             cardtypes: [CARD_TYPES.STAGE],
                             states: ["IN_PLAY"],
@@ -242,11 +244,13 @@ class MatchState {
                 actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
                 let targetData = {
                     targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
+                    requiredTargets: 1,
                     targets: [
                         {
+                            minrequiredtargets: 0,
                             player: ["active"],
                             cardtypes: [CARD_TYPES.CHARACTER],
-                            states: ["IN_PLAY", "IN_PLAY_RESTED"],
+                            states: ["IN_PLAY", "IN_PLAY_RESTED", "IN_PLAY_FIRST_TURN"],
                         }
                     ]
                 }

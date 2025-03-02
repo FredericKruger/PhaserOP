@@ -294,7 +294,9 @@ class Match {
     startPlayReplaceCard(player, cardID, replacementTargets=[]) {
         if(replacementTargets.length === 0) return;
 
-        if(this.targetingManager.isValidTarget(player, replacementTargets[0], this.state.pending_action.targetData)) {
+        let validTarget = this.targetingManager.areValidTargets(player, replacementTargets, this.state.pending_action.targetData);
+        console.log("TARGETS ARE VALID: " + validTarget);
+        if(validTarget) {
             let result = this.state.playReplaceCard(player.currentMatchPlayer, cardID, replacementTargets[0]);
 
             if(!player.bot) {
@@ -305,7 +307,8 @@ class Match {
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
         } else {
             //TODO fix is not valid target
-            //this.resolvePendingAction(player, cancel = false, targets = [])
+            console.log("TARGETS ARE INVALID");
+            player.socket.emit('game_reset_targets');
         }
     }
 
@@ -333,11 +336,17 @@ class Match {
         let actionInfos = {playedCard: cardId, playedCardData: cardData};
         let targetData = {
             targetAction: TARGET_ACTION.ATTACK_CARD_ACTION,
+            requiredTargets: 1,
             targets: [
                 {
+                    minrequiredtargets: 0,
                     player: ["passive"],
                     cardtypes: [CARD_TYPES.CHARACTER],
-                    states: ["IN_PLAY_RESTED"],
+                    states: ["IN_PLAY_FIRST_TURN"], //FIXME just for testing
+                },{
+                    minrequiredtargets: 0,
+                    player: ["passive"],
+                    cardtypes: [CARD_TYPES.LEADER]
                 }
             ]
         };

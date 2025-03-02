@@ -147,6 +147,7 @@ class Client {
             this.gameScene.targetingArrow.stopTargeting();
             this.gameScene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
         });
+        this.socket.on('game_reset_targets', () => {this.gameScene.targetManager.resetTargetIDs();});
 
         this.socket.on('game_change_state_active', () => {this.gameScene.gameStateManager.changeGameStateActive();});
 
