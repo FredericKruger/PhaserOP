@@ -240,6 +240,8 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_resolve_targeting', (targetIDs) => {socket.player.match.resolvePendingAction(socket.player, false, targetIDs);});
 
     socket.on('player_start_targeting_attack', (cardID) => {socket.player.match.startTargetingAttack(socket.player, cardID);});
+    socket.on('player_start_targeting_passiveplayer', (cardID) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_start_targeting_attack_passiveplayer', cardID);});
+    socket.on('player_udpate_targeting_attack_passiveplayer', (relX, relY) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_udpate_targeting_attack_passiveplayer', relX, relY);});
 
     socket.on('player_start_next_turn', () => {
         if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_complete_current_turn');

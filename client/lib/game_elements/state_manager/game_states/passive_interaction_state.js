@@ -14,4 +14,17 @@ class PassiveInteractionState extends GameState {
     onPointerOut(pointer, gameObject) {
         gameObject.fsmState.onPointerOut(pointer, gameObject);
     }
+
+    update() {
+        //Update all cards in the hand to reflect if they can take an action
+        for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.update(); 
+        for(let card of this.scene.activePlayerScene.characterArea.cards) card.fsmState.update();
+        for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.fsmState.update();
+        for(let card of this.scene.activePlayerScene.stageLocation.cards) card.fsmState.update();
+
+        //Update all cards in the hand to reflect if they can take an action
+        for(let card of this.scene.passivePlayerScene.characterArea.cards) card.fsmState.update();
+        for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.fsmState.update();
+        for(let card of this.scene.passivePlayerScene.stageLocation.cards) card.fsmState.update();
+    }
 }

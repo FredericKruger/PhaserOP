@@ -8,6 +8,7 @@ const MatchPlayer = require("./match_player");
 const { PLAY_CARD_STATES, ATTACH_DON_TO_CHAR_STATES, ATTACK_CARD_STATES, TARGET_ACTION, CARD_TYPES } = require("./match_enums");
 const TargetingManager = require("../managers/targeting_manager");
 const { CARD_STATES } = require("./match_card");
+const { AttackManager} = require("../managers/attack_manager");
 
 class Match {
 
@@ -55,6 +56,9 @@ class Match {
 
         /** @type {FlagManager} */
         this.flagManager = new FlagManager(this); //Create a new state manager
+
+        /** @type {AttackManager} */
+        this.attackManager = null; //Create a new attack manager
     }
     //#endregion
 
@@ -295,7 +299,6 @@ class Match {
         if(replacementTargets.length === 0) return;
 
         let validTarget = this.targetingManager.areValidTargets(player, replacementTargets, this.state.pending_action.targetData);
-        console.log("TARGETS ARE VALID: " + validTarget);
         if(validTarget) {
             let result = this.state.playReplaceCard(player.currentMatchPlayer, cardID, replacementTargets[0]);
 
@@ -306,8 +309,6 @@ class Match {
             }
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
         } else {
-            //TODO fix is not valid target
-            console.log("TARGETS ARE INVALID");
             player.socket.emit('game_reset_targets');
         }
     }
@@ -331,6 +332,10 @@ class Match {
     //#endregion
 
     //#region ATTACK FUNCTIONS
+    /** Function to start targeting a card for the attack
+     * @param {Player} player
+     * @param {number} cardId
+     */
     startTargetingAttack(player, cardId) {
         let cardData = player.currentMatchPlayer.getCardFromHand(cardId);
         let actionInfos = {playedCard: cardId, playedCardData: cardData};
@@ -354,11 +359,35 @@ class Match {
         this.state.resolving_pending_action = true;
         player.socket.emit('game_select_attack_target', actionInfos, true, targetData);
     }
+
+    /** Function that start the attack phase
+     * @param {Player} player
+     * @param {number} attackerID
+     * @param {number} defenderID
+     */
+    startAttackPhase(player, attackerID, defenderID) {
+        //First send signal to stop targetting to the current active player
+        if(!player.bot) player.socket.emit('game_stop_targetting', false);
+
+        //get the cards
+        let attackerCard = player.currentMatchPlayer.getCard(attackerID);   
+        let defenderCard = player.currentOpponentPlayer.currentMatchPlayer.getCard(defenderID);
+        //Setup the attack manager
+        this.attackManager = new AttackManager(this, attackerCard, defenderCard);
+
+        //Start the attack phase for the attacker
+        this.state.declareAttackPhase(player.currentMatchPlayer, attackerCard);
+
+        //Send signals to the clients to prepare the attack phase
+        if(!player.bot) player.socket.emit('game_declare_attack_phase', attackerID, defenderID, true);
+        if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_declare_attack_phase', attackerID, defenderID, false);
+    }
     //#endregion
 
     //#region RESOLVE ACTION FUNCTION
     /** Function to revolve the current pending action. Big switch that will redirect to the approriate function 
      * @param {Player} player
+     * @param {boolean} cancel
      * @param {Array<number>} targets
     */
     resolvePendingAction(player, cancel = false, targets = []) {
@@ -371,6 +400,15 @@ class Match {
                 } 
                 else this.startPlayReplaceCard(player, this.state.pending_action.actionInfos.playedCard, targets);
                 break;
+            case ATTACK_CARD_STATES.SELECT_TARGET:
+                if(!cancel) {
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
+                    if(validTarget) {
+                       this.startAttackPhase(player, this.state.pending_action.actionInfos.playedCard, targets[0]);
+                    }
+                } else {
+                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_stop_targeting_attack_passiveplayer');
+                }
             default:
                 break;
         }

@@ -45,9 +45,9 @@ class GameStateManager {
             scale: CARD_SCALE.IN_DECK,
             artVisible: false,
             depth: 1,
-            id: 0
+            id: activePlayerLeader.id
         });
-        activePlayerLeaderCard.updateCardData(activePlayerLeader, true);
+        activePlayerLeaderCard.updateCardData(activePlayerLeader.cardData, true);
 
         let passivePlayerLeaderCard = new GameCardUI(this.scene, this.scene.passivePlayerScene, {
             x: this.scene.screenCenterX,
@@ -56,9 +56,9 @@ class GameStateManager {
             scale: CARD_SCALE.IN_DECK,
             artVisible: false,
             depth: 1,
-            id: 0
+            id: passivePlayerLeader.id
         });
-        passivePlayerLeaderCard.updateCardData(passivePlayerLeader, true);
+        passivePlayerLeaderCard.updateCardData(passivePlayerLeader.cardData, true);
 
         //Active Player tween
         this.scene.add.tween({
@@ -617,7 +617,6 @@ class GameStateManager {
         //player.activeDonDeck.attachDon(donCard.id);
         donCard.setState(CARD_STATES.DON_ATTACHED);
         donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
-        donCard.makeDraggable(false);
         character.attachedDon.push(donCard); //Add to character pile
 
         //Animate
@@ -625,20 +624,75 @@ class GameStateManager {
 
         //Update the UI
         player.playerInfo.updateCardAmountTexts();
-        character.updatePowerText();
-
-        console.log(player.activeDonDeck.cards);
     }
 
     //#endregion
 
     //#region ATTACK FUNCTIONS
-
+    /** Function to select the attack target
+     * @param {Object} actionInfos - The action infos
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
     selectAttackTarget(actionInfos, isPlayerTurn) {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         player.selectAttackTarget(actionInfos, isPlayerTurn);
+    }
+
+    /** Function to start the targeting from the attack 
+     * @param {number} cardID - The card ID
+    */
+    passivePlayerStartTargetingAttack(cardID) {
+        let card = this.scene.passivePlayerScene.getCard(cardID);
+        console.log("HERE FOR CLIENT" + card);
+        this.scene.targetingArrow.startManualTargetingXY(card, card.x, card.y);
+    }
+
+    /** Function to update the targeting arrow from the attack
+     * @param {number} relX - The relative X position
+     * @param {number} relY - The relative Y position
+     */
+    passivePlayerUpdateTargetingAttack(relX, relY) {
+        let posX = relX * this.scene.screenWidth;
+        let posY = relY * this.scene.screenHeight;
+
+        let newY = this.scene.screenHeight - posY;
+
+        this.scene.targetingArrow.update(posX, newY);
+    }
+
+    /*** Function to stop the targetting of an attack */
+    passivePlayerStopTargetingAttack() {
+        this.scene.targetingArrow.stopTargeting();
+    }
+
+    /** Function to start the attack phase
+     * @param {number} attackerID - The attacker ID
+     * @param {number} defenderID - The defender ID
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    declareAttackPhase(attackerID, defenderID, isPlayerTurn) {
+        this.scene.gameStateUI.udpatePhase(GAME_PHASES.ATTACK_PHASE);
+
+        //Set the game state
+        if(isPlayerTurn) this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+
+        let attackerPlayer = this.scene.activePlayerScene;
+        let defenderPlayer = this.scene.passivePlayerScene;
+
+        //revesers if this is the passive player's turn
+        if(!isPlayerTurn) {
+            attackerPlayer = this.scene.passivePlayerScene;
+            defenderPlayer = this.scene.activePlayerScene;
+        }
+
+        //getCards
+        let attacker = attackerPlayer.getCard(attackerID);
+        let defender = defenderPlayer.getCard(defenderID);
+
+        if(isPlayerTurn) this.scene.actionLibrary.declareAttackAction(attackerPlayer, attacker, defender);
+        else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender);
     }
 
     //#endregion
@@ -703,10 +757,13 @@ class GameStateManager {
     /** Function to handle the draggong from the opponent player
      * @param {number} cardID
      * @param {string} cardType
-     * @param {number} posX
-     * @param {number} poY
+     * @param {number} relX
+     * @param {number} relY
      */
-    passivePlayerCardDragPosition(cardID, cardType, posX, posY) {
+    passivePlayerCardDragPosition(cardID, cardType, relX, relY) {
+        let posX = relX * this.scene.screenWidth;
+        let posY = relY * this.scene.screenHeight;
+
         let newY = this.scene.screenHeight - posY;
         if(cardType === 'GameCardUI') {
             let card = this.scene.passivePlayerScene.getCard(cardID);

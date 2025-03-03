@@ -412,6 +412,29 @@ class ActionLibrary {
     }
     //#endregion
 
+    //#region ATTACK ACTIONS
+
+    /**Function to start an action to declare an attack 
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} attacker
+     * @param {GameCardUI} defender
+    */
+    declareAttackAction(playerScene, attacker, defender) {
+        let action = new Action();
+        action.start = () => {
+            this.scene.targetingArrow.update(defender.x, defender.y);
+            attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+        };
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+        action.name = "DECLARE ATTACK";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
+    //#endregion
+
     //#region TARGETING ACTION
     /** Function to start the targetting arrow
      * @param {PlayerScene} playerScene

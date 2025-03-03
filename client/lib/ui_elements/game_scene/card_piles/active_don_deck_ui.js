@@ -20,6 +20,14 @@ class ActiveDonDeckUI extends CardPileUI {
         card.setState(CARD_STATES.DON_ACTIVE);
     };
 
+    /** Function to get a card from the ID
+     * @param {number} cardID
+     * @returns {DonCardUI} - The card with the ID
+     */
+    getCard(cardID) {
+        return this.cards.find(card => card.id === cardID);
+    }
+
     /** Function that gives the number of active don cards in the pile */
     getNumberOfActiveCards() {return this.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length;}
 

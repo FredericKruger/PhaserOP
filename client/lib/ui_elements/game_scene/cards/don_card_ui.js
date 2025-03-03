@@ -29,11 +29,11 @@ class DonCardUI extends BaseCardUI {
         this.state = state;
         this.setFSMState(state);
 
-        if(this.state === CARD_STATES.DON_ACTIVE) {
+        /*if(this.state === CARD_STATES.DON_ACTIVE) {
             this.setVisible(true);
         } else if(this.state === CARD_STATES.DON_RESTED) {
             this.setVisible(false);
-        }
+        }*/
 
         /*if(this.playerScene.player.isActivePlayer) {
             if(this.state === CARD_STATES.DON_ACTIVE) {

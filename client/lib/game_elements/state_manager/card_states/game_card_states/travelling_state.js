@@ -10,7 +10,11 @@ class TravellingState extends GameCardState {
     onDrag(pointer, gameObject, dragX, dragY) {
         gameObject.setPosition(dragX, dragY);
 
-        gameObject.scene.game.gameClient.sendCardDragPosition(gameObject.id, 'GameCardUI', dragX, dragY);
+        //Calculate relative position of X to the width
+        let relX = dragX / gameObject.scene.screenWidth;
+        let relY = dragY / gameObject.scene.screenHeight;
+
+        gameObject.scene.game.gameClient.sendCardDragPosition(gameObject.id, 'GameCardUI', relX, relY);
     }
 
     onDragEnd(pointer, gameObject, dropped) {

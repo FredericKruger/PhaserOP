@@ -2,6 +2,8 @@ const Match = require('./match');
 const { CARD_STATES } = require('./match_card');
 const { PLAY_CARD_STATES, CARD_TYPES, ATTACH_DON_TO_CHAR_STATES, MATCH_CONSTANTS, TARGET_ACTION } = require('./match_enums');
 const MatchPlayer = require('./match_player')
+const {AttackManager} = require('../managers/attack_manager');
+const {MatchCard} = require('./match_card');
 
 //#region MATCH PHASES OBJECT
 const MATCH_PHASES = Object.freeze({
@@ -325,7 +327,21 @@ class MatchState {
         }
     }
     //#endregion
+
+    //#region ATTACK FUNCTIONS
+
+    /** Function to declare the attack phase
+     * @param {MatchPlayer} player - player object
+     * @param {MatchCard} attacker - attacker card id
+     */
+    declareAttackPhase(player, attacker) {
+        //Set the state of the card
+        attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+    }
+
+    //#endregion
 }
+
 
 module.exports = {
     MATCH_PHASES: MATCH_PHASES,

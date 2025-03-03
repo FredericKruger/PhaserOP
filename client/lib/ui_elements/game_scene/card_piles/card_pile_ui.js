@@ -11,6 +11,7 @@ class CardPileUI extends BaseComponentUI{
 
     /** Function to get a card from the ID
      * @param {number} cardID
+     * @returns {GameCardUI} - The card with the ID
      */
     getCard(cardID) {
         return this.cards.find(card => card.id === cardID);
