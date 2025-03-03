@@ -6,7 +6,7 @@ const PLAY_CARD_STATES = Object.freeze({
 });
 
 const ATTACK_CARD_STATES = Object.freeze({
-    SELECT_TARGET: 'SELECT_TARGET',
+    SELECT_TARGET: 'SELECT_ATTACK_TARGET',
 });
 
 const ATTACH_DON_TO_CHAR_STATES = Object.freeze({
@@ -22,7 +22,7 @@ const CARD_TYPES = Object.freeze({
 });
 
 const MATCH_CONSTANTS = Object.freeze({
-    MAX_CHARACTERS_IN_AREA: 1, //FIXME Should be 5
+    MAX_CHARACTERS_IN_AREA: 5,
 });
 
 const TARGET_ACTION = Object.freeze({

@@ -86,6 +86,7 @@ class PlayerScene {
     selectAttackTarget(actionInfos, isPlayerTurn) {
         let card = this.getCard(actionInfos.playedCard);
         this.scene.actionLibrary.startTargetingAction(this, card, false);
+        this.scene.game.gameClient.requestStartTargetingPassivePlayer(actionInfos.playedCard);
     }
     //#endregion
 

@@ -92,7 +92,7 @@ class Client {
 
         /** CARD MOVEMENTS */
         this.socket.on('passiveplayer_card_drag_start', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragStart(cardID, cardType);});
-        this.socket.on('passiveplayer_card_drag_position', (cardID, cardType, posX, posY) => {this.gameScene.gameStateManager.passivePlayerCardDragPosition(cardID, cardType, posX, posY);});
+        this.socket.on('passiveplayer_card_drag_position', (cardID, cardType, relX, relY) => {this.gameScene.gameStateManager.passivePlayerCardDragPosition(cardID, cardType, relX, relY);});
         this.socket.on('passiveplayer_card_drag_end', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragEnd(cardID, cardType);});
         this.socket.on('passiveplayer_card_pointer_over', (cardID, state, activePlayer) => {this.gameScene.gameStateManager.passivePlayerCardPointerOver(cardID, state, activePlayer);});
         this.socket.on('passiveplayer_card_pointer_out', (cardID, state, activePlayer) => {this.gameScene.gameStateManager.passivePlayerCardPointerOut(cardID, state, activePlayer);});
@@ -140,13 +140,18 @@ class Client {
 
             this.gameScene.gameStateManager.selectAttackTarget(actionInfos, activePlayer);
         });
+        this.socket.on('game_declare_attack_phase', (attackerID, defenderID, activePlayer) => {this.gameScene.gameStateManager.declareAttackPhase(attackerID, defenderID, activePlayer);});
+        this.socket.on('game_start_targeting_attack_passiveplayer', (cardID) => {this.gameScene.gameStateManager.passivePlayerStartTargetingAttack(cardID);});
+        this.socket.on('game_udpate_targeting_attack_passiveplayer', (relX, relY) => {this.gameScene.gameStateManager.passivePlayerUpdateTargetingAttack(relX, relY);});
+        this.socket.on('game_stop_targeting_attack_passiveplayer', () => {this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();});
 
         /** OPPONENT ACTION LISTENERS */
-        this.socket.on('game_stop_targetting', () => {
+        this.socket.on('game_stop_targetting', (hideArrow = true) => {
             this.gameScene.targetManager.reset();
-            this.gameScene.targetingArrow.stopTargeting();
+            if(hideArrow) this.gameScene.targetingArrow.stopTargeting();
             this.gameScene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
         });
+        this.socket.on('game_reset_targets', () => {this.gameScene.targetManager.resetTargetIDs();});
 
         this.socket.on('game_change_state_active', () => {this.gameScene.gameStateManager.changeGameStateActive();});
 
@@ -182,7 +187,7 @@ class Client {
 
     /** CARD MOVEMENTS */
     sendCardDragStart (cardID, cardType) {this.socket.emit('player_card_drag_start', cardID, cardType);}
-    sendCardDragPosition (cardID, cardType, posX, posY) {this.socket.emit('player_card_drag_position', cardID, cardType, posX, posY);}
+    sendCardDragPosition (cardID, cardType, relX, relY) {this.socket.emit('player_card_drag_position', cardID, cardType, relX, relY);}
     sendCardDragEnd (cardID, cardType) {this.socket.emit('player_card_drag_end', cardID, cardType);}
     sendCardPointerOver (cardID, state, activePlayer) {this.socket.emit('player_card_pointer_over', cardID, state, activePlayer);}
     sendCardPointerOut (cardID, state, activePlayer) {this.socket.emit('player_card_pointer_out', cardID, state, activePlayer);}
@@ -213,6 +218,9 @@ class Client {
     requestSendTargets (targetIDs) {this.socket.emit('player_resolve_targeting', targetIDs);}
 
     requestStartTargetingAttack (cardID) {this.socket.emit('player_start_targeting_attack', cardID);}
+    requestStartTargetingPassivePlayer (cardID) {this.socket.emit('player_start_targeting_passiveplayer', cardID);}
+    requestUpdateTragetingPassivePlayer (relX, relY) {this.socket.emit('player_udpate_targeting_attack_passiveplayer', relX, relY);}
+
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}

@@ -4,8 +4,4 @@ class DonAttachedState extends DonCardState {
         super(card, DON_CARD_STATES.ATTACHED);
     }
 
-    update() {
-        card.setVisible(true);
-    }
-
 }

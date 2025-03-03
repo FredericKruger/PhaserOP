@@ -17,7 +17,7 @@ class Target {
         }
 
         // Use optional chaining and nullish coalescing to safely access properties
-        this.players = serverTarget.players?.slice() || [];
+        this.players = serverTarget.player?.slice() || [];
         this.cardtypes = serverTarget.cardtypes?.slice() || [];
         this.cost = serverTarget.cost || {};
         this.states = serverTarget.states?.slice() || [];

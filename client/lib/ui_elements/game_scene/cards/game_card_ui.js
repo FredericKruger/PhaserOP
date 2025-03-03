@@ -139,16 +139,6 @@ class GameCardUI extends BaseCardUI{
     setState(state) {
         this.state = state;
         this.setFSMState(state);
-
-        //Only show the art if ths card is from the active player
-        if(this.playerScene.player.isActivePlayer) {
-            this.powerBox.setVisible(this.state === CARD_STATES.IN_HAND);
-            this.costIcon.setVisible(this.state === CARD_STATES.IN_HAND);
-            this.powerText.setVisible(this.state === CARD_STATES.IN_HAND);
-            this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND && this.cardData.counter);
-        }
-        this.locationPowerText.setVisible(this.state === CARD_STATES.IN_PLAY || this.state === CARD_STATES.IN_PLAY_RESTED);
-
         this.exertCard(this.state);
     }
 
@@ -193,8 +183,11 @@ class GameCardUI extends BaseCardUI{
      * DON cards are only counted during tje players active turn
     */
     updatePowerText() {
-        if(this.playerScene.isPlayerTurn) this.locationPowerText.setText(this.cardData.power + this.attachedDon.length*1000);
-        else this.locationPowerText.setText(this.cardData.power);
+        let currentPower = this.cardData.power;
+        if(this.playerScene.isPlayerTurn) {
+            currentPower += this.attachedDon.length*1000;
+        } 
+        this.locationPowerText.setText(currentPower);
     }
 
     /** Function to reposition all the attached don cards */

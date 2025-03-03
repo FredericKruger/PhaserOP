@@ -7,6 +7,16 @@ class InPlayState extends GameCardState {
         super(card, GAME_CARD_STATES.IN_PLAY);
     }
 
+    enter() {
+        this.card.locationPowerText.setVisible(true);
+        super.enter();
+    }
+
+    exit(newState) {
+        this.card.locationPowerText.setVisible(false);
+        super.exit(newState);
+    }
+
     onPointerOver(pointer, gameObject) {
         gameObject.showGlow(COLOR_ENUMS.OP_WHITE);
         gameObject.scene.game.gameClient.sendCardPointerOver(gameObject.id, CARD_STATES.IN_PLAY, gameObject.playerScene === gameObject.scene.activePlayerScene);
@@ -25,7 +35,7 @@ class InPlayState extends GameCardState {
     }
 
     update() {
-        //this.card.hideGlow();
+        this.card.updatePowerText();
     }
 
     isValidTarget() {

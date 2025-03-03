@@ -49,8 +49,8 @@ class IntroAnimation extends BaseComponentUI{
         super(scene, null);
 
         //keep to pass on to the setup at the end of the animation
-        this.activePlayerLeader = activePlayerLeader.cardData;
-        this.passivePlayLeader = passivePlayLeader.cardData;
+        this.activePlayerLeader = activePlayerLeader;
+        this.passivePlayLeader = passivePlayLeader;
  
         this.onomatopeImage = this.scene.add.image(this.scene.screenCenterX, this.scene.screenCenterY, ASSET_ENUMS.GAME_ONOMATOPE_IMAGE)
             .setOrigin(0.5)

@@ -1,5 +1,6 @@
 const Match = require('../match_objects/match');
 const Player = require('../game_objects/player');
+const MatchCard = require('../match_objects/match_card');
 
 class Target {
     constructor(serverTarget) {
@@ -16,7 +17,7 @@ class Target {
         }
 
         // Use optional chaining and nullish coalescing to safely access properties
-        this.players = serverTarget.players?.slice() || [];
+        this.player = serverTarget.player?.slice() || [];
         this.cardtypes = serverTarget.cardtypes?.slice() || [];
         this.cost = serverTarget.cost || {};
         this.states = serverTarget.states?.slice() || [];
@@ -38,25 +39,48 @@ class TargetingManager {
     }
 
     /** Function to check if the target is valid
-     * @param {Player} player
-     * @param {number} cardID - card id
-     * @param {Object} targetObject - target object
+     * @param {Player} player - player object
+     * @param {Array<number>} cardID - card id
+     * @param {Object} target - target object
      */
-    isValidTarget(player, cardID, targetObject) {
-        this.target = new Target(targetObject);
+    areValidTargets(player, cardIDs, targetObject) {
+        if(cardIDs.length !== targetObject.requiredTargets) return false;
 
-        //get the card from the card id
-        let card = player.currentMatchPlayer.getCard(cardID);
-        let playerCard = true;
-        if(card === undefined) {
-            card = player.currentOpponentPlayer.currentMatchPlayer.getCard(cardID);
-            playerCard = false;
-        };
+        let targetsValid = true;
+        for(let cardID of cardIDs) {
+            //get the card from the card id
+            let card = player.currentMatchPlayer.getCard(cardID);
+            let playerCard = true;
+            if(card === undefined) {
+                card = player.currentOpponentPlayer.currentMatchPlayer.getCard(cardID);
+                playerCard = false;
+            };
+
+            let isValid = false;
+            for (let target of targetObject.targets) {
+                isValid = isValid || this.isValidTarget(card, target, playerCard);
+                if(isValid) break;
+            }
+
+            targetsValid = targetsValid && isValid;
+            if(!targetsValid) return false;
+        }
+
+        return targetsValid;
+    }
+
+    /** Function to check if the target is valid
+     * @param {MatchCard} card - card id
+     * @param {Object} target - target object
+     * @param {boolean} playerCard - player card
+     */
+    isValidTarget(card, target, playerCard) {
+        this.target = new Target(target);
 
         let isValid = true;
 
         // Check if the card belongs to a specific player
-        if (this.target.players.length > 0) isValid = isValid && this.isPlayerValid(playerCard);
+        if (this.target.player.length > 0) isValid = isValid && this.isPlayerValid(playerCard);
   
         // Check card type
         if (this.target.cardtypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
@@ -83,13 +107,13 @@ class TargetingManager {
      */
     isPlayerValid(playerCard) {
         // If players array includes "any", any player is valid
-        if (this.target.players.includes("any")) {
+        if (this.target.player.includes("any")) {
             return true;
         }
 
         // Check if the player is active or passive based on the criteria
-        return (playerCard && this.target.players.includes("active")) || 
-                (!playerCard && this.target.players.includes("passive"));
+        return (playerCard && this.target.player.includes("active")) || 
+                (!playerCard && this.target.player.includes("passive"));
     }
 
     /**

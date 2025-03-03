@@ -7,11 +7,17 @@ class DonTravellingState extends DonCardState {
     onDrag(pointer, gameObject, dragX, dragY) {
         gameObject.setPosition(dragX, dragY);
 
+        //Calculate relative position of X to the width
+        let relX = dragX / gameObject.scene.screenWidth;
+        let relY = dragY / gameObject.scene.screenHeight;
+
         if(gameObject.scene.activePlayerScene.donDraggedOverCharacter(pointer.position.x, pointer.position.y)) {
             gameObject.scaleTo(CARD_SCALE.DON_OVER_CHARACTER, true, false, false);
         } else {
             gameObject.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);
         }
+
+        gameObject.scene.game.gameClient.sendCardDragPosition(gameObject.id, 'DonCardUI', relX, relY);
     }
  
     onDragEnd(pointer, gameObject, dropped) {
@@ -32,9 +38,9 @@ class DonTravellingState extends DonCardState {
                     targets: gameObject,
                     tweens: gameObject.scene.animationLibrary.animation_move_don_characterarea2activearea(gameObject)
                 });
-            }
 
-            gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
+                gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
+            }
         }
     }
 
@@ -55,7 +61,7 @@ class DonTravellingState extends DonCardState {
                 gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
 
-            gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
+            //gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
         }
     }
 

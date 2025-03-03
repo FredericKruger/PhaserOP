@@ -28,13 +28,33 @@ class TargetingState extends GameState {
 
     update() {
         if(this.scene.targetingArrow.isTargeting) {
-            this.scene.targetingArrow.update(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
+            let posX = this.scene.input.mousePointer.x;
+            let posY = this.scene.input.mousePointer.y;
+
+            this.scene.targetingArrow.update(posX, posY);
+
+            if(this.scene.targetManager.targetAction === 'ATTACK_CARD_ACTION') {
+                let relX = posX / this.scene.screenWidth;
+                let relY = posY / this.scene.screenHeight;
+                this.scene.game.gameClient.requestUpdateTragetingPassivePlayer(relX, relY);
+            }
         }
 
         //Update all cards in the hand to reflect if they can take an action
         for(let card of this.scene.activePlayerScene.characterArea.cards) card.fsmState.isValidTarget();
         for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.fsmState.isValidTarget();
         for(let card of this.scene.activePlayerScene.stageLocation.cards) card.fsmState.isValidTarget();
+
+        //Update all cards in the hand to reflect if they can take an action
+        for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.update(); 
+        for(let card of this.scene.activePlayerScene.characterArea.cards) card.fsmState.update();
+        for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.fsmState.update();
+        for(let card of this.scene.activePlayerScene.stageLocation.cards) card.fsmState.update();
+
+        //Update all cards in the hand to reflect if they can take an action
+        for(let card of this.scene.passivePlayerScene.characterArea.cards) card.fsmState.update();
+        for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.fsmState.update();
+        for(let card of this.scene.passivePlayerScene.stageLocation.cards) card.fsmState.update();
     }
 
     exit(newState) {

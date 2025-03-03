@@ -4,8 +4,9 @@ class DonActiveState extends DonCardState {
         super(card, DON_CARD_STATES.ACTIVE);
     }
 
-    update() {
-        card.setVisible(true);
+    enter() {
+        this.card.setVisible(true);
+        super.enter();
     }
 
     onDragStart(pointer, gameObject) {

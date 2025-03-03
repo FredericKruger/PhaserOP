@@ -6,6 +6,15 @@ class InHandState extends GameCardState {
         super(card, GAME_CARD_STATES.IN_HAND);
     }
 
+    exit(newState) {
+        this.card.powerBox.setVisible(false);
+        this.card.costIcon.setVisible(false);
+        this.card.powerText.setVisible(false);
+        this.card.counterIcon.setVisible(false);
+
+        super.exit(newState);
+    }
+
     onPointerOver(pointer, gameObject) {
         if(gameObject.playerScene.player.isActivePlayer && gameObject.state === CARD_STATES.IN_HAND) {
             gameObject.setState(CARD_STATES.IN_HAND_HOVERED);
@@ -42,6 +51,13 @@ class InHandState extends GameCardState {
     update() {
         if(this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
         else this.card.hideGlow();
+
+        if(this.card.playerScene.player.isActivePlayer) {
+            this.card.powerBox.setVisible(this.card.state === CARD_STATES.IN_HAND);
+            this.card.costIcon.setVisible(this.card.state === CARD_STATES.IN_HAND);
+            this.card.powerText.setVisible(this.card.state === CARD_STATES.IN_HAND);
+            this.card.counterIcon.setVisible(this.card.state === CARD_STATES.IN_HAND && this.card.cardData.counter);
+        }
     }
     //#endregion
 }
