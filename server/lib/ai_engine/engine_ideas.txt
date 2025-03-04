@@ -1,0 +1,39 @@
+{
+  "actionPriorities": [
+    { 
+      "action": "playCard",
+      "type": "CHARACTER",
+      "strategy": "lowestCostFirst",
+      "condition": "hasDon",
+      "description": "Play the lowest cost character first to establish board presence"
+    },
+    { 
+      "action": "playCard",
+      "type": "CHARACTER",
+      "strategy": "highestPowerFirst",
+      "minCost": 3,
+      "condition": "hasDon",
+      "description": "Play high-power characters when possible"
+    },
+    { 
+      "action": "playCard",
+      "type": "STAGE",
+      "condition": "hasDon",
+      "description": "Play a stage if we have DON and no stage yet"
+    },
+    { 
+      "action": "attachDon",
+      "condition": "hasCharacters",
+      "description": "Attach DON cards to characters"
+    },
+    { 
+      "action": "attack",
+      "condition": "hasActiveCharacters",
+      "description": "Attack with any available characters"
+    },
+    { 
+      "action": "endTurn",
+      "description": "End turn if no other actions are possible"
+    }
+  ]
+}

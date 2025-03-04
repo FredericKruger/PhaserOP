@@ -58,6 +58,13 @@ class MatchCard extends Card{
         this.currentPower = cardData.power;
     }
 
+    getPower(activeTurn) {
+        let power = this.currentPower;
+        if(activeTurn) power += this.attachedDon.length * 1000;
+
+        return power;
+    }
+
 }
 
 /**Don Card Class */

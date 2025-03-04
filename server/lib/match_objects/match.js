@@ -382,6 +382,16 @@ class Match {
         if(!player.bot) player.socket.emit('game_declare_attack_phase', attackerID, defenderID, true);
         if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_declare_attack_phase', attackerID, defenderID, false);
     }
+
+    /** Function to start the blocker phase */
+    startBlockerPhase() {
+        //test if there are any blockers in the passive players area which are not rested
+        //if no start the counter phase directly
+        //if yes send the signals to the players to start the blocker phase
+
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
+    }
     //#endregion
 
     //#region RESOLVE ACTION FUNCTION
@@ -413,6 +423,8 @@ class Match {
                 break;
         }
     }
+
+    //#region UTILS
 }
 
 

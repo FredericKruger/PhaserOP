@@ -389,6 +389,7 @@ class ActionLibraryPassivePlayer {
         action.start = () => {
             this.scene.targetingArrow.update(defender.x, defender.y);
             attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+            this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
         };
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;

@@ -3,8 +3,12 @@ const NEXT_TURN_BUTTON_FSM_STATES = Object.freeze({
     ACTIVE: 'ACTIVE',
     CANCEL: 'CANCEL',
     PASS: 'PASS',
+    BLOCK: 'BLOCK',
+    COUNTER: 'COUNTER',
     PASSIVE: 'PASSIVE',
     OPPONENT_TURN: 'OPPONENT_TURN',
+    OPPONENT_BLOCK: 'OPPONENT_BLOCK',
+    OPPONENT_COUNTER: 'OPPONENT_COUNTER',
 });
 
 class NextTurnButtonState {
@@ -44,8 +48,20 @@ class NextTurnButtonState {
             case NEXT_TURN_BUTTON_FSM_STATES.PASS:
                 newFSMState = new NextTurnButtonPassState(this.button);
                 break;
+            case NEXT_TURN_BUTTON_FSM_STATES.BLOCK:
+                newFSMState = new NextTurnButtonBlockState(this.button);
+                break;
+            case NEXT_TURN_BUTTON_FSM_STATES.COUNTER:
+                newFSMState = new NextTurnButtonCounterState(this.button);
+                break;
             case NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN:
                 newFSMState = new NextTurnButtonOpponentTurnState(this.button);
+                break;
+            case NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_BLOCK:
+                newFSMState = new NextTurnButtonOpponentBlockState(this.button);
+                break;
+            case NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_COUNTER:
+                newFSMState = new NextTurnButtonOpponentCounterState(this.button);
                 break;
             default:
                 newFSMState = null;

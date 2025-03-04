@@ -304,7 +304,6 @@ class GameStateManager {
             this.scene.passivePlayerScene.isPlayerTurn = false;
 
             //Refresh the nextTurn Button
-            //this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_ACTIVE);  
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
             this.gameStateUI.yourTurnImage.setAlpha(1); 
     
@@ -379,7 +378,6 @@ class GameStateManager {
             this.scene.passivePlayerScene.isPlayerTurn = true;
 
             //Refresh the nextTurn Button
-            //this.gameStateUI.nextTurnbutton.setButtonText(NEXT_TURN_BUTTON_STATES.YOUR_TURN_PASSIVE);  
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
 
             //Refresh Don Cards
@@ -693,6 +691,24 @@ class GameStateManager {
 
         if(isPlayerTurn) this.scene.actionLibrary.declareAttackAction(attackerPlayer, attacker, defender);
         else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender);
+    }
+
+    /** Function to start the blocker phase
+     * @param {boolean} activePlayer - The blocker ID
+     */
+    startBlockerPhase(isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        //If this is the active player, blocker means that no interaction will be possible until the end of the phase
+        if(isPlayerTurn) {
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+        } else {
+            this.scene.gameState.exit(GAME_STATES.BLOCKER_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.BLOCK);
+        }
+
     }
 
     //#endregion

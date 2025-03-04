@@ -424,6 +424,7 @@ class ActionLibrary {
         action.start = () => {
             this.scene.targetingArrow.update(defender.x, defender.y);
             attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+            this.scene.game.gameClient.requestStartBlockerPhase();
         };
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;

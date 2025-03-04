@@ -1,0 +1,38 @@
+{
+    "actionPriorities": [
+      { 
+        "action": "playCard",
+        "type": "CHARACTER",
+        "condition": "hasDon",
+        "strategy": "highestPowerFirst",
+        "description": "First priority: Play characters to build board presence"
+      },
+      {
+        "action": "attack",
+        "condition": "hasActiveCharacters",
+        "description": "Second priority: Try to find favorable attacks with existing board"
+      }, 
+      {
+        "action": "attachDon",
+        "condition": "hasCharacters",
+        "description": "Third priority: If no favorable attacks, try to attach DON to enable attacks"
+      },
+      {
+        "action": "playCard",
+        "type": "CHARACTER",
+        "strategy": "highestPowerFirst",
+        "condition": "hasDon",
+        "description": "// Fourth priority: If attaching DON didn't help, play more characters"
+      },
+      {
+        "action": "playCard",
+        "type": "STAGE",
+        "condition": "hasDon",
+        "description": "Fifth priority: Play stage cards"
+      },
+      {
+        "action": "endTurn",
+        "description": "Sixth priority: End turn"
+      }
+    ]
+  }

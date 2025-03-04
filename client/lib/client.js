@@ -144,6 +144,7 @@ class Client {
         this.socket.on('game_start_targeting_attack_passiveplayer', (cardID) => {this.gameScene.gameStateManager.passivePlayerStartTargetingAttack(cardID);});
         this.socket.on('game_udpate_targeting_attack_passiveplayer', (relX, relY) => {this.gameScene.gameStateManager.passivePlayerUpdateTargetingAttack(relX, relY);});
         this.socket.on('game_stop_targeting_attack_passiveplayer', () => {this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();});
+        this.socket.on('game_start_blocker_phase', (activePlayer) => {this.gameScene.gameStateManager.startBlockerPhase(activePlayer);});
 
         /** OPPONENT ACTION LISTENERS */
         this.socket.on('game_stop_targetting', (hideArrow = true) => {
@@ -220,6 +221,8 @@ class Client {
     requestStartTargetingAttack (cardID) {this.socket.emit('player_start_targeting_attack', cardID);}
     requestStartTargetingPassivePlayer (cardID) {this.socket.emit('player_start_targeting_passiveplayer', cardID);}
     requestUpdateTragetingPassivePlayer (relX, relY) {this.socket.emit('player_udpate_targeting_attack_passiveplayer', relX, relY);}
+    requestStartBlockerPhase () {this.socket.emit('player_blocker_phase_ready');}
+    requestStartBlockerPhasePassivePlayer () {this.socket.emit('player_blocker_phase_ready_passive_player');}
 
 
     /** NEXT TURN COMMUNICATION */

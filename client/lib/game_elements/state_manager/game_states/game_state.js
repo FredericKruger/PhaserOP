@@ -2,7 +2,8 @@ const GAME_STATES = Object.freeze({
     NO_INTERACTION: 'NO_INTERACTION',
     ACTIVE_INTERACTION: 'ACTIVE_INTERACTION',
     PASSIVE_INTERACTION: 'PASSIVE_INTERACTION',
-    RESPONSIVE_INTERACTION: 'RESPONSIVE_INTERACTION',
+    BLOCKER_INTERACTION: 'BLOCKER_INTERACTION',
+    COUNTER_INTERACTION: 'COUNTER_INTERACTION',
     TARGETING: 'TARGETING',
     DRAGGING: 'DRAGGING'
 });
@@ -39,14 +40,17 @@ class GameState {
             case GAME_STATES.PASSIVE_INTERACTION:
                 this.scene.gameState = new PassiveInteractionState(this.scene);
                 break;
-            /*case GAME_STATES.RESPONSIVE_INTERACTION:
-                this.scene.gameState = new ResponsiveInteractionState(this.scene);
-                break;*/
             case GAME_STATES.TARGETING:
                 this.scene.gameState = new TargetingState(this.scene);
                 break;
             case GAME_STATES.DRAGGING:
                 this.scene.gameState = new DraggingState(this.scene);
+                break;
+            case GAME_STATES.BLOCKER_INTERACTION:
+                this.scene.gameState = new BlockerInteractionState(this.scene);
+                break;
+            case GAME_STATES.COUNTER_INTERACTION:
+                this.scene.gameState = new CounterInteractionState(this.scene);
                 break;
             default:
                 break;

@@ -44,7 +44,10 @@ class MatchFlags {
             DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: new WaitFlag("DRAW_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE", true, false),
             
             DON_PHASE_COMPLETE: new WaitFlag("DON_PHASE_COMPLETE", true, false),
-            DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: new WaitFlag("DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE", true, false)
+            DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE: new WaitFlag("DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE", true, false),
+
+            BLOCKER_PHASE_READY: new WaitFlag("BLOCKER_PHASE_READY", true, false),
+            BLOCKER_PHASE_READY_PASSIVE_PLAYER: new WaitFlag("BLOCKER_PHASE_READY_PASSIVE_PLAYER", true, false),
         }   
     }
 
@@ -134,6 +137,14 @@ class FlagManager {
             case 'DON_PHASE_ANIMATION_PASSIVEPLAYER_COMPLETE':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('DON_PHASE_COMPLETE', true);
                 this.match.startMainPhase();
+                break;
+            case 'BLOCKER_PHASE_READY':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_PHASE_READY_PASSIVE_PLAYER', true);
+                this.match.startBlockerPhase();
+                break;
+            case 'BLOCKER_PHASE_READY_PASSIVE_PLAYER':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_PHASE_READY', true);
+                this.match.startBlockerPhase();
                 break;
         }
     }
