@@ -129,8 +129,8 @@ class Client {
         this.socket.on('game_play_card_cancel_replacement_target', (cardID, activePlayer) => {this.gameScene.gameStateManager.cancelReplacementTarget(cardID, activePlayer);});
 
         /** ATTACH DON TO CHARACTER */
-        this.socket.on('game_attach_don_to_character', (actionInfos, activePlayer, attachDonSuccessful) => {
-            if(attachDonSuccessful) this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, activePlayer);
+        this.socket.on('game_attach_don_to_character', (actionInfos, activePlayer, attachDonSuccessful, botAction = false) => {
+            if(attachDonSuccessful) this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, activePlayer, botAction);
             else this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, activePlayer);
         });
 
@@ -140,7 +140,7 @@ class Client {
 
             this.gameScene.gameStateManager.selectAttackTarget(actionInfos, activePlayer);
         });
-        this.socket.on('game_declare_attack_phase', (attackerID, defenderID, activePlayer) => {this.gameScene.gameStateManager.declareAttackPhase(attackerID, defenderID, activePlayer);});
+        this.socket.on('game_declare_attack_phase', (attackerID, defenderID, activePlayer, botAction) => {this.gameScene.gameStateManager.declareAttackPhase(attackerID, defenderID, activePlayer, botAction);});
         this.socket.on('game_start_targeting_attack_passiveplayer', (cardID) => {this.gameScene.gameStateManager.passivePlayerStartTargetingAttack(cardID);});
         this.socket.on('game_udpate_targeting_attack_passiveplayer', (relX, relY) => {this.gameScene.gameStateManager.passivePlayerUpdateTargetingAttack(relX, relY);});
         this.socket.on('game_stop_targeting_attack_passiveplayer', () => {this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();});

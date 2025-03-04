@@ -42,6 +42,7 @@ class DonTravellingState extends DonCardState {
                 gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
             }
         }
+        this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 
     onDrop(pointer, gameObject, dropZone) {
@@ -63,6 +64,7 @@ class DonTravellingState extends DonCardState {
 
             //gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'DonCardUI');
         }
+        this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 
 }

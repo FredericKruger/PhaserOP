@@ -30,6 +30,9 @@ class AI_Instance {
         this.matchPlayer = match.state.player2;
 
         this.actionsTaken = new AI_Actions_Taken();
+        this.actionTaken = false;
+
+        this.waitingForPlayerInput = false;
 
         // Load AI strategy configuration
         this.loadStrategyConfig();
@@ -38,31 +41,9 @@ class AI_Instance {
     /**
      * Load AI strategy configuration from JSON file
      */
-    loadStrategyConfig() {
-        try {
-            // Default strategy if file can't be loaded
-            this.strategyConfig = {
-                actionPriorities: [
-                    { action: "playCard", type: "CHARACTER", condition: "hasDon" },
-                    { action: "playCard", type: "STAGE", condition: "hasDon" },
-                    { action: "attachDon", condition: "hasCharacters" },
-                    { action: "attack", condition: "hasActiveCharacters" },
-                    { action: "endTurn" }
-                ]
-            };
-            
-            // Try to load the configuration file
-            const configPath = path.join(__dirname, 'assets/ai_behaviours/standard_ai.json');
-            if (fs.existsSync(configPath)) {
-                const configData = fs.readFileSync(configPath, 'utf8');
-                this.strategyConfig = JSON.parse(configData);
-                console.log("AI strategy loaded successfully");
-            } else {
-                console.log("AI strategy file not found, using default strategy");
-            }
-        } catch (error) {
-            console.error("Error loading AI strategy:", error);
-        }
+    async loadStrategyConfig() {
+        // Default strategy if file can't be loaded
+        this.strategyConfig = await this.server.util.getAIStrategy('standard_ai');
     }
 
     /** Function that performs the mulligan */
@@ -94,13 +75,15 @@ class AI_Instance {
     play() {
         console.log("AI TURN");
         this.actionsTaken.reset(); //Log the actions the AI has taken
-        let actionTaken = this.decideNextAction();
-        while(actionTaken) {
-            actionTaken = this.decideNextAction();
+        this.actionTaken = this.decideNextAction();
+        while(this.actionTaken && !this.waitingForPlayerInput) {
+            this.actionTaken = this.decideNextAction();
         }
 
-        console.log("AI END TURN");
-        this.endTurn();
+        if(!this.waitingForPlayerInput) {
+            console.log("AI END TURN");
+            this.endTurn();
+        }
     }
 
     /**
@@ -114,7 +97,9 @@ class AI_Instance {
             if (action) {
                 console.log(`AI executing: ${priority.action}`);
                 this.playAction(action);
-                return true;
+
+                if(action.function !== 'endTurn') return true;
+                else return false;
             }
         }
         return false;
@@ -240,9 +225,9 @@ class AI_Instance {
         }
         
         // Check for favorable attacks first
-        const opponentPlayer = this.match.state.current_active_player === this.matchPlayer 
-        ? this.match.state.current_passive_player 
-        : this.match.state.current_active_player;
+        const opponentPlayer = this.match.state.current_active_player.currentMatchPlayer === this.matchPlayer 
+        ? this.match.state.current_passive_player.currentMatchPlayer 
+        : this.match.state.current_active_player.currentMatchPlayer;
 
         const opponentCharacters = [...opponentPlayer.inCharacterArea];
         const leaderTarget = opponentPlayer.inLeaderLocation;
@@ -350,40 +335,40 @@ class AI_Instance {
         );
         
         // Find opponent characters or leader to attack
-        const opponentPlayer = this.match.state.current_active_player === this.matchPlayer 
-            ? this.match.state.current_passive_player 
-            : this.match.state.current_active_player;
+        const opponentPlayer = this.match.state.current_active_player.currentMatchPlayer === this.matchPlayer 
+            ? this.match.state.current_passive_player.currentMatchPlayer 
+            : this.match.state.current_active_player.currentMatchPlayer;
             
         const targets = [...opponentPlayer.inCharacterArea];
-        if (opponentPlayer.inLeaderLocation) {
-            targets.push(opponentPlayer.inLeaderLocation);
-        }
+        const leaderTarget = opponentPlayer.inLeaderLocation;
         
-        if (attackers.length > 0 && targets.length > 0) {
+        if (attackers.length > 0) {
             // Sort attackers by power (highest first)
             attackers.sort((a, b) => b.getPower(true) - a.getPower(true));
         
-            // Sort targets by power (weakest first)
-            targets.sort((a, b) => a.getPower(false) - b.getPower(false));
-        
-            // Find a favorable matchup where attacker power >= target power
-            for (const attacker of attackers) {
-                for (const target of targets) {
-                    if (attacker.getPower(true) >= target.getPower(false)) {
-                        return {
-                            function: 'attack',
-                            arg: {
-                                attackerId: attacker.id,
-                                targetId: target.id
-                            }
-                        };
+            if (targets.length > 0) {
+                // Sort targets by power (weakest first)
+                targets.sort((a, b) => a.getPower(false) - b.getPower(false));
+            
+                // Find a favorable matchup where attacker power >= target power
+                for (const attacker of attackers) {
+                    for (const target of targets) {
+                        if (attacker.getPower(true) >= target.getPower(false)) {
+                            return {
+                                function: 'attack',
+                                arg: {
+                                    attackerId: attacker.id,
+                                    targetId: target.id
+                                }
+                            };
+                        }
                     }
                 }
             }
-
-            // If we want to allow attacking the leader directly when no favorable matchups exist
-            if (opponentPlayer.inLeaderLocation) {
-                const strongestAttacker = attackers[0];
+    
+            // Only allow attacking the leader if we have a character with power >= leader's power
+            if (leaderTarget) {
+                const strongestAttacker = attackers[0]; // Already sorted by power (highest first)
                 if (strongestAttacker.getPower(true) >= leaderTarget.getPower(false)) {
                     return {
                         function: 'attack',
@@ -431,9 +416,10 @@ class AI_Instance {
                     action.arg.targetId
                 );
                 this.actionsTaken.attacks++;
+                this.waitingForPlayerInput = true;
                 break;
             case 'endTurn':
-                this.endTurn();
+                this.actionTaken = false;
                 break;
         }
     }

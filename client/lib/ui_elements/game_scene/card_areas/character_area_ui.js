@@ -41,7 +41,7 @@ class CharacterAreaUI extends CardPileUI {
         for(let i=0; i<this.cards.length; i++) {
             let card = this.cards[i];
 
-            let cardX = this.posX - currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_LOCATION + 20);
+            let cardX = this.posX - currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_LOCATION + 25);
             let cardY = this.posY;
             card.moveTo(cardX, cardY, true, false, false);
             card.scaleTo(CARD_SCALE.IN_LOCATION, true, false, false);

@@ -141,4 +141,48 @@ class TargetingArrow {
         this.setVisible(true);
     }
 
+    /**
+     * Creates and returns a tween that animates the targeting arrow to a specific position
+     * @param {number} targetX - The target x-coordinate position
+     * @param {number} targetY - The target y-coordinate position
+     * @param {number} duration - The duration of the animation in milliseconds
+     * @param {string} ease - The easing function to use
+     * @param {number} delay - The delay before the animation starts in milliseconds
+     * @returns {Phaser.Tweens.Tween} The created tween
+     */
+    animateToPosition(targetX, targetY, duration = 500, ease = 'Power2', delay = 0) {
+        // Store the starting positions
+        const startX = this.originatorObject.x;
+        const startY = this.originatorObject.y;
+        
+        // Create a temporary object to animate
+        const animationHelper = {
+            progress: 0,
+            currentX: startX,
+            currentY: startY
+        };
+        
+        // Create and return the tween
+        const tween = [{
+            targets: animationHelper,
+            progress: 1,
+            duration: duration,
+            ease: ease,
+            onUpdate: () => {
+                // Calculate the current position along the path
+                animationHelper.currentX = startX + (targetX - startX) * animationHelper.progress;
+                animationHelper.currentY = startY + (targetY - startY) * animationHelper.progress;
+                
+                // Update the targeting arrow to the current position
+                this.update(animationHelper.currentX, animationHelper.currentY);
+            },
+            onComplete: () => {
+                // Ensure the arrow is exactly at the final position
+                this.update(targetX, targetY);
+            }
+        }];
+        
+        return tween;
+    }
+
 }

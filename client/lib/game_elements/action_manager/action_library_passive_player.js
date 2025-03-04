@@ -63,7 +63,7 @@ class ActionLibraryPassivePlayer {
         // end: pop the deckpile card placeholder and comlete server request if needed
         let drawAction = new Action();
         drawAction.start = () => { //Action start
-            card.setDepth(DEPTH_VALUES.CARD_IN_DECK); 
+            card.setDepth(DEPTH_VALUES.CARD_IN_HAND); 
             this.scene.children.bringToTop(card);
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {
@@ -383,18 +383,46 @@ class ActionLibraryPassivePlayer {
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} attacker
      * @param {GameCardUI} defender
+     * @param {Object} botAction
     */
-    declareAttackAction(playerScene, attacker, defender) {
+    declareAttackAction(playerScene, attacker, defender, botAction) {
         let action = new Action();
-        action.start = () => {
-            this.scene.targetingArrow.update(defender.x, defender.y);
-            attacker.setState(CARD_STATES.IN_PLAY_RESTED);
-            this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
-        };
-        action.isPlayerAction = true;
-        action.waitForAnimationToComplete = false;
-        action.name = "DECLARE ATTACK";
 
+        if(!botAction) {
+            action.start = () => {
+                this.scene.targetingArrow.update(defender.x, defender.y);
+                attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+                this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
+            };
+            action.isPlayerAction = true;
+            action.waitForAnimationToComplete = false;
+            action.name = "DECLARE ATTACK";
+        } else {
+            //Set the originator object
+            this.scene.targetingArrow.originatorObject = attacker;
+            //create the animation
+            let start_animation = this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 700, 'Power2', 200);
+            start_animation = start_animation.concat({
+                duration: 10,
+                onComplete: () => {this.actionManager.completeAction();}
+            });
+            start_animation = this.scene.tweens.chain({
+                targets: this.scene.targetingArrow,
+                tweens: start_animation
+            }).pause();
+
+            action.start = () => {
+                this.scene.targetingArrow.startManualTargetingXY(attacker, attacker.x, attacker.y);
+            };
+            action.start_animation = start_animation;
+            action.end = () => {
+                attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+                this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
+            };
+            action.isPlayerAction = true;
+            action.waitForAnimationToComplete = true;
+            action.name = "DECLARE ATTACK";
+        }
         //Add action to the action stack
         this.actionManager.addAction(action);
     }

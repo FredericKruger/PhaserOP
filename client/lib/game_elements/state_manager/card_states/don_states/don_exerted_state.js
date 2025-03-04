@@ -9,11 +9,6 @@ class DonExertedState extends DonCardState {
         super.enter();
     }
 
-    exite(newState) {
-        this.card.setVisible(true);
-        super.exit(newState);   
-    }  
-
     update() {
     }
 

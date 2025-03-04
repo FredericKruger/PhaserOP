@@ -193,7 +193,8 @@ class GameCardUI extends BaseCardUI{
     /** Function to reposition all the attached don cards */
     updateAttachedDonPosition() {
         for(let don of this.attachedDon) {
-            this.scene.children.moveBelow(don, this);
+            this.scene.children.sendToBack(don);
+            //this.scene.children.moveBelow(don, this);
             don.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);
             don.moveTo(this.x - this.displayWidth/2, this.y, true, false, false);
             don.angleTo(-20, true, false, false);
@@ -201,7 +202,6 @@ class GameCardUI extends BaseCardUI{
         
         this.attachedDonText.setText("x" + this.attachedDon.length);
         this.attachedDonText.setVisible(this.attachedDon.length > 1);
-        //this.scene.children.bringToTop(this.attachedDonText);
     }
     //#endregion
 
@@ -215,6 +215,50 @@ class GameCardUI extends BaseCardUI{
 
         if(state === CARD_STATES.IN_PLAY_RESTED) this.frontArt.angle = -90;
         else if(state === CARD_STATES.IN_PLAY) this.frontArt.angle = 0;
+    }
+    //#endregion
+    
+    //#region ANIMATION FUNCTIONS
+    /** Function that moves the card to a location
+     * @param {number} x
+     * @param {number} y
+     * @param {boolean} useTween
+     * @param {boolean} chainTween
+     * @param {boolean} clearPreviousTween
+     */
+    moveTo(x, y, useTween, chainTween, clearPreviousTween) {
+        if(clearPreviousTween) this.scene.tweens.killTweensOf(this);
+
+        let duration = 200;
+        if(this.state === CARD_STATES.TRAVELLING_DECK_HAND) duration = 700;
+
+        if(useTween) {
+            this.scene.tweens.add({
+                targets: this,
+                x: x,
+                y: y,
+                duration: duration,
+                ease: 'linear',
+                onUpdate: () => {
+                    if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
+                },
+                onComplete: () => {
+                    this.x = x;
+                    this.y = y;
+
+                    if(this.state === CARD_STATES.TRAVELLING_DECK_HAND) this.setState(CARD_STATES.IN_HAND);
+
+                    // Move attached DON cards
+                    if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
+                }
+            });
+        } else {
+            this.x = x;
+            this.y = y;
+
+            // Move attached DON cards
+            if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
+        }
     }
     //#endregion
 

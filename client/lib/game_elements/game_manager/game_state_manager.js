@@ -603,25 +603,58 @@ class GameStateManager {
     /** Function to trigger the succes of attaching a card
      * @param {Object} actionInfos - The action infos
      * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {boolean} botAction - If it is a bot action
      */
-    attachDonToCharacterSuccess(actionInfos, isPlayerTurn) {
+    attachDonToCharacterSuccess(actionInfos, isPlayerTurn, botAction) {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         let donCard = player.activeDonDeck.getCard(actionInfos.attachedDonCard); //Get the don Card
         let character = player.getCard(actionInfos.receivingCharacter); //Get the character Card
 
-        //Remove Don card from pile
-        //player.activeDonDeck.attachDon(donCard.id);
-        donCard.setState(CARD_STATES.DON_ATTACHED);
-        donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
-        character.attachedDon.push(donCard); //Add to character pile
+        //If this wasnt a bot action a simple function is enough
+        if(!botAction) {
+            //Remove Don card from pile
+            donCard.setState(CARD_STATES.DON_ATTACHED);
+            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+            character.attachedDon.push(donCard); //Add to character pile
 
-        //Animate
-        character.updateAttachedDonPosition();
+            //Animate
+            character.updateAttachedDonPosition();
 
-        //Update the UI
-        player.playerInfo.updateCardAmountTexts();
+            //Update the UI
+            player.playerInfo.updateCardAmountTexts();
+        } else { //If this is a bot action, this needs an animation to move the card
+            let action = new Action();
+            action.start = () => {
+                donCard.setDepth(DEPTH_VALUES.DON_DRAGGED);
+                // Store the starting position (from the active DON pile)
+                const startX = donCard.x;
+                const startY = donCard.y;
+            };
+            action.start_animation = this.scene.tweens.add({
+                targets: donCard,
+                x: {from: donCard.x, to: character.x},
+                y: {from: donCard.y, to: character.y},
+                angle: 0,
+                duration: 500,
+                ease: 'Cubic.easeOut',
+                onComplete: () => {
+                    this.scene.actionManager.completeAction();
+                }
+            }).pause();
+            action.end = () => {
+                donCard.setState(CARD_STATES.DON_ATTACHED);
+                donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                character.attachedDon.push(donCard); //Add to character pile
+                character.updateAttachedDonPosition();
+                player.playerInfo.updateCardAmountTexts();
+            }
+            action.isPlayerAction = false;
+            action.waitForAnimationToComplete = true;
+            this.scene.actionManager.addAction(action);
+        }
+
     }
 
     //#endregion
@@ -669,8 +702,9 @@ class GameStateManager {
      * @param {number} attackerID - The attacker ID
      * @param {number} defenderID - The defender ID
      * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {boolean} botAction - If it is a bot action
      */
-    declareAttackPhase(attackerID, defenderID, isPlayerTurn) {
+    declareAttackPhase(attackerID, defenderID, isPlayerTurn, botAction) {
         this.scene.gameStateUI.udpatePhase(GAME_PHASES.ATTACK_PHASE);
 
         //Set the game state
@@ -690,7 +724,7 @@ class GameStateManager {
         let defender = defenderPlayer.getCard(defenderID);
 
         if(isPlayerTurn) this.scene.actionLibrary.declareAttackAction(attackerPlayer, attacker, defender);
-        else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender);
+        else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender, botAction);
     }
 
     /** Function to start the blocker phase

@@ -6423,7 +6423,7 @@
         "card":"CHARACTER",
         "type":["Supernovas", "Hawkins Pirate"],
         "colors":["GREEN"],
-        "cost":4,
+        "cost":5,
         "power":6000,
         "attribute":"SLASH",
         "isleader":0,

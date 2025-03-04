@@ -29,11 +29,13 @@ class TravellingState extends GameCardState {
 
             gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
         }
+        this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 
     onDrop(pointer, gameObject, dropZone) {
         if(dropZone.getData('name') === 'CharacterArea') {
             gameObject.scene.game.gameClient.requestPlayerPlayCard(gameObject.id);
         }
+        this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 }

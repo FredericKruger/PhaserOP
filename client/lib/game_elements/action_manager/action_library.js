@@ -62,7 +62,7 @@ class ActionLibrary {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
+            card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
             this.scene.children.bringToTop(card);
 
             if(phase === GAME_PHASES.MULLIGAN_PHASE) {

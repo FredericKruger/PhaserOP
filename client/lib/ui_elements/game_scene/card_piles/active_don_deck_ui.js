@@ -41,6 +41,7 @@ class ActiveDonDeckUI extends CardPileUI {
         for(let don of spentDonIds) {
             let card = this.getCard(don);
             card.setState(CARD_STATES.DON_RESTED);
+            this.scene.children.sendToBack(card);
         }
     }
 

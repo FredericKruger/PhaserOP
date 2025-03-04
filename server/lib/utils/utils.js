@@ -205,6 +205,34 @@ class Utils {
             fs.mkdirSync(this.serverPath + '/server/assets/player_folders/' + username);
         }
     }
+
+    /** Get a Preconstructed Deck 
+     * @param {string} ai - name of the deck
+    */
+    async getAIStrategy (ai) {
+        let defaultStrategy = {
+            actionPriorities: [
+                { action: "playCard", type: "CHARACTER", condition: "hasDon" },
+                { action: "playCard", type: "STAGE", condition: "hasDon" },
+                { action: "attachDon", condition: "hasCharacters" },
+                { action: "attack", condition: "hasActiveCharacters" },
+                { action: "endTurn" }
+            ]
+        };
+
+        let filepath = this.serverPath + '/server/assets/ai_behaviours/' + ai + '.json';
+
+        try {
+            const data = await fs.promises.readFile(filepath);
+            defaultStrategy = JSON.parse(data.toString());
+            console.log("AI strategy loaded successfully");
+            return defaultStrategy;
+        } catch (err) {
+            console.error("Error loading AI strategy:", err);
+        }
+        console.log("AI strategy file not found, using default strategy");
+        return defaultStrategy;
+    }
 }
 
 module.exports = Utils;

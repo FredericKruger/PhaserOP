@@ -15,12 +15,13 @@ class NextTurnButtonBlockState extends NextTurnButtonState {
         super.enter();
         this.button.makeInteractive(true);
         this.button.buttonText.setText("PASS");
+        this.button.clearGreyscale();
     }
 
     onPointerDown(pointer, gameObject) {
         this.button.scene.add.tween({
             onStart: () => {
-                this.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
+                this.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
             },
             targets: this.button,
             rotation: Math.PI*2,

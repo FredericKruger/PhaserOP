@@ -323,10 +323,10 @@ class Match {
 
         if(result.actionResult === ATTACH_DON_TO_CHAR_STATES.DON_NOT_READY) {
             if(!player.bot) player.socket.emit('game_attach_don_to_character', result.actionInfos, true, false);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character', result.actionInfos, false, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character', result.actionInfos, false, false);
         } else if(result.actionResult === ATTACH_DON_TO_CHAR_STATES.DON_ATTACHED) {
             if(!player.bot) player.socket.emit('game_attach_don_to_character', result.actionInfos, true, true);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character', result.actionInfos, false, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_attach_don_to_character', result.actionInfos, false, true, player.bot);
         }
     }
     //#endregion
@@ -379,8 +379,8 @@ class Match {
         this.state.declareAttackPhase(player.currentMatchPlayer, attackerCard);
 
         //Send signals to the clients to prepare the attack phase
-        if(!player.bot) player.socket.emit('game_declare_attack_phase', attackerID, defenderID, true);
-        if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_declare_attack_phase', attackerID, defenderID, false);
+        if(!player.bot) player.socket.emit('game_declare_attack_phase', attackerID, defenderID, true, player.currentOpponentPlayer.bot);
+        if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_declare_attack_phase', attackerID, defenderID, false, player.bot);
     }
 
     /** Function to start the blocker phase */

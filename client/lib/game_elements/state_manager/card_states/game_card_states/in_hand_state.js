@@ -49,9 +49,14 @@ class InHandState extends GameCardState {
 
     //#region UPDATE FUNCTION
     update() {
-        if(this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
-        else this.card.hideGlow();
-
+        switch(this.card.scene.gameState.name) {
+            case GAME_STATES.ACTIVE_INTERACTION:
+                if(this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
+                else this.card.hideGlow();
+                break;
+            default: this.card.hideGlow();
+        }
+        
         if(this.card.playerScene.player.isActivePlayer) {
             this.card.powerBox.setVisible(this.card.state === CARD_STATES.IN_HAND);
             this.card.costIcon.setVisible(this.card.state === CARD_STATES.IN_HAND);
