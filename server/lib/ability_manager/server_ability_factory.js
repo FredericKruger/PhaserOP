@@ -1,4 +1,8 @@
-class AbilityFactory {
+const ServerAbility = require('./server_ability');
+const ServerBlockerAbility = require('./server_blocker_ability');
+
+
+class ServerAbilityFactory {
 
     /** Function to create an ability according to the type
      * @param {Object} abilityData
@@ -7,28 +11,29 @@ class AbilityFactory {
     static createAbility(abilityData) {
         switch (abilityData.type) {
             case 'BLOCKER':
-                return new BlockerAbility(abilityData);
+                return new ServerBlockerAbility(abilityData);
             default:
-                return new Ability(abilityData);
+                return new ServerAbility(abilityData);
         }
     }
 
     /** Function to attach an Ability to a card
-     * @param {GameCardUI} card
      * @param {Object[]} abilitiesData
-     * @returns {GameCardUI}
+     * @param {Match} match
      */
-    static attachAbilitiesToCard(card, abilitiesData) {
-        card.abilities = [];
+    static createAbilitiesForCard(abilitiesData) {
+        const abilities = [];
         
         if (abilitiesData && Array.isArray(abilitiesData)) {
             abilitiesData.forEach(abilityData => {
                 const ability = this.createAbility(abilityData);
-                ability.attachTo(card);
-                card.abilities.push(ability);
+                abilities.push(ability);
             });
         }
-        
-        return card;
+
+        return abilities;
     }
+
 }
+
+module.exports = ServerAbilityFactory;

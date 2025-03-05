@@ -337,8 +337,20 @@ class MatchState {
     declareAttackPhase(player, attacker) {
         //Set the state of the card
         attacker.setState(CARD_STATES.IN_PLAY_RESTED);
-    }
+    }    
 
+    //#endregion
+
+    //#region UTILITY FUNCTIONS
+    /** Function to get a card from either player
+     * @param {number} cardId - card id
+     * @returns {MatchCard} - returns the card object
+     */
+    getCard(cardId) {
+        let card = this.player1.getCard(cardId);
+        if(card === undefined) card = this.player2.getCard(cardId);
+        return card;
+    }
     //#endregion
 }
 

@@ -170,8 +170,8 @@ class ServerInstance {
         let playerDeck = player.decklist[player.selectedDeck];
 
         //Fill the deck from the JSON decklist provided
-        match.lastCardID = match.state.player1.deck.fromJSON(playerDeck, this.cardIndex, match.lastCardID);
-        match.lastCardID = match.state.player2.deck.fromJSON(aiDeck, this.cardIndex, match.lastCardID);
+        match.lastCardID = match.state.player1.deck.fromJSON(playerDeck, this.cardIndex, match.lastCardID, match);
+        match.lastCardID = match.state.player2.deck.fromJSON(aiDeck, this.cardIndex, match.lastCardID, match);
 
         //Fill the don deck
         match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID);
@@ -219,8 +219,8 @@ class ServerInstance {
         let player2Deck = player2.decklist[player2.selectedDeck];
 
         //Fill the deck from the JSON decklist provided
-        match.lastCardID = match.state.player1.deck.fromJSON(player1Deck, this.cardIndex, match.lastCardID);
-        match.lastCardID = match.state.player2.deck.fromJSON(player2Deck, this.cardIndex, match.lastCardID);
+        match.lastCardID = match.state.player1.deck.fromJSON(player1Deck, this.cardIndex, match.lastCardID, match);
+        match.lastCardID = match.state.player2.deck.fromJSON(player2Deck, this.cardIndex, match.lastCardID, match);
 
         //Fill the don deck
         match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID);

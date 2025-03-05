@@ -1,4 +1,4 @@
-class Ability {
+class ServerAbility {
 
     constructor(config) {
         this.id = config.id;
@@ -12,28 +12,21 @@ class Ability {
         // Tracking
         this.usedThisTurn = false;
         this.usedThisGame = false;
-        /** @type {GameCardUI} */
-        this.card = null
     }
 
-    /** Function to attach the card
-     * @param {GameCardUI} card
-     */
-    attachTo(card) {
-        this.card = card;
-    }
 
     /** Function that tests if an ability can be activated
-     * @param {GameState} gameState
+     * @param {MatchCard} card 
+     * @param {String} gameState
      * @returns {boolean}
      */
-    canActivate(gameState) {
+    canActivate(card, gameState) {
         // Check if in correct phase
-        if (this.phases.length > 0 && !this.phases.includes(gameState.name)) {
+        if (this.phases.length > 0 && !this.phases.includes(gameState)) {
             return false;
         }
 
-        if (this.states.length > 0 && !this.states.includes(this.card.state)) {
+        if (this.states.length > 0 && !this.states.includes(card.state)) {
             return false;
         }
 
@@ -57,7 +50,7 @@ class Ability {
 
     /** Function to evalate the conditions 
      * @param {Object} condition
-     * @param {GameState} gameState
+     * @param {string} gameState
      * @returns {boolean}
      */
     evaluateCondition(condition, gameState) {
@@ -78,7 +71,7 @@ class Ability {
         this.usedThisTurn = false;
     }
 
-    update() {}
-    action() {}
-
+    action (card, match) {}
 }
+
+module.exports = ServerAbility;

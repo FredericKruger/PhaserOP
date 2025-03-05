@@ -1,4 +1,6 @@
 const Player = require("../game_objects/player");
+const ServerAbilityFactory = require("../ability_manager/server_ability_factory");
+const Match = require("./match");
 
 const CARD_STATES = Object.freeze({
     IN_DECK: 'IN_DECK',
@@ -43,19 +45,28 @@ class MatchCard extends Card{
      * @param {number} cardIndex 
      * @param {number} id 
      * @param {Object} cardData 
+     * @param {Match} match
      */
-    constructor(cardIndex, id, cardData) {
+    constructor(cardIndex, id, cardData, match) {
         super(id);
 
         this.cardIndex = cardIndex;
         this.cardData = cardData;
 
+        this.abilities = ServerAbilityFactory.createAbilitiesForCard(this.cardData.abilities);;
         this.attachedDon = [];
         this.attachedCounter = null;
 
         this.state = CARD_STATES.IN_DECK;
 
         this.currentPower = cardData.power;
+    }
+
+    /** Function that gets an ability from the card
+     * @param {string} abilityId - ID of the ability
+     */
+    getAbility(abilityId) {
+        return this.abilities.find(ability => ability.id === abilityId);
     }
 
     getPower(activeTurn) {

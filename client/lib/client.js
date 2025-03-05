@@ -145,6 +145,8 @@ class Client {
         this.socket.on('game_udpate_targeting_attack_passiveplayer', (relX, relY) => {this.gameScene.gameStateManager.passivePlayerUpdateTargetingAttack(relX, relY);});
         this.socket.on('game_stop_targeting_attack_passiveplayer', () => {this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();});
         this.socket.on('game_start_blocker_phase', (activePlayer) => {this.gameScene.gameStateManager.startBlockerPhase(activePlayer);});
+        this.socket.on('game_start_counter_phase', (activePlayer) => {this.gameScene.gameStateManager.startCounterPhase(activePlayer);});
+        this.socket.on('game_attack_blocked', (activePlayer, blockerID) => {this.gameScene.gameStateManager.startAttackBlocked(activePlayer, blockerID);});
 
         /** OPPONENT ACTION LISTENERS */
         this.socket.on('game_stop_targetting', (hideArrow = true) => {
@@ -224,6 +226,10 @@ class Client {
     requestStartBlockerPhase () {this.socket.emit('player_blocker_phase_ready');}
     requestStartBlockerPhasePassivePlayer () {this.socket.emit('player_blocker_phase_ready_passive_player');}
 
+    requestPassBlockerPhase (passed) {this.socket.emit('player_pass_blocker_phase', passed);}
+
+    /** ABILITY FUNCTIONS */
+    requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}
 
     /** NEXT TURN COMMUNICATION */
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}

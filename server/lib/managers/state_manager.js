@@ -48,6 +48,9 @@ class MatchFlags {
 
             BLOCKER_PHASE_READY: new WaitFlag("BLOCKER_PHASE_READY", true, false),
             BLOCKER_PHASE_READY_PASSIVE_PLAYER: new WaitFlag("BLOCKER_PHASE_READY_PASSIVE_PLAYER", true, false),
+
+            COUNTER_PHASE_READY: new WaitFlag("COUNTER_PHASE_READY", true, true),
+            RESOLVE_ATTACK_READY: new WaitFlag("RESOLVE_ATTACK_READY", true, true)
         }   
     }
 
@@ -64,6 +67,13 @@ class MatchFlags {
      */
     getFlag(flag) {
         return this.flags[flag].value;
+    }
+
+    /** Function that resets all the flags for the action to false */
+    resetActionFlags() {
+        for(let flag in this.flags) {
+            if(this.flags[flag].isActionBased) this.flags[flag].value = false;
+        }
     }
 
     /** Function that resets all the flags for the turn to false */
@@ -145,6 +155,12 @@ class FlagManager {
             case 'BLOCKER_PHASE_READY_PASSIVE_PLAYER':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_PHASE_READY', true);
                 this.match.startBlockerPhase();
+                break;
+            case 'COUNTER_PHASE_READY':
+                this.match.startCounterPhase();
+                break;
+            case 'RESOLVE_ATTACK_READY':
+                //this.match.resolveAttack(player, args);
                 break;
         }
     }

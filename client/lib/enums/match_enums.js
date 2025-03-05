@@ -97,4 +97,6 @@ const GAME_PHASES = Object.freeze({
     DON_PHASE: 'Don Phase',
     MAIN_PHASE: 'Main Phase',
     ATTACK_PHASE: 'Main: Attack',
+    BLOCK_PHASE: 'Main: Block',
+    COUNTER_PHASE: 'Main: Counter',
 });

@@ -6332,7 +6332,8 @@
                 "id": "ST02-004-1",
                 "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
                 "type": "BLOCKER",
-                "phases": ["BLOCKER_INTERACTION"]
+                "phases": ["BLOCKER_INTERACTION"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
             }
         ]
     },    
@@ -6391,7 +6392,8 @@
                 "id": "ST02-004-1",
                 "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
                 "type": "BLOCKER",
-                "phases": ["BLOCKER_INTERACTION"]
+                "phases": ["BLOCKER_INTERACTION"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
             }
         ]
     },    
@@ -6483,7 +6485,8 @@
                 "id": "ST02-004-1",
                 "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
                 "type": "BLOCKER",
-                "phases": ["BLOCKER_INTERACTION"]
+                "phases": ["BLOCKER_INTERACTION"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
             }
         ]
     },    
@@ -6507,7 +6510,8 @@
                 "id": "ST02-013-1",
                 "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
                 "type": "BLOCKER",
-                "phases": ["BLOCKER_INTERACTION"]
+                "phases": ["BLOCKER_INTERACTION"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
             }
         ]
     },    

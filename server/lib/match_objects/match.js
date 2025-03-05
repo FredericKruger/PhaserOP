@@ -9,6 +9,8 @@ const { PLAY_CARD_STATES, ATTACH_DON_TO_CHAR_STATES, ATTACK_CARD_STATES, TARGET_
 const TargetingManager = require("../managers/targeting_manager");
 const { CARD_STATES } = require("./match_card");
 const { AttackManager} = require("../managers/attack_manager");
+const ServerAbilityFactory = require("../ability_manager/server_ability_factory");
+
 
 class Match {
 
@@ -84,6 +86,7 @@ class Match {
             if(!this.player2.bot) this.player2.socket.emit('start_game_intro', player2Leader, player1Leader);
         }
     }
+
     //#nedregion
 
     //#region MULLIGAN FUNCTIONS
@@ -385,12 +388,34 @@ class Match {
 
     /** Function to start the blocker phase */
     startBlockerPhase() {
+        //Reset all the action flags
+        this.state.current_active_player.currentMatchPlayer.matchFlags.resetActionFlags();
+        this.state.current_passive_player.currentMatchPlayer.matchFlags.resetActionFlags();
+
         //test if there are any blockers in the passive players area which are not rested
         //if no start the counter phase directly
         //if yes send the signals to the players to start the blocker phase
 
         if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
         if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
+    }
+
+    /** Function that blocks an attack
+     * @param {blockerID} blockerID
+     */
+    startBlockAttack(blockerID) {
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_blocked', true, blockerID);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_blocked', false, blockerID);
+    }
+
+    /** Function to start the Counter Phase */
+    startCounterPhase() {
+        if(this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_passive_player)){
+
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_counter_phase', true);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_counter_phase', false);
+        }
     }
     //#endregion
 
@@ -415,6 +440,8 @@ class Match {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
                     if(validTarget) {
                        this.startAttackPhase(player, this.state.pending_action.actionInfos.playedCard, targets[0]);
+                    } else {
+                        player.socket.emit('game_reset_targets');
                     }
                 } else {
                     if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_stop_targeting_attack_passiveplayer');
@@ -422,6 +449,17 @@ class Match {
             default:
                 break;
         }
+    }
+
+    /** Function to resolve the ability
+     * @param {number} cardId
+     * @param {string} abilityId
+     */
+    resolveAbility(cardId, abilityId) {
+        let card = this.state.getCard(cardId);
+        let ability = card.getAbility(abilityId);
+
+        ability.action(card, this);
     }
 
     //#region UTILS

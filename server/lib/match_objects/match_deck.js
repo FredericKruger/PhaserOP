@@ -9,9 +9,9 @@ class MatchDeck {
     }
 
     /** Construct Deck from JSO */
-    fromJSON(json, cardIndex, startID, player) {
+    fromJSON(json, cardIndex, startID, match) {
         for(let i of json.cards){
-            let c = new MatchCard(i, startID, cardIndex[i-1], player);
+            let c = new MatchCard(i, startID, cardIndex[i-1], match);
             if(cardIndex[i-1].card === 'LEADER') {
                 this.leader = c;
             } else {

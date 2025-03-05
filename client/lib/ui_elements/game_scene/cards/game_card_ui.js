@@ -169,6 +169,7 @@ class GameCardUI extends BaseCardUI{
                     this.blockerButton.setScale(1);
                     this.blockerButton.postFX.clear();
                 });
+                this.blockerButton.on('pointerdown', () => {ability.action();});
             }
         }
     }

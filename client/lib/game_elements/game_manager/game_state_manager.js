@@ -735,6 +735,7 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         //If this is the active player, blocker means that no interaction will be possible until the end of the phase
+        this.scene.gameStateUI.udpatePhase(GAME_PHASES.BLOCK_PHASE);
         if(isPlayerTurn) {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
@@ -742,7 +743,45 @@ class GameStateManager {
             this.scene.gameState.exit(GAME_STATES.BLOCKER_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.BLOCK);
         }
+    }
 
+    /** Function to start the counter phase
+     * @param {boolean} activePlayer - The blocker ID
+     */
+    startCounterPhase(isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        //If this is the active player, blocker means that no interaction will be possible until the end of the phase
+        this.scene.gameStateUI.udpatePhase(GAME_PHASES.COUNTER_PHASE);
+        if(isPlayerTurn) {
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+        } else {
+            this.scene.gameState.exit(GAME_STATES.COUNTER_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.COUNTER);
+        }
+    }
+
+    /** Function to play the animation to start the blocker 
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {number} blockerID - The blocker ID
+     */
+    startAttackBlocked(isPlayerTurn, blockerID) {
+        let card = this.scene.passivePlayerScene.getCard(blockerID);
+        if(!isPlayerTurn) card = this.scene.activePlayerScene.getCard(blockerID);
+
+        //Create anumation to move the targeting arrow toe the defender card
+        let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
+        animation = animation.concat({
+            duration: 10,
+            onComplete: () => {this.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);} //Use a callback to send a message he animation is finished and counter can start
+        });
+        this.scene.tweens.chain({
+            targets: this.scene.targetingArrow,
+            tweens: animation
+        }).restart();
+     
     }
 
     //#endregion
@@ -779,6 +818,15 @@ class GameStateManager {
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = true;
         this.scene.actionManager.addAction(action);
+    }
+
+    /** Function to pass a phase */
+    passToNextPhase(phase, passed) {
+        if(phase === GAME_STATES.BLOCKER_INTERACTION) {
+            this.scene.game.gameClient.requestPassBlockerPhase(passed);
+        } else if(phase === GAME_STATES.COUNTER_INTERACTION) {
+            //this.scene.gameState.gameClient.requestPassCounterPhase();
+        }
     }
 
     //#endregion

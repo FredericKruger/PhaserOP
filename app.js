@@ -245,6 +245,13 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_blocker_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY');});
     socket.on('player_blocker_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');});
 
+    socket.on('player_pass_blocker_phase', (passed) => {
+        socket.player.match.flagManager.handleFlag(socket.player, 'COUNTER_PHASE_READY');
+        if(passed) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'COUNTER_PHASE_READY'); //Pass the opponent as no animations required
+    });
+
+    socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(cardID, abilityID);});
+
     socket.on('player_start_next_turn', () => {
         if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_complete_current_turn');
         else socket.player.match.completeCurrentTurn();
