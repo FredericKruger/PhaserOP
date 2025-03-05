@@ -17,6 +17,10 @@ class GameCardUI extends BaseCardUI{
         this.attachedDon = [];
         this.attachedCounter = null;
 
+        //Abilities
+        /** @type {Array<Ability>} */
+        this.abilities = [];
+
         //STATE VARIABLES
         this.fsmState = new InDeckState(this);
         this.isInPlayAnimation = false;
@@ -69,6 +73,9 @@ class GameCardUI extends BaseCardUI{
         this.counterIcon.setVisible(this.state === CARD_STATES.IN_HAND);
         this.obj.push(this.counterIcon);
 
+        //prepare buttons
+        this.blockerButton = null;
+
         //Text for the attached don amount
         let textStyle =  {font: "1000 200px OnePieceFont", color: COLOR_ENUMS_CSS.OP_BLUE, align: "center"};
         if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) textStyle = {font: "1000 200px OnePieceFont", color: COLOR_ENUMS_CSS.OP_RED, align: "center"};
@@ -104,6 +111,9 @@ class GameCardUI extends BaseCardUI{
     */
     updateCardData(cardData, flipCard) {
         this.cardData = cardData;
+
+        AbilityFactory.attachAbilitiesToCard(this, cardData.abilities); //Create the abilities
+        this.createAbilityButtons(); //Create the ability buttons
         
         let textures = [];
         let cardArtKey = this.cardData.art;
@@ -130,6 +140,39 @@ class GameCardUI extends BaseCardUI{
         });
         this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));       
     }
+
+    /** function to create the ability buttons */
+    createAbilityButtons() {
+        for(let ability of this.abilities) {
+            if(ability.type === 'BLOCKER') {
+                //Prepare blocker button
+                this.blockerButton = new Button({
+                    scene: this.scene,
+                    x: 0,
+                    y: this.backArt.height*0.25,
+                    width: 400,
+                    height: 200,
+                    backgroundcolor: COLOR_ENUMS.OP_ORANGE,
+                    outlinecolor: COLOR_ENUMS.OP_WHITE,
+                    radius: 25,
+                    text: "BLOCK",
+                    fontsize: 150,
+                    fontfamily: "OnePieceFont"
+                }).setVisible(false);
+                this.obj.push(this.blockerButton);
+                this.add(this.blockerButton);
+                this.blockerButton.on('pointerover', () => {
+                    this.blockerButton.setScale(1.1);
+                    this.blockerButton.postFX.addGlow(COLOR_ENUMS.OP_BLUE, 4);
+                });
+                this.blockerButton.on('pointerout', () => {
+                    this.blockerButton.setScale(1);
+                    this.blockerButton.postFX.clear();
+                });
+            }
+        }
+    }
+
     //#endregion
 
     //#region STATE FUNCTIONS

@@ -93,7 +93,8 @@ class DonDeckUI extends CardPileUI {
     /** Function that update the cardAmount Text */
     updateCardAmountText() {
         this.cardAmountText.setText(this.cardVisuals.length);
-        this.cardAmountText.setPosition(this.posX, this.posY + this.posHeight/2);
+        if(this.cardVisuals.length > 0) this.cardAmountText.setPosition(this.cardVisuals[this.cardVisuals.length-1].x, this.posY + this.posHeight/2);
+        else this.cardAmountText.setPosition(this.posX, this.posY + this.posHeight/2);
     }
 
     /** Get the top card visual from the deck (back of the card) 

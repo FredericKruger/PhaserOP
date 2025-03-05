@@ -6326,7 +6326,15 @@
         "power":1000,
         "attribute":"SPECIAL",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST02-004-1",
+                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+                "type": "BLOCKER",
+                "phases": ["BLOCKER_INTERACTION"]
+            }
+        ]
     },    
     {
         "id":387,
@@ -6377,7 +6385,15 @@
         "attribute":"SPECIAL",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST02-004-1",
+                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+                "type": "BLOCKER",
+                "phases": ["BLOCKER_INTERACTION"]
+            }
+        ]
     },    
     {
         "id":390,
@@ -6461,7 +6477,15 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter":1000
+        "counter":1000,
+        "abilities": [
+            {
+                "id": "ST02-004-1",
+                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+                "type": "BLOCKER",
+                "phases": ["BLOCKER_INTERACTION"]
+            }
+        ]
     },    
     {
         "id":395,
@@ -6477,7 +6501,15 @@
         "power":7000,
         "attribute":"SPECIAL",
         "isleader":0,
-        "rarity":"SUPER RARE"
+        "rarity":"SUPER RARE",
+        "abilities": [
+            {
+                "id": "ST02-013-1",
+                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+                "type": "BLOCKER",
+                "phases": ["BLOCKER_INTERACTION"]
+            }
+        ]
     },    
     {
         "id":396,
