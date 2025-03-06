@@ -15,7 +15,9 @@ class GameCardUI extends BaseCardUI{
 
         //Attahed Cards
         this.attachedDon = [];
-        this.attachedCounter = null;
+        this.hoveredDon = null; //To store the hovered don card
+        this.attachedCounter = null; //To store the attached counter card
+        this.eventCounterPower = 0; //To store the addition power given by a counter event
 
         //Abilities
         /** @type {Array<Ability>} */
@@ -230,9 +232,16 @@ class GameCardUI extends BaseCardUI{
     */
     updatePowerText() {
         let currentPower = this.cardData.power;
+        //If the card is in play and it is the players turn add the power of the attached don cards
         if(this.playerScene.isPlayerTurn) {
             currentPower += this.attachedDon.length*1000;
-        } 
+            if(this.hoveredDon !== null) currentPower += 1000;
+        }
+        //If the card is in play and defending add the counter power if any is attached
+        if(this.state === CARD_STATES.IN_PLAY_DEFENDING) {
+            currentPower += this.eventCounterPower;
+            if(this.attachedCounter !== null) currentPower += this.attachedCounter.cardData.counter;
+        }
         this.locationPowerText.setText(currentPower);
     }
 

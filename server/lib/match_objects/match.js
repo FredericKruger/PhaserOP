@@ -426,7 +426,6 @@ class Match {
      * @param {Array<number>} targets
     */
     resolvePendingAction(player, cancel = false, targets = []) {
-        console.log(this.state.pending_action.actionResult);
         switch (this.state.pending_action.actionResult) {
             case PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET:
                 if(cancel) {

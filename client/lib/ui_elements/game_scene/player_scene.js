@@ -112,6 +112,29 @@ class PlayerScene {
 
         return null;
     }
+
+    /** Function the counter is over a defending character card 
+     * @param {number} pointerX
+     * @param {number} pointerY
+     * @returns {GameCardUI}
+    */
+    counterDraggedOverDefendingCharacter(pointerX, pointerY) {
+        //Start with the leader
+        for(let card of this.leaderLocation.cards) {
+            if(card.state === CARD_STATES.IN_PLAY_DEFENDING && card.getBounds().contains(pointerX, pointerY)) {
+                return card;
+            }
+        }
+
+        //Check the other characters
+        for(let card of this.characterArea.cards) {
+            if(card.state === CARD_STATES.IN_PLAY_DEFENDING && card.getBounds().contains(pointerX, pointerY)) {
+                return card;
+            }
+        }
+
+        return null;
+    }
     //#endregion
 
     //#region UTIL FUNCTIONS

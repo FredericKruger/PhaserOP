@@ -5,6 +5,9 @@ class TravellingState extends GameCardState {
      */
     constructor(card) {
         super(card, GAME_CARD_STATES.TRAVELLING);
+
+        /** @type {GameCardUI} */
+        this.counterOverCharacter = null; //To save what character the counter is currently over
     }
 
     onDrag(pointer, gameObject, dragX, dragY) {
@@ -13,6 +16,23 @@ class TravellingState extends GameCardState {
         //Calculate relative position of X to the width
         let relX = dragX / gameObject.scene.screenWidth;
         let relY = dragY / gameObject.scene.screenHeight;
+
+        if(this.card.scene.gameState === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
+            //Checked if a counter is hovered over a defending character
+            const hoveredCard = gameObject.scene.activePlayerScene.counterDraggedOverDefendingCharacter(pointer.position.x, pointer.position.y);
+            if(hoveredCard !== null) {
+                gameObject.scaleTo(CARD_SCALE.DON_OVER_CHARACTER, true, false, false);
+            } else {
+                gameObject.scaleTo(CARD_SCALE.TRAVELLING_FROM_HAND, true, false, false);
+            }
+
+            //Temporarily attach the ocunter to the character to reflect updates in the UI
+            if(hoveredCard !== this.counterOverCharacter) {
+                if(this.counterOverCharacter !== null) this.counterOverCharacter.attachedCounter = null;
+                this.counterOverCharacter = hoveredCard;
+                if(this.counterOverCharacter !== null) this.counterOverCharacter.attachedCounter = gameObject;
+            }
+        }
 
         gameObject.scene.game.gameClient.sendCardDragPosition(gameObject.id, 'GameCardUI', relX, relY);
     }
