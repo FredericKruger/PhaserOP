@@ -36,6 +36,7 @@ class InPlayState extends GameCardState {
 
     update() {
         this.card.updatePowerText();
+        
         for(let ability of this.card.abilities) {
             ability.update();
         }

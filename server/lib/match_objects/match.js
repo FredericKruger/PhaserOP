@@ -350,7 +350,7 @@ class Match {
                     minrequiredtargets: 0,
                     player: ["passive"],
                     cardtypes: [CARD_TYPES.CHARACTER],
-                    states: ["IN_PLAY_FIRST_TURN"], //FIXME just for testing
+                    states: ["IN_PLAY_RESTED"],
                 },{
                     minrequiredtargets: 0,
                     player: ["passive"],

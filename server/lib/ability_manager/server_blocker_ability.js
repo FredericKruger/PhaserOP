@@ -14,7 +14,7 @@ class ServerBlockerAbility extends ServerAbility {
      */
     action(card, match) {
         // Blocker ability action
-        match.attackManager.attack.setDefender(card);
+        match.attackManager.attack.switchDefender(card);
         match.startBlockAttack(card.id);
     }
 

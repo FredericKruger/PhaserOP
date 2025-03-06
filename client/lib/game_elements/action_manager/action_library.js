@@ -423,7 +423,8 @@ class ActionLibrary {
         let action = new Action();
         action.start = () => {
             this.scene.targetingArrow.update(defender.x, defender.y);
-            attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+            attacker.setState(CARD_STATES.IN_PLAY_ATTACKING);
+            defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
             this.scene.game.gameClient.requestStartBlockerPhase();
         };
         action.isPlayerAction = true;

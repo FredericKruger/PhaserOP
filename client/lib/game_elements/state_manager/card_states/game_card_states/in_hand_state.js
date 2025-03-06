@@ -34,7 +34,8 @@ class InHandState extends GameCardState {
     }
 
     onDragStart(pointer, gameObject) {
-        this.card.scene.gameState.exit(GAME_STATES.DRAGGING);
+        //Dont change states for countering as different rules apply
+        //if(this.card.scene.gameState !== GAME_STATES.COUNTER_INTERACTION) this.card.scene.gameState.exit(GAME_STATES.DRAGGING);
 
         gameObject.setState(CARD_STATES.TRAVELLING_FROM_HAND);
         gameObject.scene.children.bringToTop(gameObject);
@@ -52,6 +53,10 @@ class InHandState extends GameCardState {
         switch(this.card.scene.gameState.name) {
             case GAME_STATES.ACTIVE_INTERACTION:
                 if(this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
+                else this.card.hideGlow();
+                break;
+            case GAME_STATES.COUNTER_INTERACTION:
+                if(this.card.cardData.counter || this.card.hasAbility("COUNTER")) this.card.showGlow(COLOR_ENUMS.OP_RED);
                 else this.card.hideGlow();
                 break;
             default: this.card.hideGlow();

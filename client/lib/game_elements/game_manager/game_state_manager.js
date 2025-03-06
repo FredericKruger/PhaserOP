@@ -723,6 +723,8 @@ class GameStateManager {
         let attacker = attackerPlayer.getCard(attackerID);
         let defender = defenderPlayer.getCard(defenderID);
 
+        this.scene.attackManager = new AttackManager(this.scene, attacker, defender); //create a new attack manager to keep track of the attacker and defenders
+
         if(isPlayerTurn) this.scene.actionLibrary.declareAttackAction(attackerPlayer, attacker, defender);
         else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender, botAction);
     }
@@ -770,6 +772,8 @@ class GameStateManager {
     startAttackBlocked(isPlayerTurn, blockerID) {
         let card = this.scene.passivePlayerScene.getCard(blockerID);
         if(!isPlayerTurn) card = this.scene.activePlayerScene.getCard(blockerID);
+
+        this.scene.attackManager.attack.switchDefender(card); //Switch the defender
 
         //Create anumation to move the targeting arrow toe the defender card
         let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);

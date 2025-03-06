@@ -72,12 +72,12 @@
     - [x] Create Phase displayer
     - [x] Create Seperation line
     - [x] Create next turn button
-- [ ] Create Player UI
+- [x] Create Player UI
     - [x] Create Main UI
     - [x] Create life text
-    - [ ] Create Active Don
+    - [x] Create Active Don
         - [x] Create Amount Text
-        - [ ] Create logic to drag don and attach to card
+        - [x] Create logic to drag don and attach to card
     - [x] Create Resting Don Text
 - [x] Draw the player Hand
     - [x] Position Elements
@@ -99,7 +99,7 @@
     - [x] Create Area
     - [x] Create logic to display max cards
     - [ ] Create tooltip when hovering over card
-    - [ ] Create possibility to attach don card to character
+    - [x] Create possibility to attach don card to character
 - [x] Draw Stage Location
     - [x] Create Area
     - [x] Create logic to add card
@@ -137,7 +137,7 @@
 # GAME PHASES
 ---
 - [x] Create animation to signal current player turn
-- [ ] Create Refresh Phase
+- [x] Create Refresh Phase
     - [x] Return Don Cards to cost area
     - [ ] Create animation
     - [x] Set All Characters to Active
@@ -160,8 +160,8 @@
 - [ ] Create Opponent play card animations
     - [x] Animation for case card cannot be played
     - [x] Animation for case card player
-    - [ ] Animation for case targetting required
-    - [ ] Animation for case card sent to discard
+    - [x] Animation for case targetting required
+    - [x] Animation for case card sent to discard
     - [ ] Animation for case card is an event
 
 # GAME LOADING SCENE
@@ -182,7 +182,7 @@
 
 # GAME ENGINE
 ---
-- [ ] Create Turn Logic with phases
+- [x] Create Turn Logic with phases
 - [x] Create Phase Manager handling signals from the client and orchestrating game
 - [ ] Create server side logic to
     - [x] Setup Game

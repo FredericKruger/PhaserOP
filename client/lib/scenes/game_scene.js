@@ -36,6 +36,7 @@ class GameScene extends Phaser.Scene {
         this.animationManager = new AnimationManager(this);
         this.animationLibrary = new AnimationLibrary(this);
         this.animationLibraryPassivePlayer = new AnimationLibraryPassivePlayer(this);
+        this.attackManager = null;
 
         //Game Manager
         this.gameStateUI = new GameStateUI(this);

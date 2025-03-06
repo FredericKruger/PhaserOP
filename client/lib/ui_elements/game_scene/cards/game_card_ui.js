@@ -201,7 +201,7 @@ class GameCardUI extends BaseCardUI{
                 this.fsmState.exit(GAME_CARD_STATES.IN_HAND);
                 break;
             case CARD_STATES.IN_HAND_PASSIVE_PLAYER:
-            case CARD_STATES.IN_HAND_HOVERED_PASSIVE_PLAYER:
+            case CARD_STATES.IN_HAND_HOVERED_PASSIVEPLAYER:
                 this.fsmState.exit(GAME_CARD_STATES.IN_DECK);
                 break;
             case CARD_STATES.TRAVELLING_FROM_HAND:
@@ -213,6 +213,8 @@ class GameCardUI extends BaseCardUI{
                 break;
             case CARD_STATES.IN_PLAY:
             case CARD_STATES.IN_PLAY_RESTED:
+            case CARD_STATES.IN_PLAY_ATTACKING:
+            case CARD_STATES.IN_PLAY_DEFENDING:
                 this.fsmState.exit(GAME_CARD_STATES.IN_PLAY);
                 break;
             case CARD_STATES.IN_PLAY_FIRST_TURN:
@@ -254,11 +256,34 @@ class GameCardUI extends BaseCardUI{
      * @param {string} state
      */
     exertCard(state) {
-        //if(state === CARD_STATES.IN_PLAY_FIRST_TURN) this.frontArt.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
-        //else this.frontArt.resetPipeline();
+        switch(state) {
+            case CARD_STATES.IN_PLAY_RESTED:
+            case CARD_STATES.IN_PLAY_ATTACKING:
+            case CARD_STATES.IN_PLAY_DEFENDING:
+                this.angleTo(-90, true, false, false);
+                //this.frontArt.angle = -90;
+                break;
+            case CARD_STATES.IN_PLAY:
+            case CARD_STATES.IN_PLAY_FIRST_TURN:
+                this.angleTo(0, true, false, false);
+                //this.frontArt.angle = 0;
+                break;
+            default:
+                break;
+        }
+    }
 
-        if(state === CARD_STATES.IN_PLAY_RESTED) this.frontArt.angle = -90;
-        else if(state === CARD_STATES.IN_PLAY) this.frontArt.angle = 0;
+    /** Checks if a card has a specific ability type
+     * @param {string} abilityType
+     * @returns {boolean}
+     */
+    hasAbility(abilityType) {
+        if(this.abilities.length === 0) return false;
+
+        for(let ability of this.abilities) {
+            if(ability.type === abilityType) return true;
+        }   
+        return false;
     }
     //#endregion
     

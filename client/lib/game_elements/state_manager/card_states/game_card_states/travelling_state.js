@@ -29,13 +29,15 @@ class TravellingState extends GameCardState {
 
             gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
         }
-        this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+        //Dont change states for countering as different rules apply
+        //if(GAME_STATES !== GAME_STATES.COUNTER_INTERACTION) this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 
     onDrop(pointer, gameObject, dropZone) {
         if(dropZone.getData('name') === 'CharacterArea') {
             gameObject.scene.game.gameClient.requestPlayerPlayCard(gameObject.id);
         }
-        this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+        //Dont change states for countering as different rules apply
+        //if(GAME_STATES !== GAME_STATES.COUNTER_INTERACTION) this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 }

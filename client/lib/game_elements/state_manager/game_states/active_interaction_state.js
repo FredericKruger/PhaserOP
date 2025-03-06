@@ -17,6 +17,7 @@ class ActiveInteractionState extends GameState {
 
     onDragStart(pointer, gameObject) {
         gameObject.fsmState.onDragStart(pointer, gameObject);
+        this.exit(GAME_STATES.DRAGGING);
     }
 
     onPointerDown(pointer, gameObject) {
