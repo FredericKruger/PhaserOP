@@ -786,38 +786,9 @@ class GameStateManager {
 
         //Create animation to show the block button on the defender
         if(isPlayerTurn) {
-            /*card.blockerButton_manualOverride = true;
-            this.scene.time.delayedCall(1000, () => {
-                card.blockerButton_manualOverride = false;
-
-                this.scene.attackManager.attack.switchDefender(card); //Switch the defender
-
-                //Create anumation to move the targeting arrow toe the defender card
-                let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
-                animation = animation.concat({
-                    duration: 10,
-                    onComplete: () => {this.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);} //Use a callback to send a message he animation is finished and counter can start
-                });
-                this.scene.tweens.chain({
-                    targets: this.scene.targetingArrow,
-                    tweens: animation
-                }).restart();
-            });*/
             this.scene.actionLibrary.switchDefenderAction(card);
         } else {
             this.scene.actionLibraryPassivePlayer.switchDefenderAction(card);
-            /*this.scene.attackManager.attack.switchDefender(card); //Switch the defender
-
-            //Create anumation to move the targeting arrow toe the defender card
-            let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
-            animation = animation.concat({
-                duration: 10,
-                onComplete: () => {this.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);} //Use a callback to send a message he animation is finished and counter can start
-            });
-            this.scene.tweens.chain({
-                targets: this.scene.targetingArrow,
-                tweens: animation
-            }).restart();*/
         }
 
     }

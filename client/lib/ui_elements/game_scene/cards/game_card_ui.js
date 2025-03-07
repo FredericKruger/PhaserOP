@@ -283,7 +283,6 @@ class GameCardUI extends BaseCardUI{
             switch(state) {
                 case CARD_STATES.IN_PLAY_RESTED:
                 case CARD_STATES.IN_PLAY_ATTACKING:
-                case CARD_STATES.IN_PLAY_DEFENDING:
                     this.angleTo(-90, true, false, false);
                     //this.frontArt.angle = -90;
                     break;

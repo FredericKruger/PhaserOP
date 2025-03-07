@@ -36,6 +36,7 @@ class Attack {
         this.defender = defender;
         this.defender.previousState = this.defender.state;
         this.defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
+        this.defender.angleTo(-90, true, false, false); //Play exert
     }
 }
 //#endregion
