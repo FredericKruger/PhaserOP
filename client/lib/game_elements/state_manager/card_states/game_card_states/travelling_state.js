@@ -38,26 +38,51 @@ class TravellingState extends GameCardState {
     }
 
     onDragEnd(pointer, gameObject, dropped) {
+        if(this.counterOverCharacter !== null) this.counterOverCharacter.attachedCounter = null;
+        this.counterOverCharacter = null;
+
         if(!dropped) {
             //Reset the cards position
             gameObject.x = gameObject.input.dragStartX;
             gameObject.y = gameObject.input.dragStartY;
 
-            //Reset card state
-            gameObject.setState(CARD_STATES.IN_HAND);
-            gameObject.playerScene.hand.update();
+            let sendCardToHand = true;
+            if(this.card.scene.gameState === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
+                const character = gameObject.scene.activePlayerScene.counterDraggedOverDefendingCharacter(pointer.position.x, pointer.position.y);
+                if(character !== null) {
+                    gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
+                    sendCardToHand = false;
+                }
+            } 
+
+            if(sendCardToHand) {
+                //Reset card state
+                gameObject.setState(CARD_STATES.IN_HAND);
+                gameObject.playerScene.hand.update();
+            }
 
             gameObject.scene.game.gameClient.sendCardDragEnd(gameObject.id, 'GameCardUI');
         }
-        //Dont change states for countering as different rules apply
-        //if(GAME_STATES !== GAME_STATES.COUNTER_INTERACTION) this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 
     onDrop(pointer, gameObject, dropZone) {
+        if(this.counterOverCharacter !== null) this.counterOverCharacter.attachedCounter = null;
+        this.counterOverCharacter = null;
+
         if(dropZone.getData('name') === 'CharacterArea') {
-            gameObject.scene.game.gameClient.requestPlayerPlayCard(gameObject.id);
+            
+            //If the character is dropped during the counter interaction state, attach the counter to the character
+            if(this.card.scene.gameState === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
+                const character = gameObject.scene.activePlayerScene.counterDraggedOverDefendingCharacter(pointer.position.x, pointer.position.y);
+                if(character !== null) {
+                    gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
+                } else {
+                    gameObject.setState(CARD_STATES.IN_HAND);
+                    gameObject.playerScene.hand.update();
+                }
+            } else {
+                gameObject.scene.game.gameClient.requestPlayerPlayCard(gameObject.id);    
+            }
         }
-        //Dont change states for countering as different rules apply
-        //if(GAME_STATES !== GAME_STATES.COUNTER_INTERACTION) this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
     }
 }

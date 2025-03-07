@@ -26,6 +26,9 @@ class GameCardUI extends BaseCardUI{
         //STATE VARIABLES
         this.fsmState = new InDeckState(this);
         this.isInPlayAnimation = false;
+
+        //Button visibility overrides to show in case of opponent activating buttons
+        this.blockerButton_manualOverride = false;
     }
     //#endregion
 
@@ -171,7 +174,7 @@ class GameCardUI extends BaseCardUI{
                     this.blockerButton.setScale(1);
                     this.blockerButton.postFX.clear();
                 });
-                this.blockerButton.on('pointerdown', () => {ability.action();});
+                this.blockerButton.on('pointerdown', () => {ability.trigger();});
             }
         }
     }
@@ -196,6 +199,7 @@ class GameCardUI extends BaseCardUI{
         switch(state) {
             case CARD_STATES.IN_DECK:
             case CARD_STATES.IN_DISCARD:
+            case CARD_STATES.IN_PLAY_ATTACHED:
                 this.fsmState.exit(GAME_CARD_STATES.IN_DECK);
                 break;
             case CARD_STATES.IN_HAND:
@@ -258,6 +262,16 @@ class GameCardUI extends BaseCardUI{
         this.attachedDonText.setText("x" + this.attachedDon.length);
         this.attachedDonText.setVisible(this.attachedDon.length > 1);
     }
+
+    /** Function to display the attached counter */
+    updateAttachedCounterPosition() {
+        if(this.attachedCounter !== null) {
+            this.scene.children.sendToBack(this.attachedCounter);
+            this.attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
+            this.attachedCounter.scaleTo(this.x + this.displayWidth/2, this.y, true, false, false);
+            this.attachedCounter.angleTo(20, true, false, false);
+        }
+    }
     //#endregion
 
     //#region UTIL FUNCTIONS
@@ -265,20 +279,38 @@ class GameCardUI extends BaseCardUI{
      * @param {string} state
      */
     exertCard(state) {
-        switch(state) {
-            case CARD_STATES.IN_PLAY_RESTED:
-            case CARD_STATES.IN_PLAY_ATTACKING:
-            case CARD_STATES.IN_PLAY_DEFENDING:
-                this.angleTo(-90, true, false, false);
-                //this.frontArt.angle = -90;
-                break;
-            case CARD_STATES.IN_PLAY:
-            case CARD_STATES.IN_PLAY_FIRST_TURN:
-                this.angleTo(0, true, false, false);
-                //this.frontArt.angle = 0;
-                break;
-            default:
-                break;
+        if(this.cardData && this.cardData.card === CARD_TYPES.CHARACTER) {
+            switch(state) {
+                case CARD_STATES.IN_PLAY_RESTED:
+                case CARD_STATES.IN_PLAY_ATTACKING:
+                case CARD_STATES.IN_PLAY_DEFENDING:
+                    this.angleTo(-90, true, false, false);
+                    //this.frontArt.angle = -90;
+                    break;
+                case CARD_STATES.IN_PLAY:
+                case CARD_STATES.IN_PLAY_FIRST_TURN:
+                    this.angleTo(0, true, false, false);
+                    //this.frontArt.angle = 0;
+                    break;
+                default:
+                    break;
+            }
+        } else if(this.cardData && this.cardData.card === CARD_TYPES.LEADER) {
+            switch(state) {
+                case CARD_STATES.IN_PLAY_RESTED:
+                case CARD_STATES.IN_PLAY_ATTACKING:
+                    this.angleTo(-90, true, false, false);
+                    //this.frontArt.angle = -90;
+                    break;
+                case CARD_STATES.IN_PLAY:
+                case CARD_STATES.IN_PLAY_FIRST_TURN:
+                    this.angleTo(0, true, false, false);
+                    //this.frontArt.angle = 0;
+                    break;
+                case CARD_STATES.IN_PLAY_DEFENDING:
+                default:
+                    break;
+            }
         }
     }
 
@@ -293,6 +325,17 @@ class GameCardUI extends BaseCardUI{
             if(ability.type === abilityType) return true;
         }   
         return false;
+    }
+
+    /** Function that returns an ability according to the abiliy Id 
+     * @param {string} abilityId
+     * @returns {Ability}
+    */
+    getAbility(abilityId) {
+        for(let ability of this.abilities) {
+            if(ability.id === abilityId) return ability;
+        }
+        return null;
     }
     //#endregion
     
@@ -319,6 +362,7 @@ class GameCardUI extends BaseCardUI{
                 ease: 'linear',
                 onUpdate: () => {
                     if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
+                    if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
                 },
                 onComplete: () => {
                     this.x = x;
@@ -326,16 +370,18 @@ class GameCardUI extends BaseCardUI{
 
                     if(this.state === CARD_STATES.TRAVELLING_DECK_HAND) this.setState(CARD_STATES.IN_HAND);
 
-                    // Move attached DON cards
+                    // Move attached DON cards and Counters
                     if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
+                    if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
                 }
             });
         } else {
             this.x = x;
             this.y = y;
 
-            // Move attached DON cards
+            // Move attached DON cards and Counters
             if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
+            if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
         }
     }
     //#endregion

@@ -7,16 +7,18 @@ const {MatchCard} = require('./match_card');
 
 //#region MATCH PHASES OBJECT
 const MATCH_PHASES = Object.freeze({
-    WAITING_TO_START: 'WAITING_TO_START',
-    SETUP: 'SETUP',
-    MULLIGAN_PHASE: 'MULLIGAN_PHASE',
-    MULLIGAN_PHASE_OVER: 'MULLIGAN_PHASE_OVER',
-    PREPARING_FIRST_TURN: 'PREPARING_FIRST_TURN',
-
-    REFRESH_PHASE: 'REFRESH_PHASE',
-    DRAW_PHASE: 'DRAW_PHASE',
-    DON_PHASE: 'DON_PHASE',
-})
+    WAITING_TO_START: 'Waiting to Start',
+    SETUP: 'Setup',
+    MULLIGAN_PHASE: 'Mulligan Phase',
+    PREPARING_FIRST_TURN: 'Setup Phase',
+    REFRESH_PHASE: 'Refresh Phase',
+    DRAW_PHASE: 'Draw Phase',
+    DON_PHASE: 'Don Phase',
+    MAIN_PHASE: 'Main Phase',
+    ATTACK_PHASE: 'Main: Attack',
+    BLOCK_PHASE: 'Main: Block',
+    COUNTER_PHASE: 'Main: Counter',
+});
 //#endregion
 
 class MatchState {
@@ -350,6 +352,12 @@ class MatchState {
         let card = this.player1.getCard(cardId);
         if(card === undefined) card = this.player2.getCard(cardId);
         return card;
+    }
+
+    /** Function to check if there are any available blockers */
+    hasAvailableBlockers() {
+        let player = this.current_passive_player;
+        return player.hasAvailableBlockers(this.current_phase);
     }
     //#endregion
 }

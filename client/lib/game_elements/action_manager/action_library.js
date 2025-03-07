@@ -435,6 +435,54 @@ class ActionLibrary {
         this.actionManager.addAction(action);
     }
 
+    /** Action to switch defender cards during block
+     * @param {GameCardUI} blockerCard
+     */
+    switchDefenderAction(blockerCard) {
+        let action = new Action();
+        action.start = () => {
+            blockerCard.blockerButton_manualOverride = true;
+        };
+        action.start_animation = this.scene.tweens.chain({
+            targets: blockerCard,
+            tweens: [
+                {
+                    scale: blockerCard.scale,
+                    duration: 1000,
+                    onComplete: () => {
+                        this.scene.actionManager.completeAction();
+                    }
+                }
+            ]
+        }).pause();
+        action.end = () => {
+            blockerCard.blockerButton_manualOverride = false;
+
+            this.scene.attackManager.attack.switchDefender(blockerCard); //Switch the defender
+        };
+        //Create anumation to move the targeting arrow toe the defender card
+        let animation = this.scene.targetingArrow.animateToPosition(blockerCard.x, blockerCard.y, 0);
+        animation = animation.concat({
+            duration: 10,
+            onComplete: () => {this.scene.actionManager.finalizeAction();} //Use a callback to send a message he animation is finished and counter can start
+        });
+        animation = this.scene.tweens.chain({
+            targets: this.scene.targetingArrow,
+            tweens: animation
+        }).pause();
+        action.end_animation = animation;
+        action.finally = () => {
+            this.scene.gameStateManager.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);
+        };
+        
+        action.isPlayerAction = false;
+        action.waitForAnimationToComplete = true;
+        action.name = "SWITCH DEFENDER";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
     //#endregion
 
     //#region TARGETING ACTION

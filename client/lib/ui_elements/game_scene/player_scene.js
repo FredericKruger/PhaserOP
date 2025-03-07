@@ -140,6 +140,7 @@ class PlayerScene {
     //#region UTIL FUNCTIONS
     /** Function to get a card from the player
      * @param {number} cardId
+     * @return {GameCardUI}
      */
     getCard(cardId) {
         let card = this.hand.getCard(cardId);

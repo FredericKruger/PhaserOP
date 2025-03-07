@@ -16,8 +16,11 @@ class ActiveInteractionState extends GameState {
     }
 
     onDragStart(pointer, gameObject) {
-        gameObject.fsmState.onDragStart(pointer, gameObject);
-        this.exit(GAME_STATES.DRAGGING);
+        //Issue that dragstart is triggered before pointerdown in the call stack so need barrierer
+        if(gameObject.fsmState.name === GAME_CARD_STATES.IN_HAND || gameObject.fsmState.name === DON_CARD_STATES.ACTIVE) {
+            gameObject.fsmState.onDragStart(pointer, gameObject);
+            this.exit(GAME_STATES.DRAGGING);
+        }
     }
 
     onPointerDown(pointer, gameObject) {

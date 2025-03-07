@@ -132,9 +132,6 @@ class Match {
     endMulliganPhase() {
         //Only end mulligan if both player have completed the mulligan and the animation phase
         if(this.flagManager.checkFlags(['MULLIGAN_OVER', 'MULLIGAN_ANIMATION_PASSIVEPLAYER_OVER'])){
-            //Start hte mulligan phase in the match engine and get cards drawn for mulligan
-            this.state.current_phase = MATCH_PHASES.MULLIGAN_PHASE_OVER;
-
             // Delay the call to game_end_mulligan by 1 second
             setTimeout(() => {
                 //Send cards to client
@@ -372,6 +369,9 @@ class Match {
         //First send signal to stop targetting to the current active player
         if(!player.bot) player.socket.emit('game_stop_targetting', false);
 
+        //Set Phase
+        this.state.current_phase = MATCH_PHASES.ATTACK_PHASE;
+
         //get the cards
         let attackerCard = player.currentMatchPlayer.getCard(attackerID);   
         let defenderCard = player.currentOpponentPlayer.currentMatchPlayer.getCard(defenderID);
@@ -393,19 +393,30 @@ class Match {
         this.state.current_passive_player.currentMatchPlayer.matchFlags.resetActionFlags();
 
         //test if there are any blockers in the passive players area which are not rested
-        //if no start the counter phase directly
-        //if yes send the signals to the players to start the blocker phase
+        this.state.current_phase = MATCH_PHASES.BLOCK_PHASE;
 
-        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
-        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
+        //Check if the player has available blockers
+        if(this.state.current_passive_player.currentMatchPlayer.hasAvailableBlockers(this.state.current_phase)) {
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
+
+            console.log(this.state.current_passive_player.bot);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
+            else this.ai.startBlockPhase();
+        } else { //If no blockers skip the counter
+            if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');
+            if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
+        }
     }
 
     /** Function that blocks an attack
      * @param {blockerID} blockerID
      */
     startBlockAttack(blockerID) {
-        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_blocked', true, blockerID);
-        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_blocked', false, blockerID);
+        //let blockerCard = this.state.current_passive_player.currentMatchPlayer.getCard(blockerID);
+        //if(blockerCard.getAbilityByType("BLOCKER") && blockerCard.getAbilityByType("BLOCKER").canActivate(blockerCard, 'BLOCKER_INTERACTION')){
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_blocked', true, blockerID);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_blocked', false, blockerID);
+        //}
     }
 
     /** Function to start the Counter Phase */
@@ -413,8 +424,23 @@ class Match {
         if(this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_passive_player)){
 
+            this.state.current_phase = MATCH_PHASES.COUNTER_PHASE;
+
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_counter_phase', true);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_counter_phase', false);
+        }
+    }
+
+    /** Function to request attaching a counter to a character
+     * @param {Player} player
+     * @param {number} counterID
+     * @param {number} characterID
+     */
+    startAttachCounterToCharacter(counterID, characterID) {
+        let counterCard = this.state.current_passive_player.currentMatchPlayer.getCard(counterID);
+        if(counterCard.cardData.counter) {
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_counter_played', true, counterID, characterID);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_counter_played', false, counterID, characterID);
         }
     }
     //#endregion
@@ -451,14 +477,19 @@ class Match {
     }
 
     /** Function to resolve the ability
+     * @param {Player} player
      * @param {number} cardId
      * @param {string} abilityId
      */
-    resolveAbility(cardId, abilityId) {
+    resolveAbility(player, cardId, abilityId) {
         let card = this.state.getCard(cardId);
         let ability = card.getAbility(abilityId);
 
-        ability.action(card, this);
+        if(ability && ability.canActivate(card, this.state.current_phase)) {
+            ability.action(card, this);
+        } else {
+            player.socket.emit('game_ability_failure', cardId, abilityId);
+        }
     }
 
     //#region UTILS

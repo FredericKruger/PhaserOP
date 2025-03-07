@@ -72,6 +72,13 @@ class MatchCard extends Card{
         return this.abilities.find(ability => ability.id === abilityId);
     }
 
+    /** Function that gets an ability from the card according to type
+    * @param {string} type - ID of the ability
+    */
+    getAbilityByType(type) {
+        return this.abilities.find(ability => ability.type === type);
+    }
+
     getPower(activeTurn) {
         let power = this.currentPower;
         if(activeTurn) power += this.attachedDon.length * 1000;

@@ -705,28 +705,37 @@ class GameStateManager {
      * @param {boolean} botAction - If it is a bot action
      */
     declareAttackPhase(attackerID, defenderID, isPlayerTurn, botAction) {
-        this.scene.gameStateUI.udpatePhase(GAME_PHASES.ATTACK_PHASE);
+        //Create an aciton to declrare the attack
+        let action = new Action();
+        action.start = () => {
+            this.currentGamePhase = GAME_PHASES.ATTACK_PHASE;
+            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+    
+            //Set the game state
+            if(isPlayerTurn) this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+    
+            let attackerPlayer = this.scene.activePlayerScene;
+            let defenderPlayer = this.scene.passivePlayerScene;
+    
+            //revesers if this is the passive player's turn
+            if(!isPlayerTurn) {
+                attackerPlayer = this.scene.passivePlayerScene;
+                defenderPlayer = this.scene.activePlayerScene;
+            }
+    
+            //getCards
+            let attacker = attackerPlayer.getCard(attackerID);
+            let defender = defenderPlayer.getCard(defenderID);
+    
+            this.scene.attackManager = new AttackManager(this.scene, attacker, defender); //create a new attack manager to keep track of the attacker and defenders
+    
+            if(isPlayerTurn) this.scene.actionLibrary.declareAttackAction(attackerPlayer, attacker, defender);
+            else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender, botAction);
+        };
+        action.isPlayerAction = false;
+        action.waitForAnimationToComplete = false;
 
-        //Set the game state
-        if(isPlayerTurn) this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
-
-        let attackerPlayer = this.scene.activePlayerScene;
-        let defenderPlayer = this.scene.passivePlayerScene;
-
-        //revesers if this is the passive player's turn
-        if(!isPlayerTurn) {
-            attackerPlayer = this.scene.passivePlayerScene;
-            defenderPlayer = this.scene.activePlayerScene;
-        }
-
-        //getCards
-        let attacker = attackerPlayer.getCard(attackerID);
-        let defender = defenderPlayer.getCard(defenderID);
-
-        this.scene.attackManager = new AttackManager(this.scene, attacker, defender); //create a new attack manager to keep track of the attacker and defenders
-
-        if(isPlayerTurn) this.scene.actionLibrary.declareAttackAction(attackerPlayer, attacker, defender);
-        else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender, botAction);
+        this.scene.actionManager.addAction(action);
     }
 
     /** Function to start the blocker phase
@@ -737,7 +746,8 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         //If this is the active player, blocker means that no interaction will be possible until the end of the phase
-        this.scene.gameStateUI.udpatePhase(GAME_PHASES.BLOCK_PHASE);
+        this.currentGamePhase = GAME_PHASES.BLOCK_PHASE;
+        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
         if(isPlayerTurn) {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
@@ -755,7 +765,8 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         //If this is the active player, blocker means that no interaction will be possible until the end of the phase
-        this.scene.gameStateUI.udpatePhase(GAME_PHASES.COUNTER_PHASE);
+        this.currentGamePhase = GAME_PHASES.COUNTER_PHASE;
+        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
         if(isPlayerTurn) {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
@@ -773,19 +784,84 @@ class GameStateManager {
         let card = this.scene.passivePlayerScene.getCard(blockerID);
         if(!isPlayerTurn) card = this.scene.activePlayerScene.getCard(blockerID);
 
-        this.scene.attackManager.attack.switchDefender(card); //Switch the defender
+        //Create animation to show the block button on the defender
+        if(isPlayerTurn) {
+            /*card.blockerButton_manualOverride = true;
+            this.scene.time.delayedCall(1000, () => {
+                card.blockerButton_manualOverride = false;
 
-        //Create anumation to move the targeting arrow toe the defender card
-        let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
-        animation = animation.concat({
-            duration: 10,
-            onComplete: () => {this.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);} //Use a callback to send a message he animation is finished and counter can start
-        });
-        this.scene.tweens.chain({
-            targets: this.scene.targetingArrow,
-            tweens: animation
-        }).restart();
-     
+                this.scene.attackManager.attack.switchDefender(card); //Switch the defender
+
+                //Create anumation to move the targeting arrow toe the defender card
+                let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
+                animation = animation.concat({
+                    duration: 10,
+                    onComplete: () => {this.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);} //Use a callback to send a message he animation is finished and counter can start
+                });
+                this.scene.tweens.chain({
+                    targets: this.scene.targetingArrow,
+                    tweens: animation
+                }).restart();
+            });*/
+            this.scene.actionLibrary.switchDefenderAction(card);
+        } else {
+            this.scene.actionLibraryPassivePlayer.switchDefenderAction(card);
+            /*this.scene.attackManager.attack.switchDefender(card); //Switch the defender
+
+            //Create anumation to move the targeting arrow toe the defender card
+            let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
+            animation = animation.concat({
+                duration: 10,
+                onComplete: () => {this.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);} //Use a callback to send a message he animation is finished and counter can start
+            });
+            this.scene.tweens.chain({
+                targets: this.scene.targetingArrow,
+                tweens: animation
+            }).restart();*/
+        }
+
+    }
+
+    /** Function to player a counter
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {number} counterID - The counter ID
+     * @param {number} characterID - The character ID
+     */
+    startCounterPlayed(activePlayer, counterID, characterID) {
+        let counterCard = this.scene.passivePlayerScene.getCard(counterID);
+        let characterCard = this.scene.passivePlayerScene.getCard(characterID);
+        if(!activePlayer) {
+            counterID = this.scene.activePlayerScene.getCard(counterID);
+            characterID = this.scene.activePlayerScene.getCard(characterID);
+        }
+
+        //remove Card from owner hand
+        counterCard.playerScene.hand.removeCard(counterCard.id);
+        counterCard.setState(CARD_STATES.IN_PLAY_ATTACHED);
+        characterCard.attachedCounter = counterCard;
+        characterCard.updateAttachedCounterPosition();
+
+        this.passToNextPhase(GAME_STATES.COUNTER_INTERACTION, false);
+    }
+
+    //#endregion
+
+    //#region ABILITY FUNTIONS
+
+    /** Function to resolve the ability request to the server
+     * @param {number} cardId - The card
+     * @param {number} abilityId - The ability ID
+     * @param {boolean} success - If the ability was successful
+     */
+    handleAbilityStatus(cardId, abilityId, success) {
+        let card = this.scene.activePlayerScene.getCard(cardId);
+        if(!card) card = this.scene.passivePlayerScene.getCard(cardId);
+
+        const ability = card.getAbility(abilityId); //Get Ability
+        if(ability) {
+            if(success) ability.action();
+            else ability.onFail();
+        }
     }
 
     //#endregion
@@ -829,7 +905,7 @@ class GameStateManager {
         if(phase === GAME_STATES.BLOCKER_INTERACTION) {
             this.scene.game.gameClient.requestPassBlockerPhase(passed);
         } else if(phase === GAME_STATES.COUNTER_INTERACTION) {
-            //this.scene.gameState.gameClient.requestPassCounterPhase();
+            this.scene.gameState.gameClient.requestPassCounterPhase(passed);
         }
     }
 

@@ -181,6 +181,10 @@ class ServerInstance {
         match.state.player1.deck.shuffle();
         match.state.player2.deck.shuffle();
 
+        //Ready life points
+        match.state.player1.life = match.state.player1.deck.leader.cardData.life;
+        match.state.player2.life = match.state.player2.deck.leader.cardData.life;
+
         //Create an AI to play the game
         match.ai = new AI_Instance(this, match);
 
@@ -227,9 +231,15 @@ class ServerInstance {
         match.lastCardID = match.state.player2.fillDonDeck(10, match.lastCardID);
 
         //Shuffle the decks
+
         match.state.player1.deck.shuffle();
         match.state.player2.deck.shuffle();
 
+        //Ready life points
+        match.state.player1.life = match.state.player1.deck.leader.cardData.life;
+        match.state.player2.life = match.state.player2.deck.leader.cardData.life;
+
+        //Randomly select a board
         let board = this.getRandomInt(0, 2); //Randomly select the board
        
         //Send the client messages to 

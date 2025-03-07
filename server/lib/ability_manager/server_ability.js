@@ -22,10 +22,12 @@ class ServerAbility {
      */
     canActivate(card, gameState) {
         // Check if in correct phase
+        //console.log('Checking phases', this.phases, gameState);
         if (this.phases.length > 0 && !this.phases.includes(gameState)) {
             return false;
         }
 
+        //console.log('Checking states', this.states, card.state);
         if (this.states.length > 0 && !this.states.includes(card.state)) {
             return false;
         }

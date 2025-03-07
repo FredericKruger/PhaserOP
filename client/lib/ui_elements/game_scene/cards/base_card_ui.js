@@ -13,6 +13,8 @@ class BaseCardUI extends Phaser.GameObjects.Container {
         this.playerScene = playerScene;
 
         this.state = config.state;
+        this.previousState = this.state;
+        
         this.artVisible = config.artVisible;
         this.currentScale = config.scale;
         this.cardDepth = config.depth;

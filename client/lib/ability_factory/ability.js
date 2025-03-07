@@ -24,12 +24,12 @@ class Ability {
     }
 
     /** Function that tests if an ability can be activated
-     * @param {GameState} gameState
+     * @param {string} gamePhase
      * @returns {boolean}
      */
-    canActivate(gameState) {
+    canActivate(gamePhase) {
         // Check if in correct phase
-        if (this.phases.length > 0 && !this.phases.includes(gameState.name)) {
+        if (this.phases.length > 0 && !this.phases.includes(gamePhase)) {
             return false;
         }
 
@@ -47,7 +47,7 @@ class Ability {
 
         // Check all conditions
         for (const condition of this.conditions) {
-            if (!this.evaluateCondition(condition, gameState)) {
+            if (!this.evaluateCondition(condition, gamePhase)) {
                 return false;
             }
         }
@@ -57,10 +57,10 @@ class Ability {
 
     /** Function to evalate the conditions 
      * @param {Object} condition
-     * @param {GameState} gameState
+     * @param {string} gamePhase
      * @returns {boolean}
      */
-    evaluateCondition(condition, gameState) {
+    evaluateCondition(condition, gamePhase) {
         // Example condition evaluation
         switch (condition.type) {
             case 'MIN_DON':
@@ -78,7 +78,11 @@ class Ability {
         this.usedThisTurn = false;
     }
 
+    /** Function to handle the trigger of the action button */
+    trigger() {this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);}
+
     update() {}
     action() {}
+    onFail() {}
 
 }

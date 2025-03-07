@@ -36,6 +36,7 @@ class MatchPlayer {
 
     /** Function that return a card from the player from the card id
      * @param {number} cardid - ID of the card to be returned
+     * @return {MatchCard} - Card to be returned
      */
     getCard(cardid) {
         let card = this.inHand.find(c => c.id === cardid);
@@ -153,6 +154,17 @@ class MatchPlayer {
         //if(replacePreviousCard) return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
         //else return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
+    }
+
+    /** Function that checks if the players has available blockers for the given game phase
+     * @param {string} gamePhase - phase of the game
+     * @return {boolean} - true if the player has available blockers, false otherwise
+     */
+    hasAvailableBlockers(gamePhase) {
+        for(let card of this.inCharacterArea) {
+            if(card.getAbilityByType('BLOCKER') !== undefined && card.getAbilityByType('BLOCKER').canActivate(card, gamePhase)) return true;
+        }
+        return false;
     }
 
 }

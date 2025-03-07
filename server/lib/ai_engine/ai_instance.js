@@ -329,7 +329,7 @@ class AI_Instance {
      * @returns {Object|null} Action object if an attack can be made
      */
     evaluateAttack(priority) {
-        // Find characters that can attack
+        // Find characters that can attack 
         const attackers = this.matchPlayer.inCharacterArea.filter(char => 
             char.state !== CARD_STATES.IN_PLAY_RESTED && char.state !== CARD_STATES.IN_PLAY_FIRST_TURN  // Not tapped and not just summoned
         );
@@ -339,6 +339,7 @@ class AI_Instance {
             ? this.match.state.current_passive_player.currentMatchPlayer 
             : this.match.state.current_active_player.currentMatchPlayer;
             
+        //FIXME FILTER targets by state for now can attack anyone            
         const targets = [...opponentPlayer.inCharacterArea];
         const leaderTarget = opponentPlayer.inLeaderLocation;
         
@@ -423,6 +424,167 @@ class AI_Instance {
                 break;
         }
     }
+
+    //#region BLOCK STRATEGY
+
+    startBlockPhase() {
+        console.log("AI BLOCK PHASE");
+        let blockDecision = this.evaluateBlock();
+        console.log(blockDecision);
+        this.executeBlock(blockDecision);
+    }
+
+    /**
+     * Evaluates whether the AI should block an attack
+     * @returns {Object|null} Block decision object or null to not block
+     */
+    evaluateBlock() {
+        // Get the blocking strategy from the configuration
+        const blockStrategy = this.strategyConfig.blockStrategy || {
+            blockLeader: true,
+            highCostThreshold: 3,
+            blockOnlyFavorable: false,
+            lifeThreshold: 1,
+            criticalLifeThreshold: 0
+        };
+
+        const defenderCard = this.match.attackManager.attack.defender;
+        const attackerCard = this.match.attackManager.attack.attacker;
+
+        console.log(attackerCard.getPower(true));
+        console.log(defenderCard.getPower(false));
+        //check is the attacker will lose the attack
+        if(attackerCard.getPower(true) < defenderCard.getPower(false)) return { function: 'noBlock' };
+
+        // Get current AI life points
+        const currentLife = this.matchPlayer.life;
+        const isLifeCritical = currentLife <= blockStrategy.criticalLifeThreshold;
+        const isLifeLow = currentLife <= blockStrategy.lifeThreshold;
+    
+        console.log(`AI evaluating block. Current life: ${currentLife}, Is critical: ${isLifeCritical}, Is low: ${isLifeLow}`);
+        
+        // If the target is the leader and our strategy is to protect it
+        const isTargetLeader = defenderCard.cardData.card === CARD_TYPES.LEADER;
+        if (isTargetLeader && blockStrategy.blockLeader) {
+            console.log("AI considering blocking attack on leader");
+        }
+        
+        // If the target is a high-cost character worth protecting
+        const isHighCostCard = defenderCard.cardData.cost >= blockStrategy.highCostThreshold;
+        if (isHighCostCard) {
+            console.log(`AI considering blocking attack on high-cost card (${defenderCard.cardData.cost})`);
+        }
+
+        // Calculate how threatening this attack is to AI's survival
+        // If this attack would reduce life to critical levels, prioritize blocking
+        const isThreateningAttack = isTargetLeader && (
+            currentLife <= blockStrategy.criticalLifeThreshold
+        );
+
+        if (isThreateningAttack) {
+            console.log(`Attack is threatening to drop AI life to critical levels`);
+        }
+        
+        // Should we block this attack?
+        const shouldBlock = isThreateningAttack || 
+            ((isTargetLeader || isHighCostCard) && (isLifeCritical || isLifeLow)) ||
+            isLifeCritical;
+        
+        if (!shouldBlock) {
+            console.log("AI decides not to block this attack");
+            return { function: 'noBlock' };
+        }
+        
+        // Find all potential blockers (untapped characters)
+        const potentialBlockers = this.matchPlayer.inCharacterArea.filter(char => 
+            char.getAbilityByType("BLOCKER") && char.getAbilityByType("BLOCKER").canActivate(char, this.match.state.current_phase)
+        );
+        
+        if (potentialBlockers.length === 0) {
+            console.log("AI has no available blockers");
+            return { function: 'noBlock' };
+        }
+
+        // When life is critical, be willing to sacrifice more valuable cards
+        const isDesperateSituation = isLifeCritical || isThreateningAttack;
+    
+        
+        // Choose the best blocker based on power comparison
+        potentialBlockers.sort((a, b) => {
+            // In desperate situations, prioritize by raw blocking power
+            if (isDesperateSituation) {
+                return b.getPower(false) - a.getPower(false); // Highest power first
+            
+            }
+            // If we only want favorable blocks
+            if (blockStrategy.blockOnlyFavorable && !isLifeLow) {
+                const aPowerAdvantage = a.getPower(false) - attackerCard.getPower(true);
+                const bPowerAdvantage = b.getPower(false) - attackerCard.getPower(true);
+                return bPowerAdvantage - aPowerAdvantage; // Higher advantage first
+            } 
+            
+            // Otherwise, find the most suitable blocker (lowest power that can survive or trade)
+            else {
+                // First prioritize cards that can survive the block
+                const aCanSurvive = a.getPower(false) > attackerCard.getPower(true);
+                const bCanSurvive = b.getPower(false) > attackerCard.getPower(true);
+                
+                if (aCanSurvive && !bCanSurvive) return -1; // A can survive, B can't
+                if (!aCanSurvive && bCanSurvive) return 1;  // B can survive, A can't
+                
+                // If both can survive or neither can survive
+                // - In low life situations, prioritize higher power cards
+                // - Otherwise use the weakest card that can do the job
+                if (isLifeLow) {
+                    return b.getPower(false) - a.getPower(false); // Higher power first for low life
+                } else {
+                    return a.getPower(false) - b.getPower(false); // Lower power first normally
+                }
+            }
+        });
+        
+        // Get the best blocker
+        const bestBlocker = potentialBlockers[0];
+        
+        // Only block if we meet the strategy requirements
+        // But ignore favorable-only requirement if life is critical
+        if (blockStrategy.blockOnlyFavorable && 
+            !isLifeCritical && 
+            !isLifeLow &&
+            bestBlocker.getPower(false) < attackerCard.getPower(true)) {
+            console.log("AI avoids unfavorable block in non-critical situation");
+            return { function: 'noBlock' };
+        }
+        
+        const blockerAbility = bestBlocker.getAbilityByType("BLOCKER");
+
+        console.log(`AI chooses to block with ${bestBlocker.cardData.name} (Power: ${bestBlocker.getPower(false)})`);
+        return {
+            function: 'block',
+            arg: {
+                blocker: bestBlocker,
+                ability: blockerAbility
+            }
+        };
+    }
+
+    /** Function to execute the AI Block
+     * @param {Object} blockDecision - The block decision
+     */
+    executeBlock(blockDecision) {
+        console.log(blockDecision);
+        switch(blockDecision.function) {
+            case 'block':
+                blockDecision.arg.ability.action(blockDecision.arg.blocker, this.match);
+                break;
+            case 'noBlock':
+                this.match.flagManager.handleFlag(this.match.state.current_active_player, 'COUNTER_PHASE_READY');
+                this.match.flagManager.handleFlag(this.match.state.current_passive_player, 'COUNTER_PHASE_READY');
+                break;
+        }
+    }
+
+    //#endregion
 
 }
 

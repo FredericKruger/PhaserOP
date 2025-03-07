@@ -147,6 +147,7 @@ class Client {
         this.socket.on('game_start_blocker_phase', (activePlayer) => {this.gameScene.gameStateManager.startBlockerPhase(activePlayer);});
         this.socket.on('game_start_counter_phase', (activePlayer) => {this.gameScene.gameStateManager.startCounterPhase(activePlayer);});
         this.socket.on('game_attack_blocked', (activePlayer, blockerID) => {this.gameScene.gameStateManager.startAttackBlocked(activePlayer, blockerID);});
+        this.socket.on('game_counter_played', (activePlayer, counterID, characterID) => {this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID);});
 
         /** OPPONENT ACTION LISTENERS */
         this.socket.on('game_stop_targetting', (hideArrow = true) => {
@@ -155,6 +156,9 @@ class Client {
             this.gameScene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
         });
         this.socket.on('game_reset_targets', () => {this.gameScene.targetManager.resetTargetIDs();});
+
+        this.socket.on('game_ability_success', (cardId, abilityId) => {this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, true);});
+        this.socket.on('game_ability_failure', (cardId, abilityId) => {this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, false);});
 
         this.socket.on('game_change_state_active', () => {this.gameScene.gameStateManager.changeGameStateActive();});
 
@@ -225,8 +229,10 @@ class Client {
     requestUpdateTragetingPassivePlayer (relX, relY) {this.socket.emit('player_udpate_targeting_attack_passiveplayer', relX, relY);}
     requestStartBlockerPhase () {this.socket.emit('player_blocker_phase_ready');}
     requestStartBlockerPhasePassivePlayer () {this.socket.emit('player_blocker_phase_ready_passive_player');}
+    requestPlayerAttachCounterToCharacter (counterID, characterID) {this.socket.emit('player_attach_counter_to_character', counterID, characterID);}
 
     requestPassBlockerPhase (passed) {this.socket.emit('player_pass_blocker_phase', passed);}
+    requestPassCounterPhase (passed) {this.socket.emit('player_pass_counter_phase', passed);}
 
     /** ABILITY FUNCTIONS */
     requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}

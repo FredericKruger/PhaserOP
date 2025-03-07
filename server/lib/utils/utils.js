@@ -66,6 +66,7 @@ class Utils {
             const data = await fs.promises.readFile(filepath); //Read the file
             aiDeck = JSON.parse(data.toString()); //Turn file into JSON object
             let randomDeck = Math.floor(Math.random() * aiDeck.length); //Get a random deck
+            randomDeck = 1; //FIXME Forcing to test
             return aiDeck[randomDeck]; //Return the selected deck from the list
         } catch(err) {
             console.log(err);

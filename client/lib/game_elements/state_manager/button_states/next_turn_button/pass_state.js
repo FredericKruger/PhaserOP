@@ -55,7 +55,7 @@ class NextTurnButtonCounterState extends NextTurnButtonState {
             rotation: Math.PI*2,
             duration: 500,
             onComplete: () => {
-                this.button.scene.gameStateManager.passToNextPhase();
+                this.button.scene.gameStateManager.passToNextPhase(GAME_STATES.COUNTER_INTERACTION, true);
             }
         });
     }

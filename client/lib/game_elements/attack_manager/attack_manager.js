@@ -11,8 +11,11 @@ class Attack {
         this.attacker = attacker;
         this.defender = defender;
 
-        this.attacker.state = CARD_STATES.IN_PLAY_ATTACKING;
-        this.defender.state = CARD_STATES.IN_PLAY_DEFENDING;
+        this.attacker.previousState = this.attacker.state;
+        this.defender.previousState = this.defender.state;
+
+        this.attacker.setState(CARD_STATES.IN_PLAY_ATTACKING);
+        this.defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
     }
 
     /** Function to set the defender of the attack
@@ -29,9 +32,10 @@ class Attack {
      * @param {GameCardUI} defender - defender of the attack
      */
     switchDefender(defender) {
-        this.defender.state = CARD_STATES.IN_PLAY;
+        this.defender.setState(this.defender.previousState); //FIXME: This should be EXERTED or else not attackable
         this.defender = defender;
-        this.defender.state = CARD_STATES.IN_PLAY_DEFENDING;
+        this.defender.previousState = this.defender.state;
+        this.defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
     }
 }
 //#endregion

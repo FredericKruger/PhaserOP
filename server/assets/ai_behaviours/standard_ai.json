@@ -4,7 +4,7 @@
         "action": "playCard",
         "type": "CHARACTER",
         "condition": "hasDon",
-        "strategy": "highestPowerFirst",
+        "strategy": "lowestPowerFirst",
         "description": "First priority: Play characters to build board presence"
       },
       {
@@ -34,5 +34,12 @@
         "action": "endTurn",
         "description": "Sixth priority: End turn"
       }
-    ]
+    ],
+    "blockStrategy": {
+      "blockLeader": true,
+      "highCostThreshold": 1,
+      "blockOnlyFavorable": false,
+      "lifeThreshold": 4,
+      "criticalLifeThreshold": 3
+    }
   }

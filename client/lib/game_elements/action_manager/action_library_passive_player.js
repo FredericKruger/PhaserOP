@@ -427,6 +427,39 @@ class ActionLibraryPassivePlayer {
         this.actionManager.addAction(action);
     }
 
+    /** Action to switch defender cards during block
+         * @param {GameCardUI} blockerCard
+         */
+    switchDefenderAction(blockerCard) {
+        let action = new Action();
+        action.start = () => {
+            this.scene.attackManager.attack.switchDefender(card); //Switch the defender
+        };
+
+        //Create anumation to move the targeting arrow toe the defender card
+        let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
+        animation = animation.concat({
+            duration: 10,
+            onComplete: () => {this.scene.actionManager.completeAction();} //Use a callback to send a message he animation is finished and counter can start
+        });
+        animation = this.scene.tweens.chain({
+            targets: this.scene.targetingArrow,
+            tweens: animation
+        }).restart();
+
+        action.start_animation = animation;
+        action.end = () => {
+            this.scene.gameStateManager.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);
+        };
+                
+        action.isPlayerAction = false;
+        action.waitForAnimationToComplete = true;
+        action.name = "SWITCH DEFENDER";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
     //#endregion
 
 //#region DISCARD ACTION
