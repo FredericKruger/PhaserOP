@@ -433,11 +433,11 @@ class ActionLibraryPassivePlayer {
     switchDefenderAction(blockerCard) {
         let action = new Action();
         action.start = () => {
-            this.scene.attackManager.attack.switchDefender(card); //Switch the defender
+            this.scene.attackManager.attack.switchDefender(blockerCard); //Switch the defender
         };
 
         //Create anumation to move the targeting arrow toe the defender card
-        let animation = this.scene.targetingArrow.animateToPosition(card.x, card.y, 0);
+        let animation = this.scene.targetingArrow.animateToPosition(blockerCard.x, blockerCard.y, 0);
         animation = animation.concat({
             duration: 10,
             onComplete: () => {this.scene.actionManager.completeAction();} //Use a callback to send a message he animation is finished and counter can start

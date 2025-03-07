@@ -17,10 +17,10 @@ class TravellingState extends GameCardState {
         let relX = dragX / gameObject.scene.screenWidth;
         let relY = dragY / gameObject.scene.screenHeight;
 
-        if(this.card.scene.gameState === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
+        if(this.card.scene.gameState.name === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
             //Checked if a counter is hovered over a defending character
             const hoveredCard = gameObject.scene.activePlayerScene.counterDraggedOverDefendingCharacter(pointer.position.x, pointer.position.y);
-            if(hoveredCard !== null) {
+           if(hoveredCard !== null) {
                 gameObject.scaleTo(CARD_SCALE.DON_OVER_CHARACTER, true, false, false);
             } else {
                 gameObject.scaleTo(CARD_SCALE.TRAVELLING_FROM_HAND, true, false, false);
@@ -47,7 +47,7 @@ class TravellingState extends GameCardState {
             gameObject.y = gameObject.input.dragStartY;
 
             let sendCardToHand = true;
-            if(this.card.scene.gameState === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
+            if(this.card.scene.gameState.name === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
                 const character = gameObject.scene.activePlayerScene.counterDraggedOverDefendingCharacter(pointer.position.x, pointer.position.y);
                 if(character !== null) {
                     gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
@@ -72,11 +72,16 @@ class TravellingState extends GameCardState {
         if(dropZone.getData('name') === 'CharacterArea') {
             
             //If the character is dropped during the counter interaction state, attach the counter to the character
-            if(this.card.scene.gameState === GAME_STATES.COUNTER_INTERACTION && gameObject.cardData.counter) {
-                const character = gameObject.scene.activePlayerScene.counterDraggedOverDefendingCharacter(pointer.position.x, pointer.position.y);
-                if(character !== null) {
-                    gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
-                } else {
+            if(this.card.scene.gameState.name === GAME_STATES.COUNTER_INTERACTION) {
+                let sendCardToHand = true;
+                if(gameObject.cardData.counter) {
+                    const character = gameObject.scene.activePlayerScene.counterDraggedOverDefendingCharacter(pointer.position.x, pointer.position.y);
+                    if(character !== null) {
+                        gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
+                        sendCardToHand = false;
+                    } 
+                } 
+                if(sendCardToHand) {
                     gameObject.setState(CARD_STATES.IN_HAND);
                     gameObject.playerScene.hand.update();
                 }

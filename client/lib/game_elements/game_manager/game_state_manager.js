@@ -802,8 +802,8 @@ class GameStateManager {
         let counterCard = this.scene.passivePlayerScene.getCard(counterID);
         let characterCard = this.scene.passivePlayerScene.getCard(characterID);
         if(!activePlayer) {
-            counterID = this.scene.activePlayerScene.getCard(counterID);
-            characterID = this.scene.activePlayerScene.getCard(characterID);
+            counterCard = this.scene.activePlayerScene.getCard(counterID);
+            characterCard = this.scene.activePlayerScene.getCard(characterID);
         }
 
         //remove Card from owner hand
@@ -876,7 +876,7 @@ class GameStateManager {
         if(phase === GAME_STATES.BLOCKER_INTERACTION) {
             this.scene.game.gameClient.requestPassBlockerPhase(passed);
         } else if(phase === GAME_STATES.COUNTER_INTERACTION) {
-            this.scene.gameState.gameClient.requestPassCounterPhase(passed);
+            this.scene.game.gameClient.requestPassCounterPhase(passed);
         }
     }
 
