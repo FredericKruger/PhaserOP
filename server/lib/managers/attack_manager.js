@@ -15,6 +15,8 @@ class Attack {
         this.attacker = attacker;
         this.defender = defender;
 
+        this.counterPlayed = false;
+
         this.attacker.state = CARD_STATES.IN_PLAY_ATTACKING;
         this.defender.state = CARD_STATES.IN_PLAY_DEFENDING;
     }
@@ -51,6 +53,7 @@ class AttackManager {
     constructor(matchState, attacker, defender) {
         this.matchState = matchState;
 
+        /** @type {Attack} */
         this.attack = new Attack(this, attacker, defender);
     }
 

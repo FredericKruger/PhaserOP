@@ -147,7 +147,10 @@ class Client {
         this.socket.on('game_start_blocker_phase', (activePlayer) => {this.gameScene.gameStateManager.startBlockerPhase(activePlayer);});
         this.socket.on('game_start_counter_phase', (activePlayer) => {this.gameScene.gameStateManager.startCounterPhase(activePlayer);});
         this.socket.on('game_attack_blocked', (activePlayer, blockerID) => {this.gameScene.gameStateManager.startAttackBlocked(activePlayer, blockerID);});
+        
+        this.socket.on('game_counter_played_failure', (activePlayer, counterID) => {this.gameScene.gameStateManager.startCounterPlayedFailure(activePlayer, counterID);});
         this.socket.on('game_counter_played', (activePlayer, counterID, characterID) => {this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID);});
+
 
         /** OPPONENT ACTION LISTENERS */
         this.socket.on('game_stop_targetting', (hideArrow = true) => {

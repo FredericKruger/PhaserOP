@@ -251,6 +251,10 @@ io.on('connection', function (/** @type {object} */ socket) {
         if(passed) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'COUNTER_PHASE_READY'); //Pass the opponent as no animations required
     });
 
+    socket.on('player_pass_counter_phase', (passed) => {
+        console.log("DONE WITH COUNTER");
+    });
+
     socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(socket.player, cardID, abilityID);});
 
     socket.on('player_start_next_turn', () => {

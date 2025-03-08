@@ -7,6 +7,7 @@ const GAME_CARD_STATES = Object.freeze({
     IN_DISCARD: 'IN_DISCARD',
     ATTACHED: 'ATTACHED',
     IN_ACTION: 'IN_ACTION',
+    TRAVELLING_DURING_COUNTER: 'TRAVELLING_DURING_COUNTER'
 });
 
 class GameCardState {
@@ -49,6 +50,9 @@ class GameCardState {
                 break;
             case GAME_CARD_STATES.IN_DISCARD:
                 this.card.state = new InDiscardState(this.card);
+                break;
+            case GAME_CARD_STATES.TRAVELLING_DURING_COUNTER:
+                newFSMState = new TravellingStateDuringCounter(this.card);
                 break;
             /*case GAME_CARD_STATES.ATTACHED:
                 this.card.state = new AttachedState(this.card);

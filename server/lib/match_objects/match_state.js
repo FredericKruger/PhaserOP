@@ -303,6 +303,22 @@ class MatchState {
 
     //#endregion
 
+    //#region ATTACH COUNTER TO CARD
+    /** Function to attach a counter to a card
+     * @param {MatchPlayer} player - player object
+     * @param {number} counterID - counter card id
+     * @param {number} cardID - card id
+     */
+    attachCounterToCharacter(player, counterID, characterID) {
+        let counterCard = player.inHand.find(card => card.id === counterID);
+        let characterCard = player.inCharacterArea.find(card => card.id === characterID);
+
+        //remove countercard from hand
+        player.removeCardFromHand(counterCard);
+        characterCard.attachedCounter = counterCard;
+    }
+    //#endregion
+
     //#region ATTACH DON FUNCTIONS
     /** Function that handles attaching a don card to a character
      * @param {MatchPlayer} player - player object

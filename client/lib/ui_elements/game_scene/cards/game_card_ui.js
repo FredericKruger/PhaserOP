@@ -217,6 +217,9 @@ class GameCardUI extends BaseCardUI{
             case CARD_STATES.IN_MULLIGAN: 
                 this.fsmState.exit(GAME_CARD_STATES.TRAVELLING);
                 break;
+            case CARD_STATES.TRAVELLING_DURING_COUNTER:
+                this.fsmState.exit(GAME_CARD_STATES.TRAVELLING_DURING_COUNTER);
+                break;
             case CARD_STATES.IN_PLAY:
             case CARD_STATES.IN_PLAY_RESTED:
             case CARD_STATES.IN_PLAY_ATTACKING:
@@ -253,7 +256,6 @@ class GameCardUI extends BaseCardUI{
     updateAttachedDonPosition() {
         for(let don of this.attachedDon) {
             this.scene.children.sendToBack(don);
-            //this.scene.children.moveBelow(don, this);
             don.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);
             don.moveTo(this.x - this.displayWidth/2, this.y, true, false, false);
             don.angleTo(-20, true, false, false);
@@ -268,7 +270,7 @@ class GameCardUI extends BaseCardUI{
         if(this.attachedCounter !== null) {
             this.scene.children.sendToBack(this.attachedCounter);
             this.attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
-            this.attachedCounter.scaleTo(this.x + this.displayWidth/2, this.y, true, false, false);
+            this.attachedCounter.moveTo(this.x + this.displayWidth/2, this.y, true, false, false);
             this.attachedCounter.angleTo(20, true, false, false);
         }
     }
