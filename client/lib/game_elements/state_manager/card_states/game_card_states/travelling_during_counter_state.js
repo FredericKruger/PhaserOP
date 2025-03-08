@@ -53,7 +53,7 @@ class TravellingStateDuringCounter extends GameCardState {
                     gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
                     sendCardToHand = false;
                 }
-            } 
+            }
 
             if(sendCardToHand) {
                 //Reset card state
@@ -79,7 +79,10 @@ class TravellingStateDuringCounter extends GameCardState {
                     gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
                     sendCardToHand = false;
                 } 
-            } 
+            } else if(gameObject.cardData.card === CARD_TYPES.EVENT && gameObject.hasAbility("COUNTER")) {
+                sendCardToHand = false;
+                gameObject.scene.game.gameClient.requestPlayerPlayCard(gameObject.id); 
+            }
             if(sendCardToHand) {
                 gameObject.setState(CARD_STATES.IN_HAND);
                 gameObject.playerScene.hand.update();

@@ -270,8 +270,16 @@ class GameCardUI extends BaseCardUI{
         if(this.attachedCounter !== null) {
             this.scene.children.sendToBack(this.attachedCounter);
             this.attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
-            this.attachedCounter.moveTo(this.x + this.displayWidth/2, this.y, true, false, false);
-            this.attachedCounter.angleTo(20, true, false, false);
+            
+            //this.attachedCounter.moveTo(this.x + this.displayWidth/2, this.y, true, false, false);
+            //this.attachedCounter.angleTo(20, true, false, false);
+            if (this.angle === -90) {
+                this.attachedCounter.moveTo(this.x, this.y - this.displayHeight / 2, true, false, false);
+                this.attachedCounter.angleTo(-70, true, false, false); // Adjust angle accordingly
+            } else {
+                this.attachedCounter.moveTo(this.x + this.displayWidth / 2, this.y, true, false, false);
+                this.attachedCounter.angleTo(20, true, false, false);
+            }
         }
     }
     //#endregion

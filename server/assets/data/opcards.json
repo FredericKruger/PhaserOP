@@ -6504,16 +6504,7 @@
         "power":7000,
         "attribute":"SPECIAL",
         "isleader":0,
-        "rarity":"SUPER RARE",
-        "abilities": [
-            {
-                "id": "ST02-013-1",
-                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
-                "type": "BLOCKER",
-                "phases": ["Main: Block"],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
-            }
-        ]
+        "rarity":"SUPER RARE"
     },    
     {
         "id":396,
@@ -6545,7 +6536,19 @@
         "cost":1,
         "attribute":"",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST02-016-1",
+                "text": "Up to 1 of your Leader or Character cards gains +2000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
+                "type": "COUNTER",
+                "phases": ["Main: Counter"],
+                "actions": [
+                    {"name": "addCounterToDefender", "params": {"amount": 2000}},
+                    {"name": "activateExertedDon", "params": {"amount": 1}}
+                ]
+            }
+        ]
     },    
     {
         "id":398,
@@ -6560,7 +6563,19 @@
         "cost":2,
         "attribute":"",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST02-016-1",
+                "text": "Up to 1 of your Leader or Character cards gains +4000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
+                "type": "COUNTER",
+                "phases": ["Main: Counter"],
+                "actions": [
+                    {"name": "addCounterToDefender", "params": {"amount": 4000}},
+                    {"name": "activateExertedDon", "params": {"amount": 1}}
+                ]
+            }
+        ]
     },    
     {
         "id":399,

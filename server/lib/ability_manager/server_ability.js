@@ -9,6 +9,8 @@ class ServerAbility {
         this.conditions = config.conditions || []; // Array of conditions that must be met
         this.states = config.states || []; // Array of states that must be met
 
+        this.actions = config.actions || []; // Array of actions to execute
+
         // Tracking
         this.usedThisTurn = false;
         this.usedThisGame = false;
@@ -68,12 +70,39 @@ class ServerAbility {
         }
     }
 
+    /** Function to execute the actions 
+     * @param {MatchCard} card
+     * @param {Player} player
+     * @param {Match} match
+    */
+    executeActions(match, player, card) {
+        for (const action of this.actions) {
+            const func = serverAbilityActions[action.name];
+            if (func) {
+                func(match, player, card, action.params);
+            }
+        }
+    }
+
     /** Function to reset the turn variables */
     resetTurn() {
         this.usedThisTurn = false;
     }
 
-    action (card, match) {}
+    action (card, player, match) {
+        this.executeActions(match, player, card);
+    }
 }
+
+const serverAbilityActions = {
+    addCounterToDefender: (match, player, card, params) => {
+        //const defender = gameState.getDefender(params.defenderId);
+        //defender.addCounter();
+    },
+    activateExertedDon: (match, player, card, params) => {
+        //const don = gameState.getExertedDon(params.donId);
+        //don.activate();
+    }
+};
 
 module.exports = ServerAbility;

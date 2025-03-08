@@ -121,6 +121,7 @@ class Client {
 
         /** CARD PLAY */
         this.socket.on('game_play_card_not_enough_don', (actionInfos, activePlayer) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, activePlayer);});
+        this.socket.on('game_play_card_return_to_hand', (actionInfos, activePlayer) => {this.gameScene.gameStateManager.playCardReturnToHand(actionInfos, activePlayer);});
         this.socket.on('game_play_card_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
             if(activePlayer && requiresTargeting) this.gameScene.targetManager.loadFromTargetData(targetData);
 

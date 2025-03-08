@@ -552,6 +552,19 @@ class GameStateManager {
         }
     }
 
+    /** When a card couldnt be played */
+    playCardReturnToHand(actionInfos, isPlayerTurn) {
+        //Get the card
+        let player = this.scene.activePlayerScene;
+        if(!isPLayerTurn) player = this.scene.passivePlayerScene;
+        
+        let card = player.hand.getCard(actionInfos.playedCard);
+        //Change card state to in hand
+        card.setState(CARD_STATES.IN_HAND);
+        card.hideGlow();
+        player.hand.update();
+    }
+
     /** Function to play a card
      * @param {Object} actionInfos - The action infos
      * @param {boolean} isPlayerTurn - If it is the player's turn

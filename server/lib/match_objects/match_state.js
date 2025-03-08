@@ -212,8 +212,6 @@ class MatchState {
 
         if(cardCost>availableActiveDon) return {actionResult: PLAY_CARD_STATES.NOT_ENOUGH_DON, actionInfos: {playedCard: cardId}};
 
-        //FIXME Problems with AI going tinto SELECT_REPLACEMENT_TARGET
-
         let actionInfos = {};
         //If the player has enough resources remove the resources and play the card
         if(card.cardData.card === CARD_TYPES.STAGE) {
@@ -262,8 +260,18 @@ class MatchState {
                 this.resolving_pending_action = true;
                 return this.pending_action;
             }
-        } else if(card.cardData.card === CARD_TYPES.EVENT) { //TODO: Implement event card
-            actionInfos = player.playEvent(cardId, false); //FIXME: Implement play event
+        } else if(card.cardData.card === CARD_TYPES.EVENT) {
+            //test if the event can be played
+            for(let ability of card.abilities) {
+                if(!ability.canActivate(card, this.current_phase)) return {actionResult: PLAY_CARD_STATES.CONDITIONS_NOT_MET, actionInfos: {playedCard: cardId}};
+            }
+
+            actionInfos = player.playEvent(cardId, false);
+
+            for(let ability of card.abilities) {
+                this.match.resolveAbility(player, cardId, ability.id);
+            }
+            
             return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
         }
     }

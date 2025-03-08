@@ -287,6 +287,9 @@ class Match {
         } else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
             if(!player.bot) player.socket.emit('game_play_card_played', result.actionInfos, true, true, result.targetData);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, true, {});
+        } else if(result.actionResult === PLAY_CARD_STATES.CONDITIONS_NOT_MET) {
+            if(!player.bot) player.socket.emit('game_play_card_return_to_hand', result.actionInfos, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_return_to_hand', result.actionInfos, false);
         }
     }
 
@@ -490,7 +493,7 @@ class Match {
         let ability = card.getAbility(abilityId);
 
         if(ability && ability.canActivate(card, this.state.current_phase)) {
-            ability.action(card, this);
+            ability.action(card, player, this);
         } else {
             player.socket.emit('game_ability_failure', cardId, abilityId);
         }
