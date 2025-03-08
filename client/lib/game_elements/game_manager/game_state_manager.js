@@ -556,7 +556,7 @@ class GameStateManager {
     playCardReturnToHand(actionInfos, isPlayerTurn) {
         //Get the card
         let player = this.scene.activePlayerScene;
-        if(!isPLayerTurn) player = this.scene.passivePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
         
         let card = player.hand.getCard(actionInfos.playedCard);
         //Change card state to in hand
