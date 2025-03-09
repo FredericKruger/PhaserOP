@@ -574,6 +574,7 @@ class GameStateManager {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
+        console.log(actionInfos);
         player.playCard(actionInfos, isPlayerTurn, startTargeting);
     }
 

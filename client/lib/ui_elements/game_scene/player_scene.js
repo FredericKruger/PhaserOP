@@ -69,8 +69,8 @@ class PlayerScene {
 
         //Play the card
         if(!startTargeting) {
-            if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds, replacedCard);
-            else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds, replacedCard);
+            if(isPlayerTurn) this.scene.actionLibrary.playCardAction(this, card, actionInfos.spentDonIds, replacedCard, actionInfos.abilityResults);
+            else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds, replacedCard, actionInfos.abilityResults);
         } else {
             if(isPlayerTurn) {
                 this.scene.actionLibrary.startPlayCardTargetingAction(this, card);

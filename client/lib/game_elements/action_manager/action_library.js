@@ -219,7 +219,7 @@ class ActionLibrary {
          *  start: Pay Cost, Remove from hand, add to playarea
          *  end: play exert animation to show card is drying. Send Server a message about card being played
         */
-    playCardAction(playerScene, card, spentDonIds, replacedCard = null) {
+    playCardAction(playerScene, card, spentDonIds, replacedCard = null, abilityInfo = null) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
         let displayY = this.scene.screenCenterY;
 
@@ -269,7 +269,35 @@ class ActionLibrary {
             else if(card.cardData.card === CARD_TYPES.STAGE)
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
         };
-        if(replacedCard === null) action.start_animation = start_animation; //Play animation
+        if(replacedCard === null) action.start_animation = start_animation; //Play animation#
+        action.end = () => {
+            //If the card of an event
+            if(card.cardData.card === CARD_TYPES.EVENT) {
+                console.log("PLAY CARD ACTION: ", card.cardData.card);
+                //execute ability and init ability tweens
+                let abilityTweens = [];
+                for(let ability of card.abilities) {
+                    if(ability.canActivate(card.scene.gameStateUI.phaseText.text)) { //For each ability that can be activated
+                        console.log("Activated");
+                        abilityTweens = abilityTweens.concat(ability.animate(card, abilityInfo)); //Add the ability tween
+                    }
+                }
+
+                //If there are abilities to animate
+                if(abilityTweens.length>0) {
+                    //Add action finalizer call
+                    abilityTweens = abilityTweens.concat({ //concat additional tween to call the completeAction function
+                        duration: 10,
+                        onComplete: () => {this.actionManager.finalizeAction();}
+                    });
+                    //Create tween chain
+                    this.scene.actionManager.currentAction.end_animation = this.scene.tweens.chain({
+                        targets: card,
+                        tweens: abilityTweens
+                    }).pause();
+                }
+            }
+        };
         action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
@@ -281,7 +309,6 @@ class ActionLibrary {
             if(card.cardData.card === CARD_TYPES.CHARACTER) {
                 card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play
             } else if(card.cardData.card === CARD_TYPES.EVENT) {
-                //FIXME Events will be handled differently once first actions are implemented
                 this.scene.actionLibrary.discardCardAction(playerScene, card); //Create a discard Action
             }
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
@@ -461,7 +488,7 @@ class ActionLibrary {
             this.scene.attackManager.attack.switchDefender(blockerCard); //Switch the defender
         };
         //Create anumation to move the targeting arrow toe the defender card
-        let animation = this.scene.targetingArrow.animateToPosition(blockerCard.x, blockerCard.y, 0);
+        let animation = this.scene.targetingArrow.animateToPosition(blockerCard.x, blockerCard.y, 200);
         animation = animation.concat({
             duration: 10,
             onComplete: () => {this.scene.actionManager.finalizeAction();} //Use a callback to send a message he animation is finished and counter can start

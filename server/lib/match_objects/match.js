@@ -491,9 +491,10 @@ class Match {
         let card = this.state.getCard(cardId);
         let ability = card.getAbility(abilityId);
 
-        let abilityResults = null;
+        let abilityResults = {};
         if(ability && ability.canActivate(card, this.state.current_phase)) {
             abilityResults = ability.action(card, player, this);
+            console.log(abilityResults);
         } else {
             player.socket.emit('game_ability_failure', cardId, abilityId);
         }

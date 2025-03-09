@@ -1,3 +1,4 @@
+
 class ServerAbility {
 
     constructor(config) {
@@ -76,13 +77,14 @@ class ServerAbility {
      * @param {Match} match
     */
     executeActions(match, player, card) {
-        let actionResults = [];
+        let actionResults = {};
         for (const action of this.actions) {
             const func = serverAbilityActions[action.name];
             if (func) {
                 actionResults[action.name] = func(match, player, card, action.params);
             }
         }
+        return actionResults;
     }
 
     /** Function to reset the turn variables */
@@ -99,7 +101,7 @@ const serverAbilityActions = {
     addCounterToDefender: (match, player, card, params) => {
         let actionResults = {};
         actionResults.defenderId = -1;
-        actionResults.counterAmout = 0;
+        actionResults.counterAmount = 0;
 
         //find defender
         const counterAmount = params.amount;
@@ -108,18 +110,20 @@ const serverAbilityActions = {
 
         actionResults.defenderId = defender.id;
         actionResults.counterAmount = counterAmount;
+
+        return actionResults;
     },
     activateExertedDon: (match, player, card, params) => {
         let actionResults = {};
-        actionResults.donId = -1;
+        actionResults.donId = [];
 
         const donAmount = params.amount;
         for(let i = 0; i < donAmount; i++) {
             //Find an exerted Don
-            if(player.currentMatchPlayer.inExertenDon.length > 0) {
-                let donCard = player.currentMatchPlayer.inExertenDon.pop();
-                donCard.setState(CARD_STATES.DON_ACTIVE);
-                player.currentMatchPlayer.inActiveDon.push(donCard);
+            if(player.inExertenDon.length > 0) {
+                let donCard = player.inExertenDon.pop();
+                donCard.setState("DON_ACTIVE");
+                player.inActiveDon.push(donCard);
                 actionResults.donId.push(donCard.id);
             } else {
                 return actionResults;

@@ -3,11 +3,13 @@ class TargetingArrow {
     /** Constructor
      * @param {GameScene} scene - The scene this arrow will be displayed in
      */
-    constructor(scene) {
+    constructor(scene, color = COLOR_ENUMS.OP_ORANGE) {
         this.scene = scene;
 
         this.originatorObject = null;
         this.isTargeting = false;
+
+        this.arrowColor = color;
     }
 
     /** Function to create the arrow */
@@ -17,7 +19,7 @@ class TargetingArrow {
     }*/
     create() {
         this.arrowStem = this.scene.add.graphics().setDepth(2);
-        this.arrowHead = this.scene.add.triangle(100, 100, 0, -30, 0, 30, 60, 0, COLOR_ENUMS.OP_ORANGE).setOrigin(0.5, 0.5).setVisible(false).setDepth(2);
+        this.arrowHead = this.scene.add.triangle(100, 100, 0, -30, 0, 30, 60, 0, this.arrowColor).setOrigin(0.5, 0.5).setVisible(false).setDepth(2);
     }
 
     /** Function to draw a dashed curved line
@@ -78,7 +80,7 @@ class TargetingArrow {
         let x1 = this.originatorObject.x;
         let y1 = this.originatorObject.y;
 
-        let { lastStart, lastEnd } = this.drawDashedCurvedLine(this.arrowStem, x1, y1, x2, y2, COLOR_ENUMS.OP_ORANGE, 20); // Adjust the thickness here
+        let { lastStart, lastEnd } = this.drawDashedCurvedLine(this.arrowStem, x1, y1, x2, y2, this.arrowColor, 20); // Adjust the thickness here
 
         if (lastStart && lastEnd) {
             let angle = Math.atan2(lastEnd.y - lastStart.y, lastEnd.x - lastStart.x);

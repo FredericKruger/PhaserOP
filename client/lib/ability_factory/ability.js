@@ -8,6 +8,7 @@ class Ability {
         this.phases = config.phases || []; // When this ability can be triggered
         this.conditions = config.conditions || []; // Array of conditions that must be met
         this.states = config.states || []; // Array of states that must be met
+        this.actions = config.actions || []; // Array of actions to execute
 
         // Tracking
         this.usedThisTurn = false;
@@ -78,6 +79,20 @@ class Ability {
         this.usedThisTurn = false;
     }
 
+    executeActions(card, abilityInfo) {
+        let abilityTweens = [];
+        for (const action of this.actions) {
+            const func = abilityActions[action.name];
+            if (func) {
+                console.log("Executing Action: ", action.name);
+                abilityTweens = abilityTweens.concat(func(card, abilityInfo[action.name]));
+                console.log(abilityTweens);
+            }
+        }
+
+        return abilityTweens;
+    }
+
     /** Function to handle the trigger of the action button */
     trigger() {this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);}
 
@@ -85,4 +100,53 @@ class Ability {
     action() {}
     onFail() {}
 
+    animate(card, abilityInfo) {
+        console.log("Animating Ability: ", this.id);
+        return this.executeActions(card, abilityInfo);
+    }
+
 }
+
+const abilityActions = {
+    /** Function to add Counter to Defender
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    addCounterToDefender: (card, info) => {
+        console.log(info);
+        //Get Defender Card
+        const defender = card.scene.attackManager.attack.defender;
+        card.scene.eventArrow.originatorObject = card;
+        let arrowTweens = card.scene.eventArrow.animateToPosition(defender.x, defender.y, 600);
+        let tweens = [
+            {
+                onStart: () => { //Add Tween for target arrow
+                    this.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                },
+                delay: 100,
+            }
+        ];
+        tweens = tweens.concat(arrowTweens);
+        tweens = tweens.concat([{
+                onStart: () => { //Add Tween for target arrow
+                    defender.eventCounterPower = info.counterAmount;
+                },
+                targets: defender.locationPowerText,
+                scale: {from: 1, to: 1.2},
+                duration: 400,
+                yoyo: true,
+                onComplete: () => {
+                    card.scene.eventArrow.stopTargeting();
+                }
+            }
+        ]);
+
+        return tweens;  
+    },
+    activateExertedDon: (card, info) => {
+        console.log(info);
+        let tweens = [];
+        return tweens; 
+    }
+};

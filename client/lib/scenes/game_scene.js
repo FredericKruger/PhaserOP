@@ -45,6 +45,7 @@ class GameScene extends Phaser.Scene {
 
         //Ready the targetting arrow
         this.targetingArrow = new TargetingArrow(this);
+        this.eventArrow = new TargetingArrow(this, COLOR_ENUMS.OP_BLUE);
 
         this.gameState = new NoInteractionState(this);
     }
@@ -96,6 +97,7 @@ class GameScene extends Phaser.Scene {
         this.passivePlayerScene.create();
         this.gameStateUI.create();
         this.targetingArrow.create();
+        this.eventArrow.create();
 
         //Create mask Panel
         this.maskPanel = this.add.rectangle(

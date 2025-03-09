@@ -272,6 +272,7 @@ class MatchState {
             for(let ability of card.abilities) {
                 abilityResults = this.match.resolveAbility(player, cardId, ability.id);
             }
+            console.log(abilityResults);
             actionInfos.abilityResults = abilityResults;
 
             return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
