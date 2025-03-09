@@ -64,7 +64,8 @@ const COLOR_ENUMS_CSS = Object.freeze({
     OP_WHITE: "#ffffff",
     OP_BLACK: "#000000",
     OP_BLUE: "#002060",
-    OP_RED: "#80350E"
+    OP_RED: "#80350E",
+    OP_GREEN: "#019E79",
 });
 
 const ERROR_CODES = Object.freeze({

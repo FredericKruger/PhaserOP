@@ -76,10 +76,11 @@ class ServerAbility {
      * @param {Match} match
     */
     executeActions(match, player, card) {
+        let actionResults = [];
         for (const action of this.actions) {
             const func = serverAbilityActions[action.name];
             if (func) {
-                func(match, player, card, action.params);
+                actionResults[action.name] = func(match, player, card, action.params);
             }
         }
     }
@@ -90,18 +91,41 @@ class ServerAbility {
     }
 
     action (card, player, match) {
-        this.executeActions(match, player, card);
+        return this.executeActions(match, player, card);
     }
 }
 
 const serverAbilityActions = {
     addCounterToDefender: (match, player, card, params) => {
-        //const defender = gameState.getDefender(params.defenderId);
-        //defender.addCounter();
+        let actionResults = {};
+        actionResults.defenderId = -1;
+        actionResults.counterAmout = 0;
+
+        //find defender
+        const counterAmount = params.amount;
+        const defender = match.attackManager.attack.defender;
+        defender.eventCounterAmount = counterAmount;
+
+        actionResults.defenderId = defender.id;
+        actionResults.counterAmount = counterAmount;
     },
     activateExertedDon: (match, player, card, params) => {
-        //const don = gameState.getExertedDon(params.donId);
-        //don.activate();
+        let actionResults = {};
+        actionResults.donId = -1;
+
+        const donAmount = params.amount;
+        for(let i = 0; i < donAmount; i++) {
+            //Find an exerted Don
+            if(player.currentMatchPlayer.inExertenDon.length > 0) {
+                let donCard = player.currentMatchPlayer.inExertenDon.pop();
+                donCard.setState(CARD_STATES.DON_ACTIVE);
+                player.currentMatchPlayer.inActiveDon.push(donCard);
+                actionResults.donId.push(donCard.id);
+            } else {
+                return actionResults;
+            }
+        }   
+        return actionResults;
     }
 };
 

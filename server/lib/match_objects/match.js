@@ -402,7 +402,6 @@ class Match {
         if(this.state.current_passive_player.currentMatchPlayer.hasAvailableBlockers(this.state.current_phase)) {
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
 
-            console.log(this.state.current_passive_player.bot);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
             else this.ai.startBlockPhase();
         } else { //If no blockers skip the counter
@@ -492,11 +491,13 @@ class Match {
         let card = this.state.getCard(cardId);
         let ability = card.getAbility(abilityId);
 
+        let abilityResults = null;
         if(ability && ability.canActivate(card, this.state.current_phase)) {
-            ability.action(card, player, this);
+            abilityResults = ability.action(card, player, this);
         } else {
             player.socket.emit('game_ability_failure', cardId, abilityId);
         }
+        return abilityResults;
     }
 
     //#region UTILS

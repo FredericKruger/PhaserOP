@@ -250,6 +250,10 @@ class GameCardUI extends BaseCardUI{
             if(this.attachedCounter !== null) currentPower += this.attachedCounter.cardData.counter;
         }
         this.locationPowerText.setText(currentPower);
+
+        if(currentPower > this.cardData.power) this.locationPowerText.setColor(COLOR_ENUMS_CSS.OP_GREEN);
+        else if(currentPower < this.cardData.power) this.locationPowerText.setColor(COLOR_ENUMS_CSS.OP_RED);
+        else this.locationPowerText.setColor(COLOR_ENUMS_CSS.OP_WHITE);
     }
 
     /** Function to reposition all the attached don cards */
@@ -274,7 +278,7 @@ class GameCardUI extends BaseCardUI{
             //this.attachedCounter.moveTo(this.x + this.displayWidth/2, this.y, true, false, false);
             //this.attachedCounter.angleTo(20, true, false, false);
             if (this.angle === -90) {
-                this.attachedCounter.moveTo(this.x, this.y - this.displayHeight / 2, true, false, false);
+                this.attachedCounter.moveTo(this.x, this.y - this.displayWidth / 2, true, false, false);
                 this.attachedCounter.angleTo(-70, true, false, false); // Adjust angle accordingly
             } else {
                 this.attachedCounter.moveTo(this.x + this.displayWidth / 2, this.y, true, false, false);
@@ -345,6 +349,16 @@ class GameCardUI extends BaseCardUI{
             if(ability.id === abilityId) return ability;
         }
         return null;
+    }
+
+    /** Function to test if any ability can be activates
+     * @returns {boolean}
+     */
+    canActivateAbilities() {
+        for(let ability of this.abilities) 
+            if(ability.canActivate(this, this.scene.gameState.name)) return true;
+
+        return false;
     }
     //#endregion
     

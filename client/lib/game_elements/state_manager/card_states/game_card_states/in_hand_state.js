@@ -51,7 +51,10 @@ class InHandState extends GameCardState {
     update() {
         switch(this.card.scene.gameState.name) {
             case GAME_STATES.ACTIVE_INTERACTION:
-                if(this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
+                if(this.card.cardData.card === CARD_TYPES.CHARACTER && this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
+                else if(this.card.cardData.card === CARD_TYPES.STAGE && this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
+                else if(this.card.cardData.card === CARD_TYPES.EVENT && this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards() 
+                    && this.card.canActivateAbilities()) this.card.showGlow(COLOR_ENUMS.OP_ORANGE);
                 else this.card.hideGlow();
                 break;
             case GAME_STATES.COUNTER_INTERACTION:

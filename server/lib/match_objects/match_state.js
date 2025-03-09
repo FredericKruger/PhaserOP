@@ -266,12 +266,14 @@ class MatchState {
                 if(!ability.canActivate(card, this.current_phase)) return {actionResult: PLAY_CARD_STATES.CONDITIONS_NOT_MET, actionInfos: {playedCard: cardId}};
             }
 
+            //Gather ability infos for the client
             actionInfos = player.playEvent(cardId, false);
-
+            let abilityResults = null;
             for(let ability of card.abilities) {
-                this.match.resolveAbility(player, cardId, ability.id);
+                abilityResults = this.match.resolveAbility(player, cardId, ability.id);
             }
-            
+            actionInfos.abilityResults = abilityResults;
+
             return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
         }
     }

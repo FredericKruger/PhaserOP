@@ -59,6 +59,7 @@ class MatchCard extends Card{
         this.abilities = ServerAbilityFactory.createAbilitiesForCard(this.cardData.abilities);;
         this.attachedDon = [];
         this.attachedCounter = null;
+        this.eventCounterAmount = 0;
 
         this.state = CARD_STATES.IN_DECK;
 
@@ -82,6 +83,11 @@ class MatchCard extends Card{
     getPower(activeTurn) {
         let power = this.currentPower;
         if(activeTurn) power += this.attachedDon.length * 1000;
+        
+        if(!activeTurn) {
+            if(this.attachedCounter) power += this.attachedCounter.cardData.counter;
+            power += this.eventCounterAmount;
+        }
 
         return power;
     }
