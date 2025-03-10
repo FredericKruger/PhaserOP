@@ -80,7 +80,7 @@ class TargetingManager {
         let isValid = true;
 
         // Check if the card belongs to a specific player
-        if (this.target.player.length > 0) isValid = isValid && this.isPlayerValid(playerCard);
+        if (this.target.player.length > 0) isValid = isValid && this.isPlayerValid(card, playerCard);
   
         // Check card type
         if (this.target.cardtypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
@@ -102,13 +102,27 @@ class TargetingManager {
 
     /**
      * Check if the card belongs to a valid player
+     * @param {MatchCard} card
      * @param {boolean} playerCard - The player scene to check
      * @returns {boolean} - Whether the player is valid
      */
-    isPlayerValid(playerCard) {
+    isPlayerValid(card, playerCard) {
         // If players array includes "any", any player is valid
         if (this.target.player.includes("any")) {
             return true;
+        }
+
+        const originatorCard = this.match.state.pending_action.actionInfos.playedCardData;
+        // Check for "owner" in the players array which requires special handling
+        if (this.target.player.includes("owner")) {
+            // If this is checking the player's own cards, it's valid
+            // This assumes playerScene.isPlayer property indicates if this is the human player
+            return card.owner === originatorCard.owner;
+        }
+        
+        if (this.target.player.includes("opponent")) {
+            // If this is checking the opponent's cards, it's valid
+            return card.owner !== originatorCard.owner;
         }
 
         // Check if the player is active or passive based on the criteria

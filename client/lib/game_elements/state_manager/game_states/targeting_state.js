@@ -1,8 +1,8 @@
 class TargetingState extends GameState {
 
-    constructor(scene) {
-        super(scene, GAME_STATES.TARGETING);
-    }
+    constructor(scene, previousState) {
+        super(scene, GAME_STATES.TARGETING, previousState);
+    } 
 
     enter() {
         super.enter();
@@ -40,6 +40,13 @@ class TargetingState extends GameState {
             }
         }
 
+        if(this.scene.eventArrow.isTargeting) {
+            let posX = this.scene.input.mousePointer.x;
+            let posY = this.scene.input.mousePointer.y;
+
+            this.scene.eventArrow.update(posX, posY);
+        }
+
         //Update all cards in the hand to reflect if they can take an action
         for(let card of this.scene.activePlayerScene.characterArea.cards) card.fsmState.isValidTarget();
         for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.fsmState.isValidTarget();
@@ -58,7 +65,7 @@ class TargetingState extends GameState {
     }
 
     exit(newState) {
-        this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
+        this.scene.gameStateUI.nextTurnbutton.fsmState.exit(this.scene.gameStateUI.nextTurnbutton.fsmState.previousState);
         super.exit(newState); 
     }
 }

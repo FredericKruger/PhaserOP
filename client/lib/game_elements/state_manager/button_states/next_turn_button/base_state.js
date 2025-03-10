@@ -16,10 +16,12 @@ class NextTurnButtonState {
     /** Constructor
      * @param {NextTurnButton} button - The card that the state is in
      * @param {string} name - The name of the state
+     * @param {string} previousState - The previous state
      */
-    constructor(button, name) {
+    constructor(button, name, previousState) {
         this.button = button;
         this.name = name;
+        this.previousState = previousState;
 
         this.enter();
     }
@@ -34,34 +36,34 @@ class NextTurnButtonState {
         let newFSMState = null;
         switch (newState) {
             case NEXT_TURN_BUTTON_FSM_STATES.INIT:
-                newFSMState = new NextTurnButtonInitState(this.button);
+                newFSMState = new NextTurnButtonInitState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.ACTIVE:
-                newFSMState = new NextTurnButtonActiveState(this.button);
+                newFSMState = new NextTurnButtonActiveState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.PASSIVE:
-                newFSMState = new NextTurnButtonPassiveState(this.button);
+                newFSMState = new NextTurnButtonPassiveState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.CANCEL:
-                newFSMState = new NextTurnButtonCancelState(this.button);
+                newFSMState = new NextTurnButtonCancelState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.PASS:
-                newFSMState = new NextTurnButtonPassState(this.button);
+                newFSMState = new NextTurnButtonPassState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.BLOCK:
-                newFSMState = new NextTurnButtonBlockState(this.button);
+                newFSMState = new NextTurnButtonBlockState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.COUNTER:
-                newFSMState = new NextTurnButtonCounterState(this.button);
+                newFSMState = new NextTurnButtonCounterState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN:
-                newFSMState = new NextTurnButtonOpponentTurnState(this.button);
+                newFSMState = new NextTurnButtonOpponentTurnState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_BLOCK:
-                newFSMState = new NextTurnButtonOpponentBlockState(this.button);
+                newFSMState = new NextTurnButtonOpponentBlockState(this.button, this.name);
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_COUNTER:
-                newFSMState = new NextTurnButtonOpponentCounterState(this.button);
+                newFSMState = new NextTurnButtonOpponentCounterState(this.button, this.name);
                 break;
             default:
                 newFSMState = null;

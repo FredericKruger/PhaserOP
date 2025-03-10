@@ -290,6 +290,8 @@ class Match {
         } else if(result.actionResult === PLAY_CARD_STATES.CONDITIONS_NOT_MET) {
             if(!player.bot) player.socket.emit('game_play_card_return_to_hand', result.actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_return_to_hand', result.actionInfos, false);
+        } else if(result.actionResult === PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED) {
+            if(!player.bot) player.socket.emit('game_play_card_played', result.actionInfos, true, true, result.targetData);
         }
     }
 
@@ -308,7 +310,7 @@ class Match {
             if(!player.bot) {
                 player.socket.emit('game_stop_targetting');
                 player.socket.emit('game_play_card_played', result.actionInfos, true, false, {});
-                player.socket.emit('game_change_state_active');
+                //player.socket.emit('game_change_state_active');
             }
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
         } else {
@@ -451,6 +453,34 @@ class Match {
     }
     //#endregion
 
+    //#region EVENT FUNCTIONS
+
+    /** Function that handles playing a card and replacing an old one
+         * @param {Player} player
+         * @param {number} cardID
+         * @param {Array<number>} replacementTargets
+         */
+    startResolveEvent(player, cardID, replacementTargets=[]) {
+        if(replacementTargets.length === 0) return;
+
+        let validTarget = this.targetingManager.areValidTargets(player, replacementTargets, this.state.pending_action.targetData);
+        console.log(validTarget);
+        if(validTarget) {
+            let result = this.state.playEventCard(player.currentMatchPlayer, cardID, replacementTargets[0]);
+
+            if(!player.bot) {
+                player.socket.emit('game_stop_targetting', true, true);
+                player.socket.emit('game_play_card_played', result.actionInfos, true, false, {});
+                //player.socket.emit('game_change_state_active');
+            }
+            //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
+        } else {
+            player.socket.emit('game_reset_targets');
+        }
+    }
+        
+    //#endregion
+
     //#region RESOLVE ACTION FUNCTION
     /** Function to revolve the current pending action. Big switch that will redirect to the approriate function 
      * @param {Player} player
@@ -459,6 +489,14 @@ class Match {
     */
     resolvePendingAction(player, cancel = false, targets = []) {
         switch (this.state.pending_action.actionResult) {
+            case PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED:
+                if(cancel) {
+                    let cardID = this.state.cancelPlayCard(player.currentMatchPlayer);
+                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
+                } else {
+                    this.startResolveEvent(player, this.state.pending_action.actionInfos.playedCard, targets);
+                }
+                break;
             case PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET:
                 if(cancel) {
                     let cardID = this.state.cancelPlayCard(player.currentMatchPlayer);
@@ -486,15 +524,15 @@ class Match {
      * @param {Player} player
      * @param {number} cardId
      * @param {string} abilityId
+     * @param {Array<number>} targets
      */
-    resolveAbility(player, cardId, abilityId) {
+    resolveAbility(player, cardId, abilityId, targets) {
         let card = this.state.getCard(cardId);
         let ability = card.getAbility(abilityId);
 
         let abilityResults = {};
         if(ability && ability.canActivate(card, this.state.current_phase)) {
-            abilityResults = ability.action(card, player, this);
-            console.log(abilityResults);
+            abilityResults = ability.action(card, player, this, targets);
         } else {
             player.socket.emit('game_ability_failure', cardId, abilityId);
         }

@@ -170,12 +170,12 @@ class ServerInstance {
         let playerDeck = player.decklist[player.selectedDeck];
 
         //Fill the deck from the JSON decklist provided
-        match.lastCardID = match.state.player1.deck.fromJSON(playerDeck, this.cardIndex, match.lastCardID, match);
-        match.lastCardID = match.state.player2.deck.fromJSON(aiDeck, this.cardIndex, match.lastCardID, match);
+        match.lastCardID = match.state.player1.deck.fromJSON(playerDeck, this.cardIndex, match.lastCardID, match, player.playerReference);
+        match.lastCardID = match.state.player2.deck.fromJSON(aiDeck, this.cardIndex, match.lastCardID, match, bot.playerReference);
 
         //Fill the don deck
-        match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID);
-        match.lastCardID = match.state.player2.fillDonDeck(10, match.lastCardID);
+        match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID, player.playerReference);
+        match.lastCardID = match.state.player2.fillDonDeck(10, match.lastCardID, bot.playerReference);
 
         //Shuffle the decks
         match.state.player1.deck.shuffle();
@@ -223,12 +223,12 @@ class ServerInstance {
         let player2Deck = player2.decklist[player2.selectedDeck];
 
         //Fill the deck from the JSON decklist provided
-        match.lastCardID = match.state.player1.deck.fromJSON(player1Deck, this.cardIndex, match.lastCardID, match);
-        match.lastCardID = match.state.player2.deck.fromJSON(player2Deck, this.cardIndex, match.lastCardID, match);
+        match.lastCardID = match.state.player1.deck.fromJSON(player1Deck, this.cardIndex, match.lastCardID, match, player1.playerReference);
+        match.lastCardID = match.state.player2.deck.fromJSON(player2Deck, this.cardIndex, match.lastCardID, match, player2.playerReference);
 
         //Fill the don deck
-        match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID);
-        match.lastCardID = match.state.player2.fillDonDeck(10, match.lastCardID);
+        match.lastCardID = match.state.player1.fillDonDeck(10, match.lastCardID, player1.playerReference);
+        match.lastCardID = match.state.player2.fillDonDeck(10, match.lastCardID, player2.playerReference);
 
         //Shuffle the decks
 

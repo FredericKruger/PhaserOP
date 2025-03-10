@@ -87,7 +87,6 @@ class Ability {
             const func = abilityActions[action.name];
             if (func) {
                 abilityTweens = abilityTweens.concat(func(card, abilityInfo[action.name]));
-                console.log(abilityTweens);
             }
         }
 
@@ -113,33 +112,21 @@ const abilityActions = {
      * @param {Object} info
      * @returns {Object}
      */
-    addCounterToDefender: (card, info) => {
+    addCounterToCard: (card, info) => {
         //Get Defender Card
-        let defender = card.scene.attackManager.attack.defender;
-        card.scene.eventArrow.originatorObject = card;
-        let arrowTweens = card.scene.eventArrow.animateToPosition(defender.x, defender.y, 600);
-        let tweens = [
-            {
-                onStart: () => { //Add Tween for target arrow
-                    this.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
-                },
-                delay: 100,
-            }
-        ];
-        tweens = tweens.concat(arrowTweens);
-        tweens = tweens.concat([{
+        let defender = card.scene.activePlayerScene.getCard(info.defenderId);
+        if(defender === null) defender = card.scene.passivePlayerScene.getCard(info.defenderId);
+ 
+        let tweens = [{
                 onStart: () => { //Add Tween for target arrow
                     defender.eventCounterPower = info.counterAmount;
                 },
                 targets: defender.locationPowerText,
                 scale: {from: 1, to: 1.2},
                 duration: 400,
-                yoyo: true,
-                onComplete: () => {
-                    card.scene.eventArrow.stopTargeting();
-                }
+                yoyo: true
             }
-        ]);
+        ];
 
         return tweens;  
     },

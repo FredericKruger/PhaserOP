@@ -2,9 +2,10 @@ class ActiveInteractionState extends GameState {
 
     /** Constructor
      * @param {GameScene} scene - The scene that the game state is in
+     * @param {string} previousState - The previous game state
      */
-    constructor(scene) {
-        super(scene, GAME_STATES.ACTIVE_INTERACTION);
+    constructor(scene, previousState) {
+        super(scene, GAME_STATES.ACTIVE_INTERACTION, previousState);
     }
 
     onPointerOver(pointer, gameObject) {

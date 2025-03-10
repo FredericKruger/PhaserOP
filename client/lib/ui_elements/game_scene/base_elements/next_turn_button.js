@@ -18,7 +18,7 @@ class NextTurnButton extends Phaser.GameObjects.Container {
 
         this.scene = scene;
 
-        this.fsmState = new NextTurnButtonInitState(this);
+        this.fsmState = new NextTurnButtonInitState(this, null);
 
         this.backGround = this.scene.add.image(0, 0, ASSET_ENUMS.GAME_NEXT_TURN_IMAGE).setOrigin(0.5).setScale(0.35);
         this.buttonText = this.scene.add.text(0, 15, '', 

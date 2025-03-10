@@ -1,14 +1,14 @@
 class NextTurnButtonPassState extends NextTurnButtonState {
 
-    constructor(button) {
-        super(button, NEXT_TURN_BUTTON_FSM_STATES.PASS);
+    constructor(button, previousState) {
+        super(button, NEXT_TURN_BUTTON_FSM_STATES.PASS, previousState);
     }
 }
 
 class NextTurnButtonBlockState extends NextTurnButtonState {
 
-    constructor(button) {
-        super(button, NEXT_TURN_BUTTON_FSM_STATES.BLOCK);
+    constructor(button, previousState) {
+        super(button, NEXT_TURN_BUTTON_FSM_STATES.BLOCK, previousState);
     }
 
     enter() {
@@ -35,8 +35,8 @@ class NextTurnButtonBlockState extends NextTurnButtonState {
 
 class NextTurnButtonCounterState extends NextTurnButtonState {
 
-    constructor(button) {
-        super(button, NEXT_TURN_BUTTON_FSM_STATES.COUNTER);
+    constructor(button, previousState) {
+        super(button, NEXT_TURN_BUTTON_FSM_STATES.COUNTER, previousState);
     }
 
     enter() {

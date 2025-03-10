@@ -11,6 +11,8 @@ class Bot {
         this.id = serverInstance.lastBotID++;
         /** @type {string} */
         this.name = "BOT" + this.id.toString();
+        /** @type {string} */
+        this.playerReference = "B" + this.id.toString();
         
         /** @type {boolean} */
         this.inMatch = false;

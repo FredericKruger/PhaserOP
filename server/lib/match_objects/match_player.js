@@ -57,8 +57,10 @@ class MatchPlayer {
 
     /** Function that fills the Don Deck at setup 
      * @param {number} amount - amount of cards to be added to deck
+     * @param {number} startID - starting ID for the cards
+     * @param {string} player - player object
     */
-    fillDonDeck(amount, startID) {
+    fillDonDeck(amount, startID, player) {
         for(let i=0; i<amount; i++) {
             this.inDon.push(new MatchDonCard(startID));
             startID++;

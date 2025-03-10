@@ -9,6 +9,8 @@ class GameStateUI {
         this.scene = scene;
         this.gameStateManager = gameStateManager;
 
+        this.phase = "";
+
         //Mulligan UI
         this.mulliganUI = new MulliganUI(scene);
 
@@ -80,6 +82,7 @@ class GameStateUI {
      * @param {string} phase
      */
     udpatePhase(phase) {
+        this.phase = phase;
         this.phaseText.setText(phase);
     }
 

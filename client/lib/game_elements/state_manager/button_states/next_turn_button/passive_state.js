@@ -1,7 +1,7 @@
 class NextTurnButtonPassiveState extends NextTurnButtonState {
 
-    constructor(button) {
-        super(button, NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
+    constructor(button, previousState) {
+        super(button, NEXT_TURN_BUTTON_FSM_STATES.PASSIVE, previousState);
     }
 
     enter() {

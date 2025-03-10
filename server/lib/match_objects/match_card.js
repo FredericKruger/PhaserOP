@@ -28,8 +28,9 @@ class Card {
     /** Constructor
      * @param {number} id - card id
      */
-    constructor(id) {
+    constructor(id, owner) {
         this.id = id;
+        this.owner = owner;
         
         this.state = CARD_STATES.READY;
     }
@@ -50,8 +51,8 @@ class MatchCard extends Card{
      * @param {Object} cardData 
      * @param {Match} match
      */
-    constructor(cardIndex, id, cardData, match) {
-        super(id);
+    constructor(cardIndex, id, cardData, match, owner) {
+        super(id, owner);
 
         this.cardIndex = cardIndex;
         this.cardData = cardData;
@@ -80,8 +81,13 @@ class MatchCard extends Card{
         return this.abilities.find(ability => ability.type === type);
     }
 
+    /** Function that returns all the targets for the abilities */
     getAbilityTargets() {
-        
+        let targets = null; //FIXME May need several target object
+        for(let ability of this.abilities) {
+            if(ability.target) targets = ability.target;
+        }
+        return targets;
     }
 
     getPower(activeTurn) {
@@ -101,8 +107,8 @@ class MatchCard extends Card{
 /**Don Card Class */
 class MatchDonCard extends Card{
 
-    constructor(id) {
-        super(id);
+    constructor(id, owner) {
+        super(id, owner);
 
         this.state = CARD_STATES.IN_DON_DECK
     }

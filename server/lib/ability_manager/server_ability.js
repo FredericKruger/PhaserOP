@@ -78,12 +78,12 @@ class ServerAbility {
      * @param {Player} player
      * @param {Match} match
     */
-    executeActions(match, player, card) {
+    executeActions(match, player, card, targets) {
         let actionResults = {};
         for (const action of this.actions) {
             const func = serverAbilityActions[action.name];
             if (func) {
-                actionResults[action.name] = func(match, player, card, action.params);
+                actionResults[action.name] = func(match, player, card, action.params, targets);
             }
         }
         return actionResults;
@@ -94,20 +94,20 @@ class ServerAbility {
         this.usedThisTurn = false;
     }
 
-    action (card, player, match) {
-        return this.executeActions(match, player, card);
+    action (card, player, match, targets) {
+        return this.executeActions(match, player, card, targets);
     }
 }
 
 const serverAbilityActions = {
-    addCounterToDefender: (match, player, card, params) => {
+    addCounterToCard: (match, player, card, params, targets) => {
         let actionResults = {};
         actionResults.defenderId = -1;
         actionResults.counterAmount = 0;
 
         //find defender
         const counterAmount = params.amount;
-        const defender = match.attackManager.attack.defender;
+        const defender = match.state.getCard(targets);
         defender.eventCounterAmount = counterAmount;
 
         actionResults.defenderId = defender.id;
@@ -130,7 +130,7 @@ const serverAbilityActions = {
             } else {
                 return actionResults;
             }
-        }   
+        }
         return actionResults;
     }
 };

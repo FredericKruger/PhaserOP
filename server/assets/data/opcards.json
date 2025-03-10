@@ -6537,7 +6537,7 @@
                     ]
                 },
                 "actions": [
-                    {"name": "addCounterToDefender", "params": {"amount": 2000}},
+                    {"name": "addCounterToCard", "params": {"amount": 2000}},
                     {"name": "activateExertedDon", "params": {"amount": 1}}
                 ]
             }
@@ -6575,7 +6575,7 @@
                     ]
                 },
                 "actions": [
-                    {"name": "addCounterToDefender", "params": {"amount": 4000}},
+                    {"name": "addCounterToCard", "params": {"amount": 4000}},
                     {"name": "activateExertedDon", "params": {"amount": 1}}
                 ]
             }

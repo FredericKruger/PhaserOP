@@ -268,15 +268,24 @@ class MatchState {
 
             //If the ability needs targeting
             let targets = card.getAbilityTargets();
-            //Gather ability infos for the client
-            actionInfos = player.playEvent(cardId, false);
-            let abilityResults = null;
-            for(let ability of card.abilities) {
-                abilityResults = this.match.resolveAbility(player, cardId, ability.id);
-            }
-            actionInfos.abilityResults = abilityResults;
+            if(targets !== null) {
+                console.log("TARGETING REQUIRED FOR THIS CARD");
+                let cardData = player.getCardFromHand(cardId);
+                actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
+                this.pending_action = {actionResult: PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED, actionInfos: actionInfos, targetData: targets};
+                this.resolving_pending_action = true;
+                return this.pending_action;
+            } else {
+                //Gather ability infos for the client
+                actionInfos = player.playEvent(cardId, false);
+                let abilityResults = null;
+                for(let ability of card.abilities) {
+                    abilityResults = this.match.resolveAbility(player, cardId, ability.id);
+                }
+                actionInfos.abilityResults = abilityResults;
 
-            return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
+                return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
+            }
         }
     }
 
@@ -297,6 +306,27 @@ class MatchState {
 
         //Once action complete reset the pending action
         this.cancelPlayCard(player);
+
+        return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
+    }
+
+    /**Function to replace and play a card
+     * @param {MatchPlayer} player - player object
+     * @param {number} cardID - card id
+     * @param {Array<number>} targets - list of card ids to be targetted
+     */
+    playEventCard(player, cardID, targets) {
+        let card = player.inHand.find(card => card.id === cardID);
+
+        //Gather ability infos for the client
+        let actionInfos = player.playEvent(cardID);
+        actionInfos.eventTargeting = true; //to tell the server that the targeting was used
+
+        let abilityResults = null;
+        for(let ability of card.abilities) {
+            abilityResults = this.match.resolveAbility(player, cardID, ability.id, targets);
+        }
+        actionInfos.abilityResults = abilityResults;
 
         return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
     }

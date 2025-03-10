@@ -13,11 +13,14 @@ class GameState {
     /** Constructor
      * @param {GameScene} scene - The scene that the game state is in
      * @param {string} name - The name of the game state
+     * @param {string} previousState - The previous game state
      */
-    constructor(scene, name) {
+    constructor(scene, name, previousState) {
         this.scene = scene;
         this.name = name;
-        
+
+        this.previousState = previousState;
+
         this.enter();
     }
 
@@ -32,25 +35,25 @@ class GameState {
     exit(newState) {
         switch(newState) {
             case GAME_STATES.NO_INTERACTION:
-                this.scene.gameState = new NoInteractionState(this.scene);
+                this.scene.gameState = new NoInteractionState(this.scene, this.scene.gameState.name);
                 break;
             case GAME_STATES.ACTIVE_INTERACTION:
-                this.scene.gameState = new ActiveInteractionState(this.scene);
+                this.scene.gameState = new ActiveInteractionState(this.scene, this.scene.gameState.name);
                 break;
             case GAME_STATES.PASSIVE_INTERACTION:
-                this.scene.gameState = new PassiveInteractionState(this.scene);
+                this.scene.gameState = new PassiveInteractionState(this.scene, this.scene.gameState.name);
                 break;
             case GAME_STATES.TARGETING:
-                this.scene.gameState = new TargetingState(this.scene);
+                this.scene.gameState = new TargetingState(this.scene, this.scene.gameState.name);
                 break;
             case GAME_STATES.DRAGGING:
-                this.scene.gameState = new DraggingState(this.scene);
+                this.scene.gameState = new DraggingState(this.scene, this.scene.gameState.name);
                 break;
             case GAME_STATES.BLOCKER_INTERACTION:
-                this.scene.gameState = new BlockerInteractionState(this.scene);
+                this.scene.gameState = new BlockerInteractionState(this.scene, this.scene.gameState.name);
                 break;
             case GAME_STATES.COUNTER_INTERACTION:
-                this.scene.gameState = new CounterInteractionState(this.scene);
+                this.scene.gameState = new CounterInteractionState(this.scene, this.scene.gameState.name);
                 break;
             default:
                 break;

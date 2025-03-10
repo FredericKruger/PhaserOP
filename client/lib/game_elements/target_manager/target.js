@@ -33,7 +33,7 @@ class Target {
         let isValid = true;
 
         // Check if the card belongs to a specific player
-        if (this.players.length > 0) isValid = isValid && this.isPlayerValid(card.playerScene);
+        if (this.players.length > 0) isValid = isValid && this.isPlayerValid(card, card.playerScene);
   
         // Check card type
         if (this.cardtypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
@@ -55,13 +55,26 @@ class Target {
 
     /**
      * Check if the card belongs to a valid player
+     * @param {GameCardUI} card - The card to check
      * @param {PlayerScene} playerScene - The player scene to check
      * @returns {boolean} - Whether the player is valid
      */
-    isPlayerValid(playerScene) {
+    isPlayerValid(card, playerScene) {
         // If players array includes "any", any player is valid
         if (this.players.includes("any")) {
             return true;
+        }
+
+        // Check for "owner" in the players array which requires special handling
+        if (this.players.includes("owner")) {
+            // If this is checking the player's own cards, it's valid
+            // This assumes playerScene.isPlayer property indicates if this is the human player
+            return card.playerScene === card.scene.activePlayerScene;
+        }
+
+        if (this.players.includes("opponent")) {
+            // If this is checking the opponent's cards, it's valid
+            return card.playerScene === card.scene.passivePlayerScene;
         }
 
         // Check if the player is active or passive based on the criteria

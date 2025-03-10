@@ -574,7 +574,6 @@ class GameStateManager {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
-        console.log(actionInfos);
         player.playCard(actionInfos, isPlayerTurn, startTargeting);
     }
 
@@ -856,12 +855,16 @@ class GameStateManager {
 
     /** Function to trigger a next turn. Triggered on next turn button press */
     triggerNextTurn() {
-        // Trigers the end of the turn. Cards should not be draggable anymore. Next turn button should not be draggable anymore
         this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
         this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
-
-        //Send message to server    
-        this.scene.game.gameClient.requestStartNextTurn();
+        // Trigers the end of the turn. Cards should not be draggable anymore. Next turn button should not be draggable anymore
+        let endTurnAction = new Action();
+        endTurnAction.start = () => {   
+            //Send message to server    
+            this.scene.game.gameClient.requestStartNextTurn();
+        }
+        endTurnAction.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(endTurnAction);
     }
 
     /** Function that creates an action to send a message to the server when all other actions have been completed */
@@ -1023,7 +1026,7 @@ class GameStateManager {
     changeGameStateActive() {
         let action = new Action();
 
-        action.start = () => {this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);}
+        action.start = () => {this.scene.gameState.exit(this.scene.gameState.previousState);}
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
 

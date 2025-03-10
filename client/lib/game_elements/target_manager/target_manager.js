@@ -6,6 +6,7 @@ class TargetManager {
     constructor(scene) {
         this.scene = scene;
 
+        this.originatorCard = null; //Store the reference to the card triggered the targeting
         this.targetData = {};
         this.targetAction = null;
         this.requiredTargets = 0;
@@ -44,9 +45,9 @@ class TargetManager {
     */
     addTarget(card) {
         let isValid = this.isValidTarget(card); //Test if the card is valid for any target
-        //if(isValid.isValid) { //If yes add to the targetids and remove from the targets
-            this.targetIDs.push(card.id);
-            this.targets.splice(this.targets.indexOf(isValid.target), 1);
+        
+        this.targetIDs.push(card.id);
+        this.targets.splice(this.targets.indexOf(isValid.target), 1);
         //} else {
             //this.scene.animationLibrary.shakingAnimation(card); //Create a little animation to show it's not a right target
             //TODO find small animation that shows it's not a right target (maybe a sound like MURI)
@@ -65,6 +66,7 @@ class TargetManager {
 
     /** Resets the object */
     reset() {
+        this.originatorCard = null;
         this.targetAction = null;
         this.targets = [];
         this.targetIDs = [];

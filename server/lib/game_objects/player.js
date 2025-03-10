@@ -10,6 +10,7 @@ class Player {
      *  */    
     constructor(socket, server, username) {
         this.id = server.lastPlayerID++;
+        this.playerReference = "P" + this.id.toString();
         this.socket = socket;
 
         this.server = server;

@@ -154,10 +154,14 @@ class Client {
 
 
         /** OPPONENT ACTION LISTENERS */
-        this.socket.on('game_stop_targetting', (hideArrow = true) => {
+        this.socket.on('game_stop_targetting', (hideArrow = true, eventArrow = false) => {
             this.gameScene.targetManager.reset();
-            if(hideArrow) this.gameScene.targetingArrow.stopTargeting();
-            this.gameScene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+            if(hideArrow) {
+                if(eventArrow) this.gameScene.eventArrow.stopTargeting();
+                else this.gameScene.targetingArrow.stopTargeting();
+            } 
+            this.gameScene.gameState.exit(this.gameScene.gameState.previousState);
+            console.log(this.gameScene.gameState.name);
         });
         this.socket.on('game_reset_targets', () => {this.gameScene.targetManager.resetTargetIDs();});
 

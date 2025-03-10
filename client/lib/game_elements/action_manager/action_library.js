@@ -545,7 +545,11 @@ class ActionLibrary {
             let action = new Action();
             action.start = () => {
                 this.scene.gameState.exit(GAME_STATES.TARGETING);
-                this.scene.targetingArrow.startTargeting(card);
+                if(card.cardData.card === CARD_TYPES.EVENT) {
+                    this.scene.targetManager.originatorCard = card;
+                    this.scene.eventArrow.startTargeting(card);
+                }
+                else this.scene.targetingArrow.startTargeting(card);
             };
             action.isPlayerAction = true;
             action.waitForAnimationToComplete = false;
@@ -555,7 +559,12 @@ class ActionLibrary {
             this.actionManager.addAction(action);
         } else {
             this.scene.gameState.exit(GAME_STATES.TARGETING);
-            this.scene.targetingArrow.startTargeting(card);
+            
+            if(card.cardData.card === CARD_TYPES.EVENT) {
+                this.scene.targetManager.originatorCard = card;
+                this.scene.eventArrow.startTargeting(card);
+            }
+            else this.scene.targetingArrow.startTargeting(card);
         }
     }
 
@@ -563,11 +572,17 @@ class ActionLibrary {
     cancelTargetingAction() {
         let action = new Action();
         action.start = () => {
-            let card = this.scene.targetingArrow.originatorObject;
-
-            this.scene.targetingArrow.stopTargeting();
+            let card = null;
+            if(this.scene.targetManager.originatorCard === null) {
+                card = this.scene.targetingArrow.originatorObject;
+                this.scene.targetingArrow.stopTargeting();
+            } else {
+                card = this.scene.eventArrow.originatorObject;
+                this.scene.eventArrow.stopTargeting();
+            }            
 
             switch(this.scene.targetManager.targetAction) {
+                case 'EVENT_CARD_ACTION':
                 case 'PLAY_CARD_ACTION':
                     card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
                     card.setState(CARD_STATES.IN_HAND);
@@ -580,7 +595,7 @@ class ActionLibrary {
             this.scene.game.gameClient.requestCancelTargeting(this.scene.targetManager.targetData);
             this.scene.targetManager.reset();
 
-            this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+            if(this.scene.gameState.previousState !== null) this.scene.gameState.exit(this.scene.gameState.previousState);
         }
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
