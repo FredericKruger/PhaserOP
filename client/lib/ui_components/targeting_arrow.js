@@ -166,6 +166,7 @@ class TargetingArrow {
         
         // Create and return the tween
         const tween = [{
+            onStart: () => {this.setVisible(true);},
             targets: animationHelper,
             progress: 1,
             duration: duration,

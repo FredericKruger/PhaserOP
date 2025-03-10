@@ -118,17 +118,17 @@ class PlayerScene {
      * @param {number} pointerY
      * @returns {GameCardUI}
     */
-    counterDraggedOverDefendingCharacter(pointerX, pointerY) {
+    counterDraggedOverCharacter(pointerX, pointerY) {
         //Start with the leader
         for(let card of this.leaderLocation.cards) {
-            if(card.state === CARD_STATES.IN_PLAY_DEFENDING && card.getBounds().contains(pointerX, pointerY)) {
+            if(card.getBounds().contains(pointerX, pointerY)) {
                 return card;
             }
         }
 
         //Check the other characters
         for(let card of this.characterArea.cards) {
-            if(card.state === CARD_STATES.IN_PLAY_DEFENDING && card.getBounds().contains(pointerX, pointerY)) {
+            if(card.getBounds().contains(pointerX, pointerY)) {
                 return card;
             }
         }
@@ -156,6 +156,15 @@ class PlayerScene {
         if(card !== undefined && card !== null) return card;
 
         card = this.discard.getCard(cardId);
+        return card;
+    }
+
+    /** Function that finds a DonCard in the deckpile
+     * @param {number} cardId
+     * @return {DonCardUI}
+     */
+    getDonCardById(cardId) {
+        let card = this.activeDonDeck.getCard(cardId);
         return card;
     }
 

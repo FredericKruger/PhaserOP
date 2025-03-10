@@ -813,26 +813,8 @@ class GameStateManager {
      * @param {number} characterID - The character ID
      */
     startCounterPlayed(activePlayer, counterID, characterID) {
-        this.scene.attackManager.attack.counterPlayed = true;
-
-        let counterCard = this.scene.passivePlayerScene.getCard(counterID);
-        let characterCard = this.scene.passivePlayerScene.getCard(characterID);
-        if(!activePlayer) {
-            counterCard = this.scene.activePlayerScene.getCard(counterID);
-            characterCard = this.scene.activePlayerScene.getCard(characterID);
-
-            //remove interaction
-            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
-        }
-
-        //remove Card from owner hand
-        counterCard.playerScene.hand.removeCard(counterCard);
-        counterCard.setDepth(DEPTH_VALUES.CARD_IN_DECK);
-        counterCard.setState(CARD_STATES.IN_PLAY_ATTACHED);
-        characterCard.attachedCounter = counterCard;
-        characterCard.updateAttachedCounterPosition();
-
-        this.passToNextPhase(GAME_STATES.COUNTER_INTERACTION, false);
+        if(activePlayer) this.scene.actionLibraryPassivePlayer.playCounterAction(this.scene.passivePlayerScene, counterID, characterID);
+        else this.scene.actionLibrary.playCounterAction(this.scene.activePlayerScene, counterID, characterID);
     }
 
     /** Function that returns a counter card to hand if couldnt get played

@@ -271,14 +271,15 @@ class ActionLibrary {
         };
         if(replacedCard === null) action.start_animation = start_animation; //Play animation#
         action.end = () => {
+            //Refresh GameStateUI
+            playerScene.playerInfo.updateCardAmountTexts();
+
             //If the card of an event
             if(card.cardData.card === CARD_TYPES.EVENT) {
-                console.log("PLAY CARD ACTION: ", card.cardData.card);
                 //execute ability and init ability tweens
                 let abilityTweens = [];
                 for(let ability of card.abilities) {
                     if(ability.canActivate(card.scene.gameStateUI.phaseText.text)) { //For each ability that can be activated
-                        console.log("Activated");
                         abilityTweens = abilityTweens.concat(ability.animate(card, abilityInfo)); //Add the ability tween
                     }
                 }
@@ -301,9 +302,6 @@ class ActionLibrary {
         action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
-
-            //Refresh GameStateUI
-            playerScene.playerInfo.updateCardAmountTexts();
         
             //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) {
@@ -505,6 +503,31 @@ class ActionLibrary {
         action.isPlayerAction = false;
         action.waitForAnimationToComplete = true;
         action.name = "SWITCH DEFENDER";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
+    /** Function to start the play counter action
+     * @param {PlayerScene} playerScene
+     * @param {number} counterID
+     * @param {number} characterID
+     */
+    playCounterAction(playerScene, counterID, characterID) {
+        let action = new Action();
+        action.start = () => {
+            let counterCard = playerScene.getCard(counterID);
+            let characterCard = playerScene.getCard(characterID);
+
+            //remove Card from owner hand
+            counterCard.playerScene.hand.removeCard(counterCard);
+            counterCard.setDepth(DEPTH_VALUES.CARD_IN_DECK);
+            counterCard.setState(CARD_STATES.IN_PLAY_ATTACHED);
+            characterCard.attachedCounter.push(counterCard);
+            characterCard.updateAttachedCounterPosition();
+        };
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
 
         //Add action to the action stack
         this.actionManager.addAction(action);

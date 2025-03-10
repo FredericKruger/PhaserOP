@@ -14,9 +14,15 @@ class GameCardUI extends BaseCardUI{
         this.id = config.id;
 
         //Attahed Cards
+        /** @type {Array<DonCardUI>} */
         this.attachedDon = [];
+        /** @type {DonCardUI} */
         this.hoveredDon = null; //To store the hovered don card
-        this.attachedCounter = null; //To store the attached counter card
+        /** @type {Array<GameCardUI>} */
+        this.attachedCounter = []; //To store the attached counter card
+        /** @type {GameCardUI} */
+        this.tempAttachedCounter = null; //To store the card that is currently hovered above
+        /** @type {number} */
         this.eventCounterPower = 0; //To store the addition power given by a counter event
 
         //Abilities
@@ -245,10 +251,11 @@ class GameCardUI extends BaseCardUI{
             if(this.hoveredDon !== null) currentPower += 1000;
         }
         //If the card is in play and defending add the counter power if any is attached
-        if(this.state === CARD_STATES.IN_PLAY_DEFENDING) {
+        //if(this.state === CARD_STATES.IN_PLAY_DEFENDING) {
             currentPower += this.eventCounterPower;
-            if(this.attachedCounter !== null) currentPower += this.attachedCounter.cardData.counter;
-        }
+            if(this.tempAttachedCounter) currentPower += this.tempAttachedCounter.cardData.counter;
+            for(let counter of this.attachedCounter) currentPower += counter.cardData.counter;
+        //}
         this.locationPowerText.setText(currentPower);
 
         if(currentPower > this.cardData.power) this.locationPowerText.setColor(COLOR_ENUMS_CSS.OP_GREEN);
@@ -271,19 +278,22 @@ class GameCardUI extends BaseCardUI{
 
     /** Function to display the attached counter */
     updateAttachedCounterPosition() {
-        if(this.attachedCounter !== null) {
-            this.scene.children.sendToBack(this.attachedCounter);
-            this.attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
+        let counterStartPosition = this.displayHeight / 2 * 0.5;
+        for(let attachedCounter of this.attachedCounter) {
+            this.scene.children.sendToBack(attachedCounter);
+            attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
             
             //this.attachedCounter.moveTo(this.x + this.displayWidth/2, this.y, true, false, false);
             //this.attachedCounter.angleTo(20, true, false, false);
             if (this.angle === -90) {
-                this.attachedCounter.moveTo(this.x, this.y - this.displayWidth / 2, true, false, false);
-                this.attachedCounter.angleTo(-70, true, false, false); // Adjust angle accordingly
+                attachedCounter.moveTo(this.x - counterStartPosition, this.y - this.displayWidth / 2, true, false, false);
+                attachedCounter.angleTo(-70, true, false, false); // Adjust angle accordingly
             } else {
-                this.attachedCounter.moveTo(this.x + this.displayWidth / 2, this.y, true, false, false);
-                this.attachedCounter.angleTo(20, true, false, false);
+                attachedCounter.moveTo(this.x + this.displayWidth / 2, this.y - counterStartPosition, true, false, false);
+                attachedCounter.angleTo(20, true, false, false);
             }
+
+            counterStartPosition -= 20;
         }
     }
     //#endregion

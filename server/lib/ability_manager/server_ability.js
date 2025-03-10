@@ -10,6 +10,8 @@ class ServerAbility {
         this.conditions = config.conditions || []; // Array of conditions that must be met
         this.states = config.states || []; // Array of states that must be met
 
+        this.target = config.target || null; // Target of the ability
+
         this.actions = config.actions || []; // Array of actions to execute
 
         // Tracking

@@ -10,6 +10,8 @@ class Ability {
         this.states = config.states || []; // Array of states that must be met
         this.actions = config.actions || []; // Array of actions to execute
 
+        this.target = config.target || null; // Target of the ability
+
         // Tracking
         this.usedThisTurn = false;
         this.usedThisGame = false;
@@ -84,7 +86,6 @@ class Ability {
         for (const action of this.actions) {
             const func = abilityActions[action.name];
             if (func) {
-                console.log("Executing Action: ", action.name);
                 abilityTweens = abilityTweens.concat(func(card, abilityInfo[action.name]));
                 console.log(abilityTweens);
             }
@@ -101,7 +102,6 @@ class Ability {
     onFail() {}
 
     animate(card, abilityInfo) {
-        console.log("Animating Ability: ", this.id);
         return this.executeActions(card, abilityInfo);
     }
 
@@ -114,9 +114,8 @@ const abilityActions = {
      * @returns {Object}
      */
     addCounterToDefender: (card, info) => {
-        console.log(info);
         //Get Defender Card
-        const defender = card.scene.attackManager.attack.defender;
+        let defender = card.scene.attackManager.attack.defender;
         card.scene.eventArrow.originatorObject = card;
         let arrowTweens = card.scene.eventArrow.animateToPosition(defender.x, defender.y, 600);
         let tweens = [
@@ -144,9 +143,56 @@ const abilityActions = {
 
         return tweens;  
     },
+        /** Function to add Counter to Defender
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
     activateExertedDon: (card, info) => {
-        console.log(info);
-        let tweens = [];
+        //Get Defender Card
+        let donCards = [];
+        for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
+        card.scene.eventArrow.originatorObject = card;
+        let arrowTweens = card.scene.eventArrow.animateToPosition(card.playerScene.playerInfo.restingDonplaceholder.x, card.playerScene.playerInfo.restingDonplaceholder.y, 600);
+        let tweens = [
+            {
+                onStart: () => { //Add Tween for target arrow
+                    this.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                },
+                delay: 100,
+            }
+        ];
+        tweens = tweens.concat(arrowTweens);
+        tweens = tweens.concat([{
+                onStart: () => { //Add Tween for target arrow
+                    for(let donCard of donCards) donCard.setState(CARD_STATES.DON_ACTIVE);
+                },
+                targets: card.playerScene.playerInfo.restingDonCardAmountText,
+                scale: {from: 1, to: 1.2},
+                duration: 150,
+                onComplete: () => {
+                    card.playerScene.playerInfo.updateRestingCardAmountText();
+                }
+            }, {
+                targets: card.playerScene.playerInfo.restingDonCardAmountText,
+                scale: {from: 1.2, to: 1},
+                duration: 150,
+            }, {
+                targets: card.playerScene.playerInfo.activeDonCardAmountText,
+                scale: {from: 1, to: 1.2},
+                duration: 150,
+                onComplete: () => {
+                    card.playerScene.playerInfo.updateActiveCardAmountText();
+                }
+            }, {
+                targets: card.playerScene.playerInfo.activeDonCardAmountText,
+                scale: {from: 1.2, to: 1},
+                duration: 150,
+                onComplete: () => {
+                    card.scene.eventArrow.stopTargeting();
+                }
+            }
+        ]);
         return tweens; 
     }
 };

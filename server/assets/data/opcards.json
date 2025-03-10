@@ -6386,16 +6386,7 @@
         "attribute":"SPECIAL",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000,
-        "abilities": [
-            {
-                "id": "ST02-004-1",
-                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
-                "type": "BLOCKER",
-                "phases": ["Main: Block"],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
-            }
-        ]
+        "counter": 1000
     },    
     {
         "id":390,
@@ -6479,16 +6470,7 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter":1000,
-        "abilities": [
-            {
-                "id": "ST02-004-1",
-                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
-                "type": "BLOCKER",
-                "phases": ["Main: Block"],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
-            }
-        ]
+        "counter":1000
     },    
     {
         "id":395,
@@ -6543,6 +6525,17 @@
                 "text": "Up to 1 of your Leader or Character cards gains +2000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
                 "type": "COUNTER",
                 "phases": ["Main: Counter"],
+                "target": {
+                    "targetAction": "EVENT_CARD_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"]
+                        }
+                    ]
+                },
                 "actions": [
                     {"name": "addCounterToDefender", "params": {"amount": 2000}},
                     {"name": "activateExertedDon", "params": {"amount": 1}}
@@ -6570,6 +6563,17 @@
                 "text": "Up to 1 of your Leader or Character cards gains +4000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
                 "type": "COUNTER",
                 "phases": ["Main: Counter"],
+                "target": {
+                    "targetAction": "EVENT_CARD_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"]
+                        }
+                    ]
+                },
                 "actions": [
                     {"name": "addCounterToDefender", "params": {"amount": 4000}},
                     {"name": "activateExertedDon", "params": {"amount": 1}}

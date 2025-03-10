@@ -45,7 +45,7 @@ class GameScene extends Phaser.Scene {
 
         //Ready the targetting arrow
         this.targetingArrow = new TargetingArrow(this);
-        this.eventArrow = new TargetingArrow(this, COLOR_ENUMS.OP_BLUE);
+        this.eventArrow = new TargetingArrow(this, COLOR_ENUMS.OP_GREEN);
 
         this.gameState = new NoInteractionState(this);
     }

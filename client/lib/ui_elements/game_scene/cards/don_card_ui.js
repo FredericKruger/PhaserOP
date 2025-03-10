@@ -28,24 +28,6 @@ class DonCardUI extends BaseCardUI {
     setState(state) {
         this.state = state;
         this.setFSMState(state);
-
-        /*if(this.state === CARD_STATES.DON_ACTIVE) {
-            this.setVisible(true);
-        } else if(this.state === CARD_STATES.DON_RESTED) {
-            this.setVisible(false);
-        }*/
-
-        /*if(this.playerScene.player.isActivePlayer) {
-            if(this.state === CARD_STATES.DON_ACTIVE) {
-                this.makeInteractive(true);
-                this.makeDraggable(true);
-                this.setVisible(true);
-            } else if(this.state === CARD_STATES.DON_RESTED) {
-                this.makeInteractive(false);
-                //this.makeDraggable(false);
-                this.setVisible(false);
-            } 
-        }*/
     }
 
     /** Set the Final State Machine state from the state

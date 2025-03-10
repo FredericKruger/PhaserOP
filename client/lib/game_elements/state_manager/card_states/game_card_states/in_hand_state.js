@@ -58,11 +58,10 @@ class InHandState extends GameCardState {
                 else this.card.hideGlow();
                 break;
             case GAME_STATES.COUNTER_INTERACTION:
-                if(this.card.cardData.counter && !this.card.scene.attackManager.attack.counterPlayed) this.card.showGlow(COLOR_ENUMS.OP_RED);
+                if(this.card.cardData.counter) this.card.showGlow(COLOR_ENUMS.OP_RED);
                 else if(
                     this.card.hasAbility("COUNTER")
                     && this.card.cardData.cost <= this.card.playerScene.activeDonDeck.getNumberOfActiveCards()
-                    && !this.card.scene.attackManager.attack.counterPlayed
                 ) this.card.showGlow(COLOR_ENUMS.OP_RED);
                 else this.card.hideGlow();
                 break;

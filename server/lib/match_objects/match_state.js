@@ -266,13 +266,14 @@ class MatchState {
                 if(!ability.canActivate(card, this.current_phase)) return {actionResult: PLAY_CARD_STATES.CONDITIONS_NOT_MET, actionInfos: {playedCard: cardId}};
             }
 
+            //If the ability needs targeting
+            let targets = card.getAbilityTargets();
             //Gather ability infos for the client
             actionInfos = player.playEvent(cardId, false);
             let abilityResults = null;
             for(let ability of card.abilities) {
                 abilityResults = this.match.resolveAbility(player, cardId, ability.id);
             }
-            console.log(abilityResults);
             actionInfos.abilityResults = abilityResults;
 
             return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
@@ -322,11 +323,11 @@ class MatchState {
      */
     attachCounterToCharacter(player, counterID, characterID) {
         let counterCard = player.inHand.find(card => card.id === counterID);
-        let characterCard = player.inCharacterArea.find(card => card.id === characterID);
+        let characterCard = player.getCard(characterID);
 
         //remove countercard from hand
         player.removeCardFromHand(counterCard);
-        characterCard.attachedCounter = counterCard;
+        characterCard.attachedCounter.push(counterCard);
     }
     //#endregion
 

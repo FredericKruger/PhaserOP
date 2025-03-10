@@ -460,6 +460,31 @@ class ActionLibraryPassivePlayer {
         this.actionManager.addAction(action);
     }
 
+    /** Function to start the play counter action
+     * @param {PlayerScene} playerScene
+     * @param {number} counterID
+     * @param {number} characterID
+     */
+    playCounterAction(playerScene, counterID, characterID) {
+        let action = new Action();
+        action.start = () => {
+            let counterCard = playerScene.getCard(counterID);
+            let characterCard = playerScene.getCard(characterID);
+
+            //remove Card from owner hand
+            counterCard.playerScene.hand.removeCard(counterCard);
+            counterCard.setDepth(DEPTH_VALUES.CARD_IN_DECK);
+            counterCard.setState(CARD_STATES.IN_PLAY_ATTACHED);
+            characterCard.attachedCounter.push(counterCard);
+            characterCard.updateAttachedCounterPosition();
+        };
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
     //#endregion
 
 //#region DISCARD ACTION

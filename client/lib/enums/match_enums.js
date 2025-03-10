@@ -70,6 +70,8 @@ const CARD_SCALE = Object.freeze({
     IN_LOCATION: 0.18,
     IN_PLAY_ANIMATION: 0.3,
 
+    COUNTER_OVER_CARD: 0.1,
+
     IN_LOCATION_LEADER: 0.23, 
 
     IN_HAND_PASSIVE_PLAYER: 0.18,
