@@ -205,6 +205,32 @@ class ActionLibrary {
         //Add Action to the action stack
         this.actionManager.addAction(action);
     }
+
+    /** Function that moves an attached don card to the exerted pile 
+     * @param {PlayerScene} playerScene
+     * @param {DonCardUI} card
+    */
+    moveDonCardToExertedAction(playerScene, card) {
+        //play animation to show card
+        let start_animation = this.scene.tweens.chain({
+            targets: card,
+            tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(card, 0)
+        }).pause();
+
+        let action = new Action();
+        action.start = () => {
+            card.setState(CARD_STATES.DON_RESTED); //Change state
+            card.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
+        };
+        action.start_animation = start_animation;
+        action.waitForAnimationToComplete = true;
+        action.isPlayerAction = true;
+        action.name = "MOVE DON CARD TO EXERTED";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
     //#end region
 
     //#region PLAY CARD ACTION
@@ -395,6 +421,13 @@ class ActionLibrary {
      * @param {GameCardUI} card
      */
     discardCardAction(playerScene, card) {
+        //Before creating action, discard attached counters
+        //If if has any counters attached, discard those
+        while(card.attachedCounter.length > 0) {
+            let counterCard = card.attachedCounter.pop();
+            this.discardCardAction(playerScene, counterCard);
+        }
+        
         //Get Start Animation
         let startAnimation_tweens = this.scene.animationLibrary.desintegrationAnimation(card, 0);
         startAnimation_tweens = startAnimation_tweens.concat({
@@ -419,11 +452,29 @@ class ActionLibrary {
 
 
         let action = new Action();
-        action.start = () => {};
+        action.start = () => {
+            //Reset the eventCounter value
+            card.eventCounterPower = 0;
+
+            //If it has any attached don cards move them to the exerted pile
+            let numberAnimations = 0;
+            while(card.attachedDon.length > 0) {
+                let donCard = card.attachedDon.pop();
+                donCard.setState(CARD_STATES.DON_RESTED); //Change state
+                donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
+                this.scene.tweens.chain({
+                    targets: donCard,
+                    tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(card, numberAnimations*100)
+                }).restart();
+                card.updateAttachedDonPosition();
+                numberAnimations++;
+            }
+        };
         action.start_animation = start_animation;
         action.end = () => {
             playerScene.removeCard(card); //Remove this card from whaterever pile it is in
             card.setPosition(playerScene.discard.posX, playerScene.discard.posY); //Move card to discard pile
+            card.angle = 0;
             playerScene.discard.addCard(card, {setCardState: true, setCardDepth: true, updateUI: true}); //Add card to dispacrd pile
         };
         action.end_animation = end_animation;
@@ -596,6 +647,7 @@ class ActionLibrary {
             finishAction.start = () => {
                 this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
                 //Replace with a call to the server to synchronise
+                //FIXME create call to server
             };
             finishAction.waitForAnimationToComplete = false;
             finishAction.isPlayerAction = false;

@@ -50,6 +50,17 @@ class MatchPlayer {
         return card;
     }
 
+    /** Function that return a card from the player from the card id
+     * @param {number} cardid - ID of the card to be returned
+     * @return {MatchDonCard} - Card to be returned
+     */
+    getDonCard(cardid) {
+        let card = this.inDon.find(c => c.id === cardid);
+        if(card === undefined) card = this.inActiveDon.find(c => c.id === cardid);
+        if(card === undefined) card = this.inExertenDon.find(c => c.id === cardid);
+        return card;
+    }
+
     /** Function that returns a card from Hand from the card id
      * @param {number} cardid - ID of the card to be returned
      */
@@ -169,11 +180,26 @@ class MatchPlayer {
 
     /** Function that discards a card
      * @param {MatchCard} card - card to be discarded
-
      */
     discardCard(card){
+        //If the card has any attached don, return to don pile as set the state
+        while(card.attachedDon.length > 0) {
+            let donid = card.attachedDon.pop();
+            let don = this.getDonCard(donid);
+            don.state = CARD_STATES.DON_RESTED;
+        }
+
+        //If the card has any attached counter discard
+        while(card.attachedCounter.length > 0) {
+            let counter = card.attachedCounter.pop();
+            this.discardCard(counter);
+        }
+
+        //Reset counterPower of card
+        card.eventCounterAmount = 0;
+
         this.inDiscard.push(card); //push it to the discard
-        card.setState(CARD_STATES.IN_DISCARD); //set the state
+        card.state = CARD_STATES.IN_DISCARD; //set the state
     }
 
 }
