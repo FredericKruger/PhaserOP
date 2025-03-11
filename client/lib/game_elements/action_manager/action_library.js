@@ -533,6 +533,80 @@ class ActionLibrary {
         this.actionManager.addAction(action);
     }
 
+    /** Function to start the attack animation and resolve the attack
+     * @param {boolean} activePlayer - If it is the active player
+     * @param {Object} attackResults - The attack results
+     */
+    startAttackAnimation(activePlayer, attackResults) {
+        // Create an action for the attack animation
+        let action = new Action();
+            
+        // Determine attacker and defender based on active player
+        let attackerPlayer = activePlayer ? this.scene.activePlayerScene : this.scene.passivePlayerScene;
+        let defenderPlayer = activePlayer ? this.scene.passivePlayerScene : this.scene.activePlayerScene;
+            
+        action.start = () => {
+            // Set game state to prevent interaction during animation
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+
+            //Hide targeting arrow
+            this.scene.targetingArrow.stopTargeting();
+
+            // Get the attacker and defender cards from the attack manager
+            const attacker = this.scene.attackManager.attack.attacker;
+            const defender = this.scene.attackManager.attack.defender;
+        
+            // Create and play the battle animation
+            const battleAnimationManager = new BattleAnimation(this.scene);
+            const battleAnimation = battleAnimationManager.createBattleAnimation(attacker, defender);
+        
+            // Add damage text animation
+            battleAnimation.on('complete', () => {
+                // Display damage indicators
+                const defenderPower = defender.getPower();
+                if (defenderPower > 0) {
+                    battleAnimationManager.showDamageNumber(defender.x, defender.y, defenderPower, 0xff3333);
+                }
+                
+                const attackerPower = attacker.getPower();
+                if (attackerPower > 0) {
+                    battleAnimationManager.showDamageNumber(attacker.x, attacker.y, attackerPower, 0xff3333);
+                }
+                                
+                // Complete the action after showing damage
+                setTimeout(() => {
+                    this.scene.actionManager.completeAction();
+                }, 1000);
+            });
+
+            battleAnimation.play();
+        };
+        action.start_animation = null;
+        action.end = () => {
+            //If the defender was destroyed
+            if(attackResults.defenderDestroyed) {
+                //Create action to discard the card
+                this.discardCardAction(defenderPlayer, this.scene.attackManager.attack.defender);
+            }
+
+            //Create an action to draw a card from the life pool if attacker was attacked and update lifepoints
+
+            //Create an action to switch states when finished
+            let finishAction = new Action();
+            finishAction.start = () => {
+                this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+                //Replace with a call to the server to synchronise
+            };
+            finishAction.waitForAnimationToComplete = false;
+            finishAction.isPlayerAction = false;
+            this.scene.actionManager.addAction(finishAction);
+        }
+
+        action.isPlayerAction = false;
+        action.waitForAnimationToComplete = true;
+        this.scene.actionManager.addAction(action);
+    }
+
     //#endregion
 
     //#region TARGETING ACTION

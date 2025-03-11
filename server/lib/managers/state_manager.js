@@ -160,7 +160,7 @@ class FlagManager {
                 this.match.startCounterPhase();
                 break;
             case 'RESOLVE_ATTACK_READY':
-                //this.match.resolveAttack(player, args);
+                this.match.startResolveAttack();
                 break;
         }
     }

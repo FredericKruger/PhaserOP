@@ -58,6 +58,8 @@ class ActionManager {
             //Then execute the animation
             if(this.currentAction.waitForAnimationToComplete && this.currentAction.start_animation !== null) {
                 this.scene.animationManager.addAnimation({animation: this.currentAction.start_animation, delay: 0});
+            } else if(this.currentAction.waitForAnimationToComplete && this.currentAction.start_animation === null) {
+                return;
             } else {
                 if(this.currentAction.start_animation !== null) this.currentAction.start_animation.restart();
                 this.completeAction();

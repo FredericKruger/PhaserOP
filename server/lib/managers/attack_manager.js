@@ -1,4 +1,6 @@
 const { CARD_STATES } = require('../match_objects/match_card');
+const { CARD_TYPES } = require('../match_objects/match_enums');
+const MatchPlayer = require('../match_objects/match_player');
 
 const MatchCard = require('../match_objects/match_card').MatchCard;
 
@@ -6,18 +8,29 @@ const MatchCard = require('../match_objects/match_card').MatchCard;
 class Attack {
 
     /** Constructor 
-     * @param {AttackManager} attackManager
      * @param {MatchCard} attacker
      * @param {MatchCard} defender
+     * @param {MatchPlayer} attackingPlayer
+     * @param {MatchPlayer} defendingPlayer
     */
-    constructor(attackManager,  attacker, defender) {
-        this.attackManager = attackManager;
+    constructor(attacker, defender, attackingPlayer, defendingPlayer) {
+        /** @type {MatchCard} */
         this.attacker = attacker;
+        /** @type {MatchCard} */
         this.defender = defender;
 
+        /** @type {MatchPlayer} */
+        this.attackingPlayer = attackingPlayer
+        this.defendingPlayer = defendingPlayer
+
+        /** @type {boolean} */
         this.counterPlayed = false;
+        /** @type {boolean} */
+        this.blocked = false;
 
         this.attacker.state = CARD_STATES.IN_PLAY_ATTACKING;
+
+        this.defender.previousState = this.defender.state;
         this.defender.state = CARD_STATES.IN_PLAY_DEFENDING;
     }
 
@@ -35,10 +48,15 @@ class Attack {
      * @param {MatchCard} defender - defender of the attack
      */
     switchDefender(defender) {
-        this.defender.state = CARD_STATES.IN_PLAY;
+        this.defender.state = this.defender.previousState;
         this.defender = defender;
+        
+        this.defender.previousState = CARD_STATES.IN_PLAY_RESTED; //If card blocked it will go back to rested
         this.defender.state = CARD_STATES.IN_PLAY_DEFENDING;
+        this.blocked = true;
     }
+
+
 }
 //#endregion
 
@@ -49,12 +67,35 @@ class AttackManager {
      * @param {MatchState} matchState
      * @param {MatchCard} attacker
      * @param {MatchCard} defender
+     * @param {MatchPlayer} attackingPlayer
+     * @param {MatchPlayer} defendingPlayer
      */
-    constructor(matchState, attacker, defender) {
+    constructor(matchState, attacker, defender, attackingPlayer, defendingPlayer) {
         this.matchState = matchState;
 
         /** @type {Attack} */
-        this.attack = new Attack(this, attacker, defender);
+        this.attack = new Attack(attacker, defender, attackingPlayer, defendingPlayer);
+    }
+
+    /** Function to resolve the attack
+     * @returns {Object}
+     */
+    resolveAttack() {
+        const attackerPower = this.attack.attacker.getPower(true);
+        const defenderPower = this.attack.defender.getPower(false);
+
+        let attackResult = {
+            defenderDestroyed: false,
+            lostLeaderLife: false
+        };
+
+        //Check if the attack was successful from the attacker perspective
+        if(attackerPower >= defenderPower) {
+            if(this.attack.defender.cardData.card === CARD_TYPES.CHARACTER) attackResult.defenderDestroyed = true;
+            else if(this.attack.defender.cardData.card === CARD_TYPES.LEADER) attackResult.lostLeaderLife = true;
+        }
+
+        return attackResult;
     }
 
 }

@@ -32,6 +32,10 @@ class CounterInteractionState extends GameState {
         gameObject.fsmState.onDrop(pointer, gameObject, dropZone);
     }
 
+    onPointerDown(pointer, gameObject) {
+        if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
+    }
+
     update() {
         //Update all cards in the hand to reflect if they can take an action
         for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.update(); 

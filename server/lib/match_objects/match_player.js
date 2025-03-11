@@ -75,8 +75,7 @@ class MatchPlayer {
         let card = this.inHand.find(c => c.id === cardID); //Get the card
 
         this.removeCardFromHand(card); //remove the card from the hand
-        this.inDiscard.push(card); //push the card to the discard
-        card.setState(CARD_STATES.IN_DISCARD); //set the state
+        this.discardCard(card); //discard the card
 
         //Remove the resources from the active don
         let donIDs = [];
@@ -133,8 +132,7 @@ class MatchPlayer {
         //If a card is replaced remove it from the character area and add it to the discard
         if(replacePreviousCard) {
             let previousCard = this.inCharacterArea.find(c => c.id === replacedCardID); //Get the card
-            this.inDiscard.push(previousCard); //push it to the discard
-            previousCard.setState(CARD_STATES.IN_DISCARD); //set the state
+            this.discardCard(previousCard); //discard the card
             this.inCharacterArea = this.inCharacterArea.filter(c => c.id !== replacedCardID); //remove it from the character area
         }
 
@@ -167,6 +165,15 @@ class MatchPlayer {
             if(card.getAbilityByType('BLOCKER') !== undefined && card.getAbilityByType('BLOCKER').canActivate(card, gamePhase)) return true;
         }
         return false;
+    }
+
+    /** Function that discards a card
+     * @param {MatchCard} card - card to be discarded
+
+     */
+    discardCard(card){
+        this.inDiscard.push(card); //push it to the discard
+        card.setState(CARD_STATES.IN_DISCARD); //set the state
     }
 
 }

@@ -152,6 +152,7 @@ class Client {
         this.socket.on('game_counter_played_failure', (activePlayer, counterID) => {this.gameScene.gameStateManager.startCounterPlayedFailure(activePlayer, counterID);});
         this.socket.on('game_counter_played', (activePlayer, counterID, characterID) => {this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID);});
 
+        this.socket.on('game_start_attack_animation', (activePlayer, attackResults) => {this.gameScene.gameStateManager.startAttackAnimation(activePlayer, attackResults);});
 
         /** OPPONENT ACTION LISTENERS */
         this.socket.on('game_stop_targetting', (hideArrow = true, eventArrow = false) => {

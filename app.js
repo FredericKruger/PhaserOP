@@ -248,11 +248,12 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     socket.on('player_pass_blocker_phase', (passed) => {
         socket.player.match.flagManager.handleFlag(socket.player, 'COUNTER_PHASE_READY');
-        if(passed) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'COUNTER_PHASE_READY'); //Pass the opponent as no animations required
+        if(passed && !socket.player.currentOpponentPlayer.bot) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'COUNTER_PHASE_READY'); //Pass the opponent as no animations required
     });
 
     socket.on('player_pass_counter_phase', (passed) => {
-        console.log("DONE WITH COUNTER");
+        socket.player.match.flagManager.handleFlag(socket.player, 'RESOLVE_ATTACK_READY');
+        if(passed && !socket.player.currentOpponentPlayer.bot) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'RESOLVE_ATTACK_READY'); //Pass the opponent as no animations required
     });
 
     socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(socket.player, cardID, abilityID);});

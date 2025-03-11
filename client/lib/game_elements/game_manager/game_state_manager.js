@@ -829,6 +829,15 @@ class GameStateManager {
         player.hand.update();
     }
 
+    /** Function to start the attack animation and resolve the attack
+     * @param {boolean} activePlayer - If it is the active player
+     * @param {Object} attackResults - The attack results
+     */
+    startAttackAnimation(activePlayer, attackResults) {
+        //if(activePlayer) 
+        this.scene.actionLibrary.startAttackAnimation(activePlayer, attackResults);
+    }
+
     //#endregion
 
     //#region ABILITY FUNTIONS
@@ -894,6 +903,7 @@ class GameStateManager {
         if(phase === GAME_STATES.BLOCKER_INTERACTION) {
             this.scene.game.gameClient.requestPassBlockerPhase(passed);
         } else if(phase === GAME_STATES.COUNTER_INTERACTION) {
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.scene.game.gameClient.requestPassCounterPhase(passed);
         }
     }

@@ -397,7 +397,52 @@ class MatchState {
     declareAttackPhase(player, attacker) {
         //Set the state of the card
         attacker.setState(CARD_STATES.IN_PLAY_RESTED);
-    }    
+    }  
+    
+    /** Function to resolve the attack
+     * @param {Object} attackResults - attack results
+     * @param {MatchCard} attacker - attacker card
+     * @param {MatchCard} defender - defender
+     * @param {MatchPlayer} attackingPlayer - attacking player
+     * @param {MatchPlayer} defendingPlayer - defending player
+     */
+    resolveAttack(attackResults, attacker, defender, attackingPlayer, defendingPlayer) {
+        //If the defender lost discard
+        if(attackResults.defenderDestroyed) {
+            defendingPlayer.discardCard(defender);
+        } else {
+            //If the defender is a character
+            defender.state = defender.previousState;
+        }
+
+        if(attackResults.lostLeaderLife) {
+            defendingPlayer.life--;
+
+            //draw card from lifedeck
+            let card = defendingPlayer.inLifeDeck.pop();
+            card.setState(CARD_STATES.IN_HAND);
+            defendingPlayer.inHand.push(card);
+
+            attackResults.lifeCardIds = [card.id]; //TODO handle double strike
+
+            if(defendingPlayer.life < 0) {
+                //End the game
+                //TODO Create end game
+            }
+        }
+
+        //Set the attacker state to exerte
+        attacker.state = CARD_STATES.IN_PLAY_RESTED;
+
+        return attackResults;
+    }
+
+    /** Function to clean the attack Phase */
+    cleanUpAttackPhase() {
+        //TODO for all the cards in the play area removes all attached counter
+        //reset all the counter values
+        
+    }
 
     //#endregion
 

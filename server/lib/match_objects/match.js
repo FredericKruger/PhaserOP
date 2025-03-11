@@ -381,7 +381,7 @@ class Match {
         let attackerCard = player.currentMatchPlayer.getCard(attackerID);   
         let defenderCard = player.currentOpponentPlayer.currentMatchPlayer.getCard(defenderID);
         //Setup the attack manager
-        this.attackManager = new AttackManager(this, attackerCard, defenderCard);
+        this.attackManager = new AttackManager(this, attackerCard, defenderCard, player.currentMatchPlayer, player.currentOpponentPlayer.currentMatchPlayer);
 
         //Start the attack phase for the attacker
         this.state.declareAttackPhase(player.currentMatchPlayer, attackerCard);
@@ -450,6 +450,20 @@ class Match {
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_counter_played_failure', true, counterID);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_counter_played_failure', false, counterID);
         }
+    }
+
+    /** Function to resolve the attack */
+    startResolveAttack() {
+        console.log("RESOLVING ATTACK");
+        if(this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_passive_player)){
+            //Resolve the attack
+            let attackResults = this.attackManager.resolveAttack(); 
+            attackResults = this.state.resolveAttack(attackResults, this.attackManager.attack.attacker, this.attackManager.attack.defender, this.attackManager.attack.attackingPlayer, this.attackManager.attack.defendingPlayer);
+
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_attack_animation', true, attackResults);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_attack_animation', false, attackResults);
+        } 
     }
     //#endregion
 

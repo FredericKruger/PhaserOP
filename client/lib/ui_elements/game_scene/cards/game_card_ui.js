@@ -244,18 +244,7 @@ class GameCardUI extends BaseCardUI{
      * DON cards are only counted during tje players active turn
     */
     updatePowerText() {
-        let currentPower = this.cardData.power;
-        //If the card is in play and it is the players turn add the power of the attached don cards
-        if(this.playerScene.isPlayerTurn) {
-            currentPower += this.attachedDon.length*1000;
-            if(this.hoveredDon !== null) currentPower += 1000;
-        }
-        //If the card is in play and defending add the counter power if any is attached
-        //if(this.state === CARD_STATES.IN_PLAY_DEFENDING) {
-            currentPower += this.eventCounterPower;
-            if(this.tempAttachedCounter) currentPower += this.tempAttachedCounter.cardData.counter;
-            for(let counter of this.attachedCounter) currentPower += counter.cardData.counter;
-        //}
+        let currentPower = this.getPower();
         this.locationPowerText.setText(currentPower);
 
         if(currentPower > this.cardData.power) this.locationPowerText.setColor(COLOR_ENUMS_CSS.OP_GREEN);
@@ -370,6 +359,24 @@ class GameCardUI extends BaseCardUI{
 
         return false;
     }
+
+    /** Function to return a cards power
+     * @returns {number}
+     */
+    getPower() {
+        let currentPower = this.cardData.power;
+        //If the card is in play and it is the players turn add the power of the attached don cards
+        if(this.playerScene.isPlayerTurn) {
+            currentPower += this.attachedDon.length*1000;
+            if(this.hoveredDon !== null) currentPower += 1000;
+        }
+        currentPower += this.eventCounterPower;
+        if(this.tempAttachedCounter) currentPower += this.tempAttachedCounter.cardData.counter;
+        for(let counter of this.attachedCounter) currentPower += counter.cardData.counter;
+
+        return currentPower;
+    }
+
     //#endregion
     
     //#region ANIMATION FUNCTIONS
