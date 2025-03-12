@@ -371,60 +371,91 @@ class GameStateManager {
 
             //Refresh the nextTurn Button
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
-            this.gameStateUI.yourTurnImage.setAlpha(1); 
+            //this.gameStateUI.yourTurnImage.setAlpha(1); 
     
-            //Start with showing the "Your Turn" image
+            // Enhanced animation for "Your Turn" transition
             this.scene.add.tween({
                 targets: this.gameStateUI.yourTurnImage,
-                delay: 1000,
-                alpha: {from: 1, to: 0},
-                duration: 1000,
+                delay: 600, // Shorter delay for better pacing
+                alpha: { from: 0, to: 1 }, // Start invisible and fade in
+                scale: { from: 0.55, to: 0.6 }, // Very minimal scale change
+                y: { from: this.gameStateUI.yourTurnImage.y - 10, to: this.gameStateUI.yourTurnImage.y }, // Reduced vertical movement
+                ease: 'Sine.easeOut', // Changed to smoother easing
+                duration: 400, // Slower animation
+                onStart: () => {
+                    // Add camera shake for dramatic effect
+                    if (this.scene.cameras && this.scene.cameras.main) {
+                        this.scene.cameras.main.shake(80, 0.002);
+                    }
+                },
                 onComplete: () => {
-                    //Refresh DON Cards
-                    let numberOfAnimations = 0;
-                    for(let i=0; i<refreshDon.length; i++) { //For all the don cards
-                        let donCard = this.scene.activePlayerScene.activeDonDeck.getCard(refreshDon[i]); //Get the card
-                        if(donCard.state === CARD_STATES.DON_ATTACHED) { //If the don card is attached
-                            donCard.setState(CARD_STATES.DON_ACTIVE); //Change state
-                            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
-                    
-                            //Create tween to bring it back to the area
-                            this.scene.tweens.chain({
-                                targets: donCard,
-                                tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(donCard, numberOfAnimations*300)
+                    // Add pulsing effect
+                    this.scene.tweens.add({
+                        targets: this.gameStateUI.yourTurnImage,
+                        scale: 0.605, // Very minimal pulse
+                        duration: 350, // Slower pulse
+                        yoyo: true,
+                        repeat: 1,
+                        ease: 'Sine.easeInOut',
+                        onComplete: () => {
+                            // Add dramatic exit animation
+                            this.scene.tweens.add({
+                                targets: this.gameStateUI.yourTurnImage,
+                                alpha: 0,
+                                scale: 0.59, // Minimal scale change
+                                duration: 500, // Slower fade out
+                                ease: 'Sine.easeIn',
+                                onComplete: () => {
+                                    // Original code after animation completes
+                                    //Refresh DON Cards
+                                    let numberOfAnimations = 0;
+                                    for(let i=0; i<refreshDon.length; i++) { //For all the don cards
+                                        let donCard = this.scene.activePlayerScene.activeDonDeck.getCard(refreshDon[i]); //Get the card
+                                        if(donCard.state === CARD_STATES.DON_ATTACHED) { //If the don card is attached
+                                            donCard.setState(CARD_STATES.DON_ACTIVE); //Change state
+                                            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
+                                    
+                                            //Create tween to bring it back to the area
+                                            this.scene.tweens.chain({
+                                                targets: donCard,
+                                                tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(donCard, numberOfAnimations*300)
+                                            });
+
+                                            numberOfAnimations = numberOfAnimations + 1; //Increase animation delay tracker
+                                        } else {
+                                            donCard.setState(CARD_STATES.DON_ACTIVE);
+                                        }
+                                    }
+                                    this.scene.activePlayerScene.playerInfo.updateCardAmountTexts(); //Update the ui
+
+                                    //Refresh Character Cards
+                                    for(let i=0; i<refreshCards.length; i++) {
+                                        let card = this.scene.activePlayerScene.getCard(refreshCards[i]);
+                                        card.setState(CARD_STATES.IN_PLAY); //Make characters in play
+                                    }
+
+                                    //Refresh the attached don array
+                                    for(let card of this.scene.activePlayerScene.characterArea.cards) {
+                                        card.attachedDon = [];
+                                        card.updateAttachedDonPosition();
+                                        card.updatePowerText();
+                                    }
+                                    for(let card of this.scene.activePlayerScene.leaderLocation.cards) {
+                                        card.attachedDon = [];
+                                        card.updateAttachedDonPosition();
+                                        card.updatePowerText();
+                                    }
+
+                                    //Refresh all passive player Card Power as attached dons only give power during the active player's turn
+                                    for(let card of this.scene.passivePlayerScene.characterArea.cards) card.updatePowerText();
+                                    for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.updatePowerText();
+
+                                    //Tell server refresh complete
+                                    this.scene.game.gameClient.requestEndRefreshPhase(true);
+                                }
                             });
-
-                            numberOfAnimations = numberOfAnimations + 1; //Increase animation delay tracker
-                        } else {
-                            donCard.setState(CARD_STATES.DON_ACTIVE);
                         }
-                    }
-                    this.scene.activePlayerScene.playerInfo.updateCardAmountTexts(); //Update the ui
-
-                    //Refresh Character Cards
-                    for(let i=0; i<refreshCards.length; i++) {
-                        let card = this.scene.activePlayerScene.getCard(refreshCards[i]);
-                        card.setState(CARD_STATES.IN_PLAY); //Make characters in play
-                    }
-
-                    //Refresh the attached don array
-                    for(let card of this.scene.activePlayerScene.characterArea.cards) {
-                        card.attachedDon = [];
-                        card.updateAttachedDonPosition();
-                        card.updatePowerText();
-                    }
-                    for(let card of this.scene.activePlayerScene.leaderLocation.cards) {
-                        card.attachedDon = [];
-                        card.updateAttachedDonPosition();
-                        card.updatePowerText();
-                    }
-
-                    //Refresh all passive player Card Power as attached dons only give power during the active player's turn
-                    for(let card of this.scene.passivePlayerScene.characterArea.cards) card.updatePowerText();
-                    for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.updatePowerText();
-
-                    //Tell server refresh complete
-                    this.scene.game.gameClient.requestEndRefreshPhase(true);
+                    });
                 }
             });
         });
