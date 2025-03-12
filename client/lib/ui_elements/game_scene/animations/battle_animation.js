@@ -275,7 +275,7 @@ class BattleAnimation {
                         targets: sprite,
                         alpha: 0,
                         scale: targetScale * 1.5,
-                        duration: 500,
+                        duration: 1000,
                         delay: 100,
                         onComplete: () => sprite.destroy()
                     });

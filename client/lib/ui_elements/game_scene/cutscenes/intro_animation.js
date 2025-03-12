@@ -80,47 +80,89 @@ class IntroAnimation extends BaseComponentUI{
 
     /** Function to create the ui */
     startAnimation() {
-        //Play the onomatope
+        // Create a dark overlay for better contrast
+        const overlay = this.scene.add.rectangle(
+            this.scene.screenCenterX, 
+            this.scene.screenCenterY,
+            this.scene.screenWidth,
+            this.scene.screenHeight,
+            0x000000, 0.5
+        ).setDepth(3);
+        this.obj.push(overlay);
+        
+        // First player slides in with more dynamic easing
         this.scene.tweens.add({
             targets: this.activePlayerIntroContainer,
             x: this.scene.screenWidth*0.33,
-            ease: 'Power2',
-            duration: 1000,
+            ease: 'Back.easeOut', // More dynamic than Power2
+            duration: 800, // Slightly faster
             onComplete: () => {
+                // Small camera shake for impact
+                this.scene.cameras.main.shake(100, 0.004);
+                
+                // Onomatope appears with more punch
                 this.scene.tweens.add({
                     onStart: () => {this.onomatopeImage.setVisible(true);},
                     targets: this.onomatopeImage,
-                    scale: {from : 1.5, to: 1},
-                    delay: 1000,
-                    duration: 500,
-                    ease: 'Power2',
+                    scale: {from: 1.8, to: 1}, // Start larger for more impact
+                    alpha: {from: 0, to: 1}, // Fade in
+                    delay: 400, // Shorter delay
+                    duration: 400, // Faster animation
+                    ease: 'Back.easeOut', // More dynamic bounce
                     onComplete: () => {
+                        // VS image with quick entrance
                         this.scene.tweens.add({
                             onStart: () => {this.vsImage.setVisible(true);},
                             targets: this.vsImage,
-                            scale: {from : 1.5, to: 1},
+                            scale: {from: 1.8, to: 1}, // Larger start for more impact
+                            alpha: {from: 0, to: 1}, // Fade in 
                             delay: 200,
-                            duration: 500,
-                            ease: 'Power2',
+                            duration: 400, // Faster
+                            ease: 'Back.easeOut', // Bounce effect
                             onComplete: () => {
+                                // Add a subtle pulse to the VS image while waiting
+                                const vsPulse = this.scene.tweens.add({
+                                    targets: this.vsImage,
+                                    scale: 1.1,
+                                    duration: 500,
+                                    yoyo: true,
+                                    repeat: 1, // Just pulse once
+                                    ease: 'Sine.easeInOut'
+                                });
+                                
+                                // Second player slides in with more dynamic motion
                                 this.scene.tweens.add({
                                     targets: this.passivePlayerIntroContainer,
                                     x: this.scene.screenWidth*0.66,
-                                    delay: 1000,
-                                    duration: 1000,
-                                    ease: 'Power2',
+                                    delay: 600, // Shorter delay
+                                    duration: 800, // Slightly faster
+                                    ease: 'Back.easeOut', // More bounce
                                     onComplete: () => {
-                                        this.scene.time.delayedCall(1000, () => {
-                                            this.setVisible(false);
-                                            this.destroyAll();
-                                            this.scene.gameStateManager.setupScene(this.activePlayerLeader, this.passivePlayLeader);
+                                        // Camera shake on arrival
+                                        this.scene.cameras.main.shake(100, 0.004);
+                                        
+                                        // Hold briefly then fade out
+                                        this.scene.time.delayedCall(800, () => { // Shorter delay
+                                            this.scene.tweens.add({
+                                                targets: [overlay, this.activePlayerIntroContainer, 
+                                                         this.passivePlayerIntroContainer, 
+                                                         this.onomatopeImage, this.vsImage],
+                                                alpha: 0, 
+                                                duration: 500,
+                                                ease: 'Power2',
+                                                onComplete: () => {
+                                                    this.setVisible(false);
+                                                    this.destroyAll();
+                                                    this.scene.gameStateManager.setupScene(this.activePlayerLeader, this.passivePlayLeader);
+                                                }
+                                            });
                                         });
                                     }
-                                })
+                                });
                             }
-                        })
+                        });
                     }
-                })
+                });
             }
         });
     }

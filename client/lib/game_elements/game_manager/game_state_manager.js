@@ -59,54 +59,120 @@ class GameStateManager {
             id: passivePlayerLeader.id
         });
         passivePlayerLeaderCard.updateCardData(passivePlayerLeader.cardData, true);
+        this.scene.children.moveBelow(passivePlayerLeaderCard, activePlayerLeaderCard);
 
         //Active Player tween
         this.scene.add.tween({
             targets: activePlayerLeaderCard,
-            y: this.scene.activePlayerScene.leaderLocation.posY - 50,
-            scale: {from: CARD_SCALE.IN_DECK, to: 0.4},
-            duration: 500,
-            ease: 'easeOut',
+            y: this.scene.activePlayerScene.leaderLocation.posY - 150,
+            scale: {from: CARD_SCALE.IN_DECK, to: 0.5},
+            duration: 600,
+            ease: 'Back.easeOut', // More dynamic easing function
             onComplete: () => {
                 this.scene.add.tween({
                     targets: activePlayerLeaderCard,
                     y: this.scene.activePlayerScene.leaderLocation.posY,
                     scale: {from: 0.4, to: CARD_SCALE.IN_LOCATION_LEADER},
-                    duration: 250,
-                    delay: 1000,
-                    ease: 'easeIn',
+                    duration: 400, // Faster landing for more impact
+                    delay: 800,
+                    ease: 'Bounce.easeOut', // Bounce effect on landing
                     onComplete: () => {
-                        this.scene.activePlayerScene.leaderLocation.addCard(activePlayerLeaderCard);
-                        activePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
-                        this.activePlayerReadyForMulligan = true;
-                        this.startMulliganPhase();
+                        // Create and play dust explosion effect
+                        const dustExplosion = this.scene.add.sprite(
+                            activePlayerLeaderCard.x,
+                            activePlayerLeaderCard.y, // Position it below the card
+                            ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET
+                        ).setScale(3).setOrigin(0.5);
+                        
+                        // Set the depth to be just below the card
+                        this.scene.children.moveBelow(dustExplosion, activePlayerLeaderCard);
+                        
+                        // Play the dust explosion animation
+                        dustExplosion.play(ANIMATION_ENUMS.DUST_EXPLOSION_ANIMATION);
+                        
+                        // Add a camera shake effect for more impact
+                        this.scene.cameras.main.shake(150, 0.008);
+                        
+                        // Remove the explosion sprite once the animation completes
+                        dustExplosion.once('animationcomplete', () => {
+                            dustExplosion.destroy();
+                        });
+
+                        // Add a slight scale bounce to the card
+                        this.scene.tweens.add({
+                            targets: activePlayerLeaderCard,
+                            scaleX: activePlayerLeaderCard.scaleX * 1.1,
+                            scaleY: activePlayerLeaderCard.scaleY * 1.1,
+                            duration: 150,
+                            yoyo: true,
+                            ease: 'Quad.easeOut',
+                            onComplete: () => {
+                                this.scene.activePlayerScene.leaderLocation.addCard(activePlayerLeaderCard);
+                                activePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
+                                this.activePlayerReadyForMulligan = true;
+                                this.startMulliganPhase();
+                            }
+                        });
                     }
                 })
             }
         });
 
-        //Passive Player tween
+        // Passive Player leader card animation with enhanced dynamics and dust explosion
         this.scene.add.tween({
             targets: passivePlayerLeaderCard,
-            y: this.scene.passivePlayerScene.leaderLocation.posY + 50,
-            scale: {from: CARD_SCALE.IN_DECK, to: 0.4},
-            duration: 450,
-            ease: 'easeOut',
+            delay: 300, // Delay the animation to create a staggered effect
+            y: this.scene.passivePlayerScene.leaderLocation.posY + 75, // Higher arc for more impact
+            scale: {from: CARD_SCALE.IN_DECK, to: 0.35}, // Match the active player scale
+            duration: 600, // Match the active player duration
+            ease: 'Back.easeOut', // More dynamic easing function
             onComplete: () => {
                 this.scene.add.tween({
                     targets: passivePlayerLeaderCard,
                     y: this.scene.passivePlayerScene.leaderLocation.posY,
-                    scale: {from: 0.4, to: CARD_SCALE.IN_LOCATION_LEADER},
-                    duration: 250,
-                    delay: 1000,
-                    ease: 'easeIn',
+                    scale: {from: 0.35, to: CARD_SCALE.IN_LOCATION_LEADER},
+                    duration: 400, // Faster landing for more impact
+                    delay: 800,
+                    ease: 'Bounce.easeOut', // Bounce effect on landing
                     onComplete: () => {
-                        this.scene.passivePlayerScene.leaderLocation.addCard(passivePlayerLeaderCard);
-                        passivePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
-                        this.passivePlayerReadyForMulligan = true;
-                        this.startMulliganPhase();
+                        // Create and play dust explosion effect
+                        const dustExplosion = this.scene.add.sprite(
+                            passivePlayerLeaderCard.x,
+                            passivePlayerLeaderCard.y, // Position it below the card
+                            ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET
+                        ).setScale(3).setOrigin(0.5);
+                        
+                        // Set the depth to be just below the card
+                        this.scene.children.moveBelow(dustExplosion, passivePlayerLeaderCard);
+                        
+                        // Play the dust explosion animation
+                        dustExplosion.play(ANIMATION_ENUMS.DUST_EXPLOSION_ANIMATION);
+                        
+                        // Add a camera shake effect for more impact
+                        this.scene.cameras.main.shake(150, 0.008);
+                        
+                        // Remove the explosion sprite once the animation completes
+                        dustExplosion.once('animationcomplete', () => {
+                            dustExplosion.destroy();
+                        });
+
+                        // Add a slight scale bounce to the card
+                        this.scene.tweens.add({
+                            targets: passivePlayerLeaderCard,
+                            scaleX: passivePlayerLeaderCard.scaleX * 1.1,
+                            scaleY: passivePlayerLeaderCard.scaleY * 1.1,
+                            duration: 150,
+                            yoyo: true,
+                            ease: 'Quad.easeOut',
+                            onComplete: () => {
+                                this.scene.passivePlayerScene.leaderLocation.addCard(passivePlayerLeaderCard);
+                                passivePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
+                                this.passivePlayerReadyForMulligan = true;
+                                this.startMulliganPhase();
+                            }
+                        });
                     }
-                })
+                });
             }
         });
 
