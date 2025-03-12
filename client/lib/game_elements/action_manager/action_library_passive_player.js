@@ -221,7 +221,7 @@ class ActionLibraryPassivePlayer {
      * It creates an action to execute the inking and do the animation
      * Calls the completeServerRequest at the end
      */
-    playCardAction(playerScene, card, spentDonIds, replacedCard = null) {
+    playCardAction(playerScene, card, spentDonIds, replacedCard = null, abilityInfo = null) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_PLAY_ANIMATION/2;
         let displayY = this.scene.screenCenterY;
 
@@ -253,11 +253,25 @@ class ActionLibraryPassivePlayer {
             onComplete: () => {this.scene.actionManager.completeAction();}
         });
         //Create tween chain
-        let animation = this.scene.tweens.chain({
+        let start_animation = this.scene.tweens.chain({
             targets: card,
             tweens: tweens
         }).pause();
 
+        //Prepare the tweens from the playArea animation
+        let tweens2 = null;
+        if(card.cardData.card === CARD_TYPES.CHARACTER) tweens2 = playerScene.characterArea.addCardAnimation(card);
+        else if(card.cardData.card === CARD_TYPES.STAGE) tweens2 = playerScene.stageLocation.addCardAnimation(card);
+        if(tweens2 !== null) tweens2 = tweens2.concat({ //concat additional tween to call the completeAction function
+            duration: 10,
+            onComplete: () => {this.actionManager.finalizeAction();}
+        });
+        //Create the tween chain
+        let end_animation = null;
+        if(tweens2 !== null) end_animation = this.scene.tweens.chain({
+            targets: card,
+            tweens: tweens2
+        }).pause();
 
         //Create the action
         let action = new Action();
@@ -274,12 +288,39 @@ class ActionLibraryPassivePlayer {
             else if(card.cardData.card === CARD_TYPES.STAGE)
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
         }
-        action.start_animation = animation; //play animation
-        action.finally = () => {
-            card.isInPlayAnimation = false;
-
+        action.start_animation = start_animation; //play animation
+        action.end = () => {
             //Refresh GameStateUI
             playerScene.playerInfo.updateCardAmountTexts();
+
+            //If the card of an event
+            if(card.cardData.card === CARD_TYPES.EVENT) {
+                //execute ability and init ability tweens
+                let abilityTweens = [];
+                for(let ability of card.abilities) {
+                    if(ability.canActivate(card.scene.gameStateUI.phaseText.text)) { //For each ability that can be activated
+                        abilityTweens = abilityTweens.concat(ability.animate(card, abilityInfo, false)); //Add the ability tween
+                    }
+                }
+
+                //If there are abilities to animate
+                if(abilityTweens.length>0) {
+                    //Add action finalizer call
+                    abilityTweens = abilityTweens.concat({ //concat additional tween to call the completeAction function
+                        duration: 10,
+                        onComplete: () => {this.actionManager.finalizeAction();}
+                    });
+                    //Create tween chain
+                    this.scene.actionManager.currentAction.end_animation = this.scene.tweens.chain({
+                        targets: card,
+                        tweens: abilityTweens
+                    }).pause();
+                }
+            }
+        }
+        action.end_animation = end_animation;
+        action.finally = () => {
+            card.isInPlayAnimation = false;
         
             //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play

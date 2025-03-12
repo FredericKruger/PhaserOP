@@ -115,7 +115,7 @@ class TargetingArrow {
     
     /** Function to stop targetting */
     stopTargeting() {
-        this.originatorObject = null;
+        //this.originatorObject = null;
         this.setVisible(false);
         this.isTargeting = false;
     }

@@ -81,12 +81,12 @@ class Ability {
         this.usedThisTurn = false;
     }
 
-    executeActions(card, abilityInfo) {
+    executeActions(card, abilityInfo, activePlayer) {
         let abilityTweens = [];
         for (const action of this.actions) {
             const func = abilityActions[action.name];
             if (func) {
-                abilityTweens = abilityTweens.concat(func(card, abilityInfo[action.name]));
+                abilityTweens = abilityTweens.concat(func(card, abilityInfo[action.name], activePlayer));
             }
         }
 
@@ -100,8 +100,8 @@ class Ability {
     action() {}
     onFail() {}
 
-    animate(card, abilityInfo) {
-        return this.executeActions(card, abilityInfo);
+    animate(card, abilityInfo, activePlayer = true) {
+        return this.executeActions(card, abilityInfo, activePlayer);
     }
 
 }
@@ -112,12 +112,27 @@ const abilityActions = {
      * @param {Object} info
      * @returns {Object}
      */
-    addCounterToCard: (card, info) => {
+    addCounterToCard: (card, info, activePlayer) => {
         //Get Defender Card
         let defender = card.scene.activePlayerScene.getCard(info.defenderId);
-        if(defender === null) defender = card.scene.passivePlayerScene.getCard(info.defenderId);
+        if(defender === undefined) defender = card.scene.passivePlayerScene.getCard(info.defenderId);
  
-        let tweens = [{
+        let tweens = [];
+        if(!activePlayer) {
+            card.scene.eventArrow.originatorObject = card;
+            let arrowTweens = card.scene.eventArrow.animateToPosition(defender.x, defender.y, 600);
+            tweens = tweens.concat([
+                {
+                    onStart: () => { //Add Tween for target arrow
+                        card.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                    },
+                    delay: 100,
+                }
+            ]);
+            tweens = tweens.concat(arrowTweens);
+        }
+
+        tweens = tweens.concat([{
                 onStart: () => { //Add Tween for target arrow
                     defender.eventCounterPower = info.counterAmount;
                 },
@@ -126,7 +141,18 @@ const abilityActions = {
                 duration: 400,
                 yoyo: true
             }
-        ];
+        ]);
+
+        if(!activePlayer) {
+            tweens = tweens.concat([{
+                targets: defender.locationPowerText,
+                scale: 1,
+                duration: 10,
+                onStart: () => {
+                    card.scene.eventArrow.stopTargeting();
+                }
+            }]);
+        }
 
         return tweens;  
     },
@@ -135,7 +161,7 @@ const abilityActions = {
      * @param {Object} info
      * @returns {Object}
      */
-    activateExertedDon: (card, info) => {
+    activateExertedDon: (card, info, activePlayer) => {
         //Get Defender Card
         let donCards = [];
         for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
@@ -144,7 +170,7 @@ const abilityActions = {
         let tweens = [
             {
                 onStart: () => { //Add Tween for target arrow
-                    this.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                    card.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
                 },
                 delay: 100,
             }

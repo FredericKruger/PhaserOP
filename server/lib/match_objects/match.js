@@ -454,7 +454,6 @@ class Match {
 
     /** Function to resolve the attack */
     startResolveAttack() {
-        console.log("RESOLVING ATTACK");
         if(this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_passive_player)){
             //Resolve the attack
@@ -478,16 +477,14 @@ class Match {
         if(replacementTargets.length === 0) return;
 
         let validTarget = this.targetingManager.areValidTargets(player, replacementTargets, this.state.pending_action.targetData);
-        console.log(validTarget);
         if(validTarget) {
             let result = this.state.playEventCard(player.currentMatchPlayer, cardID, replacementTargets[0]);
 
             if(!player.bot) {
                 player.socket.emit('game_stop_targetting', true, true);
                 player.socket.emit('game_play_card_played', result.actionInfos, true, false, {});
-                //player.socket.emit('game_change_state_active');
             }
-            //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
         } else {
             player.socket.emit('game_reset_targets');
         }
