@@ -249,35 +249,34 @@ class ActionLibrary {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
         let displayY = this.scene.screenCenterY;
 
-        //play animation to show card
+        // Enhanced animation for playing a card - more dynamic initial display only
         let start_animation = this.scene.tweens.chain({
             targets: card,
             tweens: [
                 {
-                    scale: {value: CARD_SCALE.IN_PLAY_ANIMATION, duration: 150},
-                    x: {value: displayX, duration: 150},
-                    y: {value: displayY, duration: 150}
-                }, {
+                    // Phase 2: Move to center display position with dramatic scaling
+                    scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 0.9, to: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, duration: 130},
+                    x: {from: card.x + (displayX - card.x) * 0.3, to: displayX, duration: 130},
+                    y: {from: card.y - 40, to: displayY, duration: 130},
+                    rotation: {from: 0.05, to: 0, duration: 130},
+                    ease: 'Power2.easeInOut'
+                },
+                {
+                    // Phase 3: Quick scale adjustment for emphasis with slight bounce
+                    scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, to: CARD_SCALE.IN_PLAY_ANIMATION, duration: 100},
+                    ease: 'Back.easeOut',
+                },
+                {
+                    // Phase 4: Hold the card in display position
+                    // This phase is shorter since specific card arrival animations will be handled elsewhere
                     scale: CARD_SCALE.IN_PLAY_ANIMATION,
-                    duration: 750,
-                    onComplete: () => {this.actionManager.completeAction();}
+                    duration: 600,
+                    onComplete: () => {                        
+                        // Complete the action
+                        this.actionManager.completeAction();
+                    }
                 }
             ]
-        }).pause();
-
-        //Prepare the tweens from the playArea animation
-        let tweens2 = null;
-        if(card.cardData.card === CARD_TYPES.CHARACTER) tweens2 = playerScene.characterArea.addCardAnimation(card);
-        else if(card.cardData.card === CARD_TYPES.STAGE) tweens2 = playerScene.stageLocation.addCardAnimation(card);
-        if(tweens2 !== null) tweens2 = tweens2.concat({ //concat additional tween to call the completeAction function
-            duration: 10,
-            onComplete: () => {this.actionManager.finalizeAction();}
-        });
-        //Create the tween chain
-        let end_animation = null;
-        if(tweens2 !== null) end_animation = this.scene.tweens.chain({
-            targets: card,
-            tweens: tweens2
         }).pause();
 
         //Create the action
@@ -325,7 +324,6 @@ class ActionLibrary {
                 }
             }
         };
-        action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
         
