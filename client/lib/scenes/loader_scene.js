@@ -315,6 +315,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.spritesheet(ASSET_ENUMS.GOING_MERRY_SPRITESHEET, `${assetPath}/merry_loader.png`, { frameWidth: 524, frameHeight: 321 });
         this.load.spritesheet(ASSET_ENUMS.LOADING_SPRITESHEET, `${assetPath}/loading_gif.png`, { frameWidth: 479, frameHeight: 236 });
         this.load.spritesheet(ASSET_ENUMS.SLEEPING_SPRITESHEET, `${assetPath}/sleeping_spritesheet.png`, { frameWidth: 480, frameHeight: 480 });
+        this.load.spritesheet(ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET, `${assetPath}/dustexplosions.png`, { frameWidth: 728, frameHeight: 343});
 
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
@@ -372,6 +373,14 @@ class LoaderScene extends Phaser.Scene {
             repeat: -1
         });
 
+        // Create the animation with the atlas frames
+        this.anims.create({
+            key: ANIMATION_ENUMS.DUST_EXPLOSION_ANIMATION,
+            frames: this.createColoudExplosionAnimation(),
+            frameRate: 12,
+            repeat: 0
+        });
+
         let welcomeText = this.make.text({
             x : screenCenterX,
             y : screenCenterY+50,
@@ -391,4 +400,65 @@ class LoaderScene extends Phaser.Scene {
             }
         })
     }
+
+    /** Function to create the animation frames form the cloud explosion image */
+    createColoudExplosionAnimation() {
+        // Calculate frameswith custom vertical spacing
+        const frameCount = 6; // Total number of frames
+        const rowCount = 3; // Number of rows
+        const framesPerRow = 7; // Frames per row
+        const topMargin = 10; // Top margin in pixels
+        const leftMargin = 115; // Left margin in pixels
+        const verticalSpacing = 6; // Spacing between rows in pixels
+        const horizontalSpacing = 0; // Optional: spacing between columns
+        const spriteWidth = 99;
+        const spriteHeight = 101;
+
+        // First, create a texture atlas dynamically for our dust explosion spritesheet
+        const atlasKey = 'dust-explosion-atlas';
+        const atlasFrames = {};
+
+        // Generate custom frame data accounting for layout and spacing
+        const frames = [];
+        for (let i = 0; i < frameCount; i++) {
+            // Calculate row and column for this frame
+            const row = Math.floor(i / framesPerRow);
+            const col = i % framesPerRow;
+            
+            // Calculate x and y positions with margins and spacing
+            const x = leftMargin + col * (spriteWidth + horizontalSpacing);
+            const y = topMargin + row * (spriteHeight + verticalSpacing);
+            
+            // Create a frame definition for this frame
+            atlasFrames['frame_' + i] = {
+                frame: { x: x, y: y, w: spriteWidth, h: spriteHeight },
+                rotated: false,
+                trimmed: false,
+                sourceSize: { w: spriteWidth, h: spriteHeight },
+                spriteSourceSize: { x: 0, y: 0, w: spriteWidth, h: spriteHeight }
+            };
+        }
+        // Create the atlas definition
+        const atlas = {
+            frames: atlasFrames,
+            meta: {
+                image: ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET,
+                format: 'RGBA8888',
+                size: { w: 728, h: 343 }, // This should match your spritesheet dimensions
+                scale: 1
+            }
+        };
+
+        // Add the atlas to the texture manager
+        this.textures.addAtlas(atlasKey, this.textures.get(ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET).source[0].image, atlas);
+
+        // Create animation frames array referencing the atlas frames
+        const animationFrames = [];
+        for (let i = 0; i < frameCount; i++) {
+            animationFrames.push({ key: atlasKey, frame: 'frame_' + i });
+        }
+
+        return animationFrames;
+    }
+
 }

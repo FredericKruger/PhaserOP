@@ -33,9 +33,11 @@ class CharacterAreaUI extends CardPileUI {
     }
 
     /** Funciton to update the character area */
-    update() {
+    update(newAddedCard = null) {
         let numberCards = Math.max(this.cards.length-1, 0);
         let currentIndex = numberCards/2 - numberCards;
+
+        let newCardPos = {x: 0, y: 0};
 
         //Iterate through cards
         for(let i=0; i<this.cards.length; i++) {
@@ -43,11 +45,18 @@ class CharacterAreaUI extends CardPileUI {
 
             let cardX = this.posX - currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_LOCATION + 25);
             let cardY = this.posY;
-            card.moveTo(cardX, cardY, true, false, false);
-            card.scaleTo(CARD_SCALE.IN_LOCATION, true, false, false);
+            if(newAddedCard !== null && card !== newAddedCard) {
+                card.moveTo(cardX, cardY, true, false, false);
+                card.scaleTo(CARD_SCALE.IN_LOCATION, true, false, false);
+            } else {
+                newCardPos.x = cardX;
+                newCardPos.y = cardY;
+            }
 
             currentIndex++;
         }
+
+        return newCardPos;
     }
 
     /** Function to add a card

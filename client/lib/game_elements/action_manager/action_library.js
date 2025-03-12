@@ -348,7 +348,8 @@ class ActionLibrary {
         //Update playArea action
         let updateAction = new Action();
         updateAction.start = () => {
-            playerScene.characterArea.update();
+            let cardPosition = playerScene.characterArea.update(card);
+            card.enterCharacterArea(cardPosition.x, cardPosition.y);
 
             //Create small animation
             if(card.cardData.card === CARD_TYPES.CHARACTER) {

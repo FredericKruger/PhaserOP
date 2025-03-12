@@ -385,7 +385,7 @@ class GameCardUI extends BaseCardUI{
      * @param {boolean} chainTween
      * @param {boolean} clearPreviousTween
      */
-    moveTo(x, y, useTween, chainTween, clearPreviousTween) {
+    moveTo(x, y, useTween, chainTween, clearPreviousTween, playCardEffect = false) {
         if(clearPreviousTween) this.scene.tweens.killTweensOf(this);
 
         let duration = 200;
@@ -421,6 +421,69 @@ class GameCardUI extends BaseCardUI{
             if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
             if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
         }
+    }
+
+    /** Function to create an animation to enter the character ARea
+     * @param {number} posX
+     * @param {number} posY
+     */
+    enterCharacterArea(posX, posY) {
+        const duration = 300;
+
+        this.scene.tweens.add({
+            targets: this,
+            x: posX,
+            y: posY,
+            scale: CARD_SCALE.IN_LOCATION,
+            duration: duration,
+            ease: 'Cubic.easeIn', // More dramatic easing for card playing
+            onComplete: () => {
+                this.x = posX;
+                this.y = posY;
+
+                if(this.state === CARD_STATES.TRAVELLING_DECK_HAND) this.setState(CARD_STATES.IN_HAND);
+                
+                // Play dust explosion effect if this is a card being played
+                this.playDustExplosionEffect();
+            }
+        });
+    }
+
+    /** 
+     * Creates and plays the dust explosion effect beneath the card
+     * @private
+     */
+    playDustExplosionEffect() {
+        // Create dust explosion sprite at the card's position but slightly lower
+        const dustExplosion = this.scene.add.sprite(
+            this.x, 
+            this.y, // Position it below the card
+            ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET
+        ).setScale(2.75).setOrigin(0.5);
+        
+        // Set the depth to be just below the card
+        dustExplosion.setDepth(this.depth - 1);
+        
+        // Play the dust explosion animation
+        dustExplosion.play(ANIMATION_ENUMS.DUST_EXPLOSION_ANIMATION);
+        
+        // Add a camera shake effect for more impact
+        this.scene.cameras.main.shake(100, 0.005);
+        
+        // Add a slight scale bounce to the card
+        this.scene.tweens.add({
+            targets: this,
+            scaleX: this.scaleX * 1.1,
+            scaleY: this.scaleY * 1.1,
+            duration: 100,
+            yoyo: true,
+            ease: 'Quad.easeOut'
+        });
+        
+        // Remove the explosion sprite once the animation completes
+        dustExplosion.once('animationcomplete', () => {
+            dustExplosion.destroy();
+        });
     }
     //#endregion
 
