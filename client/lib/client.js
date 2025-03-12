@@ -150,7 +150,7 @@ class Client {
         this.socket.on('game_attack_blocked', (activePlayer, blockerID) => {this.gameScene.gameStateManager.startAttackBlocked(activePlayer, blockerID);});
         
         this.socket.on('game_counter_played_failure', (activePlayer, counterID) => {this.gameScene.gameStateManager.startCounterPlayedFailure(activePlayer, counterID);});
-        this.socket.on('game_counter_played', (activePlayer, counterID, characterID) => {this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID);});
+        this.socket.on('game_counter_played', (activePlayer, counterID, characterID, counterCardData = null) => {this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID, counterCardData);});
 
         this.socket.on('game_start_attack_animation', (activePlayer, attackResults) => {this.gameScene.gameStateManager.startAttackAnimation(activePlayer, attackResults);});
 

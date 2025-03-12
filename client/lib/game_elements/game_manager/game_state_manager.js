@@ -689,7 +689,6 @@ class GameStateManager {
     */
     passivePlayerStartTargetingAttack(cardID) {
         let card = this.scene.passivePlayerScene.getCard(cardID);
-        console.log("HERE FOR CLIENT" + card);
         this.scene.targetingArrow.startManualTargetingXY(card, card.x, card.y);
     }
 
@@ -811,8 +810,8 @@ class GameStateManager {
      * @param {number} counterID - The counter ID
      * @param {number} characterID - The character ID
      */
-    startCounterPlayed(activePlayer, counterID, characterID) {
-        if(activePlayer) this.scene.actionLibraryPassivePlayer.playCounterAction(this.scene.passivePlayerScene, counterID, characterID);
+    startCounterPlayed(activePlayer, counterID, characterID, counterCardData) {
+        if(activePlayer) this.scene.actionLibraryPassivePlayer.playCounterAction(this.scene.passivePlayerScene, counterID, characterID, counterCardData);
         else this.scene.actionLibrary.playCounterAction(this.scene.activePlayerScene, counterID, characterID);
     }
 

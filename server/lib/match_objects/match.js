@@ -444,7 +444,7 @@ class Match {
         let counterCard = this.state.current_passive_player.currentMatchPlayer.getCard(counterID);
         if(counterCard.cardData.counter) {
             this.state.attachCounterToCharacter(this.state.current_passive_player.currentMatchPlayer, counterID, characterID);
-            //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_counter_played', true, counterID, characterID);
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_counter_played', true, counterID, characterID, counterCard.cardData);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_counter_played', false, counterID, characterID);
         } else {
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_counter_played_failure', true, counterID);

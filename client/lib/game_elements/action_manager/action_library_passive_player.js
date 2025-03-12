@@ -465,21 +465,62 @@ class ActionLibraryPassivePlayer {
      * @param {number} counterID
      * @param {number} characterID
      */
-    playCounterAction(playerScene, counterID, characterID) {
+    playCounterAction(playerScene, counterID, characterID, counterCardData) {
+        let counterCard = playerScene.getCard(counterID);
+        counterCard.updateCardData(counterCardData);
+        let characterCard = playerScene.getCard(characterID);
+        console.log(characterCard);
+
+        let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_PLAY_ANIMATION/2;
+        let displayY = this.scene.screenCenterY;
+
+        //Create tweens
+        let tweens = [];
+        tweens.push({ //Tween 1: Bring card to top, then move it to center and scale up. On complete redraw the hand
+            onStart: () => {this.scene.children.bringToTop(counterCard);},
+            x: displayX,
+            y: displayY,
+            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            angle: 0,
+            duration: 300,
+            onComplete: () => { playerScene.hand.update(); }
+        });
+        tweens.push({
+            scaleX: 0,
+            duration: 300
+        });
+        tweens.push({ //Tween 3: empty tween to show the player the card for 2 seconds
+            onStart: () => {counterCard.flipCard();},
+            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            duration: 200
+        });
+        tweens.push({ //Tween 5: empty tween to call completeActin
+            delay: 750,
+            duration: 200,
+            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            onComplete: () => {this.scene.actionManager.completeAction();}
+        });
+        //Create tween chain
+        let animation = this.scene.tweens.chain({
+            targets: counterCard,
+            tweens: tweens
+        }).pause();
+
         let action = new Action();
         action.start = () => {
-            let counterCard = playerScene.getCard(counterID);
-            let characterCard = playerScene.getCard(characterID);
-
             //remove Card from owner hand
             counterCard.playerScene.hand.removeCard(counterCard);
+            counterCard.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
+        };
+        action.start_animation = animation; //play animation
+        action.end = () => {
             counterCard.setDepth(DEPTH_VALUES.CARD_IN_DECK);
             counterCard.setState(CARD_STATES.IN_PLAY_ATTACHED);
             characterCard.attachedCounter.push(counterCard);
             characterCard.updateAttachedCounterPosition();
-        };
+        }
         action.isPlayerAction = true;
-        action.waitForAnimationToComplete = false;
+        action.waitForAnimationToComplete = true;
 
         //Add action to the action stack
         this.actionManager.addAction(action);

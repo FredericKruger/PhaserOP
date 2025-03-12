@@ -272,8 +272,6 @@ class GameCardUI extends BaseCardUI{
             this.scene.children.sendToBack(attachedCounter);
             attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
             
-            //this.attachedCounter.moveTo(this.x + this.displayWidth/2, this.y, true, false, false);
-            //this.attachedCounter.angleTo(20, true, false, false);
             if (this.angle === -90) {
                 attachedCounter.moveTo(this.x - counterStartPosition, this.y - this.displayWidth / 2, true, false, false);
                 attachedCounter.angleTo(-70, true, false, false); // Adjust angle accordingly
