@@ -367,7 +367,7 @@ class AnimationLibrary {
     }
 
     /** Animation that moves a don card from the character area to the active don area
-     * @param {DonCardUI} card - card to be moved from the don deck to the active don area
+     * @param {DonCardUI} card - card to be moved from a character back to the active don area
      * @param {number} delay - delay with which to start the tweens
      */
     animation_move_don_characterarea2activearea(card, delay) {
@@ -376,19 +376,84 @@ class AnimationLibrary {
         let posY = card.playerScene.playerInfo.activeDonPlaceholder.y;
         let angle = card.playerScene.playerInfo.activeDonPlaceholder.angle;
 
+        // Calculate arc path parameters
+        const startX = card.x;
+        const startY = card.y;
+        const arcHeight = 80 + Math.random() * 40; // Random arc height between 80-120
+        const controlX = (startX + posX) / 2;
+        const controlY = startY - arcHeight;
+        
+        // Random rotation during flight
+        const randomRotation = (Math.random() * 0.2) - 0.1;
+
         let tweens = [
-            { //tween3: move the card to the mulligan card position
+            { // Phase 1: Initial detachment with small "pop" effect
+                scale: card.scale * 1.15, // Slightly enlarge for pop effect
+                y: card.y - 20, // Small initial lift
+                rotation: randomRotation * 0.5,
+                duration: 150,
+                delay: delay,
+                ease: 'Back.easeOut', // Slight overshoot for pop effect
+                onStart: () => {
+                    // Set proper depth for animation
+                    card.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                }
+            },
+            { // Phase 2: Arc movement toward DON area
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 0.9,
+                x: controlX,
+                y: controlY,
+                rotation: randomRotation,
+                duration: 300,
+                ease: 'Sine.easeOut' // Smooth deceleration for natural arc
+            },
+            { // Phase 3: Final approach to DON pile
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1,
+                x: posX,
+                y: posY - 15, // Slightly above final position
+                rotation: Phaser.Math.DegToRad(angle * 0.8), // Almost to final angle
+                duration: 250,
+                ease: 'Power2.easeIn' // Accelerating approach
+            },
+            { // Phase 4: Settle into DON pile with slight bounce
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON,
                 x: posX,
                 y: posY,
-                angle: angle,
-                duration: 750,
-                delay: delay,
+                rotation: Phaser.Math.DegToRad(angle),
+                duration: 200,
+                ease: 'Back.easeOut', // Bounce effect when settling
                 onComplete: () => {
+                    // Set proper depth in DON area
                     this.scene.children.moveBelow(card, card.playerScene.playerInfo.activeDonCardAmountText);
+                    
+                    // Create a pulse effect on the DON counter
+                    const donText = card.playerScene.playerInfo.activeDonCardAmountText;
+                    if (donText) {
+                        card.scene.tweens.add({
+                            targets: donText,
+                            scale: 1.2,
+                            duration: 150,
+                            yoyo: true,
+                            ease: 'Sine.easeInOut'
+                        });
+                    }
+                    
+                    // Optional: Add ripple effect to DON pile
+                    const donPile = card.playerScene.activeDonDeck;
+                    if (donPile) {
+                        card.scene.tweens.add({
+                            targets: donPile,
+                            scaleX: 1.05,
+                            scaleY: 1.05,
+                            duration: 100,
+                            yoyo: true,
+                            ease: 'Sine.easeInOut'
+                        });
+                    }
                 }
             }
         ];
+        
         return tweens;
     }
     //#endregion
