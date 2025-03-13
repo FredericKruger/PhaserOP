@@ -756,7 +756,7 @@ class GameStateManager {
             character.attachedDon.push(donCard); //Add to character pile
 
             //Animate
-            character.updateAttachedDonPosition();
+            character.updateAttachedDonPosition(true, donCard);
 
             //Update the UI
             player.playerInfo.updateCardAmountTexts();
@@ -768,29 +768,87 @@ class GameStateManager {
                 const startX = donCard.x;
                 const startY = donCard.y;
             };
+            
+            // Create the animation
             action.start_animation = this.scene.tweens.add({
                 targets: donCard,
-                x: {from: donCard.x, to: character.x},
-                y: {from: donCard.y, to: character.y},
-                angle: 0,
+                x: { from: donCard.x, to: character.x },
+                y: { from: donCard.y, to: character.y },
+                scale: { from: donCard.scale, to: donCard.scale * 1.1 },
+                angle: { from: 0, to: 360 }, // Full rotation during travel
                 duration: 500,
-                ease: 'Cubic.easeOut',
+                ease: 'Back.easeOut',
                 onComplete: () => {
+                    // Create impact effect at destination
+                    try {                        
+                        // Power-up effect on character
+                        this.scene.tweens.add({
+                            targets: character,
+                            scaleX: character.scaleX * 1.1,
+                            scaleY: character.scaleY * 1.1,
+                            duration: 200,
+                            yoyo: true,
+                            ease: 'Sine.easeOut'
+                        });
+                        
+                        // Character glow effect
+                        const glow = this.scene.add.graphics();
+                        glow.fillStyle(0xffcc00, 0.3);
+                        glow.fillRoundedRect(
+                            character.x - (character.width * character.scaleX * 0.55),
+                            character.y - (character.height * character.scaleY * 0.55),
+                            character.width * character.scaleX * 1.1,
+                            character.height * character.scaleY * 1.1,
+                            10
+                        );
+                        
+                        this.scene.tweens.add({
+                            targets: glow,
+                            alpha: 0,
+                            duration: 500,
+                            ease: 'Power2.easeOut',
+                            onComplete: () => glow.destroy()
+                        });
+                    } catch (e) {
+                        // Silent fail if effect unavailable
+                    }
+                    
                     this.scene.actionManager.completeAction();
                 }
             }).pause();
+
             action.end = () => {
                 donCard.setState(CARD_STATES.DON_ATTACHED);
                 donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
                 character.attachedDon.push(donCard); //Add to character pile
-                character.updateAttachedDonPosition();
+                character.updateAttachedDonPosition(true, donCard);
+
+                // Update the power text with animation
+                character.updatePowerText();
+                if (character.powerText) {
+                    this.scene.tweens.add({
+                        targets: character.powerText,
+                        scale: 1.5,
+                        duration: 150,
+                        yoyo: true,
+                        ease: 'Back.easeOut'
+                    });
+                }
+                
+                // Update the UI with pulse effect
                 player.playerInfo.updateCardAmountTexts();
+                this.scene.tweens.add({
+                    targets: player.playerInfo.activeDonCardAmountText,
+                    scale: 1.2,
+                    duration: 100,
+                    yoyo: true,
+                    ease: 'Sine.easeOut'
+                });
             }
             action.isPlayerAction = false;
             action.waitForAnimationToComplete = true;
             this.scene.actionManager.addAction(action);
         }
-
     }
 
     //#endregion

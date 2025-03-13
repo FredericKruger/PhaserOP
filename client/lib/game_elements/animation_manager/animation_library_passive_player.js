@@ -259,7 +259,7 @@ class AnimationLibraryPassivePlayer {
      */
     animation_move_card_deck2hand(card, delay) {
         let animation = [
-            { // Phase 1: Quick pull from deck with slight arc
+            { // Phase 1: Quick pull from deck
                 scaleX: 0,
                 scaleY: 0.18,
                 x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.2,
@@ -267,7 +267,13 @@ class AnimationLibraryPassivePlayer {
                 duration: 180, // Faster initial movement
                 delay: delay,
                 ease: 'Power2.easeOut'
-            }, 
+            },
+            { // Phase 2: Pause for a moment with slight pulse effect
+                scaleX: 0.02, // Show just a hint of the card width
+                scaleY: 0.19, // Slight increase in height for pulse effect
+                duration: 220, // Duration of the pause
+                ease: 'Sine.easeInOut',
+            },
             { // Phase 3: Quick move toward hand position
                 scaleX: 0.28,
                 scaleY: 0.28,

@@ -19,11 +19,13 @@ class InPlayState extends GameCardState {
 
     onPointerOver(pointer, gameObject) {
         gameObject.showGlow(COLOR_ENUMS.OP_WHITE);
+        gameObject.fanOutDonCards();
         gameObject.scene.game.gameClient.sendCardPointerOver(gameObject.id, CARD_STATES.IN_PLAY, gameObject.playerScene === gameObject.scene.activePlayerScene);
     }
 
     onPointerOut(pointer, gameObject) {
         gameObject.hideGlow();
+        gameObject.fanInDonCards();
         gameObject.scene.game.gameClient.sendCardPointerOut(gameObject.id, CARD_STATES.IN_PLAY, gameObject.playerScene === gameObject.scene.activePlayerScene);
     }
 
