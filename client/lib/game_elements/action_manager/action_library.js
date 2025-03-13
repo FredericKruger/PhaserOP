@@ -486,15 +486,21 @@ class ActionLibrary {
      * @param {GameCardUI} defender
     */
     declareAttackAction(playerScene, attacker, defender) {
+        let start_animation = this.scene.tweens.chain({
+            targets: this.scene.targetingArrow,
+            tweens: this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 200)
+        }).pause();
+
         let action = new Action();
-        action.start = () => {
-            this.scene.targetingArrow.update(defender.x, defender.y);
+        action.start = () => {};
+        action.start_animation = start_animation;
+        action.end = () => {
             attacker.setState(CARD_STATES.IN_PLAY_ATTACKING);
             defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
             this.scene.game.gameClient.requestStartBlockerPhase();
         };
         action.isPlayerAction = true;
-        action.waitForAnimationToComplete = false;
+        action.waitForAnimationToComplete = true;
         action.name = "DECLARE ATTACK";
 
         //Add action to the action stack

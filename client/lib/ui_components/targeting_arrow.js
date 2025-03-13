@@ -157,83 +157,87 @@ class TargetingArrow {
         const startX = this.originatorObject.x;
         const startY = this.originatorObject.y;
         
-        // Calculate a midpoint with some offset for a smoother, arcing path
-        const midX = startX + (targetX - startX) * 0.5;
-        const midY = startY + (targetY - startY) * 0.3; // Slightly bias toward the start point
-        
         // Calculate distance between points to adjust timing
         const distance = Math.sqrt(Math.pow(targetX - startX, 2) + Math.pow(targetY - startY, 2));
         const adjustedDuration = Math.min(Math.max(duration, 300), 800); // Ensure reasonable animation time
         
-        // Create a temporary object to animate
+        // Create a temporary object to animate with dynamic speed properties
         const animationHelper = {
             progress: 0,
             currentX: startX,
             currentY: startY,
-            pathType: 'bezier' // Use bezier path by default for smooth curves
+            pathType: 'linear' // Use linear path for straight arrow
         };
         
-        // Create and return the tween with improved animation
+        // Create and return the tween with improved speed dynamics
         const tween = [{
             onStart: () => {
                 this.setVisible(true);
-                
-                // Optional: Add a subtle "whoosh" effect
-                if (this.scene.cameras && this.scene.cameras.main) {
-                    this.scene.cameras.main.shake(100, 0.001); // Very subtle camera shake
+                // Optional: Add a subtle "launch" effect at the start
+                if (this.arrowHead) {
+                    this.arrowHead.setScale(0.8);
+                    this.scene.tweens.add({
+                        targets: this.arrowHead,
+                        scale: 1,
+                        duration: 80,
+                        ease: 'Back.easeOut'
+                    });
                 }
             },
             targets: animationHelper,
             progress: 1,
             duration: adjustedDuration,
             delay: delay,
-            ease: 'Cubic.easeInOut', // Better easing for smooth acceleration/deceleration
+            ease: 'Expo.easeOut', // Fast start, gradual slowdown for dynamic feel
             onUpdate: () => {
-                let currentX, currentY;
+                // Calculate current position with linear interpolation
+                const currentX = startX + (targetX - startX) * animationHelper.progress;
+                const currentY = startY + (targetY - startY) * animationHelper.progress;
                 
-                if (animationHelper.pathType === 'bezier') {
-                    // Use quadratic Bezier curve for smoother path
-                    const t = animationHelper.progress;
-                    const invT = 1 - t;
-                    
-                    // Quadratic Bezier formula: (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
-                    currentX = invT * invT * startX + 2 * invT * t * midX + t * t * targetX;
-                    currentY = invT * invT * startY + 2 * invT * t * midY + t * t * targetY;
-                } else {
-                    // Fallback to linear interpolation
-                    currentX = startX + (targetX - startX) * animationHelper.progress;
-                    currentY = startY + (targetY - startY) * animationHelper.progress;
-                }
-                
-                // Update the targeting arrow to the current position with smoother interpolation
+                // Update the targeting arrow to the current position
                 this.update(currentX, currentY);
                 
-                // Optional: Update arrow visibility/opacity based on progress
-                if (this.arrowStem && this.arrowHead) {
-                    // Fade in at the start, remain solid in the middle, fade out at the end
-                    let opacity = 1;
-                    if (animationHelper.progress < 0.2) {
-                        opacity = animationHelper.progress / 0.2;
-                    } else if (animationHelper.progress > 0.8) {
-                        opacity = (1 - animationHelper.progress) / 0.2;
-                    }
+                // Optional: Adjust dash speed based on progress
+                // This creates the illusion of movement dynamics without changing the path
+                if (this.arrowStem) {
+                    // Calculate current speed factor - faster at start, slower at end
+                    const speedFactor = 1 - Math.pow(animationHelper.progress, 2);
                     
-                    this.arrowStem.setAlpha(opacity);
-                    this.arrowHead.setAlpha(opacity);
+                    // Apply subtle scaling to suggest momentum
+                    if (this.arrowHead) {
+                        // Slight stretch at high speeds, normal at end
+                        const stretchFactor = 1 + speedFactor * 0.1;
+                        this.arrowHead.setScale(stretchFactor);
+                    }
                 }
             },
             onComplete: () => {
                 // Ensure the arrow is exactly at the final position
                 this.update(targetX, targetY);
                 
-                // Optional: Add a subtle "impact" effect at the target
+                // Add an "impact" effect at the target
                 if (this.arrowHead) {
                     this.scene.tweens.add({
                         targets: this.arrowHead,
-                        scale: 1.2,
+                        scale: 1.3, // Larger scale for more impact
                         duration: 100,
                         yoyo: true,
                         ease: 'Back.easeOut'
+                    });
+                    
+                    // Optional: Add a ripple or flash effect at the target
+                    const impact = this.scene.add.circle(targetX, targetY, 30, this.arrowColor, 0.7);
+                    impact.setDepth(1);
+                    
+                    this.scene.tweens.add({
+                        targets: impact,
+                        scale: 2,
+                        alpha: 0,
+                        duration: 250,
+                        ease: 'Quad.easeOut',
+                        onComplete: () => {
+                            impact.destroy();
+                        }
                     });
                 }
             }

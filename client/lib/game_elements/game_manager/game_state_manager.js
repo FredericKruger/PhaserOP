@@ -574,23 +574,42 @@ class GameStateManager {
                 else this.scene.actionLibraryPassivePlayer.drawDonCardAction(this.scene.passivePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*500, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
 
                 //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
+                //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
                 let donImage = this.scene.add.image(
                     this.scene.screenWidth*0.35 + i * this.scene.screenWidth * 0.3,
                     this.scene.screenCenterY - 100 + i * 200,
                     ASSET_ENUMS.GAME_DON_BIG
-                ).setOrigin(0.5).setDepth(2).setScale(1).setVisible(false).setAngle(-10 + i*20);
+                ).setOrigin(0.5).setDepth(2).setScale(0).setVisible(false).setAngle(-10 + i*20);
+
+                // Dramatic entry animation sequence
                 this.scene.tweens.add({
                     onStart: () => {donImage.setVisible(true);},
                     targets: donImage,
                     delay: i*500,
-                    alpha: 1,
-                    duration: 1000,
-                    onComplete: () => {
+                    scale: { from: 0, to: 1.3 }, // Zoom in effect (larger than final)
+                    angle: { from: -20 + i*40, to: -10 + i*20 }, // Rotation effect
+                    duration: 400,
+                    ease: 'Back.easeOut',
+                    onComplete: () => {                       
+                        // Pulse effect
                         this.scene.tweens.add({
                             targets: donImage,
-                            alpha: {from: 1, to: 0},
-                            duration: 1000,
-                            onComplete: () => {donImage.destroy();}
+                            scale: 1,
+                            duration: 200,
+                            ease: 'Bounce.easeOut',
+                            onComplete: () => {                                
+                                // Hold for a moment before fading out
+                                this.scene.time.delayedCall(400, () => {
+                                    this.scene.tweens.add({
+                                        targets: donImage,
+                                        alpha: { from: 1, to: 0 },
+                                        scale: { from: 1, to: 1.2 },
+                                        duration: 800,
+                                        ease: 'Power1.easeIn',
+                                        onComplete: () => {donImage.destroy();}
+                                    });
+                                });
+                            }
                         });
                     }
                 });
