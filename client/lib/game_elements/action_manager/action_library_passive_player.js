@@ -227,23 +227,75 @@ class ActionLibraryPassivePlayer {
 
         //Create tweens
         let tweens = [];
-        if(replacedCard === null) tweens.push({ //Tween 1: Bring card to top, then move it to center and scale up. On complete redraw the hand
-            onStart: () => {this.scene.children.bringToTop(card);},
+        if(replacedCard === null) {
+            // Initial pop-up effect from hand
+            tweens.push({
+                onStart: () => {
+                    this.scene.children.bringToTop(card);
+                },
+                x: card.x - 10, // Small shift back
+                y: card.y - 30, // Pop up slightly
+                scale: CARD_SCALE.IN_HAND * 1.1,
+                angle: -5, // Small tilt
+                duration: 150,
+                ease: 'Back.easeOut'
+            });
+            
+            // Move toward center with arc
+            tweens.push({
+                x: displayX - 50, // Approach point
+                y: displayY - 40, // Arc peak
+                scale: CARD_SCALE.IN_PLAY_ANIMATION * 0.8,
+                angle: 0, // Straighten out
+                duration: 250,
+                ease: 'Sine.easeInOut',
+                onComplete: () => {
+                    playerScene.hand.update();
+                }
+            });
+        }
+
+        // Move to final position and scale up
+        tweens.push({
             x: displayX,
             y: displayY,
             scale: CARD_SCALE.IN_PLAY_ANIMATION,
-            angle: 0,
-            duration: 400,
-            onComplete: () => { playerScene.hand.update(); }
+            duration: 150,
+            ease: 'Power2.easeOut'
         });
+
+    // Card flip animation - more dramatic
+    tweens.push({
+        scaleX: 0, // Card edge-on for flip
+        scaleY: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, // Slight scale increase during flip
+        rotation: 0.1, // Slight rotation during flip
+        duration: 250,
+        ease: 'Cubic.easeIn'
+    });
+    
+        // Show card face with slight bounce
         tweens.push({
-            scaleX: 0,
-            duration: 300
+            onStart: () => {
+                card.flipCard();
+            },
+            scaleX: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
+            scaleY: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
+            rotation: 0,
+            duration: 220,
+            ease: 'Back.easeOut'
         });
-        tweens.push({ //Tween 3: empty tween to show the player the card for 2 seconds
-            onStart: () => {card.flipCard();},
+        
+        // Settle to normal scale
+        tweens.push({
             scale: CARD_SCALE.IN_PLAY_ANIMATION,
-            duration: 300
+            duration: 150,
+            ease: 'Sine.easeInOut'
+        });
+        
+        // Hold to show card
+        tweens.push({
+            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            duration: 600
         });
 
         if(replacedCard !== null) tweens = tweens.concat(this.scene.animationLibraryPassivePlayer.animation_target_card(card, replacedCard)); //Tween 4: move replaced card to the deck
@@ -280,7 +332,6 @@ class ActionLibraryPassivePlayer {
             playerScene.activeDonDeck.payCost(spentDonIds);
             
             playerScene.hand.removeCard(card); //Remove the card form the hand
-            card.setDepth(DEPTH_VALUES.CARD_IN_DECK);
 
             card.isInPlayAnimation = true;
             if(card.cardData.card === CARD_TYPES.CHARACTER)
@@ -340,20 +391,9 @@ class ActionLibraryPassivePlayer {
         //Update playArea action
         let updateAction = new Action();
         updateAction.start = () => {
+            card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
             let cardPosition = playerScene.characterArea.update(card);
             card.enterCharacterArea(cardPosition.x, cardPosition.y);
-        
-            //Create small animation
-            if(card.cardData.card === CARD_TYPES.CHARACTER) {
-                this.scene.time.delayedCall(300, () => {
-                    let restingAnimation = this.scene.add.sprite(
-                        card.x + card.displayWidth/2,
-                        card.y - card.displayHeight/2, 
-                        ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
-                    restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
-                    this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
-                });
-            }
         };
         updateAction.isPlayerAction = false; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation

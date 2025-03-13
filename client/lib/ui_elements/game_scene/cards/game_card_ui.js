@@ -424,7 +424,6 @@ class GameCardUI extends BaseCardUI{
                     if(this.turnPlayed && this.dizzySprite) {
                         this.dizzySprite.x = this.x;
                         this.dizzySprite.y = this.y - this.displayHeight/4;
-                        this.scene.children.moveAbove(this.dizzySprite, this);
                     }
                 }
             });
@@ -522,10 +521,10 @@ class GameCardUI extends BaseCardUI{
                 this.y - this.displayHeight/4, 
                 ASSET_ENUMS.DIZZY_SPRITESHEET).setScale(0.3).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_PLAY);
             this.dizzySprite.play(ANIMATION_ENUMS.DIZZY_ANIMATION);
-            this.scene.children.moveAbove(this.dizzySprite, this);
         }
     }
 
+    /** Function to stop the dizzy Animation */
     stopDizzyAnimation() {
         if(this.dizzySprite) {
             this.dizzySprite.destroy();

@@ -252,38 +252,37 @@ class AnimationLibraryPassivePlayer {
         return tweens;
     }
 
-    /** Animation to move a card from the deck to the hand for the pasive player
+    /** Animation to move a card from the deck to the hand for the passive player
      * @param {GameCardUI} card - card to be moved from the deck to the hand
      * @param {number} delay - delay with which to start the tweens
+     * @returns {Array} - Array of tween configurations
      */
     animation_move_card_deck2hand(card, delay) {
         let animation = [
-            /*{ //tween 1: move slightly to the right of the deckpile while reducing x scale to 0. At the end flip the card
+            { // Phase 1: Quick pull from deck with slight arc
                 scaleX: 0,
-                scaleY: CARD_SCALE.IN_DECK,
-                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.2/2,
-                duration: 250,
+                scaleY: 0.18,
+                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.2,
+                y: card.y - 10, // Slight upward movement
+                duration: 180, // Faster initial movement
                 delay: delay,
-                onComplete: () => {
-                    card.state = CARD_STATES.TRAVELLING_TO_HAND;
-                }
-            }, */
-            { //tween 2: move slightly to the right of the deckpile while increasing the x scale to match the y scale
-                onStart: () => {card.state = CARD_STATES.TRAVELLING_TO_HAND;},
+                ease: 'Power2.easeOut'
+            }, 
+            { // Phase 3: Quick move toward hand position
                 scaleX: 0.28,
                 scaleY: 0.28,
-                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.28 - 20,
-                y: card.y + 100,
-                ease: 'quart.out',
-                duration: 500,
-            }, {
-                delay: 400,
-                duration: 10,
+                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.5,
+                y: card.y - 100,
+                rotation: 0, // Return to normal rotation
+                ease: 'Quad.easeInOut',
+                duration: 300,
                 onComplete: () => {
+                    // Signal that the card is ready for hand positioning
+                    card.setState(CARD_STATES.TRAVELLING_TO_HAND);
                 }
             }
         ];
-
+    
         return animation;
     }
 
@@ -292,38 +291,109 @@ class AnimationLibraryPassivePlayer {
      * @param {number} delay - delay with which to start the tweens
      */
     animation_move_don_deck2activearea(card, delay) {
-        //Get final positions and angles
+        // Get final positions and angles
         let posX = card.playerScene.playerInfo.activeDonPlaceholder.x;
         let posY = card.playerScene.playerInfo.activeDonPlaceholder.y;
         let angle = card.playerScene.playerInfo.activeDonPlaceholder.angle;
 
+        // Calculate arc path - make sure it's above the deck (upward movement)
+        const startX = card.x;
+        const startY = card.y;
+        const arcHeight = 60 + Math.random() * 30; // Random arc height between 60-90
+        const midX = startX + (posX - startX) * 0.4;
+        const midY = startY - arcHeight; // Ensure arc peak is ABOVE the starting point
+        
+        // Random rotation during flight
+        const randomRotation = (Math.random() * 0.2) - 0.1; // Between -0.1 and 0.1 radians
+
         let tweens = [
-            { //tween1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function
-                scaleX: CARD_SCALE.IN_DON_DECK,
-                scaleY: 0,
-                y: card.y - GAME_UI_CONSTANTS.CARD_ART_HEIGHT*CARD_SCALE.IN_DON_DECK/2,
-                duration: 150,
+            { // Phase 1: Initial "pop" from deck
+                scale: CARD_SCALE.IN_DON_DECK * 1.1,
+                y: card.y - 20, // Initial upward lift
+                rotation: randomRotation * 0.3,
+                duration: 120,
                 delay: delay,
-                onComplete: () => {card.flipCard();}
-            }, { //tween2: move slightly more to the left of the deck pile and increase the y scale
-                scaleX: CARD_SCALE.IN_DON_DECK,
-                scaleY: CARD_SCALE.IN_DON_DECK,
-                y: card.y - GAME_UI_CONSTANTS.CARD_ART_HEIGHT*CARD_SCALE.IN_DON_DECK + 20,
-                ease: 'quart.out',
+                ease: 'Back.easeOut', // Slight bounce for pop effect
+                onStart: () => {
+                    // Set proper depth for animation
+                    card.setDepth(DEPTH_VALUES.CARD_IN_ANIMATION);
+                }
+            },
+            { // Phase 2: Begin arc movement & card flip simultaneously 
+                scaleY: 0, // Card edge-on during flip (Y-axis)
+                scaleX: CARD_SCALE.IN_DON_DECK * 1.05,
+                x: card.x + (midX - card.x) * 0.4, // More movement along X axis during flip
+                y: card.y - 40, // Continue moving upward during flip
+                rotation: randomRotation * 0.5,
                 duration: 150,
-            }, { //tween3: move the card to the mulligan card position
-                scale: CARD_SCALE.DON_IN_ACTIVE_DON,
+                ease: 'Quad.easeOut',
+                onComplete: () => {
+                    // Flip card to show face
+                    card.flipCard();
+                }
+            },
+            { // Phase 3: Continue upward arc with card face showing
+                scaleY: CARD_SCALE.IN_DON_DECK * 0.9, // Card unfolds while continuing to move
+                scaleX: CARD_SCALE.IN_DON_DECK * 0.9,
+                x: midX,
+                y: midY, // Peak of the upward arc
+                rotation: randomRotation,
+                duration: 180,
+                ease: 'Sine.easeInOut'
+            },
+            { // Phase 4: Begin approach to DON area
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 0.95,
+                x: posX - 15, // Approach from the side
+                y: posY - 10, // Approach from above
+                rotation: Phaser.Math.DegToRad(angle * 0.8), // Begin rotation toward final angle
+                duration: 170,
+                ease: 'Power2.easeIn'
+            },
+            { // Phase 5: Final approach with slight overshoot
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.05, // Slightly larger for emphasis
                 x: posX,
                 y: posY,
-                angle: angle,
-                duration: 750,
+                rotation: Phaser.Math.DegToRad(angle),
+                duration: 140,
+                ease: 'Back.easeOut', // Bounce effect when arriving
                 onComplete: () => {
-                    card.x = posX;
-                    card.y = posY;
+                    card.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                    // Set proper depth in DON area
                     this.scene.children.moveBelow(card, card.playerScene.playerInfo.activeDonCardAmountText);
+                    
+                    // Create a pulse effect on the DON counter
+                    const donText = card.playerScene.playerInfo.activeDonCardAmountText;
+                    if (donText) {
+                        card.scene.tweens.add({
+                            targets: donText,
+                            scale: 1.15,
+                            duration: 120,
+                            yoyo: true,
+                            ease: 'Sine.easeInOut'
+                        });
+                    }
+                    
+                    // Add ripple effect to DON pile
+                    const donPile = card.playerScene.activeDonDeck;
+                    if (donPile) {
+                        card.scene.tweens.add({
+                            targets: donPile,
+                            scaleX: 1.03,
+                            scaleY: 1.03,
+                            duration: 80,
+                            yoyo: true,
+                            ease: 'Sine.easeInOut'
+                        });
+                    }
                 }
+            },
+            { // Phase 6: Settle to exact size
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON,
+                duration: 100,
+                ease: 'Sine.easeOut'
             }
         ];
+        
         return tweens;
     }
 
