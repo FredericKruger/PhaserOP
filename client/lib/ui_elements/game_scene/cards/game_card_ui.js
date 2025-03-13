@@ -33,6 +33,7 @@ class GameCardUI extends BaseCardUI{
         this.fsmState = new InDeckState(this);
         this.isInPlayAnimation = false;
         this.donFanShowing = false;
+        this.counterFanShowing = false;
 
         this.turnPlayed = true; //To store if the card was played in the current turn
 
@@ -255,6 +256,12 @@ class GameCardUI extends BaseCardUI{
         else this.locationPowerText.setColor(COLOR_ENUMS_CSS.OP_WHITE);
     }
 
+    /** Function to update the number of attached Don */
+    updateAttachedDonText() {
+        this.attachedDonText.setText("x" + this.attachedDon.length);
+        this.attachedDonText.setVisible(this.attachedDon.length > 1);
+    }
+
     /** Function to reposition all the attached don cards 
      * @param {boolean} isNewCard - Whether a new card was just attached
      * @param {DonCardUI} newDonCard - The newly attached DON card (optional)
@@ -305,22 +312,58 @@ class GameCardUI extends BaseCardUI{
         this.updatePowerText();
     }
 
-    /** Function to display the attached counter */
-    updateAttachedCounterPosition() {
-        let counterStartPosition = this.displayHeight / 2 * 0.45;
-        for(let attachedCounter of this.attachedCounter) {
-            this.scene.children.sendToBack(attachedCounter);
-            attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
-            
-            if (this.angle === -90) {
-                attachedCounter.moveTo(this.x - counterStartPosition, this.y - this.displayWidth * 0.25, true, false, false);
-                attachedCounter.angleTo(-70, true, false, false); // Adjust angle accordingly
-            } else {
-                attachedCounter.moveTo(this.x + this.displayWidth * 0.25, this.y - counterStartPosition, true, false, false);
-                attachedCounter.angleTo(20, true, false, false);
-            }
+    /** Function to reposition all the attached counter cards 
+     * @param {boolean} isNewCard - Whether a new card was just attached
+     * @param {GameCardUI} newCounterCard - The newly attached counter card (optional)
+     */
+    updateAttachedCounterPosition(isNewCard = false, newCounterCard = null) {
+        // If there are no attached DON cards, nothing to do
+        if (this.attachedCounter.length === 0) return;
+        
+        // First, ensure all DON cards are properly depth-sorted
+        for (let counter of this.attachedCounter) {
+            this.scene.children.sendToBack(counter);
+        }
 
-            counterStartPosition -= 20;
+        // If a new card was just attached, animate it
+        if (isNewCard) {
+            // Duration settings for the animation
+            const fanOutDuration = 200;
+            const holdDuration = 500;
+            const fanInDuration = 250;
+            
+            // Step 1: Fan out the existing DON cards
+            this.fanOutCounterCards(fanOutDuration);
+            
+            // Step 2: After fanning out, add the new card with effects
+            if (newCounterCard) {
+                this.scene.time.delayedCall(fanOutDuration, () => {
+                    this.animateNewCounterCard(newCounterCard, fanOutDuration);
+                });
+            }
+            
+            // Step 3: Fan all cards back in to their final position
+            if(!this.getBounds().contains(this.scene.game.input.mousePointer.x, this.scene.game.input.mousePointer.y)) {
+                this.scene.time.delayedCall(fanOutDuration + holdDuration, () => {
+                    this.fanInCounterCards(fanInDuration);
+                });
+            }
+        } else {
+            let counterStartPosition = this.displayHeight / 2 * 0.45;
+            for(let attachedCounter of this.attachedCounter) {
+                this.scene.children.sendToBack(attachedCounter);
+                attachedCounter.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);   
+                
+                if (this.angle === -90) {
+                    attachedCounter.moveTo(this.x - counterStartPosition, this.y - this.displayWidth * 0.25, true, false, false);
+                    attachedCounter.angleTo(-70, true, false, false); // Adjust angle accordingly
+                } else {
+                    attachedCounter.moveTo(this.x + this.displayWidth * 0.25, this.y - counterStartPosition, true, false, false);
+                    attachedCounter.angleTo(20, true, false, false);
+                }
+
+                counterStartPosition -= 5;
+            }
         }
     }
     //#endregion
@@ -660,6 +703,95 @@ class GameCardUI extends BaseCardUI{
                     if(i === this.attachedDon.length - 1) {
                         this.attachedDonText.setVisible(false);
                         this.donFanShowing = false;
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Animate a new counter card being added
+     * @param {GameCardUI} newCounterCard - The new counter card
+     * @param {number} delay - Delay before animation starts
+     */
+    animateNewCounterCard(newCounterCard, delay = 0) {
+        // Define the position where the new card will go
+        const fanOutX = this.x + this.displayWidth/2;
+        const fanOutY = this.y - this.displayHeight/6 + this.attachedCounter.length * 5;
+        
+        // Move the new DON card into position with a nice animation
+        this.scene.tweens.add({
+            targets: newCounterCard,
+            x: fanOutX,
+            y: fanOutY,
+            angle: 20,
+            scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1, // Make it slightly larger for emphasis
+            duration: 200,
+            ease: 'Back.easeOut',
+            onComplete: () => {
+                // Pulse animation on the new card
+                this.scene.tweens.add({
+                    targets: newCounterCard,
+                    scale: CARD_SCALE.DON_IN_ACTIVE_DON,
+                    duration: 100,
+                    yoyo: true,
+                    ease: 'Sine.easeInOut'
+                });
+            }
+        });
+    }
+
+    /**
+     * Fan out DON cards for display
+     * @param {number} duration - Animation duration in milliseconds
+     */
+    fanOutCounterCards(duration = 200) {
+        // Define the fan-out positions
+        const fanOutX = this.x + this.displayWidth/2;
+        const fanOutY = this.y - this.displayHeight/6;
+        
+        this.counterFanShowing = true;
+
+        for (let i = 0; i < this.attachedCounter.length; i++) {
+            const counter = this.attachedCounter[i];
+            const offset = i * 5;
+            
+            this.scene.tweens.add({
+                targets: counter,
+                x: fanOutX,
+                y: fanOutY + (i * 5),
+                angle: 20 + (i * 1), // Fan them at slightly different angles
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON,
+                duration: duration,
+                ease: 'Back.easeOut'
+            });
+        }
+    }
+
+    /**
+     * Fan in DON cards to their final position
+     * @param {number} duration - Animation duration in milliseconds
+     */
+    fanInCounterCards(duration = 250) {
+        // Determine the final position
+        const finalX = this.x + this.displayWidth/2 - GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
+        const finalY = this.y;
+
+        // Fan all cards back in
+        for (let i = 0; i < this.attachedCounter.length; i++) {
+            const counter = this.attachedCounter[i];
+            
+            this.scene.tweens.add({
+                targets: counter,
+                x: finalX,
+                y: finalY,
+                angle: 0,
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON,
+                duration: duration,
+                ease: 'Quad.easeInOut',
+                onStart: () => {
+                    if(i === this.attachedCounter.length - 1) {
+                        this.counterFanShowing = false;
                     }
                 }
             });

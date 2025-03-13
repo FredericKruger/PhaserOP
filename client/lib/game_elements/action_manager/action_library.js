@@ -571,7 +571,7 @@ class ActionLibrary {
             counterCard.setDepth(DEPTH_VALUES.CARD_IN_DECK);
             counterCard.setState(CARD_STATES.IN_PLAY_ATTACHED);
             characterCard.attachedCounter.push(counterCard);
-            characterCard.updateAttachedCounterPosition();
+            characterCard.updateAttachedCounterPosition(true, counterCard);
         };
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
