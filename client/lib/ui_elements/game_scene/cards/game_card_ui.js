@@ -33,6 +33,8 @@ class GameCardUI extends BaseCardUI{
         this.fsmState = new InDeckState(this);
         this.isInPlayAnimation = false;
 
+        this.turnPlayed = true; //To store if the card was played in the current turn
+
         //Button visibility overrides to show in case of opponent activating buttons
         this.blockerButton_manualOverride = false;
     }
@@ -401,6 +403,12 @@ class GameCardUI extends BaseCardUI{
                 onUpdate: () => {
                     if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
                     if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
+
+                    // Move dizzy sprite with card if it exists and card was played this turn
+                    if(this.turnPlayed && this.dizzySprite) {
+                        this.dizzySprite.x = this.x;
+                        this.dizzySprite.y = this.y - this.displayHeight/4;
+                    }
                 },
                 onComplete: () => {
                     this.x = x;
@@ -411,6 +419,13 @@ class GameCardUI extends BaseCardUI{
                     // Move attached DON cards and Counters
                     if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
                     if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
+
+                    // Final position for dizzy sprite if it exists
+                    if(this.turnPlayed && this.dizzySprite) {
+                        this.dizzySprite.x = this.x;
+                        this.dizzySprite.y = this.y - this.displayHeight/4;
+                        this.scene.children.moveAbove(this.dizzySprite, this);
+                    }
                 }
             });
         } else {
@@ -420,6 +435,13 @@ class GameCardUI extends BaseCardUI{
             // Move attached DON cards and Counters
             if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
             if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
+
+            // Immediately update dizzy sprite position if it exists
+            if(this.turnPlayed && this.dizzySprite) {
+                this.dizzySprite.x = this.x;
+                this.dizzySprite.y = this.y - this.displayHeight/4;
+                this.scene.children.moveAbove(this.dizzySprite, this);
+            }
         }
     }
 
@@ -445,6 +467,12 @@ class GameCardUI extends BaseCardUI{
                 
                 // Play dust explosion effect if this is a card being played
                 this.playDustExplosionEffect();
+
+                if(this.cardData.card === CARD_TYPES.CHARACTER) {
+                    this.scene.time.delayedCall(300, () => {
+                        this.startDizzyAnimation();
+                    });
+                }
             }
         });
     }
@@ -484,6 +512,24 @@ class GameCardUI extends BaseCardUI{
         dustExplosion.once('animationcomplete', () => {
             dustExplosion.destroy();
         });
+    }
+
+    /** Function to start the dizzy Animation */
+    startDizzyAnimation() {
+        if(this.turnPlayed) {
+            this.dizzySprite = this.scene.add.sprite(
+                this.x,
+                this.y - this.displayHeight/4, 
+                ASSET_ENUMS.DIZZY_SPRITESHEET).setScale(0.3).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_PLAY);
+            this.dizzySprite.play(ANIMATION_ENUMS.DIZZY_ANIMATION);
+            this.scene.children.moveAbove(this.dizzySprite, this);
+        }
+    }
+
+    stopDizzyAnimation() {
+        if(this.dizzySprite) {
+            this.dizzySprite.destroy();
+        }
     }
     //#endregion
 

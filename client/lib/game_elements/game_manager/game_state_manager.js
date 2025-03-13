@@ -349,6 +349,10 @@ class GameStateManager {
                 let callback = (i === (passivePlayerCards.length-1) ? animationCallback : null);
                 this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
             }
+
+            //Make leader cards dizzy to signal first turn
+            this.scene.activePlayerScene.leaderLocation.cards[0].startDizzyAnimation();
+            this.scene.passivePlayerScene.leaderLocation.cards[0].startDizzyAnimation();
         });
     }
     //#endregion
@@ -432,6 +436,8 @@ class GameStateManager {
                                     for(let i=0; i<refreshCards.length; i++) {
                                         let card = this.scene.activePlayerScene.getCard(refreshCards[i]);
                                         card.setState(CARD_STATES.IN_PLAY); //Make characters in play
+                                        card.turnPlayed = false;
+                                        card.stopDizzyAnimation();
                                     }
 
                                     //Refresh the attached don array
@@ -502,6 +508,7 @@ class GameStateManager {
             for(let i=0; i<refreshCards.length; i++) {
                 let card = this.scene.passivePlayerScene.getCard(refreshCards[i]); //Set all character cards to ready
                 card.setState(CARD_STATES.IN_PLAY);
+                card.stopDizzyAnimation();
             }
 
             //Refresh the attached don array

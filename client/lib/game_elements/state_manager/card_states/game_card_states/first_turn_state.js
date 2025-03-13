@@ -9,13 +9,11 @@ class FirstTurnState extends GameCardState {
 
     enter() {
         this.card.locationPowerText.setVisible(true);
-        this.card.frontArt.setPipeline(PIPELINE_ENUMS.GREYSCALE_PIPELINE);
         super.enter();
     }
 
     exit(newState) {
         this.card.locationPowerText.setVisible(false);
-        this.card.frontArt.resetPipeline();
         super.exit(newState);
     }
 

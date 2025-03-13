@@ -316,6 +316,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.spritesheet(ASSET_ENUMS.LOADING_SPRITESHEET, `${assetPath}/loading_gif.png`, { frameWidth: 479, frameHeight: 236 });
         this.load.spritesheet(ASSET_ENUMS.SLEEPING_SPRITESHEET, `${assetPath}/sleeping_spritesheet.png`, { frameWidth: 480, frameHeight: 480 });
         this.load.spritesheet(ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET, `${assetPath}/dustexplosions.png`, { frameWidth: 728, frameHeight: 343});
+        this.load.spritesheet(ASSET_ENUMS.DIZZY_SPRITESHEET, `${assetPath}/dizzy_spritesheet.png`, { frameWidth: 638, frameHeight: 360 });
 
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
@@ -379,6 +380,13 @@ class LoaderScene extends Phaser.Scene {
             frames: this.createColoudExplosionAnimation(),
             frameRate: 12,
             repeat: 0
+        });
+
+        this.anims.create({
+            key: ANIMATION_ENUMS.DIZZY_ANIMATION,
+            frames: this.anims.generateFrameNumbers(ASSET_ENUMS.DIZZY_SPRITESHEET, { start: 0, end: 135}),
+            frameRate: 20,
+            repeat: -1
         });
 
         let welcomeText = this.make.text({

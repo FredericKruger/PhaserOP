@@ -371,57 +371,57 @@ class AnimationLibrary {
      * @param {number} delay - delay with which to start the tweens
      */
     animation_move_don_characterarea2activearea(card, delay) {
-        //Get final positions and angles
+        // Get final positions and angles
         let posX = card.playerScene.playerInfo.activeDonPlaceholder.x;
         let posY = card.playerScene.playerInfo.activeDonPlaceholder.y;
         let angle = card.playerScene.playerInfo.activeDonPlaceholder.angle;
 
-        // Calculate arc path parameters
+        // Calculate a more direct path with reduced arc height
         const startX = card.x;
         const startY = card.y;
-        const arcHeight = 80 + Math.random() * 40; // Random arc height between 80-120
+        const arcHeight = 30 + Math.random() * 20; // Much lower arc height (30-50 vs 80-120)
         const controlX = (startX + posX) / 2;
-        const controlY = startY - arcHeight;
+        const controlY = Math.min(startY, posY) - arcHeight; // Use the minimum of start/end Y positions
         
-        // Random rotation during flight
-        const randomRotation = (Math.random() * 0.2) - 0.1;
+        // Reduced rotation during flight for more direct movement
+        const randomRotation = (Math.random() * 0.1) - 0.05; // Half the previous rotation
 
         let tweens = [
-            { // Phase 1: Initial detachment with small "pop" effect
-                scale: card.scale * 1.15, // Slightly enlarge for pop effect
-                y: card.y - 20, // Small initial lift
+            { // Phase 1: Quick detachment with minimal pop effect
+                scale: card.scale * 1.1, // Smaller scale increase
+                y: card.y - 10, // Smaller initial lift
                 rotation: randomRotation * 0.5,
-                duration: 150,
+                duration: 120, // Faster initial movement
                 delay: delay,
-                ease: 'Back.easeOut', // Slight overshoot for pop effect
+                ease: 'Power2.easeOut', // Changed to Power2 for more direct movement
                 onStart: () => {
                     // Set proper depth for animation
                     card.setDepth(DEPTH_VALUES.DON_IN_PILE);
                 }
             },
-            { // Phase 2: Arc movement toward DON area
-                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 0.9,
+            { // Phase 2: Direct movement toward DON area with minimal arc
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 0.95, // Less scale change
                 x: controlX,
                 y: controlY,
                 rotation: randomRotation,
-                duration: 300,
-                ease: 'Sine.easeOut' // Smooth deceleration for natural arc
+                duration: 220, // Faster movement
+                ease: 'Quad.easeOut' // Changed to Quad for more direct path
             },
-            { // Phase 3: Final approach to DON pile
-                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1,
+            { // Phase 3: Direct approach to DON pile
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.05, // Less scale emphasis
                 x: posX,
-                y: posY - 15, // Slightly above final position
-                rotation: Phaser.Math.DegToRad(angle * 0.8), // Almost to final angle
-                duration: 250,
-                ease: 'Power2.easeIn' // Accelerating approach
+                y: posY - 5, // Much closer to final position
+                rotation: Phaser.Math.DegToRad(angle * 0.9), // Closer to final angle
+                duration: 180, // Faster approach
+                ease: 'Power1.easeIn' // Less aggressive acceleration
             },
-            { // Phase 4: Settle into DON pile with slight bounce
+            { // Phase 4: Quick settle into DON pile
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON,
                 x: posX,
                 y: posY,
                 rotation: Phaser.Math.DegToRad(angle),
-                duration: 200,
-                ease: 'Back.easeOut', // Bounce effect when settling
+                duration: 150, // Faster settling
+                ease: 'Sine.easeOut', // Changed to Sine for smoother landing
                 onComplete: () => {
                     // Set proper depth in DON area
                     this.scene.children.moveBelow(card, card.playerScene.playerInfo.activeDonCardAmountText);
@@ -431,21 +431,21 @@ class AnimationLibrary {
                     if (donText) {
                         card.scene.tweens.add({
                             targets: donText,
-                            scale: 1.2,
-                            duration: 150,
+                            scale: 1.1, // Smaller pulse
+                            duration: 120, // Faster pulse
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
                     }
                     
-                    // Optional: Add ripple effect to DON pile
+                    // Add ripple effect to DON pile
                     const donPile = card.playerScene.activeDonDeck;
                     if (donPile) {
                         card.scene.tweens.add({
                             targets: donPile,
-                            scaleX: 1.05,
-                            scaleY: 1.05,
-                            duration: 100,
+                            scaleX: 1.03, // Smaller ripple
+                            scaleY: 1.03, // Smaller ripple
+                            duration: 80, // Faster ripple
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });

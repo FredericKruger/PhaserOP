@@ -43,10 +43,10 @@ class TargetingArrow {
 
         // Calculate the number of dashes and gaps
         let adjustedLength = length - 5; // Adjust the length to stop before the arrow head
-        let dashCount = Math.floor(adjustedLength / (50 + 10)); // Example values for dashLength and gapLength
+        let gapLength = 10;
+        let dashCount = Math.floor(adjustedLength / (60 + gapLength)); // Example values for dashLength and gapLength
         if (dashCount < 1) dashCount = 1; // Ensure at least one dash
-        let dashLength = adjustedLength / (dashCount * 2 - 1);
-        let gapLength = dashLength;
+        let dashLength = (adjustedLength - dashCount*gapLength) / dashCount;//adjustedLength / (dashCount * 2 - 1);
 
         let t = 0;
 
@@ -150,38 +150,92 @@ class TargetingArrow {
      * @param {number} duration - The duration of the animation in milliseconds
      * @param {string} ease - The easing function to use
      * @param {number} delay - The delay before the animation starts in milliseconds
-     * @returns {Phaser.Tweens.Tween} The created tween
+     * @returns {Array} An array of tween configurations
      */
     animateToPosition(targetX, targetY, duration = 500, ease = 'Power2', delay = 0) {
         // Store the starting positions
         const startX = this.originatorObject.x;
         const startY = this.originatorObject.y;
         
+        // Calculate a midpoint with some offset for a smoother, arcing path
+        const midX = startX + (targetX - startX) * 0.5;
+        const midY = startY + (targetY - startY) * 0.3; // Slightly bias toward the start point
+        
+        // Calculate distance between points to adjust timing
+        const distance = Math.sqrt(Math.pow(targetX - startX, 2) + Math.pow(targetY - startY, 2));
+        const adjustedDuration = Math.min(Math.max(duration, 300), 800); // Ensure reasonable animation time
+        
         // Create a temporary object to animate
         const animationHelper = {
             progress: 0,
             currentX: startX,
-            currentY: startY
+            currentY: startY,
+            pathType: 'bezier' // Use bezier path by default for smooth curves
         };
         
-        // Create and return the tween
+        // Create and return the tween with improved animation
         const tween = [{
-            onStart: () => {this.setVisible(true);},
+            onStart: () => {
+                this.setVisible(true);
+                
+                // Optional: Add a subtle "whoosh" effect
+                if (this.scene.cameras && this.scene.cameras.main) {
+                    this.scene.cameras.main.shake(100, 0.001); // Very subtle camera shake
+                }
+            },
             targets: animationHelper,
             progress: 1,
-            duration: duration,
-            ease: ease,
+            duration: adjustedDuration,
+            delay: delay,
+            ease: 'Cubic.easeInOut', // Better easing for smooth acceleration/deceleration
             onUpdate: () => {
-                // Calculate the current position along the path
-                animationHelper.currentX = startX + (targetX - startX) * animationHelper.progress;
-                animationHelper.currentY = startY + (targetY - startY) * animationHelper.progress;
+                let currentX, currentY;
                 
-                // Update the targeting arrow to the current position
-                this.update(animationHelper.currentX, animationHelper.currentY);
+                if (animationHelper.pathType === 'bezier') {
+                    // Use quadratic Bezier curve for smoother path
+                    const t = animationHelper.progress;
+                    const invT = 1 - t;
+                    
+                    // Quadratic Bezier formula: (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+                    currentX = invT * invT * startX + 2 * invT * t * midX + t * t * targetX;
+                    currentY = invT * invT * startY + 2 * invT * t * midY + t * t * targetY;
+                } else {
+                    // Fallback to linear interpolation
+                    currentX = startX + (targetX - startX) * animationHelper.progress;
+                    currentY = startY + (targetY - startY) * animationHelper.progress;
+                }
+                
+                // Update the targeting arrow to the current position with smoother interpolation
+                this.update(currentX, currentY);
+                
+                // Optional: Update arrow visibility/opacity based on progress
+                if (this.arrowStem && this.arrowHead) {
+                    // Fade in at the start, remain solid in the middle, fade out at the end
+                    let opacity = 1;
+                    if (animationHelper.progress < 0.2) {
+                        opacity = animationHelper.progress / 0.2;
+                    } else if (animationHelper.progress > 0.8) {
+                        opacity = (1 - animationHelper.progress) / 0.2;
+                    }
+                    
+                    this.arrowStem.setAlpha(opacity);
+                    this.arrowHead.setAlpha(opacity);
+                }
             },
             onComplete: () => {
                 // Ensure the arrow is exactly at the final position
                 this.update(targetX, targetY);
+                
+                // Optional: Add a subtle "impact" effect at the target
+                if (this.arrowHead) {
+                    this.scene.tweens.add({
+                        targets: this.arrowHead,
+                        scale: 1.2,
+                        duration: 100,
+                        yoyo: true,
+                        ease: 'Back.easeOut'
+                    });
+                }
             }
         }];
         

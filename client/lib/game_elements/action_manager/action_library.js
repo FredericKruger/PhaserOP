@@ -348,18 +348,6 @@ class ActionLibrary {
         updateAction.start = () => {
             let cardPosition = playerScene.characterArea.update(card);
             card.enterCharacterArea(cardPosition.x, cardPosition.y);
-
-            //Create small animation
-            if(card.cardData.card === CARD_TYPES.CHARACTER) {
-                this.scene.time.delayedCall(300, () => {
-                    let restingAnimation = this.scene.add.sprite(
-                        card.x + card.displayWidth/2,
-                        card.y - card.displayHeight/2, 
-                        ASSET_ENUMS.SLEEPING_SPRITESHEET).setScale(0.2).setOrigin(0, 1);
-                    restingAnimation.play(ANIMATION_ENUMS.SLEEPING_ANIMATION);
-                    this.scene.time.delayedCall(5000, () => {restingAnimation.destroy();});
-                });
-            }
         };
         updateAction.isPlayerAction = true; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
@@ -454,6 +442,9 @@ class ActionLibrary {
         action.start = () => {
             //Reset the eventCounter value
             card.eventCounterPower = 0;
+
+            //Destroy dizzyanumation
+            card.stopDizzyAnimation();
 
             //If it has any attached don cards move them to the exerted pile
             let numberAnimations = 0;

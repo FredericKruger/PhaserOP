@@ -51,13 +51,15 @@ class AI_Instance {
         //Test if there is a 1 cost and a 2 cost card in the hand
         let oneCost = false;
         let twoCost = false;
+        let threeCost = false;
         for(let card of this.matchPlayer.inHand) {
             if(card.cardData.cost === 1) oneCost = true;
             else if(card.cardData.cost === 2) twoCost = true;
+            else if(card.cardData.cost === 3) threeCost = true;
         }
 
         //If it finds a one cost and a two cast don't mulligan
-        if(oneCost && twoCost) return [];
+        if(oneCost && twoCost && threeCost) return [];
         else {
             let oldCard = this.matchPlayer.inHand;
             for(let card of oldCard) this.matchPlayer.removeCardFromHand(card); //Remove Cards from hand

@@ -17,106 +17,238 @@ class AnimationLibraryPassivePlayer {
      * First gets positions in mulligan, then create list of tweens  
      */
     animation_move_card_deck2mulligan(card, mulliganPosition, delay) {
-        let startX = this.scene.screenCenterX - (2 * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER + 10)); //Figure out starting postion of mullican
-        let posX = startX + mulliganPosition * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER + 10); //Get the number of cards in the mulligan and adjust x postion
+        // Calculate final position in mulligan area
+        let startX = this.scene.screenCenterX - (2 * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER + 10));
+        let posX = startX + mulliganPosition * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER + 10);
         
-        //Create list of tweens
+        // Calculate arc path for more dynamic movement
+        const arcHeight = 50 + Math.random() * 30; // Random arc height
+        const midY = card.y - arcHeight; // Peak of the arc
+        const midX = card.x + (posX - card.x) * 0.4; // Control point along the path
+        
+        // Add subtle random rotation for more natural card movement
+        const randomRotation = (Math.random() * 0.2) - 0.1; // Between -0.1 and 0.1 radians
+        
+        // Create list of tweens with more dynamic movement
         let animation = [
-            { //Tween1: move slightly next to deckpile and adjust scale
-                scale: CARD_SCALE.IN_DECK,
-                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER + 20,
-                y: card.playerScene.deck.getTopCardVisual().y,
-                ease: 'quart.out',
-                duration: 250,
-                delay: delay,
-            }, { //Tween 2: move to mulligan ui
-                scale: CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER,
+            { // Phase 1: Initial "pop" from deck with slight rotation
+                scale: CARD_SCALE.IN_DECK * 0.9,
+                x: card.x + 20, // Small shift from deck
+                y: card.y - 15, // Small lift
+                rotation: randomRotation * 0.5,
+                ease: 'Back.easeOut', // Add slight bounce for "pop" effect
+                duration: 120,
+                delay: delay
+            }, 
+            { // Phase 2: Arc movement toward mulligan position
+                scale: CARD_SCALE.IN_DECK * 1.1, // Slightly larger during arc
+                x: midX,
+                y: midY,
+                rotation: randomRotation,
+                ease: 'Sine.easeOut',
+                duration: 180
+            },
+            { // Phase 3: Final approach to mulligan position
+                scale: CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER * 1.05, // Slightly larger
                 x: posX,
+                y: 150 - 10, // Slightly above final position
+                rotation: 0, // Straighten out the card
+                ease: 'Power2.easeOut',
+                duration: 150
+            },
+            { // Phase 4: Settle into position with subtle bounce
+                scale: CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER,
                 y: 150,
-                duration: 200
+                ease: 'Back.easeOut',
+                duration: 120,
+                onComplete: () => {
+                    // Ensure correct final state
+                    card.setState(CARD_STATES.IN_MULLIGAN);
+                    
+                    // Optional: Add subtle card pulse to emphasize arrival
+                    this.scene.tweens.add({
+                        targets: card,
+                        scaleX: CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER * 1.03,
+                        scaleY: CARD_SCALE.IN_MULLIGAN_PASSIVE_PLAYER * 1.03,
+                        duration: 100,
+                        yoyo: true,
+                        ease: 'Sine.easeInOut'
+                    });
+                }
             }
-        ]
+        ];
+        
         return animation;
     }
 
     /** Animation that brings a card from the mulligan UI to the deck
-     * First get the deckpile coordinates
-     * Tween 1: move the card close to the deckpoile while reducing the scale
-     * Tween 2: move the card closer to the deckpile while reducing the x scale to 0. At the end, remove mulligan selection ui and flip the card. Change card state to IN_DECK for hand reflesh
-     * Tween 3: reducing scaling to IN_PILE to simulate putting back on top. Move the card on top of the deckpile
-     * Tween 4: reduce card scale to 0 to simulate disappearing
-     * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
+     * @param {GameCardUI} card - card to be moved from the mulligan UI to the deck
      * @param {number} delay - delay with which to start the tweens 
+     * @returns {Array} - Array of tween configurations
      */
     animation_move_card_mulligan2deck(card, delay) {
         let posX = card.playerScene.deck.posX;
         let posY = card.playerScene.deck.posY;
 
+        // Calculate a more dynamic arc path
+        const arcHeight = 60 + Math.random() * 40; // Random arc height for dynamic movement
+        const midX = (card.x + posX) / 2;
+        const controlY = posY - arcHeight;
+
+        // Add subtle random rotation for more natural movement
+        const randomRotation = (Math.random() * 0.15) - 0.075;
+
         let animation = [
-            { //Tween 1: move the card close to the deckpoile while reducing the scale
-                x: posX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_DECK - 20),
-                y: posY,
-                scale: CARD_SCALE.IN_DECK,
-                duration: 300,
-                delay: delay
-            }, { //Tween 2: reducing scaling to IN_PILE to simulate putting back on top. Move the card on top of the deckpile
-                scale: CARD_SCALE.IN_DECK,
+            { // Phase 1: Quick lift and prepare for journey
+                x: card.x, 
+                y: card.y - 30, // Initial lift
+                rotation: randomRotation * 0.5,
+                scale: 0.2, // Shrink as it starts moving
+                duration: 70,
+                delay: delay,
+                ease: 'Power2.easeOut'
+            }, 
+            { // Phase 2: Arc movement - flying through air
+                x: midX,
+                y: controlY, 
+                scaleX: 0.17, 
+                scaleY: 0.17,
+                rotation: randomRotation,
+                duration: 100,
+                ease: 'Quad.easeInOut',
+            },
+            { // Phase 3: Approach to deck
+                x: posX - 20, // Position just before final
+                y: posY - 15,
+                scale: 0.15, // Continuing to shrink
+                rotation: 0, // Straighten out
+                duration: 70,
+                ease: 'Power3.easeIn',
+                onComplete: () => {
+                    card.setState(CARD_STATES.IN_DECK);
+                    
+                    // Add deck ripple effect
+                    const deckPile = card.playerScene.deck;
+                    if (deckPile) {
+                        card.scene.tweens.add({
+                            targets: deckPile,
+                            scaleX: 1.03, // Small ripple
+                            scaleY: 1.03,
+                            duration: 70,
+                            yoyo: true,
+                            ease: 'Quad.easeInOut'
+                        });
+                    }
+                }
+            },
+            { // Phase 5: Quick settle into deck
+                scaleX: CARD_SCALE.IN_DECK,
+                scaleY: CARD_SCALE.IN_DECK,
                 x: posX,
-                duration: 150,
+                y: posY,
+                duration: 40,
+                ease: 'Sine.easeOut',
+            },
+            { // Phase 6: Disappear into deck
+                scaleX: 0,
+                scaleY: 0,
+                duration: 25,
+                ease: 'Power1.easeIn'
             }
         ];
-    
+
         return animation;
     }
 
     /** Animation to move a card from the deck to the life deck 
-     * First get the life deck coordinates
-     * Tween 1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function 
-     * Tween 2: move slightly more to the left of the deck pile and increase the y scale
-     * Tween 3: move the card to the mulligan card position
-     * Tween 4: reduce the card scale to 0 to simulate disappearing
      * @param {GameCardUI} card - card to be moved from the deck to the life deck
      * @param {number} delay - delay with which to start the tweens
-     * 
-    */
+     * @returns {Array} - Array of tween configurations
+     */
     animation_move_card_deck2lifedeck(card, delay) {
         let posX = card.playerScene.playerInfo.lifeAmountText.x;
         let posY = card.playerScene.playerInfo.lifeAmountText.y;
 
+        // Calculate a very subtle downward arc path
+        const arcHeight = 15 + Math.random() * 10; // Minimal arc height (15-25px)
+        const midX = card.x + (posX - card.x) * 0.4;
+        const midY = Math.max(card.y, posY) + arcHeight; // Small peak below the straight path
+        
+        // Add very subtle random rotation
+        const randomRotation = (Math.random() * 0.1) - 0.05; // Even smaller rotation range
+
         let tweens = [
-            { //tween1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function
-                scaleX: 0,
-                scaleY: CARD_SCALE.IN_DECK,
-                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.2/2,
-                duration: 150,
+            { // Phase 1: Initial movement from deck
+                scale: CARD_SCALE.IN_DECK * 1.05, // Less scale change
+                y: card.y + 5, // Minimal initial movement
+                rotation: randomRotation * 0.3,
+                duration: 120,
                 delay: delay,
+                ease: 'Power2.easeOut', // Changed from Back to Power for less bounce
+            },
+            { // Phase 2: Begin arc movement (no card flipping)
+                scale: CARD_SCALE.IN_DECK * 0.95, // Start shrinking
+                x: card.x + (midX - card.x) * 0.3,
+                y: card.y + 10, // Continue downward
+                rotation: randomRotation * 0.5,
+                duration: 130,
+                ease: 'Power1.easeOut',
                 onComplete: () => {
+                    // Change state during arc movement
                     card.state = CARD_STATES.IN_LIFEDECK;
                 }
-            }, { //tween2: move slightly more to the left of the deck pile and increase the y scale
-                scaleX: CARD_SCALE.IN_DECK,
-                scaleY: CARD_SCALE.IN_DECK,
-                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH*0.28 - 20,
-                y: card.y - 100,
-                ease: 'quart.out',
-                duration: 150,
-            }, { //tween3: move the card to the mulligan card position
-                scale: CARD_SCALE.IN_DECK,
+            },
+            { // Phase 3: Continue arc downward
+                scale: CARD_SCALE.IN_DECK * 0.85,
+                x: midX,
+                y: midY, // Below straight-line path
+                rotation: randomRotation,
+                duration: 150, // Shorter duration
+                ease: 'Sine.easeInOut',
+            },
+            { // Phase 4: Begin approach to life area
+                scale: CARD_SCALE.IN_DECK * 0.75,
+                x: posX - 20, // Closer approach
+                y: posY + 10, // Approach from below
+                rotation: randomRotation * 0.5,
+                duration: 150, // Shorter duration
+                ease: 'Power1.easeIn'
+            },
+            { // Phase 5: Final approach to life counter
+                scale: CARD_SCALE.IN_DECK * 0.7,
                 x: posX,
                 y: posY,
-                duration: 750,
+                rotation: 0,
+                duration: 130, // Shorter duration
+                ease: 'Quad.easeOut',
                 onComplete: () => {
                     card.setDepth(0);
                     this.scene.children.moveBelow(card, card.playerScene.playerInfo.lifeAmountText);
+                    
+                    // Create a pulse effect on the life counter text
+                    const lifeText = card.playerScene.playerInfo.lifeAmountText;
+                    if (lifeText) {
+                        card.scene.tweens.add({
+                            targets: lifeText,
+                            scale: 1.2,
+                            duration: 150,
+                            yoyo: true,
+                            ease: 'Sine.easeInOut'
+                        });
+                    }
                 }
-            }, {
-                delay: 100,
-                duration: 10,
+            },
+            { // Phase 6: Merge into life counter
+                scale: 0,
+                alpha: 0,
+                duration: 100, // Faster disappearance
+                ease: 'Power1.easeIn', // Changed from Back to Power for less bounce
                 onComplete: () => {
                     card.setVisible(false);
                 }
-            } 
+            }
         ];
+        
         return tweens;
     }
 
