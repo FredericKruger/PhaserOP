@@ -19,13 +19,19 @@ class InPlayState extends GameCardState {
 
     onPointerOver(pointer, gameObject) {
         gameObject.showGlow(COLOR_ENUMS.OP_WHITE);
-        if(!gameObject.donFanShowing) gameObject.fanOutDonCards(); //Make sure not to fan twice
+        if(this.card.scene.gameState.name !== GAME_STATES.DRAGGING 
+            && this.card.scene.gameState.name !== GAME_STATES.TARGETING) {
+            if(!gameObject.donFanShowing) gameObject.fanOutDonCards(); //Make sure not to fan twice
+        }
         gameObject.scene.game.gameClient.sendCardPointerOver(gameObject.id, CARD_STATES.IN_PLAY, gameObject.playerScene === gameObject.scene.activePlayerScene);
     }
 
     onPointerOut(pointer, gameObject) {
         gameObject.hideGlow();
-        if(gameObject.donFanShowing) gameObject.fanInDonCards();
+        if(this.card.scene.gameState.name !== GAME_STATES.DRAGGING 
+            && this.card.scene.gameState.name !== GAME_STATES.TARGETING) {
+                if(gameObject.donFanShowing) gameObject.fanInDonCards();
+        }
         gameObject.scene.game.gameClient.sendCardPointerOut(gameObject.id, CARD_STATES.IN_PLAY, gameObject.playerScene === gameObject.scene.activePlayerScene);
     }
 

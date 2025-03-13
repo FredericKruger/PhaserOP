@@ -95,14 +95,14 @@ class GameScene extends Phaser.Scene {
         //Create cloud images
         let activePlayerCloud = this.add.image(this.screenCenterX, this.screenHeight, ASSET_ENUMS.IMAGE_CLOUD_BACKGROUND).setOrigin(0.5, 1).setDepth(0);
         activePlayerCloud.setScale(this.cameras.main.width / activePlayerCloud.width);
-        activePlayerCloud.setPosition(this.screenCenterX, this.screenHeight + activePlayerCloud.displayHeight*0.25);
+        activePlayerCloud.setPosition(this.screenCenterX, this.screenHeight + activePlayerCloud.displayHeight*0.15);
         activePlayerCloud.setTint(COLOR_ENUMS.OP_BLUE);
         this.obj.push(activePlayerCloud);
 
         //Create cloud images
         let passivePlayerCloud = this.add.image(this.screenCenterX, 0, ASSET_ENUMS.IMAGE_CLOUD_BACKGROUND).setOrigin(0.5, 0).setDepth(0).setAngle(180);
         passivePlayerCloud.setScale(this.cameras.main.width / passivePlayerCloud.width);
-        passivePlayerCloud.setPosition(this.screenCenterX, this.screenHeight - passivePlayerCloud.displayHeight*0.25);
+        passivePlayerCloud.setPosition(this.screenCenterX, this.screenHeight - passivePlayerCloud.displayHeight*0.15);
         passivePlayerCloud.setTint(COLOR_ENUMS.OP_RED);
         this.obj.push(passivePlayerCloud);
 
