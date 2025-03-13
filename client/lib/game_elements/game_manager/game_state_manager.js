@@ -570,8 +570,8 @@ class GameStateManager {
 
             for(let i=0; i<donCards.length; i++) {
                 let callback = (i === (donCards.length-1) ? animationCallback : null);
-                if(isPlayerTurn) this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*500, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
-                else this.scene.actionLibraryPassivePlayer.drawDonCardAction(this.scene.passivePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*500, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+                if(isPlayerTurn) this.scene.actionLibrary.drawDonCardAction(this.scene.activePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*0, startAnimationCallback: callback}, {waitForAnimationToComplete: true});
+                else this.scene.actionLibraryPassivePlayer.drawDonCardAction(this.scene.passivePlayerScene, donCards[i], GAME_PHASES.DON_PHASE, {delay: i*0, startAnimationCallback: callback}, {waitForAnimationToComplete: true, isServerRequest: false});
 
                 //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
                 //Create DON image and create animation to show and destroy it on DON. Handling different position depending on 1 or 2 Don cards being drawn
@@ -1000,16 +1000,9 @@ class GameStateManager {
 
     /** Function that creates an action to send a message to the server when all other actions have been completed */
     completeCurrentTurn() {
-        let animation = this.scene.add.tween({
-            onStart: () => {
-                this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
-            },
+        let animation = this.scene.tweens.chain({
             targets: this.scene.gameStateUI.nextTurnbutton,
-            rotation: Math.PI*2,
-            duration: 500,
-            onComplete: () => {
-                this.scene.actionManager.completeAction();
-            }
+            tweens: this.scene.animationLibrary.nextTurnButtonAnimation()
         }).pause();
 
         let action = new Action();

@@ -311,8 +311,8 @@ class AnimationLibraryPassivePlayer {
                 scale: CARD_SCALE.IN_DON_DECK * 1.1,
                 y: card.y - 20, // Initial upward lift
                 rotation: randomRotation * 0.3,
-                duration: 120,
-                delay: delay,
+                duration: 60, // 120 * 0.5 = 60
+                delay: delay * 0.5, // Reduce delay by 50% as well
                 ease: 'Back.easeOut', // Slight bounce for pop effect
                 onStart: () => {
                     // Set proper depth for animation
@@ -325,7 +325,7 @@ class AnimationLibraryPassivePlayer {
                 x: card.x + (midX - card.x) * 0.4, // More movement along X axis during flip
                 y: card.y - 40, // Continue moving upward during flip
                 rotation: randomRotation * 0.5,
-                duration: 150,
+                duration: 75, // 150 * 0.5 = 75
                 ease: 'Quad.easeOut',
                 onComplete: () => {
                     // Flip card to show face
@@ -338,7 +338,7 @@ class AnimationLibraryPassivePlayer {
                 x: midX,
                 y: midY, // Peak of the upward arc
                 rotation: randomRotation,
-                duration: 180,
+                duration: 90, // 180 * 0.5 = 90
                 ease: 'Sine.easeInOut'
             },
             { // Phase 4: Begin approach to DON area
@@ -346,7 +346,7 @@ class AnimationLibraryPassivePlayer {
                 x: posX - 15, // Approach from the side
                 y: posY - 10, // Approach from above
                 rotation: Phaser.Math.DegToRad(angle * 0.8), // Begin rotation toward final angle
-                duration: 170,
+                duration: 85, // 170 * 0.5 = 85
                 ease: 'Power2.easeIn'
             },
             { // Phase 5: Final approach with slight overshoot
@@ -354,7 +354,7 @@ class AnimationLibraryPassivePlayer {
                 x: posX,
                 y: posY,
                 rotation: Phaser.Math.DegToRad(angle),
-                duration: 140,
+                duration: 70, // 140 * 0.5 = 70
                 ease: 'Back.easeOut', // Bounce effect when arriving
                 onComplete: () => {
                     card.setDepth(DEPTH_VALUES.DON_IN_PILE);
@@ -367,7 +367,7 @@ class AnimationLibraryPassivePlayer {
                         card.scene.tweens.add({
                             targets: donText,
                             scale: 1.15,
-                            duration: 120,
+                            duration: 60, // 120 * 0.5 = 60
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
@@ -380,7 +380,7 @@ class AnimationLibraryPassivePlayer {
                             targets: donPile,
                             scaleX: 1.03,
                             scaleY: 1.03,
-                            duration: 80,
+                            duration: 40, // 80 * 0.5 = 40
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
@@ -389,7 +389,7 @@ class AnimationLibraryPassivePlayer {
             },
             { // Phase 6: Settle to exact size
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON,
-                duration: 100,
+                duration: 50, // 100 * 0.5 = 50
                 ease: 'Sine.easeOut'
             }
         ];

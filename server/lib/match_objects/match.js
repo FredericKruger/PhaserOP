@@ -342,7 +342,7 @@ class Match {
      * @param {number} cardId
      */
     startTargetingAttack(player, cardId) {
-        let cardData = player.currentMatchPlayer.getCardFromHand(cardId);
+        let cardData = player.currentMatchPlayer.getCard(cardId).cardData;
         let actionInfos = {playedCard: cardId, playedCardData: cardData};
         let targetData = {
             targetAction: TARGET_ACTION.ATTACK_CARD_ACTION,
@@ -350,12 +350,12 @@ class Match {
             targets: [
                 {
                     minrequiredtargets: 0,
-                    player: ["passive"],
+                    player: ["opponent"],
                     cardtypes: [CARD_TYPES.CHARACTER],
                     states: ["IN_PLAY_RESTED"],
                 },{
                     minrequiredtargets: 0,
-                    player: ["passive"],
+                    player: ["opponent"],
                     cardtypes: [CARD_TYPES.LEADER]
                 }
             ]

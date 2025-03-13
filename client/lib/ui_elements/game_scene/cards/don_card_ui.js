@@ -17,6 +17,8 @@ class DonCardUI extends BaseCardUI {
         this.backArt.setTexture(ASSET_ENUMS.CARD_BACK2);
         this.frontArt.setTexture(ASSET_ENUMS.DON_CARD);
 
+        this.angle = 0;
+
         this.fsmState = new DonInDeckState(this);
     }
     //#endregion

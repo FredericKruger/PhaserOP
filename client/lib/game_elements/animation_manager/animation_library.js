@@ -305,7 +305,7 @@ class AnimationLibrary {
         card.setDepth(card.playerScene.donDeck.depth - 1);
         
         // Set initial properties for the animation
-        const initialAngle = -90; // Start facing down, as if it's being drawn from under the deck
+        const initialAngle = 0; // Start facing down, as if it's being drawn from under the deck
         card.setRotation(Phaser.Math.DegToRad(initialAngle));
         
         let tweens = [
@@ -527,4 +527,58 @@ class AnimationLibrary {
             onComplete: () => { card.x = posX; } // Reset the x position
         });
     }
+
+    //#region NEXT TURN BUTTON ANIMATION
+
+    // Animation for the next turn button
+    nextTurnButtonAnimation() {  
+        // Create a more dynamic rotation animation
+        let tweens = [{
+            onStart: () => {
+                this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
+                
+                // Slightly scale up at the start
+                this.scene.tweens.add({
+                    targets: this.scene.gameStateUI.nextTurnbutton,
+                    scaleX: 1.15,
+                    scaleY: 1.15,
+                    duration: 150,
+                    ease: 'Back.easeOut',
+                    yoyo: true
+                });
+            },
+            targets: this.scene.gameStateUI.nextTurnbutton,
+            rotation: Math.PI * 4, // Two full rotations instead of one
+            duration: 700, // Slightly longer duration
+            ease: 'Cubic.easeInOut', // More dynamic easing function
+            onUpdate: (tween) => {
+                // Add subtle scale pulsing during rotation
+                const progress = tween.progress;
+                const scaleFactor = 1 + 0.05 * Math.sin(progress * Math.PI * 4);
+                this.scene.gameStateUI.nextTurnbutton.setScale(scaleFactor);
+            },
+            onComplete: () => {
+                // Reset scale and rotation
+                this.scene.gameStateUI.nextTurnbutton.setScale(1);
+                this.scene.gameStateUI.nextTurnbutton.setRotation(0);
+                
+                // Add final impact effect
+                this.scene.tweens.add({
+                    targets: this.scene.gameStateUI.nextTurnbuttonn,
+                    scaleX: 1.2,
+                    scaleY: 1.2,
+                    duration: 100,
+                    yoyo: true,
+                    ease: 'Bounce.easeOut',
+                    onComplete: () => {
+                        // Transition to next phase
+                        this.scene.actionManager.completeAction();
+                    }
+                });
+            }
+        }];
+        return tweens;
+    }
+
+    //#endregion
 }
