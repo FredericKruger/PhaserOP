@@ -285,16 +285,9 @@ class ActionLibraryPassivePlayer {
             ease: 'Back.easeOut'
         });
         
-        // Settle to normal scale
-        tweens.push({
-            scale: CARD_SCALE.IN_PLAY_ANIMATION,
-            duration: 150,
-            ease: 'Sine.easeInOut'
-        });
-        
         // Hold to show card
         tweens.push({
-            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            scale: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
             duration: 600
         });
 
@@ -308,21 +301,6 @@ class ActionLibraryPassivePlayer {
         let start_animation = this.scene.tweens.chain({
             targets: card,
             tweens: tweens
-        }).pause();
-
-        //Prepare the tweens from the playArea animation
-        let tweens2 = null;
-        if(card.cardData.card === CARD_TYPES.CHARACTER) tweens2 = playerScene.characterArea.addCardAnimation(card);
-        else if(card.cardData.card === CARD_TYPES.STAGE) tweens2 = playerScene.stageLocation.addCardAnimation(card);
-        if(tweens2 !== null) tweens2 = tweens2.concat({ //concat additional tween to call the completeAction function
-            duration: 10,
-            onComplete: () => {this.actionManager.finalizeAction();}
-        });
-        //Create the tween chain
-        let end_animation = null;
-        if(tweens2 !== null) end_animation = this.scene.tweens.chain({
-            targets: card,
-            tweens: tweens2
         }).pause();
 
         //Create the action
@@ -369,7 +347,6 @@ class ActionLibraryPassivePlayer {
                 }
             }
         }
-        action.end_animation = end_animation;
         action.finally = () => {
             card.isInPlayAnimation = false;
         
