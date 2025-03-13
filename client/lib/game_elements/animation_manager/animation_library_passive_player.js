@@ -258,37 +258,48 @@ class AnimationLibraryPassivePlayer {
      * @returns {Array} - Array of tween configurations
      */
     animation_move_card_deck2hand(card, delay) {
+        // Calculate initial and intermediate positions
+        const startX = card.x;
+        const startY = card.y;
+        const intermediateX = startX + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.15;
+        const intermediateY = startY - 15;
+        
+        // Setup dimensions for the animation
+        const finalScale = 0.28; // Final scale before going to hand
+        
         let animation = [
-            { // Phase 1: Quick pull from deck
-                scaleX: 0,
-                scaleY: 0.18,
-                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.2,
-                y: card.y - 10, // Slight upward movement
-                duration: 180, // Faster initial movement
+            { // Phase 1: Draw card from deck with slight upward movement
+                scale: CARD_SCALE.IN_DECK * 0.95,
+                x: intermediateX,
+                y: intermediateY,
+                duration: 150,
                 delay: delay,
-                ease: 'Power2.easeOut'
+                ease: 'Power2.easeOut',
+                onStart: () => {
+                    // Set proper depth for animation
+                    card.setDepth(DEPTH_VALUES.CARD_IN_ANIMATION);
+                }
             },
-            { // Phase 2: Pause for a moment with slight pulse effect
-                scaleX: 0.02, // Show just a hint of the card width
-                scaleY: 0.19, // Slight increase in height for pulse effect
-                duration: 220, // Duration of the pause
+            /*{ // Phase 2: Pause with subtle effects
+                scale: CARD_SCALE.IN_DECK * 0.95, // Slight increase for visual feedback
+                duration: 150, // Slightly longer pause
                 ease: 'Sine.easeInOut',
-            },
-            { // Phase 3: Quick move toward hand position
-                scaleX: 0.28,
-                scaleY: 0.28,
-                x: card.x + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.5,
-                y: card.y - 100,
-                rotation: 0, // Return to normal rotation
+            },*/
+            { // Phase 3: Move toward hand position
+                scaleX: finalScale,
+                scaleY: finalScale,
+                x: startX + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.5,
+                y: startY - 100,
+                rotation: 0,
                 ease: 'Quad.easeInOut',
-                duration: 300,
+                duration: 180,
                 onComplete: () => {
                     // Signal that the card is ready for hand positioning
                     card.setState(CARD_STATES.TRAVELLING_TO_HAND);
                 }
             }
         ];
-    
+
         return animation;
     }
 

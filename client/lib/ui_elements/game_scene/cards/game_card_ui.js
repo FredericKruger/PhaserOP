@@ -32,6 +32,7 @@ class GameCardUI extends BaseCardUI{
         //STATE VARIABLES
         this.fsmState = new InDeckState(this);
         this.isInPlayAnimation = false;
+        this.donFanShowing = false;
 
         this.turnPlayed = true; //To store if the card was played in the current turn
 
@@ -285,34 +286,23 @@ class GameCardUI extends BaseCardUI{
             }
             
             // Step 3: Fan all cards back in to their final position
-            this.scene.time.delayedCall(fanOutDuration + holdDuration, () => {
-                this.fanInDonCards(fanInDuration);
-            });
+            if(!this.getBounds().contains(this.scene.game.input.mousePointer.x, this.scene.game.input.mousePointer.y)) {
+                this.scene.time.delayedCall(fanOutDuration + holdDuration, () => {
+                    this.fanInDonCards(fanInDuration);
+                });
+            }
         } else {
             // For non-animated updates, just set the positions directly
             for (let don of this.attachedDon) {
-                don.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, false, false, false);
-                don.moveTo(this.x - this.displayWidth/2, this.y, false, false, false);
-                don.angleTo(-20, false, false, false);
+                don.moveTo(this.x - this.displayWidth/2 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON, this.y, false, false, false);
             }
             
             // Update counter text without animation
             this.attachedDonText.setText("x" + this.attachedDon.length);
-            this.attachedDonText.setVisible(this.attachedDon.length > 1);
         }
         
         // Ensure power text is updated since DON cards affect power
         this.updatePowerText();
-
-        /*for(let don of this.attachedDon) {
-            this.scene.children.sendToBack(don);
-            don.scaleTo(CARD_SCALE.DON_IN_ACTIVE_DON, true, false, false);
-            don.moveTo(this.x - this.displayWidth/2, this.y, true, false, false);
-            don.angleTo(-20, true, false, false);
-        }
-        
-        this.attachedDonText.setText("x" + this.attachedDon.length);
-        this.attachedDonText.setVisible(this.attachedDon.length > 1);*/
     }
 
     /** Function to display the attached counter */
@@ -608,6 +598,7 @@ class GameCardUI extends BaseCardUI{
                     ease: 'Sine.easeInOut',
                     onComplete: () => {
                         this.attachedDonText.setText("x" + this.attachedDon.length);
+                        if(this.donFanShowing) this.attachedDonText.setVisible(this.attachedDon.length > 1);
                     }
                 });
             }
@@ -623,6 +614,8 @@ class GameCardUI extends BaseCardUI{
         const fanOutX = this.x - this.displayWidth/2;
         const fanOutY = this.y;
         
+        this.donFanShowing = true;
+
         for (let i = 0; i < this.attachedDon.length; i++) {
             const don = this.attachedDon[i];
             const offset = i * 5;
@@ -636,7 +629,7 @@ class GameCardUI extends BaseCardUI{
                 duration: duration,
                 ease: 'Back.easeOut',
                 onComplete: () => {
-                    this.attachedDonText.setVisible(this.attachedDon.length > 1);
+                    if(this.donFanShowing) this.attachedDonText.setVisible(this.attachedDon.length > 1);
                 }
             });
         }
@@ -650,7 +643,7 @@ class GameCardUI extends BaseCardUI{
         // Determine the final position
         const finalX = this.x - this.displayWidth/2 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
         const finalY = this.y;
-        
+
         // Fan all cards back in
         for (let i = 0; i < this.attachedDon.length; i++) {
             const don = this.attachedDon[i];
@@ -666,6 +659,7 @@ class GameCardUI extends BaseCardUI{
                 onStart: () => {
                     if(i === this.attachedDon.length - 1) {
                         this.attachedDonText.setVisible(false);
+                        this.donFanShowing = false;
                     }
                 }
             });
