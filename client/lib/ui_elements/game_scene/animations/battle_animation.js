@@ -358,7 +358,7 @@ class BattleAnimation {
             y: y - 80,
             alpha: 0,
             scale: 1.5,
-            duration: 3000,
+            duration: 5000,
             ease: 'Power2',
             onComplete: () => damageText.destroy()
         });

@@ -34,6 +34,13 @@ class MatchPlayer {
         this.inHand = this.inHand.filter(c => c.id !== card.id);
     }
 
+    /** Function that removes a card from the hand 
+     * @param {MatchCard} Card - card to be removed
+    */
+    removeCardFromCharacterArea(card) {
+        this.inCharacterArea = this.inCharacterArea.filter(c => c.id !== card.id);
+    }
+
     /** Function that return a card from the player from the card id
      * @param {number} cardid - ID of the card to be returned
      * @return {MatchCard} - Card to be returned
@@ -215,6 +222,7 @@ class MatchPlayer {
         //Reset counterPower of card
         card.eventCounterAmount = 0;
 
+        this.removeCardFromCharacterArea(card); //remove it from the character area
         this.inDiscard.push(card); //push it to the discard
         card.state = CARD_STATES.IN_DISCARD; //set the state
 

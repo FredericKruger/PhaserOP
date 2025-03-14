@@ -132,14 +132,76 @@ const abilityActions = {
             tweens = tweens.concat(arrowTweens);
         }
 
-        tweens = tweens.concat([{
-                onStart: () => { //Add Tween for target arrow
-                    defender.eventCounterPower = info.counterAmount;
+        // Create new enhanced animation for counter addition
+        tweens = tweens.concat([
+            {
+                onStart: () => {
+                    // Set the counter value
+                    defender.eventCounterPower += info.counterAmount;
+                    
+                    // Create a glow effect around the card
+                    defender.showGlow(COLOR_ENUMS.OP_GREEN);
+                    
+                    // Create a floating number effect showing the buff
+                    const floatingText = card.scene.add.text(
+                        defender.x, 
+                        defender.y - 20, 
+                        `+${info.counterAmount}`, 
+                        {
+                            fontFamily: 'OnePieceFont',
+                            fontSize: '32px',
+                            color: '#00ff00',
+                            stroke: '#000000',
+                            strokeThickness: 4,
+                            shadow: { blur: 5, color: '#000000', fill: true }
+                        }
+                    )
+                    .setOrigin(0.5)
+                    .setDepth(DEPTH_VALUES.CARD_ATTACKING + 10);
+                    
+                    // Store reference to remove it later
+                    defender.floatingBuffText = floatingText;
+                    
+                    // Pulse the card
+                    card.scene.tweens.add({
+                        targets: defender,
+                        scaleX: defender.scaleX * 1.2,
+                        scaleY: defender.scaleY * 1.2,
+                        duration: 200,
+                        yoyo: true,
+                        repeat: 1,
+                        ease: 'Sine.easeInOut'
+                    });
                 },
                 targets: defender.locationPowerText,
-                scale: {from: 1, to: 1.2},
+                scale: { from: 1, to: 1.8 }, // Increased scale
                 duration: 400,
-                yoyo: true
+                yoyo: true,
+                ease: 'Back.easeOut'
+            },
+            {
+                // Float the buff text upward
+                targets: () => defender.floatingBuffText,
+                y: '-=70',
+                alpha: { from: 1, to: 0 },
+                duration: 1200,
+                ease: 'Power2',
+                onComplete: () => {
+                    // Clean up the text
+                    if (defender.floatingBuffText) {
+                        defender.floatingBuffText.destroy();
+                        delete defender.floatingBuffText;
+                    }
+                    
+                    // Clean up particles
+                    if (defender.buffParticles) {
+                        defender.buffParticles.destroy();
+                        delete defender.buffParticles;
+                    }
+                    
+                    // Hide the glow
+                    defender.hideGlow();
+                }
             }
         ]);
 
