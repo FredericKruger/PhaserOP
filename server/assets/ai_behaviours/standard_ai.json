@@ -1,4 +1,24 @@
 {
+  "mulliganStrategy": {
+    "firstPlayer": {
+      "requiredCards": [
+        { "cost": 1, "count": 1},
+        { "cost": 3, "count": 1}
+      ],
+      "preferredTypes": ["CHARACTER", "STAGE"],
+      "preferredColors": [],
+      "maxCost": 4
+    },
+    "secondPlayer": {
+      "requiredCards": [
+        { "cost": 2, "count": 1},
+        { "cost": 3, "count": 1}
+      ],
+      "preferredTypes": ["CHARACTER", "STAGE"],
+      "preferredColors": [],
+      "maxCost": 5
+    }
+  },
   "actionPriorities": [
     { 
       "action": "playCard",

@@ -119,7 +119,7 @@ class Match {
         if(requestingPlayer.currentOpponentPlayer.bot) {
             //let AI do the mulligan
             
-            let newCardsAI = this.ai.mulligan();
+            let newCardsAI = this.ai.mulligan(false); //FIXME need to implement coin flip
             requestingPlayer.socket.emit('game_mulligan_cards_passiveplayer', newCardsAI);
         }
 

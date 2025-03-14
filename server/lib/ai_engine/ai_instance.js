@@ -3,6 +3,7 @@ const Match = require("../match_objects/match");
 const { CARD_TYPES } = require("../match_objects/match_enums");
 const { CARD_STATES } = require("../match_objects/match_card");
 
+//#region AI ACTION CLASS
 class AI_Actions_Taken {
     constructor() {
         this.charactersPlayed = 0;
@@ -16,9 +17,11 @@ class AI_Actions_Taken {
         this.attacks = 0;
     }
 }
+//#endregion
 
 class AI_Instance {
 
+    //#region CONSTRUCTOR
     /**
      * 
      * @param {ServerInstance} server 
@@ -37,6 +40,7 @@ class AI_Instance {
         // Load AI strategy configuration
         this.loadStrategyConfig();
     }
+    //#endregion
 
     /**
      * Load AI strategy configuration from JSON file
@@ -46,33 +50,159 @@ class AI_Instance {
         this.strategyConfig = await this.server.util.getAIStrategy('standard_ai');
     }
 
-    /** Function that performs the mulligan */
-    mulligan() {
-        //Test if there is a 1 cost and a 2 cost card in the hand
-        let oneCost = false;
-        let twoCost = false;
-        let threeCost = false;
-        for(let card of this.matchPlayer.inHand) {
-            if(card.cardData.cost === 1) oneCost = true;
-            else if(card.cardData.cost === 2) twoCost = true;
-            else if(card.cardData.cost === 3) threeCost = true;
+    //#region MULLIGAN
+    /** 
+     * Function that performs the mulligan based on strategy configuration
+     * @param {boolean} isFirstPlayer - Whether the AI is the first player
+     * @returns {Array} Array of new cards drawn
+     */
+    mulligan(isFirstPlayer) {
+        //console.log("AI performing mulligan");
+    
+        // Determine if AI is going first or second
+        const strategy = isFirstPlayer ? 
+            this.strategyConfig.mulliganStrategy.firstPlayer : 
+            this.strategyConfig.mulliganStrategy.secondPlayer;
+        
+       // console.log(`AI is ${isFirstPlayer ? 'first' : 'second'} player, using appropriate strategy`);
+        
+        // Analyze current hand
+        const handAnalysis = this.analyzeHand(strategy);
+        
+        // Decision logic based on the analysis
+        const shouldMulligan = !this.evaluateKeepHand(handAnalysis, strategy);
+        
+        if (!shouldMulligan) {
+            //console.log("AI keeps hand");
+            return [];
         }
-
-        //If it finds a one cost and a two cast don't mulligan
-        if(oneCost && twoCost && threeCost) return [];
-        else {
-            let oldCard = this.matchPlayer.inHand;
-            for(let card of oldCard) this.matchPlayer.removeCardFromHand(card); //Remove Cards from hand
-
-            let newCards = this.match.state.drawCards(this.matchPlayer, 5); //Draw 5 new cards
-            
-            for(let card of oldCard) this.matchPlayer.deck.add(card); //Add old cards to deck
-            this.matchPlayer.deck.shuffle(); //Shuffle deck
-
-            return newCards;
+        
+        // Perform mulligan
+        console.log("AI mulligans");
+        const oldCards = [...this.matchPlayer.inHand];
+        for (let card of oldCards) {
+            this.matchPlayer.removeCardFromHand(card);
         }
+        
+        let newCards = this.match.state.drawCards(this.matchPlayer, 5);
+        
+        // Return old cards to deck and shuffle
+        for (let card of oldCards) {
+            this.matchPlayer.deck.add(card);
+        }
+        this.matchPlayer.deck.shuffle();
+        
+        //console.log(`AI drew ${newCards.length} new cards`);
+        return newCards;
     }
 
+    /**
+     * Analyzes the current hand against mulligan strategy
+     * @param {Object} strategy - The strategy to use
+     * @returns {Object} Analysis of the current hand
+     */
+    analyzeHand(strategy) {
+        const costDistribution = {};
+        const types = [];
+        const colors = [];
+        let highestCost = 0;
+        
+        // Count cards by cost and gather attributes and colors
+        for (let card of this.matchPlayer.inHand) {
+            // Track cost distribution
+            costDistribution[card.cardData.cost] = (costDistribution[card.cardData.cost] || 0) + 1;
+            
+            // Track highest cost
+            if (card.cardData.cost > highestCost) {
+                highestCost = card.cardData.cost;
+            }
+            
+            // Track types
+            if (card.cardData.card) {
+                let type = card.cardData.card;
+                if (!types.includes(type)) {
+                    types.push(type);
+                }
+            }
+            
+            // Track colors
+            if (card.cardData.color && !colors.includes(card.cardData.color)) {
+                colors.push(card.cardData.color);
+            }
+        }
+        
+        return {
+            costDistribution,
+            types,
+            colors,
+            highestCost,
+            handSize: this.matchPlayer.inHand.length
+        };
+    }
+
+    /**
+     * Evaluates if the hand should be kept based on strategy
+     * @param {Object} analysis - Hand analysis
+     * @param {Object} strategy - Mulligan strategy
+     * @returns {boolean} Whether to keep the hand
+     */
+    evaluateKeepHand(analysis, strategy) {
+        console.log("Evaluating hand:", analysis);
+        
+        // Check required cost distribution
+        for (let requirement of strategy.requiredCards) {
+            const cardsOfCost = analysis.costDistribution[requirement.cost] || 0;
+            if (cardsOfCost < requirement.count) {
+                //console.log(`Missing required ${requirement.count} cards of cost ${requirement.cost}, have ${cardsOfCost}`);
+                return false;
+            }
+        }
+        
+        // Check if hand has cards that are too expensive
+        if (strategy.maxCost && analysis.highestCost > strategy.maxCost) {
+            //console.log(`Hand has cards that exceed max cost of ${strategy.maxCost}`);
+            return false;
+        }
+        
+        // Check for preferred attributes (optional - will keep hand even without these)
+        let hasPreferredType = false;
+        if (strategy.preferredTypes && strategy.preferredTypes.length > 0) {
+            for (let type of strategy.preferredTypes) {
+                if (analysis.types.includes(type)) {
+                    hasPreferredType = true;
+                    break;
+                }
+            }
+            
+            if (!hasPreferredType) {
+                //console.log("Hand lacks preferred card types, but may still be kept");
+                // We don't return false here as this is just a preference, not a requirement
+            }
+        }
+        
+        // Check for preferred colors (optional - will keep hand even without these)
+        let hasPreferredColor = false;
+        if (strategy.preferredColors && strategy.preferredColors.length > 0) {
+            for (let color of strategy.preferredColors) {
+                if (analysis.colors.includes(color)) {
+                    hasPreferredColor = true;
+                    break;
+                }
+            }
+            
+            if (!hasPreferredColor) {
+                //console.log("Hand lacks preferred colors, but may still be kept");
+                // We don't return false here as this is just a preference, not a requirement
+            }
+        }
+        
+        // If we've passed all the required checks, keep the hand
+       // console.log("Hand meets mulligan requirements");
+        return true;
+    }
+    //#endregion
+
+    //#region PLAY FUNCTIONS
     /** Function that performs the AI turn */
     play() {
         console.log("AI TURN");
@@ -127,6 +257,48 @@ class AI_Instance {
         }
     }
 
+    /** Function called by the ai to finish his turn. Tells the game engine to start the next turn */
+    endTurn(){
+        this.match.state.current_passive_player.socket.emit('game_complete_current_turn');
+    }
+
+     /** 
+     * Function that executes an action 
+     * @param {Object} action - The action to execute
+     */
+     playAction(action) {
+        switch (action.function) {
+            case 'playCard':
+                this.match.startPlayCard(this.match.state.current_active_player, action.arg);
+                this.actionsTaken.charactersPlayed++;
+                break;
+            case 'attachDon':
+                // Implement DON attachment
+                this.match.startAttachDonToCharacter(
+                    this.match.state.current_active_player,
+                    action.arg.donCardId,
+                    action.arg.characterId
+                );
+                this.actionsTaken.attachedDon++;
+                break;
+            case 'attack':
+                // Implement attack
+                this.match.startAttackPhase(
+                    this.match.state.current_active_player,
+                    action.arg.attackerId,
+                    action.arg.targetId
+                );
+                this.actionsTaken.attacks++;
+                this.waitingForPlayerInput = true;
+                break;
+            case 'endTurn':
+                this.actionTaken = false;
+                break;
+        }
+    }
+    //#endregion
+
+    //#region EVALUATE PLAY CARD
     /**
      * Evaluates if a card can be played
      * @param {Object} priority - Play card priority configuration
@@ -205,7 +377,9 @@ class AI_Instance {
 
         return null;
     }
+    //#endregion
 
+    //#region EVALUATE ATTACH DON
     /**
      * Evaluates if DON cards can be attached
      * @param {Object} priority - Attach DON priority configuration
@@ -324,7 +498,9 @@ class AI_Instance {
         // Otherwise, don't attach DON now - better to play more characters
         return null;
     }
+    //#endregion
 
+    //#region EVALUATE ATTACK
     /**
      * Evaluates if an attack can be made
      * @param {Object} priority - Attack priority configuration
@@ -386,49 +562,9 @@ class AI_Instance {
         
         return null;
     }
-
-    /** Function called by the ai to finish his turn. Tells the game engine to start the next turn */
-    endTurn(){
-        this.match.state.current_passive_player.socket.emit('game_complete_current_turn');
-    }
-
-     /** 
-     * Function that executes an action 
-     * @param {Object} action - The action to execute
-     */
-     playAction(action) {
-        switch (action.function) {
-            case 'playCard':
-                this.match.startPlayCard(this.match.state.current_active_player, action.arg);
-                this.actionsTaken.charactersPlayed++;
-                break;
-            case 'attachDon':
-                // Implement DON attachment
-                this.match.startAttachDonToCharacter(
-                    this.match.state.current_active_player,
-                    action.arg.donCardId,
-                    action.arg.characterId
-                );
-                this.actionsTaken.attachedDon++;
-                break;
-            case 'attack':
-                // Implement attack
-                this.match.startAttackPhase(
-                    this.match.state.current_active_player,
-                    action.arg.attackerId,
-                    action.arg.targetId
-                );
-                this.actionsTaken.attacks++;
-                this.waitingForPlayerInput = true;
-                break;
-            case 'endTurn':
-                this.actionTaken = false;
-                break;
-        }
-    }
+    //#endregion
 
     //#region BLOCK STRATEGY
-
     startBlockPhase() {
         console.log("AI BLOCK PHASE");
         let blockDecision = this.evaluateBlock();
