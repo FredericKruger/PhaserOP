@@ -9,11 +9,17 @@ class ActiveInteractionState extends GameState {
     }
 
     onPointerOver(pointer, gameObject) {
-        gameObject.fsmState.onPointerOver(pointer, gameObject);
+        if(gameObject === this.scene.activePlayerScene.playerInfo.lifeCardPlaceholder && !this.scene.activePlayerScene.lifeDeck.fanDisplayed) {
+            this.scene.activePlayerScene.lifeDeck.showLifeCardFan();
+        }
+        else if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOver(pointer, gameObject);
     }
 
     onPointerOut(pointer, gameObject) {
-        gameObject.fsmState.onPointerOut(pointer, gameObject);
+        if(gameObject === this.scene.activePlayerScene.playerInfo.lifeCardPlaceholder && this.scene.activePlayerScene.lifeDeck.fanDisplayed){
+            this.scene.activePlayerScene.lifeDeck.hideLifeCardFan();
+        }            
+        else if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOut(pointer, gameObject);
     }
 
     onDragStart(pointer, gameObject) {

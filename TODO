@@ -139,7 +139,7 @@
 - [x] Create animation to signal current player turn
 - [x] Create Refresh Phase
     - [x] Return Don Cards to cost area
-    - [ ] Create animation
+    - [x] Create animation
     - [x] Set All Characters to Active
     - [x] Create animation (exerted characters should have a greyscale pipeline)
     - [x] Refresh UI

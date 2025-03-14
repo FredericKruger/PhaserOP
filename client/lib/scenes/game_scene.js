@@ -123,16 +123,16 @@ class GameScene extends Phaser.Scene {
         /** LISTENERS */
         /** Hander for when the poinster enters a card */
         this.input.on('pointerover', (pointer, gameObject) => {
-            if(gameObject[0] instanceof BaseCardUI) {
-                this.gameState.onPointerOver(pointer, gameObject[0]);
-            }
+            //if(gameObject[0] instanceof BaseCardUI) {
+            this.gameState.onPointerOver(pointer, gameObject[0]);
+            //}
         });
 
         /** Handler for when the pointer leaves a card */
         this.input.on('pointerout', (pointer, gameObject) => {
-            if(gameObject[0] instanceof BaseCardUI) {
-                this.gameState.onPointerOut(pointer, gameObject[0]);
-            }
+            //if(gameObject[0] instanceof BaseCardUI) {
+            this.gameState.onPointerOut(pointer, gameObject[0]);
+            //}
         });
 
         /** HANLDER FOR CLICKING */

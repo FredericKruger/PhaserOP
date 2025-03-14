@@ -9,11 +9,11 @@ class BlockerInteractionState extends GameState {
     }
 
     onPointerOver(pointer, gameObject) {
-        gameObject.fsmState.onPointerOver(pointer, gameObject);
+        if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOver(pointer, gameObject);
     }
 
     onPointerOut(pointer, gameObject) {
-        gameObject.fsmState.onPointerOut(pointer, gameObject);
+        if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOut(pointer, gameObject);
     }
 
     onPointerDown(pointer, gameObject) {

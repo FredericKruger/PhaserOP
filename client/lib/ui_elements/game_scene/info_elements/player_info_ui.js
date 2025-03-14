@@ -75,7 +75,12 @@ class PlayerInfoUI extends BaseComponentUI{
                 {font: "1000 80px OnePieceTCGFont", color: COLOR_ENUMS_CSS.OP_WHITE, stroke: color, strokeThickness: 6}
             ).setOrigin(0.5).setDepth(1);
         }
+        this.lifeCardPlaceholder = this.scene.add.rectangle(this.lifeAmountText.x, this.lifeAmountText.y, 75, 105, 0x000000, 0).setOrigin(0.5).setDepth(1);
+        this.lifeCardPlaceholder.setInteractive(new Phaser.Geom.Rectangle(0, 0, 75, 105), Phaser.Geom.Rectangle.Contains);
+        this.scene.children.moveAbove(this.lifeCardPlaceholder, this.lifeAmountText);
+
         this.obj.push(this.lifeAmountText);
+        this.obj.push(this.lifeCardPlaceholder);
 
         this.setVisible(false);
     }
