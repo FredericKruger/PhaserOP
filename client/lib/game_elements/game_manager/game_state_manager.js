@@ -898,6 +898,7 @@ class GameStateManager {
      * @param {boolean} botAction - If it is a bot action
      */
     declareAttackPhase(attackerID, defenderID, isPlayerTurn, botAction) {
+        console.log("AtTACK PHASE" + isPlayerTurn + ' ' + botAction)
         //Create an aciton to declrare the attack
         let action = new Action();
         action.start = () => {

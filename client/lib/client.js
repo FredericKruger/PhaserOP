@@ -242,6 +242,7 @@ class Client {
 
     requestPassBlockerPhase (passed) {this.socket.emit('player_pass_blocker_phase', passed);}
     requestPassCounterPhase (passed) {this.socket.emit('player_pass_counter_phase', passed);}
+    requestStartAttackCleanup () {this.socket.emit('player_start_attack_cleanup');}
 
     /** ABILITY FUNCTIONS */
     requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}

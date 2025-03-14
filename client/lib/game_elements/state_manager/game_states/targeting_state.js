@@ -2,6 +2,8 @@ class TargetingState extends GameState {
 
     constructor(scene, previousState) {
         super(scene, GAME_STATES.TARGETING, previousState);
+
+        this.targettedCard = null;
     } 
 
     enter() {
@@ -32,6 +34,9 @@ class TargetingState extends GameState {
             const isValidTarget = this.scene.targetManager.isValidTarget(gameObject);
             
             if (isValidTarget.isValid) {
+                //Save the current targetting object
+                this.targettedCard = gameObject;
+
                 // Stop any existing tweens on this card to prevent conflicts
                 this.scene.tweens.killTweensOf(gameObject);
                 
@@ -64,38 +69,7 @@ class TargetingState extends GameState {
                             ease: 'Sine.easeInOut'
                         });
                         
-                        // Optional: Add a subtle glow effect
-                        try {
-                            if (!gameObject.targetGlow) {
-                                gameObject.targetGlow = this.scene.add.graphics();
-                                gameObject.targetGlow.setDepth(gameObject.depth - 1);
-                            }
-                            
-                            // Clear any existing glow
-                            gameObject.targetGlow.clear();
-                            
-                            // Draw glow around card
-                            gameObject.targetGlow.fillStyle(COLOR_ENUMS.OP_YELLOW, 0.3);
-                            gameObject.targetGlow.fillRoundedRect(
-                                gameObject.x - (gameObject.width * gameObject.scaleX * 0.55),
-                                gameObject.y - (gameObject.height * gameObject.scaleY * 0.55),
-                                gameObject.width * gameObject.scaleX * 1.1,
-                                gameObject.height * gameObject.scaleY * 1.1,
-                                8
-                            );
-                            
-                            // Animate glow opacity
-                            this.scene.tweens.add({
-                                targets: gameObject.targetGlow,
-                                alpha: 0.5,
-                                duration: 500,
-                                yoyo: true,
-                                repeat: -1,
-                                ease: 'Sine.easeInOut'
-                            });
-                        } catch (e) {
-                            // Silently fail if glow effect can't be created
-                        }
+                        gameObject.showGlow(COLOR_ENUMS.OP_GOLD);
                     }
                 });
             }
@@ -121,13 +95,11 @@ class TargetingState extends GameState {
                 ease: 'Back.easeOut',
                 onComplete: () => {
                     // Remove glow effect if it exists
-                    if (gameObject.targetGlow) {
-                        gameObject.targetGlow.clear();
-                        this.scene.tweens.killTweensOf(gameObject.targetGlow);
-                        gameObject.targetGlow.setAlpha(0);
-                    }
+                    gameObject.hideGlow();
                 }
             });
+
+            this.targettedCard = null; //reset pointer
         }
     }
     
@@ -180,6 +152,26 @@ class TargetingState extends GameState {
     }
 
     exit(newState) {
+        if(this.targettedCard) {
+            // Stop any existing tweens
+            this.scene.tweens.killTweensOf(this.targettedCard);
+
+            // Return to original state with a small animation
+            this.scene.tweens.add({
+                targets: this.targettedCard,
+                scaleX: this.targettedCard.originalScale.x,
+                scaleY: this.targettedCard.originalScale.y,
+                y: this.targettedCard.y + 5, // Return from lifted position
+                duration: 200,
+                ease: 'Back.easeOut',
+                onComplete: () => {
+                    // Remove glow effect if it exists
+                    this.targettedCard.hideGlow();
+                    this.targettedCard = null;
+                }
+            });
+        }
+
         this.scene.gameStateUI.nextTurnbutton.fsmState.exit(this.scene.gameStateUI.nextTurnbutton.fsmState.previousState);
         super.exit(newState); 
     }

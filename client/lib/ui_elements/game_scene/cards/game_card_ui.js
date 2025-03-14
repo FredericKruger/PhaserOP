@@ -458,6 +458,37 @@ class GameCardUI extends BaseCardUI{
         return currentPower;
     }
 
+    /** Function to retrieve an attached don from the id
+     * @param {number} donId
+     * @returns {DonCardUI}
+     */
+    getAttachedDon(donId) {
+        return this.attachedDon.find(don => don.id === donId);
+    }
+
+    /** Function to remove a don card form the attached array
+     * @param {number} donId
+     */
+    removeAttachedDon(donId) {
+        this.attachedDon = this.attachedDon.filter(don => don.id !== donId);
+        this.attachedDonText.setText("x" + this.attachedDon.length);
+    }
+
+    /** Function to retrieve an attached counter card from the id
+     * @param {number} counterId
+     * @returns {GameCardUI}
+     */
+    getAttachedCounter(cardid) {
+        return this.attachedCounter.find(counter => counter.id === cardid);
+    }
+
+    /** Function to remove a counter card from the attached array
+     * @param {number} cardId
+     */
+    removeAttachedCounter(cardId) {
+        this.attachedDon = this.attachedDon.filter(counter => counter.id !== cardId);
+    }
+
     //#endregion
     
     //#region ANIMATION FUNCTIONS

@@ -75,6 +75,11 @@ class AttackManager {
 
         /** @type {Attack} */
         this.attack = new Attack(attacker, defender, attackingPlayer, defendingPlayer);
+
+        this.blockPhase_Complete = false;
+        this.counterPhase_Complete = false;
+        this.resolveAttack_Complete = false;
+        this.attackCleanup_Complete = false;
     }
 
     /** Function to resolve the attack

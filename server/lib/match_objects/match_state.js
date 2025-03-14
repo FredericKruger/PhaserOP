@@ -409,7 +409,7 @@ class MatchState {
     resolveAttack(attackResults, attacker, defender, attackingPlayer, defendingPlayer) {
         //If the defender lost discard
         if(attackResults.defenderDestroyed) {
-            defendingPlayer.discardCard(defender);
+            attackResults.defenderAttachedCards = defendingPlayer.discardCard(defender);
         } else {
             //If the defender is a character
             defender.state = defender.previousState;

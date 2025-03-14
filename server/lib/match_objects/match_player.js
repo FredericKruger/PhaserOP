@@ -180,19 +180,27 @@ class MatchPlayer {
 
     /** Function that discards a card
      * @param {MatchCard} card - card to be discarded
+     * @returns {Object} 
      */
     discardCard(card){
+        let cardsToBeReturned = {
+            attachedDon: [],
+            attachedCounter: []
+        };
+
         //If the card has any attached don, return to don pile as set the state
         while(card.attachedDon.length > 0) {
             let donid = card.attachedDon.pop();
             let don = this.getDonCard(donid);
             don.state = CARD_STATES.DON_RESTED;
+            cardsToBeReturned.attachedDon.push(don);
         }
 
         //If the card has any attached counter discard
         while(card.attachedCounter.length > 0) {
             let counter = card.attachedCounter.pop();
             this.discardCard(counter);
+            cardsToBeReturned.attachedCounter.push(counter.id);
         }
 
         //Reset counterPower of card
@@ -200,8 +208,10 @@ class MatchPlayer {
 
         this.inDiscard.push(card); //push it to the discard
         card.state = CARD_STATES.IN_DISCARD; //set the state
-    }
 
+        //return object
+        return cardsToBeReturned;
+    }
 }
 
 module.exports = MatchPlayer;

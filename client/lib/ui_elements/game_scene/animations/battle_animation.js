@@ -17,21 +17,21 @@ class BattleAnimation {
         // Configuration for the battle animation
         const config = {
             impactFrames: [ASSET_ENUMS.BATTLE_ONO1, ASSET_ENUMS.BATTLE_ONO2, ASSET_ENUMS.BATTLE_ONO3, ASSET_ENUMS.BATTLE_ONO4, ASSET_ENUMS.BATTLE_ONO5],
-            numEffects: Phaser.Math.Between(4, 7),   // Reduced by 1 to account for explosion
-            effectScale: { min: 1.5, max: 2.5 },
-            explosionScale: { min: 1.0, max: 1.2 },  // Larger scale for main explosion
-            shakeMagnitude: 5,
-            shakeCount: 4,
+            numEffects: Phaser.Math.Between(5, 9),   // Increased number of effects
+            effectScale: { min: 1.5, max: 2.8 },     // Larger max scale
+            explosionScale: { min: 1.2, max: 1.8 },  // Larger explosion scale
+            shakeMagnitude: 7,                       // More intense shake
+            shakeCount: 5,                           // More shakes
             duration: {
-                approach: 400,
-                impact: 150,
-                effectsDelay: 50,
-                retreat: 300,
-                shake: 50,
-                angleChange: 200,
-                explosionAppear: 100,
-                explosionHold: 300,
-                explosionFade: 500
+                approach: 500,                       // Slower approach
+                impact: 300,                         // Longer impact pause
+                effectsDelay: 70,                    // More time between effects
+                retreat: 400,                        // Slower retreat
+                shake: 60,                           // Slightly longer shakes
+                angleChange: 250,                    // Smoother angle changes
+                explosionAppear: 150,                // Slower explosion appear
+                explosionHold: 400,                  // Longer explosion visibility
+                explosionFade: 600                   // Longer fade out
             }
         };
 
@@ -162,9 +162,9 @@ class BattleAnimation {
     createExplosionEffect(x, y, config) {
         // Generate a random vibrant color for the explosion
         const explosionColor = Phaser.Display.Color.GetColor(
-            Phaser.Math.Between(180, 255),  // Red (keep it high for vibrant colors)
-            Phaser.Math.Between(100, 255),  // Green
-            Phaser.Math.Between(50, 150)    // Blue (keep lower for more orange/red explosions)
+            Phaser.Math.Between(200, 255),  // More vibrant red
+            Phaser.Math.Between(120, 255),  // More vibrant green
+            Phaser.Math.Between(50, 150)    // Keep blue lower for warm colors
         );
 
         // Create the main explosion sprite
@@ -173,7 +173,6 @@ class BattleAnimation {
             .setScale(0.5)
             .setAlpha(0)
             .setTint(explosionColor)  // Apply the random color tint
-            //.setBlendMode(Phaser.BlendModes.ADD)  // ADD blend mode for a glowing effect
             .setDepth(DEPTH_VALUES.CARD_ATTACKING_ANIMATION + 10) // Very high depth to be on top
             .setAngle(Phaser.Math.Between(0, 360));
         
@@ -183,7 +182,7 @@ class BattleAnimation {
         // 1. Explosion appears quickly
         this.scene.tweens.add({
             targets: explosion,
-            scale: targetScale,
+            scale: targetScale * 1.5,
             alpha: 1,
             duration: config.duration.explosionAppear,
             ease: 'Back.easeOut',
@@ -191,13 +190,15 @@ class BattleAnimation {
                 // 2. Hold the explosion briefly
                 this.scene.tweens.add({
                     targets: explosion,
+                    scale: targetScale * 1.6, // Small growth during hold
                     duration: config.duration.explosionHold,
+                    ease: 'Sine.easeInOut',
                     onComplete: () => {
                         // 3. Fade out and grow slightly
                         this.scene.tweens.add({
                             targets: explosion,
                             alpha: 0,
-                            scale: targetScale * 1.3,
+                            scale: targetScale * 2,
                             duration: config.duration.explosionFade,
                             ease: 'Power2',
                             onComplete: () => explosion.destroy()
@@ -233,7 +234,7 @@ class BattleAnimation {
         // Create the specified number of impact effects
         for (let i = 0; i < count; i++) {
             // Randomize position around the impact point
-            const radius = Phaser.Math.Between(50, 100);
+            const radius = Phaser.Math.Between(75, 200);
             const angle = Phaser.Math.Between(0, 360) * Math.PI / 180;
             const x = centerX + radius * Math.cos(angle);
             const y = centerY + radius * Math.sin(angle);
@@ -260,24 +261,32 @@ class BattleAnimation {
             const targetScale = Phaser.Math.FloatBetween(scaleRange.min, scaleRange.max);
             
             // Add a slight delay based on the effect index
-            const delay = i * duration.effectsDelay;
+            const delay = i * duration.effectsDelay * 1.5;
             
-            // Animate the impact effect appearance
+            // Animate the impact effect appearance with longer duration
             this.scene.tweens.add({
                 targets: sprite,
                 scale: targetScale,
                 delay: delay,
-                duration: 150,
+                duration: 300, // Increased from 150
                 ease: 'Back.easeOut',
                 onComplete: () => {
-                    // Fade out and destroy after showing
+                    // Add rotation during the hold phase for more dynamic feeling
                     this.scene.tweens.add({
                         targets: sprite,
-                        alpha: 0,
-                        scale: targetScale * 1.5,
-                        duration: 1000,
-                        delay: 100,
-                        onComplete: () => sprite.destroy()
+                        angle: sprite.angle + Phaser.Math.Between(-20, 20),
+                        duration: 500, // Hold with slight rotation
+                        onComplete: () => {
+                            // Fade out and destroy after showing with even longer duration
+                            this.scene.tweens.add({
+                                targets: sprite,
+                                alpha: 0,
+                                scale: targetScale * 1.8, // Grow more as it fades
+                                duration: 1500, // Increased from 1000
+                                ease: 'Power2',
+                                onComplete: () => sprite.destroy()
+                            });
+                        }
                     });
                 }
             });
@@ -303,7 +312,7 @@ class BattleAnimation {
                     targets: card,
                     x: origX,
                     y: origY,
-                    duration: duration,
+                    duration: duration * 1.5,
                     ease: 'Sine.easeOut'
                 });
                 return;

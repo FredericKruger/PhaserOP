@@ -448,19 +448,28 @@ class ActionLibraryPassivePlayer {
         let action = new Action();
 
         if(!botAction) {
-            action.start = () => {
-                this.scene.targetingArrow.update(defender.x, defender.y);
+            let tweens =  this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 200);
+            tweens = tweens.concat({
+                duration: 10,
+                onComplete: () => {this.actionManager.completeAction();}
+            });
+            let start_animation = this.scene.tweens.chain({
+                targets: this.scene.targetingArrow,
+                tweens: tweens
+            }).pause();
+            action.start_animation = start_animation;
+            action.end = () => {
                 attacker.setState(CARD_STATES.IN_PLAY_RESTED);
                 this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
-            };
+            }
             action.isPlayerAction = true;
-            action.waitForAnimationToComplete = false;
+            action.waitForAnimationToComplete = true;
             action.name = "DECLARE ATTACK";
         } else {
             //Set the originator object
             this.scene.targetingArrow.originatorObject = attacker;
             //create the animation
-            let start_animation = this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 700, 'Power2', 200);
+            let start_animation = this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 500);
             start_animation = start_animation.concat({
                 duration: 10,
                 onComplete: () => {this.actionManager.completeAction();}

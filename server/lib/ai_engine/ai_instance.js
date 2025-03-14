@@ -568,7 +568,6 @@ class AI_Instance {
     startBlockPhase() {
         console.log("AI BLOCK PHASE");
         let blockDecision = this.evaluateBlock();
-        console.log(blockDecision);
         this.executeBlock(blockDecision);
     }
 
@@ -718,6 +717,35 @@ class AI_Instance {
             case 'noBlock':
                 this.match.flagManager.handleFlag(this.match.state.current_active_player, 'COUNTER_PHASE_READY');
                 this.match.flagManager.handleFlag(this.match.state.current_passive_player, 'COUNTER_PHASE_READY');
+                break;
+        }
+    }
+    //#endregion
+
+    //#region COUNTER STRATEGY
+
+    startCounterPhase() {
+        console.log("AI COUNTER PHASE");
+        //let blockDecision = this.evaluateBlock();
+        let counterDecisions = {
+            function: 'noCounter'
+        };
+        
+        this.executeCounter(counterDecisions);
+    }
+
+    /** Function to execute the AI Block
+     * @param {Object} counterDecision - The block decision
+     */
+    executeCounter(counterDecision) {
+        console.log(counterDecision);
+        switch(counterDecision.function) {
+            case 'counter':
+                //blockDecision.arg.ability.action(counterDecision.arg.blocker, this.match);
+                break;
+            case 'noCounter':
+                this.match.flagManager.handleFlag(this.match.state.current_active_player, 'RESOLVE_ATTACK_READY');
+                this.match.flagManager.handleFlag(this.match.state.current_passive_player, 'RESOLVE_ATTACK_READY');
                 break;
         }
     }

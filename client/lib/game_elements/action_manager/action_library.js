@@ -407,14 +407,7 @@ class ActionLibrary {
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
      */
-    discardCardAction(playerScene, card) {
-        //Before creating action, discard attached counters
-        //If if has any counters attached, discard those
-        while(card.attachedCounter.length > 0) {
-            let counterCard = card.attachedCounter.pop();
-            this.discardCardAction(playerScene, counterCard);
-        }
-        
+    discardCardAction(playerScene, card) {        
         //Get Start Animation
         let startAnimation_tweens = this.scene.animationLibrary.desintegrationAnimation(card, 0);
         startAnimation_tweens = startAnimation_tweens.concat({
@@ -445,20 +438,6 @@ class ActionLibrary {
 
             //Destroy dizzyanumation
             card.stopDizzyAnimation();
-
-            //If it has any attached don cards move them to the exerted pile
-            let numberAnimations = 0;
-            while(card.attachedDon.length > 0) {
-                let donCard = card.attachedDon.pop();
-                donCard.setState(CARD_STATES.DON_RESTED); //Change state
-                donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
-                this.scene.tweens.chain({
-                    targets: donCard,
-                    tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(card, numberAnimations*100)
-                }).restart();
-                card.updateAttachedDonPosition();
-                numberAnimations++;
-            }
         };
         action.start_animation = start_animation;
         action.end = () => {
@@ -486,9 +465,14 @@ class ActionLibrary {
      * @param {GameCardUI} defender
     */
     declareAttackAction(playerScene, attacker, defender) {
+        let tweens = this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 200);
+        tweens = tweens.concat({
+            duration: 10,
+            onComplete: () => {this.actionManager.completeAction();}
+        });
         let start_animation = this.scene.tweens.chain({
             targets: this.scene.targetingArrow,
-            tweens: this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 200)
+            tweens: tweens
         }).pause();
 
         let action = new Action();
@@ -633,6 +617,39 @@ class ActionLibrary {
             //If the defender was destroyed
             if(attackResults.defenderDestroyed) {
                 //Create action to discard the card
+                let defenderCard = this.scene.attackManager.attack.defender
+
+                //go through attached don cards and return to active area
+                if(attackResults.defenderAttachedCards && attackResults.defenderAttachedCards.attachedDon.length > 0) {
+                    let numberAnimations = 0;
+                    for(let donid of attackResults.defenderAttachedCards.attachedDon) {
+                        //If it has any attached don cards move them to the exerted pile
+                        let donCard = defenderCard.getAttachedDon(donid);
+                        if(donCard !== undefined) {
+                            defenderCard.removeAttachedDon(donid);
+                            donCard.setState(CARD_STATES.DON_RESTED); //Change state
+                            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
+                            this.scene.tweens.chain({
+                                targets: donCard,
+                                tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(defenderCard, numberAnimations*100)
+                            }).restart();
+                            numberAnimations++;
+                        }
+                    }
+                }
+
+                //go through attached counter cards and discard
+                if(attackResults.defenderAttachedCards && attackResults.defenderAttachedCards.attachedCounter.length > 0) {
+                    for(let cardid of attackResults.defenderAttachedCards.attachedCounter) {
+                        let counterCard = defenderCard.getAttachedCounter(cardid);
+                        if(counterCard !== undefined) {
+                            defenderCard.removeAttachedCounter(cardid);
+                            this.discardCardAction(defenderPlayer, counterCard);
+                        }
+                    }
+                }
+
+                //discard the actual defender card
                 this.discardCardAction(defenderPlayer, this.scene.attackManager.attack.defender);
             }
 
@@ -641,9 +658,7 @@ class ActionLibrary {
             //Create an action to switch states when finished
             let finishAction = new Action();
             finishAction.start = () => {
-                this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
-                //Replace with a call to the server to synchronise
-                //FIXME create call to server
+                this.scene.game.gameClient.requestStartAttackCleanup();
             };
             finishAction.waitForAnimationToComplete = false;
             finishAction.isPlayerAction = false;

@@ -398,6 +398,7 @@ class Match {
         this.state.current_passive_player.currentMatchPlayer.matchFlags.resetActionFlags();
 
         //test if there are any blockers in the passive players area which are not rested
+        this.attackManager.blockPhase_Complete = true;
         this.state.current_phase = MATCH_PHASES.BLOCK_PHASE;
 
         //Check if the player has available blockers
@@ -416,22 +417,22 @@ class Match {
      * @param {blockerID} blockerID
      */
     startBlockAttack(blockerID) {
-        //let blockerCard = this.state.current_passive_player.currentMatchPlayer.getCard(blockerID);
-        //if(blockerCard.getAbilityByType("BLOCKER") && blockerCard.getAbilityByType("BLOCKER").canActivate(blockerCard, 'BLOCKER_INTERACTION')){
-            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_blocked', true, blockerID);
-            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_blocked', false, blockerID);
-        //}
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_blocked', true, blockerID);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_blocked', false, blockerID);
     }
 
     /** Function to start the Counter Phase */
     startCounterPhase() {
-        if(this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_active_player)
+        if( !this.attackManager.counterPhase_Complete
+            && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_passive_player)){
 
+            this.attackManager.counterPhase_Complete = true;
             this.state.current_phase = MATCH_PHASES.COUNTER_PHASE;
 
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_counter_phase', true);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_counter_phase', false);
+            else this.ai.startCounterPhase();
         }
     }
 
@@ -454,8 +455,13 @@ class Match {
 
     /** Function to resolve the attack */
     startResolveAttack() {
-        if(this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_active_player)
+        if( !this.attackManager.resolveAttack_Complete
+            && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_passive_player)){
+
+            this.attackManager.resolveAttack_Complete = true;
+            //this.state.current_phase = MATCH_PHASES.RESOLVE_ATTACK;
+            
             //Resolve the attack
             let attackResults = this.attackManager.resolveAttack(); 
             attackResults = this.state.resolveAttack(attackResults, this.attackManager.attack.attacker, this.attackManager.attack.defender, this.attackManager.attack.attackingPlayer, this.attackManager.attack.defendingPlayer);
@@ -463,6 +469,23 @@ class Match {
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_attack_animation', true, attackResults);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_attack_animation', false, attackResults);
         } 
+    }
+
+    /** Function to cleanup after the attack */
+    startAttackCleanup() {
+        if( !this.attackManager.attackCleanup_Complete
+            && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_passive_player)){
+
+                this.attackManager.attackCleanup_Complete = true;
+                console.log("READY FOR CLEANUP");
+
+        }
+    }
+
+    /** Function to continue with the rest of the turn */
+    resumeTurn() {
+
     }
     //#endregion
 
