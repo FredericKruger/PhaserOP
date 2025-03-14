@@ -79,6 +79,7 @@ class MatchPlayer {
         return startID;
     }
 
+    //#region PLAY EVENT
     /** Function that plays an event 
      * @param {number} cardID - ID of the card to be played
     */
@@ -99,7 +100,9 @@ class MatchPlayer {
 
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: -1, spentDonIds: donIDs};
     }
+    //#endregion
 
+    //#region PLAY STAGE
     /** Function that plays a stage card and replaces the previous one if needed
      * @param {number} cardID - ID of the card to be played
      * @param {boolean} replacePreviousCard - flag to replace the
@@ -131,7 +134,9 @@ class MatchPlayer {
 
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: previousCardID, spentDonIds: donIDs};
     }
+    //#endregion
 
+    //#region PLAY CHARACTER
     /** Function to play a character
      * @param {number} cardID - ID of the card to be played
      * @param {boolean} replacePreviousCard - flag to replace the previous card
@@ -166,7 +171,9 @@ class MatchPlayer {
         //else return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
     }
+    //#endregion
 
+    //#region HAS AVAILABLE BLOCKERS
     /** Function that checks if the players has available blockers for the given game phase
      * @param {string} gamePhase - phase of the game
      * @return {boolean} - true if the player has available blockers, false otherwise
@@ -177,7 +184,9 @@ class MatchPlayer {
         }
         return false;
     }
+    //#endregion
 
+    //#region DISCARD FUNCTION
     /** Function that discards a card
      * @param {MatchCard} card - card to be discarded
      * @returns {Object} 
@@ -212,6 +221,38 @@ class MatchPlayer {
         //return object
         return cardsToBeReturned;
     }
+    //#endregion
+
+    //#region ATTACK CLEANUP
+    /** Function to cleanup all the counters from characters after an attack
+     * @returns {Array<Object>}
+     */
+    attackCleanup() {
+        let cardsToBeReturned = [];
+
+        //First the cards in the character area
+        for(let card of this.inCharacterArea) {
+            //reset eventCounter
+            card.eventCounterAmount = 0;
+
+            while(card.attachedCounter.length > 0) {
+                let counter = card.attachedCounter.pop();
+                this.discardCard(counter);
+                cardsToBeReturned.push({card: card.id, counter: counter.id});
+            }
+        }
+
+        //Then the leader
+        this.inLeaderLocation.eventCounterAmount = 0;
+        while(this.inLeaderLocation.attachedCounter.length > 0) {
+            let counter = this.inLeaderLocation.attachedCounter.pop();
+            this.discardCard(counter);
+            cardsToBeReturned.push({card: this.inLeaderLocation.id, counter: counter.id});
+        }
+
+        return cardsToBeReturned;
+    }
+    //#endregion
 }
 
 module.exports = MatchPlayer;

@@ -1015,8 +1015,44 @@ class GameStateManager {
      * @param {Object} attackResults - The attack results
      */
     startAttackAnimation(activePlayer, attackResults) {
-        //if(activePlayer) 
         this.scene.actionLibrary.startAttackAnimation(activePlayer, attackResults);
+    }
+
+    /** Function to start the attack cleanup action */
+    startAttackCleanup(activePlayer, cleanupResults) {
+        let player = this.scene.activePlayerScene;
+        if(!activePlayer) player = this.scene.passivePlayerScene;
+
+        //reset event counter amounts
+        player.resetEventCounterAmounts();
+
+        //list of cards that were cleaned up
+        let affectedCards = [];
+        if(cleanupResults.length > 0) {
+            for(let i=0; i<cleanupResults.length; i++) {
+                const cleanup = cleanupResults[i];
+                let card = player.getCard(cleanup.card);
+                let counter = card.getAttachedCounter(cleanup.counter);
+
+                //Fan out the cards to show. Add test to make sure it is not faned out twice
+                if(!card.counterFanShowingManual){ 
+                    card.fanOutCounterCards(250, true);
+                    affectedCards.push(card);
+                }
+
+                card.removeAttachedCounter(cleanup.counter);
+                this.scene.actionLibrary.discardCardAction(player, counter, 150); 
+            }
+        }
+        
+        //Create an action to send finished to the server
+        const finalAction = new Action();
+        finalAction.start = () => {
+            for(let card of affectedCards) card.fanInCounterCards(0, true);
+            this.scene.game.gameClient.requestEndAttack();
+        }
+        finalAction.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(finalAction)
     }
 
     //#endregion
@@ -1211,6 +1247,26 @@ class GameStateManager {
         let action = new Action();
 
         action.start = () => {this.scene.gameState.exit(this.scene.gameState.previousState);}
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+
+        this.scene.actionManager.addAction(action);
+    }
+
+    resumeActive(){
+        let action = new Action();
+
+        action.start = () => {this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);}
+        action.isPlayerAction = true;
+        action.waitForAnimationToComplete = false;
+
+        this.scene.actionManager.addAction(action);
+    }
+
+    resumePassive(){
+        let action = new Action();
+
+        action.start = () => {this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);}
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
 

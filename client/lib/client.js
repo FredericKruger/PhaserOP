@@ -153,6 +153,7 @@ class Client {
         this.socket.on('game_counter_played', (activePlayer, counterID, characterID, counterCardData = null) => {this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID, counterCardData);});
 
         this.socket.on('game_start_attack_animation', (activePlayer, attackResults) => {this.gameScene.gameStateManager.startAttackAnimation(activePlayer, attackResults);});
+        this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);});
 
         /** OPPONENT ACTION LISTENERS */
         this.socket.on('game_stop_targetting', (hideArrow = true, eventArrow = false) => {
@@ -170,6 +171,8 @@ class Client {
         this.socket.on('game_ability_failure', (cardId, abilityId) => {this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, false);});
 
         this.socket.on('game_change_state_active', () => {this.gameScene.gameStateManager.changeGameStateActive();});
+        this.socket.on('game_resume_active', () => {this.gameScene.gameStateManager.resumeActive();});
+        this.socket.on('game_resume_passive', () => {this.gameScene.gameStateManager.resumePassive();});
 
         this.socket.on('game_complete_current_turn', () => {this.gameScene.gameStateManager.completeCurrentTurn();});
     }
@@ -243,6 +246,7 @@ class Client {
     requestPassBlockerPhase (passed) {this.socket.emit('player_pass_blocker_phase', passed);}
     requestPassCounterPhase (passed) {this.socket.emit('player_pass_counter_phase', passed);}
     requestStartAttackCleanup () {this.socket.emit('player_start_attack_cleanup');}
+    requestEndAttack() {this.socket.emit('player_end_attack');}
 
     /** ABILITY FUNCTIONS */
     requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}

@@ -88,6 +88,18 @@ class PlayerScene {
         this.scene.actionLibrary.startTargetingAction(this, card, false);
         this.scene.game.gameClient.requestStartTargetingPassivePlayer(actionInfos.playedCard);
     }
+
+    resetEventCounterAmounts() {
+        //For each card in the character area
+        for(let card of this.characterArea.cards) {
+            card.eventCounterPower = 0;
+        }
+
+        //for the leader
+        for(let card of this.leaderLocation.cards) {
+            card.eventCounterPower = 0;
+        }
+    }
     //#endregion
 
     //#region CHECKER FUNCTIONS

@@ -489,7 +489,7 @@ class AnimationLibrary {
      * @param {GameCardUI} card - card to be destroyed
      * @param {number} delay - delay with which to start the tweens
      */
-    integrationAnimation(card, delay) {
+    integrationAnimation(card, delay, duration = 500) {
         // Create a temporary object to hold the animation value
         const tempObj = { burnAmount: 1 };
     
@@ -503,7 +503,7 @@ class AnimationLibrary {
             delay: delay || 0,
             targets: tempObj,  // Use the temporary object as the target
             burnAmount: 0,  
-            duration: 500,
+            duration: duration,
             ease: 'Power2',
             onUpdate: (tween) => {
                 card.frontArt.pipeline.set1f('burnAmount', tempObj.burnAmount);

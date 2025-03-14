@@ -474,18 +474,32 @@ class Match {
     /** Function to cleanup after the attack */
     startAttackCleanup() {
         if( !this.attackManager.attackCleanup_Complete
-            && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_active_player)
-            && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_passive_player)){
+            && this.flagManager.checkFlag('ATTACK_CLEANUP_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('ATTACK_CLEANUP_READY', this.state.current_passive_player)){
 
                 this.attackManager.attackCleanup_Complete = true;
                 console.log("READY FOR CLEANUP");
 
+                const cleanupResults = this.state.attackCleanup(this.attackManager.attack.defendingPlayer);
+
+                //reset Attack object
+                this.attackManager = null;
+
+                //Send results to clients
+                if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_cleanup', false, cleanupResults);
+                if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_cleanup', true, cleanupResults);
         }
     }
 
     /** Function to continue with the rest of the turn */
     resumeTurn() {
-
+        if( this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_passive_player)) {
+            
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_resume_passive');   
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_resume_active');
+            else this.ai.resumeTurn(true);
+        }
     }
     //#endregion
 

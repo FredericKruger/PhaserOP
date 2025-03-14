@@ -437,13 +437,13 @@ class MatchState {
         return attackResults;
     }
 
-    /** Function to clean the attack Phase */
-    cleanUpAttackPhase() {
-        //TODO for all the cards in the play area removes all attached counter
-        //reset all the counter values
-        
+    /** Function to handle the cleanup of the counter cards in the defender
+     * @param {MatchPlayer} defendingPlayer - defending player
+     * @returns {Object}
+     */
+    attackCleanup(player) {
+        return player.attackCleanup();
     }
-
     //#endregion
 
     //#region UTILITY FUNCTIONS

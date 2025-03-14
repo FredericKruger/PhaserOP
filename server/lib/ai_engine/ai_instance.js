@@ -207,15 +207,7 @@ class AI_Instance {
     play() {
         console.log("AI TURN");
         this.actionsTaken.reset(); //Log the actions the AI has taken
-        this.actionTaken = this.decideNextAction();
-        while(this.actionTaken && !this.waitingForPlayerInput) {
-            this.actionTaken = this.decideNextAction();
-        }
-
-        if(!this.waitingForPlayerInput) {
-            console.log("AI END TURN");
-            this.endTurn();
-        }
+        this.resumeTurn();
     }
 
     /**
@@ -254,6 +246,26 @@ class AI_Instance {
                 return { function: 'endTurn' };
             default:
                 return null;
+        }
+    }
+
+    /** Function to resume the AI Actions
+     * @param {boolean} isResuming - If the AI is resuming the turn
+     */
+    resumeTurn(isResuming = false) {
+        if(isResuming) {
+            this.waitingForPlayerInput = false;
+            console.log("AI RESUMING");
+        }
+
+        this.actionTaken = this.decideNextAction();
+        while(this.actionTaken && !this.waitingForPlayerInput) {
+            this.actionTaken = this.decideNextAction();
+        }
+
+        if(!this.waitingForPlayerInput) {
+            console.log("AI END TURN");
+            this.endTurn();
         }
     }
 

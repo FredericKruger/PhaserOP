@@ -32,8 +32,12 @@ class GameCardUI extends BaseCardUI{
         //STATE VARIABLES
         this.fsmState = new InDeckState(this);
         this.isInPlayAnimation = false;
+
         this.donFanShowing = false;
+        this.donFanManual = false;
+
         this.counterFanShowing = false;
+        this.counterFanShowingManual = false;
 
         this.turnPlayed = true; //To store if the card was played in the current turn
 
@@ -486,7 +490,7 @@ class GameCardUI extends BaseCardUI{
      * @param {number} cardId
      */
     removeAttachedCounter(cardId) {
-        this.attachedDon = this.attachedDon.filter(counter => counter.id !== cardId);
+        this.attachedCounter = this.attachedCounter.filter(counter => counter.id !== cardId);
     }
 
     //#endregion
@@ -650,8 +654,13 @@ class GameCardUI extends BaseCardUI{
      */
     animateNewDonCard(newDonCard, delay = 0) {
         // Define the position where the new card will go
-        const fanOutX = this.x - this.displayWidth/2;
-        const fanOutY = this.y;
+        let fanOutX = this.x - this.displayWidth/2;
+        let fanOutY = this.y;
+
+        if(this.angle === -90) {
+            fanOutX = this.x - this.displayHeight/2;
+            fanOutY = this.y;
+        }
         
         // Move the new DON card into position with a nice animation
         this.scene.tweens.add({
@@ -685,8 +694,13 @@ class GameCardUI extends BaseCardUI{
      */
     fanOutDonCards(duration = 200) {
         // Define the fan-out positions
-        const fanOutX = this.x - this.displayWidth/2;
-        const fanOutY = this.y;
+        let fanOutX = this.x - this.displayWidth/2;
+        let fanOutY = this.y;
+
+        if(this.angle === -90) {
+            fanOutX = this.x - this.displayHeight/2;
+            fanOutY = this.y;
+        }
         
         this.donFanShowing = true;
 
@@ -715,8 +729,13 @@ class GameCardUI extends BaseCardUI{
      */
     fanInDonCards(duration = 250) {
         // Determine the final position
-        const finalX = this.x - this.displayWidth/2 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
-        const finalY = this.y;
+        let finalX = this.x - this.displayWidth/2 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
+        let finalY = this.y;
+
+        if(this.angle === -90) {
+            finalX = this.x - this.displayHeight/2 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
+            finalY = this.y;
+        }
 
         // Fan all cards back in
         for (let i = 0; i < this.attachedDon.length; i++) {
@@ -747,8 +766,13 @@ class GameCardUI extends BaseCardUI{
      */
     animateNewCounterCard(newCounterCard, delay = 0) {
         // Define the position where the new card will go
-        const fanOutX = this.x + this.displayWidth/2;
-        const fanOutY = this.y - this.displayHeight/6 + this.attachedCounter.length * 5;
+        let fanOutX = this.x + this.displayWidth/2;
+        let fanOutY = this.y - this.displayHeight/6 + this.attachedCounter.length * 5;
+
+        if(this.angle === -90) {
+            let fanOutX = this.x + this.displayHeight/2;
+            let fanOutY = this.y - this.displayWidth/6 + this.attachedCounter.length * 3;
+        }
         
         // Move the new DON card into position with a nice animation
         this.scene.tweens.add({
@@ -776,21 +800,28 @@ class GameCardUI extends BaseCardUI{
      * Fan out DON cards for display
      * @param {number} duration - Animation duration in milliseconds
      */
-    fanOutCounterCards(duration = 200) {
+    fanOutCounterCards(duration = 200, manualFaning = false) {
         // Define the fan-out positions
-        const fanOutX = this.x + this.displayWidth/2;
-        const fanOutY = this.y - this.displayHeight/6;
+        let fanOutX = this.x + this.displayWidth/2;
+        let fanOutY = this.y - this.displayHeight/6;
+
+        if(this.angle === -90) {
+            fanOutX = this.x + this.displayHeight/2;
+            fanOutY = this.y + this.displayWidth/6;
+        }
         
         this.counterFanShowing = true;
+        if(manualFaning) this.counterFanShowingManual = true;
 
         for (let i = 0; i < this.attachedCounter.length; i++) {
             const counter = this.attachedCounter[i];
-            const offset = i * 5;
+            let offset = i * 5;
+            if(this.angle === -90) offset = i * 2;
             
             this.scene.tweens.add({
                 targets: counter,
                 x: fanOutX,
-                y: fanOutY + (i * 5),
+                y: fanOutY + offset,
                 angle: 20 + (i * 1), // Fan them at slightly different angles
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON,
                 duration: duration,
@@ -803,10 +834,15 @@ class GameCardUI extends BaseCardUI{
      * Fan in DON cards to their final position
      * @param {number} duration - Animation duration in milliseconds
      */
-    fanInCounterCards(duration = 250) {
+    fanInCounterCards(duration = 250, manualFaning = false) {
         // Determine the final position
-        const finalX = this.x + this.displayWidth/2 - GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
-        const finalY = this.y;
+        let finalX = this.x + this.displayWidth/2 - GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
+        let finalY = this.y;
+
+        if(this.angle === -90) {
+            finalX = this.x + this.displayHeight/2 - GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.DON_IN_ACTIVE_DON;
+            finalY = this.y;
+        }
 
         // Fan all cards back in
         for (let i = 0; i < this.attachedCounter.length; i++) {
@@ -822,6 +858,7 @@ class GameCardUI extends BaseCardUI{
                 ease: 'Quad.easeInOut',
                 onStart: () => {
                     if(i === this.attachedCounter.length - 1) {
+                        if(manualFaning) this.counterFanShowingManual = false;
                         this.counterFanShowing = false;
                     }
                 }

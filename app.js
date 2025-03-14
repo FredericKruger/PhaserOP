@@ -256,9 +256,8 @@ io.on('connection', function (/** @type {object} */ socket) {
         if(passed && !socket.player.currentOpponentPlayer.bot) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'RESOLVE_ATTACK_READY'); //Pass the opponent as no animations required
     });
 
-    socket.on('player_start_attack_cleanup', () => {
-        socket.player.match.flagManager.handleFlag(socket.player, 'ATTACK_CLEANUP_READY');
-    });
+    socket.on('player_start_attack_cleanup', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ATTACK_CLEANUP_READY');});
+    socket.on('player_end_attack', () => {socket.player.match.flagManager.handleFlag(socket.player, 'RESUME_TURN_READY');})
 
     socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(socket.player, cardID, abilityID);});
 

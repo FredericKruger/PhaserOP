@@ -346,8 +346,10 @@ class ActionLibrary {
         //Update playArea action
         let updateAction = new Action();
         updateAction.start = () => {
-            let cardPosition = playerScene.characterArea.update(card);
-            card.enterCharacterArea(cardPosition.x, cardPosition.y);
+            if(card.cardData.card === CARD_TYPES.CHARACTER) {
+                let cardPosition = playerScene.characterArea.update(card);
+                card.enterCharacterArea(cardPosition.x, cardPosition.y);
+            }
         };
         updateAction.isPlayerAction = true; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
@@ -407,7 +409,7 @@ class ActionLibrary {
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
      */
-    discardCardAction(playerScene, card) {        
+    discardCardAction(playerScene, card, animationSpeed = 500) {        
         //Get Start Animation
         let startAnimation_tweens = this.scene.animationLibrary.desintegrationAnimation(card, 0);
         startAnimation_tweens = startAnimation_tweens.concat({
@@ -420,7 +422,7 @@ class ActionLibrary {
         }).pause();
 
         //Get end animation
-        let endAnimation_tweens = this.scene.animationLibrary.integrationAnimation(card, 500);
+        let endAnimation_tweens = this.scene.animationLibrary.integrationAnimation(card, 500, animationSpeed);
         endAnimation_tweens = endAnimation_tweens.concat({
             targets: card,
             duration: 10,
@@ -640,6 +642,7 @@ class ActionLibrary {
 
                 //go through attached counter cards and discard
                 if(attackResults.defenderAttachedCards && attackResults.defenderAttachedCards.attachedCounter.length > 0) {
+                    defenderCard.fanOutCounterCards(200, true);
                     for(let cardid of attackResults.defenderAttachedCards.attachedCounter) {
                         let counterCard = defenderCard.getAttachedCounter(cardid);
                         if(counterCard !== undefined) {
@@ -647,7 +650,14 @@ class ActionLibrary {
                             this.discardCardAction(defenderPlayer, counterCard);
                         }
                     }
+
+                    //small action to fan in the cards
+                    let fanInAction = new Action();
+                    fanInAction.start = () => {defenderCard.fanInCounterCards(0, true);};
+                    fanInAction.waitForAnimationToComplete = false;
+                    this.scene.actionManager.addAction(fanInAction);
                 }
+
 
                 //discard the actual defender card
                 this.discardCardAction(defenderPlayer, this.scene.attackManager.attack.defender);
