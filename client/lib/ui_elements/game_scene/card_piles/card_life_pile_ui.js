@@ -7,6 +7,7 @@ class CardLifePileUI extends CardPileUI {
     constructor(scene, playerscene) {
         super(scene, playerscene);
 
+        this.manualFaning = false;
         this.fanDisplayed = false;
     }
 

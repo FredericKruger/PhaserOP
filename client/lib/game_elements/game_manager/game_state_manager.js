@@ -755,6 +755,38 @@ class GameStateManager {
             donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
             character.attachedDon.push(donCard); //Add to character pile
 
+            const donImage = this.scene.add.image(character.x, character.y + character.displayHeight*0.25, ASSET_ENUMS.GAME_DON_SMALL).setDepth(character.depth+1).setScale(0);
+            // Dramatic entry animation sequence
+            this.scene.tweens.add({
+                onStart: () => {donImage.setVisible(true);},
+                targets: donImage,
+                scale: { from: 0, to: 1.8 }, // Zoom in effect (larger than final)
+                duration: 400,
+                ease: 'Back.easeOut',
+                onComplete: () => {                       
+                    // Pulse effect
+                    this.scene.tweens.add({
+                        targets: donImage,
+                        scale: 1.5,
+                        duration: 200,
+                        ease: 'Bounce.easeOut',
+                        onComplete: () => {                                
+                            // Hold for a moment before fading out
+                            this.scene.time.delayedCall(400, () => {
+                                this.scene.tweens.add({
+                                    targets: donImage,
+                                    alpha: { from: 1, to: 0 },
+                                    scale: { from: 1.5, to: 1.7 },
+                                    duration: 600,
+                                    ease: 'Power1.easeIn',
+                                    onComplete: () => {donImage.destroy();}
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+
             //Animate
             character.updateAttachedDonPosition(true, donCard);
 
@@ -822,6 +854,38 @@ class GameStateManager {
                 donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
                 character.attachedDon.push(donCard); //Add to character pile
                 character.updateAttachedDonPosition(true, donCard);
+
+                const donImage = this.scene.add.image(character.x, character.y + character.displayHeight*0.25, ASSET_ENUMS.GAME_DON_SMALL).setDepth(character.depth+1).setScale(0);
+                // Dramatic entry animation sequence
+                this.scene.tweens.add({
+                    onStart: () => {donImage.setVisible(true);},
+                    targets: donImage,
+                    scale: { from: 0, to: 1.8 }, // Zoom in effect (larger than final)
+                    duration: 400,
+                    ease: 'Back.easeOut',
+                    onComplete: () => {                       
+                        // Pulse effect
+                        this.scene.tweens.add({
+                            targets: donImage,
+                            scale: 1.5,
+                            duration: 200,
+                            ease: 'Bounce.easeOut',
+                            onComplete: () => {                                
+                                // Hold for a moment before fading out
+                                this.scene.time.delayedCall(400, () => {
+                                    this.scene.tweens.add({
+                                        targets: donImage,
+                                        alpha: { from: 1, to: 0 },
+                                        scale: { from: 1.5, to: 1.7 },
+                                        duration: 600,
+                                        ease: 'Power1.easeIn',
+                                        onComplete: () => {donImage.destroy();}
+                                    });
+                                });
+                            }
+                        });
+                    }
+                });
 
                 // Update the power text with animation
                 character.updatePowerText();
