@@ -281,6 +281,59 @@ class AnimationLibrary {
         return animation;
     }
 
+    /** Animation that brings a card from the deck to 
+     * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
+     * @param {number} delay - delay with which to start the tweens 
+     */
+    animation_move_card_lifedeck2display(card, delay) {
+        let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
+        let displayY = this.scene.screenCenterY;
+
+        let pos1Y = displayY + (card.y - displayY)*2/3;
+        let pos2Y = displayY + (card.y - displayY)*1/3;
+
+        let animation = [
+            { // Phase 1: Lift the card slightly and move to intermediate position
+                targets: card,
+                x: displayX,
+                y: pos1Y,
+                duration: 300, // Adjusted duration for smoother movement
+                delay: delay,
+                ease: 'Power2.easeInOut', // Smoother easing
+                onComplete: () => {
+                    card.state = CARD_STATES.TRAVELLING_DECK_HAND;
+                }
+            },
+            { // Phase 2: Flip the card on the x-axis (first half)
+                targets: card,
+                scaleX: 0,
+                scaleY: (CARD_SCALE.IN_PLAY_ANIMATION - card.scale) / 2,
+                y: pos2Y,
+                duration: 300,
+                ease: 'Power2.easeIn',
+                onComplete: () => {
+                    card.flipCard();
+                }
+            },
+            { // Phase 3: Flip the card on the x-axis (second half) and move to final position
+                targets: card,
+                scaleX: CARD_SCALE.IN_PLAY_ANIMATION,
+                scaleY: CARD_SCALE.IN_PLAY_ANIMATION,
+                y: displayY,
+                duration: 300,
+                ease: 'Power2.easeOut'
+            },
+            { // Phase 4: Pause at display location
+                targets: card,
+                scale: CARD_SCALE.IN_PLAY_ANIMATION,
+                duration: 800, // Longer hold duration
+                ease: 'Power2.easeInOut'
+            }
+        ];
+    
+        return animation;
+    }
+
     /** Animation that moves a don card from the don deck to the active don area
      * @param {DonCardUI} card - card to be moved from the don deck to the active don area
      * @param {number} delay - delay with which to start the tweens

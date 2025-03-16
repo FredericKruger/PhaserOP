@@ -120,6 +120,17 @@ class GameScene extends Phaser.Scene {
             COLOR_ENUMS.OP_BLACK, 0.8).setOrigin(0.5).setDepth(3);
         this.maskPanel.setVisible(true);
 
+        //Create Test Button to test new features
+        this.testButton = this.add.image(100, 100, ASSET_ENUMS.IMAGE_INTRO_LUFFY).setOrigin(0.5).setDepth(10).setScale(0.6);
+        this.testButton.setInteractive();
+        this.testButton.on('pointerdown', () => {
+            let serverCard = {
+                id: this.activePlayerScene.lifeDeck.cards[0].id,
+                cardData: this.activePlayerScene.hand.cards[0].cardData
+            }
+            this.actionLibrary.drawLifeCardAction(this.activePlayerScene, serverCard);
+        });
+
         /** LISTENERS */
         /** Hander for when the poinster enters a card */
         this.input.on('pointerover', (pointer, gameObject) => {
@@ -195,8 +206,8 @@ class GameScene extends Phaser.Scene {
         this.passivePlayer.setLife(passivePlayerLeader.cardData.life);
 
         //Set life points in the ui
-        this.activePlayerScene.playerInfo.setLifePoints(this.activePlayer.totalLife);
-        this.passivePlayerScene.playerInfo.setLifePoints(this.passivePlayer.totalLife);
+        this.activePlayerScene.playerInfo.setLifePoints(0);//this.activePlayer.totalLife);
+        this.passivePlayerScene.playerInfo.setLifePoints(0);//this.passivePlayer.totalLife);
 
         //Make the scene appear
         this.cameras.main.fadeIn(1000, 0, 0, 0); // Fade in over 1 second

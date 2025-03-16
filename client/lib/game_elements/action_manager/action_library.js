@@ -72,6 +72,7 @@ class ActionLibrary {
             } else if(phase === GAME_PHASES.PREPARING_FIRST_TURN) {
                 card.setState(CARD_STATES.IN_LIFEDECK);
                 playerScene.lifeDeck.addCard(card);
+                playerScene.playerInfo.setLifePoints(playerScene.lifeDeck.cards.length); //udpate the ui
             } else {
                 card.setState(CARD_STATES.TRAVELLING_TO_HAND);
             }
@@ -90,6 +91,66 @@ class ActionLibrary {
         };
         drawAction.isPlayerAction = true;
         drawAction.waitForAnimationToComplete = config.waitForAnimationToComplete;
+        drawAction.name = "DRAW CARD ACTION";
+
+        //Add Action to the action stack
+        this.actionManager.addAction(drawAction);
+    }
+    //#endregion
+
+    //#region DRAW LIFE CARD ACTION
+    /**
+     * Createss an action to draw a card
+     * @param {PlayerScene} playerScene 
+     * @param {Object} serverCard
+     */
+    drawLifeCardAction(playerScene, serverCard) {
+        //Create a new Duel Card
+        let card = playerScene.lifeDeck.getCard(serverCard.id);
+        if(serverCard.cardData) {
+            card.updateCardData(serverCard.cardData, false); //in some case we only pass the id
+        };
+
+        //Prepare Tweens
+        let tweens = this.scene.animationLibrary.animation_move_card_lifedeck2display(card, 200);
+        tweens = tweens.concat({
+            duration: 10,
+            onComplete: () => { this.scene.actionManager.completeAction(); }
+        });
+        let start_animation = this.scene.tweens.chain({ //Create tween chain
+            targets: card,
+            tweens: tweens
+        }).pause();
+
+        //Create Action
+        let drawAction = new Action();
+        drawAction.start = () => {
+            playerScene.lifeDeck.showLifeCardFan(true);
+            
+            playerScene.lifeDeck.removeCard(card);
+            card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+            card.setState(CARD_STATES.TRAVELLING_TO_HAND);
+            // Add a pulse effect to the life counter
+
+            playerScene.playerInfo.setLifePoints(playerScene.lifeDeck.cards.length); //udpate the ui
+            const lifeText = card.playerScene.playerInfo.lifeAmountText;
+            this.scene.tweens.add({
+                targets: lifeText,
+                scale: 1.2,
+                duration: 150,
+                yoyo: true,
+                ease: 'Sine.easeInOut'
+            });
+        };
+        drawAction.start_animation = start_animation;
+        drawAction.end = () => {
+            playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, updateUI: true});
+        }
+        drawAction.finally = () => {
+            playerScene.lifeDeck.hideLifeCardFan(true);
+        };
+        drawAction.isPlayerAction = true;
+        drawAction.waitForAnimationToComplete = true;
         drawAction.name = "DRAW CARD ACTION";
 
         //Add Action to the action stack

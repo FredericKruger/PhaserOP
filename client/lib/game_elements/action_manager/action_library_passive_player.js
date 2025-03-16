@@ -72,6 +72,7 @@ class ActionLibraryPassivePlayer {
             } else if (phase === GAME_PHASES.PREPARING_FIRST_TURN) {
                 card.setState(CARD_STATES.IN_LIFEDECK);
                 playerScene.lifeDeck.addCard(card);
+                playerScene.playerInfo.setLifePoints(playerScene.lifeDeck.cards.length); //udpate the ui
             } else {
                 card.setState(CARD_STATES.TRAVELLING_TO_HAND);
             }
