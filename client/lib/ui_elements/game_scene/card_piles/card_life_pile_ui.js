@@ -7,6 +7,8 @@ class CardLifePileUI extends CardPileUI {
     constructor(scene, playerscene) {
         super(scene, playerscene);
 
+        this.fanPositioner = playerscene.playerPosition === PLAYER_POSITIONS.BOTTOM ? 1 : -1;
+
         this.manualFaning = false;
         this.fanDisplayed = false;
     }
@@ -43,7 +45,7 @@ class CardLifePileUI extends CardPileUI {
             this.scene.tweens.add({
                 targets: card,
                 x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
-                y: this.playerScene.playerInfo.lifeCardPlaceholder.y - this.playerScene.playerInfo.lifeCardPlaceholder.height / 2 - GAME_UI_CONSTANTS.CARD_ART_HEIGHT / 2 * CARD_SCALE.IN_DON_DECK,
+                y: this.playerScene.playerInfo.lifeCardPlaceholder.y - (this.playerScene.playerInfo.lifeCardPlaceholder.height / 2 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT / 2 * CARD_SCALE.IN_DON_DECK) * this.fanPositioner,
                 alpha: { from: 0, to: 1 },
                 duration: 400,
                 ease: 'Power2',
@@ -54,7 +56,7 @@ class CardLifePileUI extends CardPileUI {
                         for (let j = 0; j < this.cards.length; j++) {
                             let card2 = this.cards[j];
                             let cardAngle = currentIndex * 5; // Adjust the angle between cards
-                            let cardY = Math.abs(currentIndex) * 5; // Adjust the height difference between cards
+                            let cardY = Math.abs(currentIndex) * 5 * this.fanPositioner; // Adjust the height difference between cards
                             let cardX = currentIndex * 10; // Adjust the horizontal distance between cards
             
                             this.scene.tweens.add({
@@ -82,7 +84,7 @@ class CardLifePileUI extends CardPileUI {
             this.scene.tweens.add({
                 targets: card,
                 x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
-                y: this.playerScene.playerInfo.lifeCardPlaceholder.y - this.playerScene.playerInfo.lifeCardPlaceholder.height/2 - GAME_UI_CONSTANTS.CARD_ART_HEIGHT/2*CARD_SCALE.IN_DON_DECK,
+                y: this.playerScene.playerInfo.lifeCardPlaceholder.y - (this.playerScene.playerInfo.lifeCardPlaceholder.height/2 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT/2*CARD_SCALE.IN_DON_DECK) * this.fanPositioner,
                 angle: 0,
                 duration: 400,
                 ease: 'Elastic.easeOut',

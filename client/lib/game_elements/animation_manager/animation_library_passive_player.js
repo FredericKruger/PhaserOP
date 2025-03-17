@@ -409,6 +409,36 @@ class AnimationLibraryPassivePlayer {
         return tweens;
     }
 
+    /** Animation that brings a card from the deck to 
+     * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
+     * @param {number} delay - delay with which to start the tweens 
+     */
+    animation_move_card_lifedeck2display(card, delay) {
+        let displayX = this.scene.screenWidth - 100 - GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
+        let displayY = this.scene.screenCenterY - 100;
+
+        let animation = [
+            { // Phase 3: Flip the card on the x-axis (second half) and move to final position
+                targets: card,
+                scaleX: CARD_SCALE.IN_PLAY_ANIMATION,
+                scaleY: CARD_SCALE.IN_PLAY_ANIMATION,
+                y: displayY,
+                x: displayX,
+                duration: 500,
+                ease: 'Power2.easeOut',
+                delay: delay,
+            },
+            { // Phase 4: Pause at display location
+                targets: card,
+                scale: CARD_SCALE.IN_PLAY_ANIMATION,
+                duration: 800, // Longer hold duration
+                ease: 'Power2.easeInOut'
+            }
+        ];
+    
+        return animation;
+    }
+
     /** Animation that moves a don card from the character area to the active don area
      * @param {DonCardUI} card - card to be moved from the don deck to the active don area
      * @param {number} delay - delay with which to start the tweens
