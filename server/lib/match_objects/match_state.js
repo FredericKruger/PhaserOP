@@ -423,7 +423,9 @@ class MatchState {
             card.setState(CARD_STATES.IN_HAND);
             defendingPlayer.inHand.push(card);
 
+            //Append card information
             attackResults.lifeCardIds = [card.id]; //TODO handle double strike
+            attackResults.lifeCardData = [card.cardData];
 
             if(defendingPlayer.life < 0) {
                 //End the game

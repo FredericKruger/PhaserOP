@@ -719,12 +719,21 @@ class ActionLibrary {
                     this.scene.actionManager.addAction(fanInAction);
                 }
 
-
                 //discard the actual defender card
                 this.discardCardAction(defenderPlayer, this.scene.attackManager.attack.defender);
             }
 
             //Create an action to draw a card from the life pool if attacker was attacked and update lifepoints
+            if(attackResults.lostLeaderLife) {
+                for(let i = 0; i<attackResults.lifeCardIds.length; i++) {
+                    let serverCard = {
+                        id: attackResults.lifeCardIds[i],
+                        cardData: attackResults.lifeCardData[i]
+                    };
+                    if(activePlayer) this.scene.actionLibraryPassivePlayer.drawLifeCardAction(this.scene.passivePlayerScene,serverCard);
+                    else this.scene.actionLibrary.drawLifeCardAction(this.scene.activePlayerScene,serverCard);
+                }
+            }
 
             //Create an action to switch states when finished
             let finishAction = new Action();

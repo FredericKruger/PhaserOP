@@ -74,9 +74,6 @@ class BattleAnimation {
 
         // Add personality to the facing angles with slight combat poses
         let attackerTargetAngle, defenderTargetAngle;
-
-        console.log(attackerOrigAngle + ' ' + attackToDefendAngle);
-        console.log(defenderOrigAngle + ' ' + defendToAttackAngle);
         
         // Normal angle calculation for upright cards
         attackerTargetAngle = attackToDefendAngle + 90 + Phaser.Math.Between(-5, 5);

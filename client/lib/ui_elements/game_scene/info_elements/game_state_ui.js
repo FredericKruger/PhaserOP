@@ -31,6 +31,18 @@ class GameStateUI {
         this.nextTurnbutton = new NextTurnButton(this.scene, this.scene.screenWidth-150, this.scene.screenCenterY);
         this.nextTurnbutton.setDepth(1);
         this.obj.push(this.nextTurnbutton);
+        
+        //Surrender Button
+        this.surrenderButton = this.scene.add.sprite(this.scene.screenWidth-125, this.scene.screenCenterY - 125, ASSET_ENUMS.WHITE_FLAG_SPRITESHEET).setDepth(1).setScale(0.25).setInteractive();
+        this.surrenderButton.on('pointerover', () => {
+            this.surrenderButton.setScale(0.27);
+            this.surrenderButton.play(ANIMATION_ENUMS.WHITE_FLAG_ANIMATION);
+        });
+        this.surrenderButton.on('pointerout', () => {
+            this.surrenderButton.setScale(0.25);
+            this.surrenderButton.stop();
+        });
+        this.obj.push(this.surrenderButton);
 
         //Your turn image
         this.yourTurnImage = this.scene.add.image(this.scene.screenCenterX, this.scene.screenCenterY, ASSET_ENUMS.GAME_START_TURN_IMAGE).setAlpha(0);
