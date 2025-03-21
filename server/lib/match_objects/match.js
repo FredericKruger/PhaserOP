@@ -61,6 +61,9 @@ class Match {
 
         /** @type {AttackManager} */
         this.attackManager = null; //Create a new attack manager
+
+        /** @type {Boolean} */
+        this.gameOver = false;
     }
     //#endregion
 
@@ -588,6 +591,29 @@ class Match {
     }
 
     //#region UTILS
+
+    //#region GAME OVER
+
+    /** Function to determine wether the game is over or not */
+    isGameOver() {
+
+    }
+
+    /** Function to handle the game over
+     * @param {Player} winner
+     * @param {Player} loser
+    */
+    endGame(winner, loser) {
+        this.gameOver = true;
+
+        //award rewards to the winner
+
+        //Start end game animations
+        if(!winner.bot) winner.socket.emit('game_end', true, 1000);
+        if(!loser.bot) loser.socket.emit('game_end', false, 0);
+
+        //cleanup match and ai in server instance
+    }
 }
 
 

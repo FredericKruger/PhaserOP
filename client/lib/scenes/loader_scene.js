@@ -322,6 +322,7 @@ class LoaderScene extends Phaser.Scene {
 
         assetPath = 'assets/dom';
         this.load.html('nameform', `${assetPath}/loginform.html`);
+        this.load.text('explosion_svg', `${assetPath}/voronoi_explosion_svg.svg`);
 
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI'); //plugins
         

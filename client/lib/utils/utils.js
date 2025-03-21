@@ -191,8 +191,77 @@ class Utils {
         });
     }
 
+    /** Function to get the battle background from the random index
+     * @param {number} index
+     * @returns {string}
+     */
     getBattleBackground(index) {
         let battleBackgroundList = Object.keys(ASSET_ENUMS).filter(key => key.startsWith('BATTLE_BACKGROUND'));
         return battleBackgroundList[index];
+    }
+
+    parseSVGPaths(svgData) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgData, 'image/svg+xml');
+        const paths = doc.querySelectorAll('path');
+        const pathPoints = [];
+    
+        paths.forEach(path => {
+            const points = this.parseSVGPath(path.getAttribute('d'));
+            pathPoints.push(points);
+        });
+    
+        return pathPoints;
+    }
+
+    parseSVGPoints(svgData) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgData, 'image/svg+xml');
+        const circles = doc.querySelectorAll('circle');
+        const circleCoordinates = [];
+
+        circles.forEach(circle => {
+            const cx = parseFloat(circle.getAttribute('cx'));
+            const cy = parseFloat(circle.getAttribute('cy'));
+            circleCoordinates.push({ cx, cy });
+        });
+
+        return circleCoordinates;
+    }
+
+    parseSVGPath(svgPath) {
+        const commands = svgPath.match(/[a-zA-Z][^a-zA-Z]*/g);
+        const points = [];
+        let currentPoint = { x: 0, y: 0 };
+    
+        commands.forEach(command => {
+            const type = command[0];
+            const values = command.slice(1).trim().split(/[\s,]+/).map(Number);
+    
+            switch (type) {
+                case 'M':
+                    currentPoint = { x: values[0], y: values[1] };
+                    points.push(currentPoint);
+                    break;
+                case 'L':
+                    currentPoint = { x: values[0], y: values[1] };
+                    points.push(currentPoint);
+                    break;
+                case 'H':
+                    currentPoint.x = values[0];
+                    points.push({ ...currentPoint });
+                    break;
+                case 'V':
+                    currentPoint.y = values[0];
+                    points.push({ ...currentPoint });
+                    break;
+                case 'Z':
+                    points.push(points[0]); // Close the path
+                    break;
+                // Add more cases for other SVG path commands as needed
+            }
+        });
+    
+        return points;
     }
 }

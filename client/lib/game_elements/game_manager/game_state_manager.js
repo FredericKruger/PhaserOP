@@ -8,6 +8,8 @@ class GameStateManager {
         this.scene = scene;
         this.gameStateUI = gameStateUI;
 
+        this.gameOver = false;
+
         //Game State Variables
         this.currentGamePhase = null;
 
@@ -1182,6 +1184,29 @@ class GameStateManager {
         }
     }
 
+    //#endregion
+
+    //#region SURRENDER HANDLING
+    /* Function to ask for surrender */
+    askForSurrender() {
+        //change game state
+        this.scene.gameState.exit(GAME_STATES.NO_INTERACTION);
+        this.gameOver = true;
+        this.scene.game.gameClient.requestSurrender();
+    }
+
+    /** Function to handle the end of the game 
+     * @param {boolean} isWinner - If the player is the winner
+     * @param {number} reward - The reward
+    */
+    endGame(isWinner, reward) {
+        this.gameOver = true;
+        this.scene.gameState.exit(GAME_STATES.NO_INTERACTION);
+
+        //Create the end game screen
+        const endGameAnimation = new EndGameAnimation(this.scene, isWinner, reward);
+        endGameAnimation.startAnimation();
+    }
     //#endregion
 
     //#region PASSIVE PLAYER MOUSE HANDLING FUNCTION

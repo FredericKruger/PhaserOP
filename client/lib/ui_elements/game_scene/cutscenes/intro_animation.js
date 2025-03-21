@@ -41,9 +41,6 @@ class IntroAnimation extends BaseComponentUI{
      * @param {GameScene} scene - The scene this animation will be played in
      * @param {Object} activePlayerLeader - The leader object of the active player
      * @param {Object} passivePlayLeader - The leader object of the passive player
-     * @param {string} activePlayerName - The name of the active player
-     * @param {string} passivePlayerName - The name of the passive player
-     * 
      */
     constructor(scene, activePlayerLeader, passivePlayLeader) {
         super(scene, null);

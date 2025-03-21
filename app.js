@@ -266,6 +266,8 @@ io.on('connection', function (/** @type {object} */ socket) {
         else socket.player.match.completeCurrentTurn();
     }); //Ask the passive player to send a message when all pending action are complete
     socket.on('player_current_turn_completed_passiveplayer', () => {socket.player.match.completeCurrentTurn();});
+
+    socket.on('player_surrender', () => {socket.player.match.endGame(socket.player.currentOpponentPlayer, socket.player);});
 });
 
 //START LISTENING

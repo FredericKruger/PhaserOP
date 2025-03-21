@@ -259,11 +259,11 @@ class AI_Instance {
         }
 
         this.actionTaken = this.decideNextAction();
-        while(this.actionTaken && !this.waitingForPlayerInput) {
+        while(!this.match.isGameOver && this.actionTaken && !this.waitingForPlayerInput) {
             this.actionTaken = this.decideNextAction();
         }
 
-        if(!this.waitingForPlayerInput) {
+        if(!this.match.isGameOver && !this.waitingForPlayerInput) {
             console.log("AI END TURN");
             this.endTurn();
         }

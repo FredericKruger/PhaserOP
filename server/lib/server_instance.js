@@ -188,7 +188,7 @@ class ServerInstance {
         //Create an AI to play the game
         match.ai = new AI_Instance(this, match);
 
-        let board = this.getRandomInt(0, 2); //Randomly select the board
+        let board = this.getRandomInt(0, 3); //Randomly select the board
        
         //Send the client messages to 
         // 1: Load the match ui, provided the number of cards in each deck
@@ -240,7 +240,7 @@ class ServerInstance {
         match.state.player2.life = match.state.player2.deck.leader.cardData.life;
 
         //Randomly select a board
-        let board = this.getRandomInt(0, 2); //Randomly select the board
+        let board = this.getRandomInt(0, 3); //Randomly select the board
        
         //Send the client messages to 
         // 1: Load the match ui, provided the number of cards in each deck

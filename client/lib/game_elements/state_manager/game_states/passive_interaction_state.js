@@ -16,6 +16,10 @@ class PassiveInteractionState extends GameState {
         if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOut(pointer, gameObject);
     }
 
+    onPointerDown(pointer, gameObject) {
+        if(gameObject === this.scene.gameStateUI.surrenderButton) this.scene.gameStateManager.askForSurrender();
+    }
+
     update() {
         //Update all cards in the hand to reflect if they can take an action
         for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.update(); 

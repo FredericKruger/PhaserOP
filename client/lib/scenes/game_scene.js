@@ -124,10 +124,7 @@ class GameScene extends Phaser.Scene {
         this.testButton = this.add.image(100, 100, ASSET_ENUMS.IMAGE_INTRO_LUFFY).setOrigin(0.5).setDepth(10).setScale(0.6);
         this.testButton.setInteractive();
         this.testButton.on('pointerdown', () => {
-            let serverCard = {
-                id: this.passivePlayerScene.lifeDeck.cards[0].id,
-            }
-            this.actionLibraryPassivePlayer.drawLifeCardAction(this.passivePlayerScene, serverCard);
+            this.gameStateManager.endGame(true, 1000);
         });
 
         /** LISTENERS */

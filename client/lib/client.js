@@ -2,6 +2,7 @@
 class Client {
 
     constructor(){
+        //#region CONSTRUCTOR
         //Creates a client object
         this.username = ""; //Store the mainplayer username
         this.playerSettings = null; //Store the mainplayer settings
@@ -36,8 +37,9 @@ class Client {
         this.activePlayerNumberCards = null;
         this.passivePlayerNumberCards = null;
         this.passivePlayerName = "";
+        //#endregion
 
-        /** Listen to the signal from the server that the player has successfully connected */
+        //#region SOCKET.ON CONNECT
         this.socket.on('player_connected', (success, playerSetting, cardList, playerCollection, newPlayer, shopData) => {
             if(success) {
                 this.playerSettings = playerSetting;
@@ -51,53 +53,63 @@ class Client {
                 this.loginScene.shakeLoginMenu();
             }    
         });
-
-        /** Listen to the signal from the server that the player has successfully disconnected */
         this.socket.on('player_disconnected', () => {this.titleScene.loadLoginScreen();});
-
-        /** Listen to the signal when the first login screen is complete */
         this.socket.on('first_login_complete', () => {
             this.firstLogin = false;
             this.titleScene.firstLoginPanel.closePanel();
         });
+        //#endregion
 
-        /** Listen to signal from the server containing the player decklist 
-         * decklist: JSON object containing the player decklist
-        */
+        //#region SOCKET.ON DECKLIST
         this.socket.on('update_player_decklist', (deckList) => {this.decklist = JSON.parse(deckList);});
-        /** Signal to update collection */
         this.socket.on('update_player_collection', (collection) => {
             collection = JSON.parse(collection);
             this.playerCollection.updateCollection(collection);
             this.playerCollection.filterCollection();
         });
-        /** Signal to update the settings */
-        this.socket.on('update_player_settings', (settings) => {this.playerSettings = settings;});
+        //#endregion
 
-        /** PACK OPENING LISTENERS */
+        //#region SOCKET.ON SETTINGS
+        this.socket.on('update_player_settings', (settings) => {this.playerSettings = settings;});
+        //#endregion
+
+        //#region SOCKET.ON PACK OPENING LISTENERS
         this.socket.on('pack_opened', (cardList) => {this.packOpeningScene.openPack(cardList);});
         this.socket.on('pack_open_failed', (message) => {this.packOpeningScene.packOpenFailed(message);});
+        //#endregion
 
-        /** SHOP LISTENERS */
+        //#region SHOP LISTENERS
         this.socket.on('shop_purchase_failed', (message) => {this.storeScene.purchasePanel.purchaseFailed(message);});
         this.socket.on('shop_purchase_successful', (ShopItem, itemType, cardList) => {
             this.storeScene.setPlayerBerries();
             this.storeScene.purchasePanel.purchaseSuccessful(ShopItem, itemType, cardList);
         });
+        //#endregion
 
-        /** MATCHMAKING LISTENERS */
-        //this.socket.on('start_game_searching_scene', () => {this.deckSelectionScene.startGameSearchingScene();});
+        //#region SOCKET.ON MATCHMAKING LISTENERS
         this.socket.on('matchmaking_stopped', () => {this.gameSearchingScene.goBackToDeckSelection();});
         this.socket.on('match_found_disable_cancel', () => {this.gameSearchingScene.disableCancelButton();});
+        //#region
 
-        /** CARD MOVEMENTS */
-        this.socket.on('passiveplayer_card_drag_start', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragStart(cardID, cardType);});
-        this.socket.on('passiveplayer_card_drag_position', (cardID, cardType, relX, relY) => {this.gameScene.gameStateManager.passivePlayerCardDragPosition(cardID, cardType, relX, relY);});
-        this.socket.on('passiveplayer_card_drag_end', (cardID, cardType) => {this.gameScene.gameStateManager.passivePlayerCardDragEnd(cardID, cardType);});
-        this.socket.on('passiveplayer_card_pointer_over', (cardID, state, activePlayer) => {this.gameScene.gameStateManager.passivePlayerCardPointerOver(cardID, state, activePlayer);});
-        this.socket.on('passiveplayer_card_pointer_out', (cardID, state, activePlayer) => {this.gameScene.gameStateManager.passivePlayerCardPointerOut(cardID, state, activePlayer);});
+        //#region SOCKET.ON CARD MOVEMENTS
+        this.socket.on('passiveplayer_card_drag_start', (cardID, cardType) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerCardDragStart(cardID, cardType);
+        });
+        this.socket.on('passiveplayer_card_drag_position', (cardID, cardType, relX, relY) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerCardDragPosition(cardID, cardType, relX, relY);
+        });
+        this.socket.on('passiveplayer_card_drag_end', (cardID, cardType) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerCardDragEnd(cardID, cardType);
+        });
+        this.socket.on('passiveplayer_card_pointer_over', (cardID, state, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerCardPointerOver(cardID, state, activePlayer);
+        });
+        this.socket.on('passiveplayer_card_pointer_out', (cardID, state, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerCardPointerOut(cardID, state, activePlayer);
+        });
+        //#endregion
 
-        /** GAME LISTENERS */
+        //#region SOCKET.ON GAME SETUP
         this.socket.on('start_game_scene', (activePlayerNumberCards, passivePlayerNumberCards, passivePlayerName, board) => {
             this.activePlayerNumberCards = activePlayerNumberCards;
             this.passivePlayerNumberCards = passivePlayerNumberCards;
@@ -110,71 +122,144 @@ class Client {
         this.socket.on('game_mulligan_cards_passiveplayer', (newCards) => {this.gameScene.gameStateManager.mulliganCardsPassivePlayer(newCards);});
         this.socket.on('game_end_mulligan', () => {this.gameScene.gameStateManager.endMulligan();});
         this.socket.on('game_first_turn_setup', (activePlayerCards, passivePlayerCards) => {this.gameScene.gameStateManager.firstTurnSetup(activePlayerCards, passivePlayerCards);});
+        //#endregion
 
+        //#region SOCKET.ON GAME PHASES
         this.socket.on('game_start_refresh_phase', (activePlayer, refreshDon, refreshCards) => {
-            if(activePlayer) this.gameScene.gameStateManager.startRefreshPhase(refreshDon, refreshCards);
-            else this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards);
+            if(!this.gameScene.gameStateManager.gameOver) {
+                if(activePlayer) this.gameScene.gameStateManager.startRefreshPhase(refreshDon, refreshCards);
+                else this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards);
+            }
         });
-        this.socket.on('game_start_draw_phase', (activePlayer, newCards) => {this.gameScene.gameStateManager.startDrawPhase(newCards, activePlayer);});
-        this.socket.on('game_start_don_phase', (activePlayer, donCards) => {this.gameScene.gameStateManager.startDonPhase(donCards, activePlayer);});
-        this.socket.on('game_start_main_phase', (activePlayer) => {this.gameScene.gameStateManager.startMainPhase(activePlayer);});
+        this.socket.on('game_start_draw_phase', (activePlayer, newCards) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startDrawPhase(newCards, activePlayer);
+        });
+        this.socket.on('game_start_don_phase', (activePlayer, donCards) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startDonPhase(donCards, activePlayer);
+        });
+        this.socket.on('game_start_main_phase', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startMainPhase(activePlayer);
+        });
+        //#endregion
 
-        /** CARD PLAY */
-        this.socket.on('game_play_card_not_enough_don', (actionInfos, activePlayer) => {this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, activePlayer);});
-        this.socket.on('game_play_card_return_to_hand', (actionInfos, activePlayer) => {this.gameScene.gameStateManager.playCardReturnToHand(actionInfos, activePlayer);});
+        //#region SOCKET.ON CARD PLAY
+        this.socket.on('game_play_card_not_enough_don', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, activePlayer);
+        });
+        this.socket.on('game_play_card_return_to_hand', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.playCardReturnToHand(actionInfos, activePlayer);
+        });
         this.socket.on('game_play_card_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
-            if(activePlayer && requiresTargeting) this.gameScene.targetManager.loadFromTargetData(targetData);
-
-            this.gameScene.gameStateManager.playCard(actionInfos, activePlayer, requiresTargeting);
+            if(!this.gameScene.gameStateManager.gameOver) {
+                if(activePlayer && requiresTargeting) this.gameScene.targetManager.loadFromTargetData(targetData);
+                this.gameScene.gameStateManager.playCard(actionInfos, activePlayer, requiresTargeting);
+            }
         });
-        this.socket.on('game_play_card_cancel_replacement_target', (cardID, activePlayer) => {this.gameScene.gameStateManager.cancelReplacementTarget(cardID, activePlayer);});
+        this.socket.on('game_play_card_cancel_replacement_target', (cardID, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelReplacementTarget(cardID, activePlayer);
+        });
+        //#endregion
 
-        /** ATTACH DON TO CHARACTER */
+        //#region SOCKET.ON ATTACH DON TO CHARACTER
         this.socket.on('game_attach_don_to_character', (actionInfos, activePlayer, attachDonSuccessful, botAction = false) => {
-            if(attachDonSuccessful) this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, activePlayer, botAction);
-            else this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, activePlayer);
+            if(!this.gameScene.gameStateManager.gameOver) {
+                if(attachDonSuccessful) this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, activePlayer, botAction);
+                else this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, activePlayer);
+            }
         });
+        //#endregion
 
-        /** ATTACK CHARACTER */
+        //#region SOCKET.ON ATTACK CHARACTER
         this.socket.on('game_select_attack_target', (actionInfos, activePlayer, targetData) => {
-            if(activePlayer) this.gameScene.targetManager.loadFromTargetData(targetData);
-
-            this.gameScene.gameStateManager.selectAttackTarget(actionInfos, activePlayer);
+            if(!this.gameScene.gameStateManager.gameOver) {
+                if(activePlayer) this.gameScene.targetManager.loadFromTargetData(targetData);
+                this.gameScene.gameStateManager.selectAttackTarget(actionInfos, activePlayer);
+            }
         });
-        this.socket.on('game_declare_attack_phase', (attackerID, defenderID, activePlayer, botAction) => {this.gameScene.gameStateManager.declareAttackPhase(attackerID, defenderID, activePlayer, botAction);});
-        this.socket.on('game_start_targeting_attack_passiveplayer', (cardID) => {this.gameScene.gameStateManager.passivePlayerStartTargetingAttack(cardID);});
-        this.socket.on('game_udpate_targeting_attack_passiveplayer', (relX, relY) => {this.gameScene.gameStateManager.passivePlayerUpdateTargetingAttack(relX, relY);});
-        this.socket.on('game_stop_targeting_attack_passiveplayer', () => {this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();});
-        this.socket.on('game_start_blocker_phase', (activePlayer) => {this.gameScene.gameStateManager.startBlockerPhase(activePlayer);});
-        this.socket.on('game_start_counter_phase', (activePlayer) => {this.gameScene.gameStateManager.startCounterPhase(activePlayer);});
-        this.socket.on('game_attack_blocked', (activePlayer, blockerID) => {this.gameScene.gameStateManager.startAttackBlocked(activePlayer, blockerID);});
+        this.socket.on('game_declare_attack_phase', (attackerID, defenderID, activePlayer, botAction) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.declareAttackPhase(attackerID, defenderID, activePlayer, botAction);
+        });
+        this.socket.on('game_start_targeting_attack_passiveplayer', (cardID) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerStartTargetingAttack(cardID);
+        });
+        this.socket.on('game_udpate_targeting_attack_passiveplayer', (relX, relY) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerUpdateTargetingAttack(relX, relY);
+        });
+        this.socket.on('game_stop_targeting_attack_passiveplayer', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();
+        });
+        this.socket.on('game_start_blocker_phase', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startBlockerPhase(activePlayer);
+        });
+        this.socket.on('game_start_counter_phase', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startCounterPhase(activePlayer);
+        });
+        this.socket.on('game_attack_blocked', (activePlayer, blockerID) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackBlocked(activePlayer, blockerID);
+        });
         
-        this.socket.on('game_counter_played_failure', (activePlayer, counterID) => {this.gameScene.gameStateManager.startCounterPlayedFailure(activePlayer, counterID);});
-        this.socket.on('game_counter_played', (activePlayer, counterID, characterID, counterCardData = null) => {this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID, counterCardData);});
-
-        this.socket.on('game_start_attack_animation', (activePlayer, attackResults) => {this.gameScene.gameStateManager.startAttackAnimation(activePlayer, attackResults);});
-        this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);});
-
-        /** OPPONENT ACTION LISTENERS */
-        this.socket.on('game_stop_targetting', (hideArrow = true, eventArrow = false) => {
-            this.gameScene.targetManager.reset();
-            if(hideArrow) {
-                if(eventArrow) this.gameScene.eventArrow.stopTargeting();
-                else this.gameScene.targetingArrow.stopTargeting();
-            } 
-            this.gameScene.gameState.exit(this.gameScene.gameState.previousState);
-            console.log(this.gameScene.gameState.name);
+        this.socket.on('game_counter_played_failure', (activePlayer, counterID) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startCounterPlayedFailure(activePlayer, counterID);
         });
-        this.socket.on('game_reset_targets', () => {this.gameScene.targetManager.resetTargetIDs();});
+        this.socket.on('game_counter_played', (activePlayer, counterID, characterID, counterCardData = null) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startCounterPlayed(activePlayer, counterID, characterID, counterCardData);
+        });
 
-        this.socket.on('game_ability_success', (cardId, abilityId) => {this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, true);});
-        this.socket.on('game_ability_failure', (cardId, abilityId) => {this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, false);});
+        this.socket.on('game_start_attack_animation', (activePlayer, attackResults) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackAnimation(activePlayer, attackResults);
+        });
+        this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);
+        });
 
-        this.socket.on('game_change_state_active', () => {this.gameScene.gameStateManager.changeGameStateActive();});
-        this.socket.on('game_resume_active', () => {this.gameScene.gameStateManager.resumeActive();});
-        this.socket.on('game_resume_passive', () => {this.gameScene.gameStateManager.resumePassive();});
+        //#region SOCKET.ON TARGETTING
+        this.socket.on('game_stop_targetting', (hideArrow = true, eventArrow = false) => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                this.gameScene.targetManager.reset();
+                if(hideArrow) {
+                    if(eventArrow) this.gameScene.eventArrow.stopTargeting();
+                    else this.gameScene.targetingArrow.stopTargeting();
+                } 
+                this.gameScene.gameState.exit(this.gameScene.gameState.previousState);
+            }
+        });
+        this.socket.on('game_reset_targets', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.targetManager.resetTargetIDs();
+        });
+        //#endregion
 
-        this.socket.on('game_complete_current_turn', () => {this.gameScene.gameStateManager.completeCurrentTurn();});
+        //#region SOCKET.ON ABILITY FUNCTIONS
+        this.socket.on('game_ability_success', (cardId, abilityId) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, true);
+        });
+        this.socket.on('game_ability_failure', (cardId, abilityId) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, false);
+        });
+        //#endregion
+
+        //#region SOCKET.ON STATE CHANGE
+        this.socket.on('game_change_state_active', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.changeGameStateActive();
+        });
+        this.socket.on('game_resume_active', () => {
+            if(!this.gameScene.gameStateManager.gameOver) his.gameScene.gameStateManager.resumeActive();
+        });
+        this.socket.on('game_resume_passive', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.resumePassive();
+        });
+        //#endregion
+
+        //#region SOCKET.ON NEXT TURN
+        this.socket.on('game_complete_current_turn', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.completeCurrentTurn();
+        });
+        //#endregion
+
+        //#region SOCKET.ON END GAME
+        this.socket.on('game_end', (isWinner, reward) => {
+            this.gameScene.gameStateManager.endGame(isWinner, reward);
+        });
+        //#endregion
     }
 
     /** Function that tells the server a new deck was chosen */
@@ -204,18 +289,20 @@ class Client {
         this.username = null;
     }
 
-    /** CARD MOVEMENTS */
+    //#region REQUEST MATCHMAKING
+    requestEnterMatchmaking (selectedDeck, vsAI) {this.socket.emit('player_enter_matchmaking', selectedDeck, vsAI);}
+    requestLeaveMatchmaking () {this.socket.emit('player_leave_matchmaking');}
+    //#endregion
+
+    //#region REQUEST CARD MOVEMENT
     sendCardDragStart (cardID, cardType) {this.socket.emit('player_card_drag_start', cardID, cardType);}
     sendCardDragPosition (cardID, cardType, relX, relY) {this.socket.emit('player_card_drag_position', cardID, cardType, relX, relY);}
     sendCardDragEnd (cardID, cardType) {this.socket.emit('player_card_drag_end', cardID, cardType);}
     sendCardPointerOver (cardID, state, activePlayer) {this.socket.emit('player_card_pointer_over', cardID, state, activePlayer);}
     sendCardPointerOut (cardID, state, activePlayer) {this.socket.emit('player_card_pointer_out', cardID, state, activePlayer);}
+    //#endregion
 
-    /** MATCHMAKING */
-    requestEnterMatchmaking (selectedDeck, vsAI) {this.socket.emit('player_enter_matchmaking', selectedDeck, vsAI);}
-    requestLeaveMatchmaking () {this.socket.emit('player_leave_matchmaking');}
-
-    /** GAME COMMUNICATION */
+    //#region REQUEST GAME SETUP
     requestMatchSceneReady () {this.socket.emit('player_match_scene_ready');}
     requestStartMulliganPhase () {this.socket.emit('player_match_start_mulligan_phase');}
     requestMulliganCards (cards) {this.socket.emit('player_mulligan_cards', cards);}
@@ -225,17 +312,25 @@ class Client {
     requestReadyFirstTurn () {this.socket.emit('player_ready_first_turn');}
     requestFirstTurnSetupComplete() {this.socket.emit('player_first_turn_setup_complete');};
     requestFirstTurnSetupPassivePlayerAnimationComplete () {this.socket.emit('player_first_turn_setup_passiveplayer_animation_complete');};
+    //#endregion
 
+    //#region REQUEST GAME PHASES
     requestEndRefreshPhase (activePlayer) {this.socket.emit('player_end_refresh_phase', activePlayer);}
     requestEndDrawPhase (activePlayer) {this.socket.emit('player_end_draw_phase', activePlayer);}
     requestEndDonPhase (activePlayer) {this.socket.emit('player_end_don_phase', activePlayer);}
+    //#endregion
 
+    //#region REQUEST CARD PLAY
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
     requestPlayerAttachDonToCharacter (donID, characterID) {this.socket.emit('player_attach_don_to_character', donID, characterID);}
+    //#endregion
 
+    //#region REQUEST TARGET
     requestCancelTargeting () {this.socket.emit('player_cancel_targeting');}
     requestSendTargets (targetIDs) {this.socket.emit('player_resolve_targeting', targetIDs);}
+    //#endregion
 
+    //#region REQUEST ATTACK
     requestStartTargetingAttack (cardID) {this.socket.emit('player_start_targeting_attack', cardID);}
     requestStartTargetingPassivePlayer (cardID) {this.socket.emit('player_start_targeting_passiveplayer', cardID);}
     requestUpdateTragetingPassivePlayer (relX, relY) {this.socket.emit('player_udpate_targeting_attack_passiveplayer', relX, relY);}
@@ -247,15 +342,20 @@ class Client {
     requestPassCounterPhase (passed) {this.socket.emit('player_pass_counter_phase', passed);}
     requestStartAttackCleanup () {this.socket.emit('player_start_attack_cleanup');}
     requestEndAttack() {this.socket.emit('player_end_attack');}
+    //#endregion
 
-    /** ABILITY FUNCTIONS */
+    //#region REQUEST ABILITY
     requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}
+    //#endregion
 
-    /** NEXT TURN COMMUNICATION */
+    //#region REQUEST END TURN
     requestStartNextTurn () {this.socket.emit('player_start_next_turn');}
     requestCurrentTurnCompletedPassivePlayer() {this.socket.emit('player_current_turn_completed_passiveplayer');}
+    requestSurrender() {this.socket.emit('player_surrender');}
+    //#endregion
 
-    /** Function that tells the server to update the player settings */
+    //#region REQUEST SETTINGS
     updatePlayerSettings () {this.socket.emit('update_player_settings', this.playerSettings);}
+    //#endregion
     
 }
