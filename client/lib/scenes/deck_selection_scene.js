@@ -133,6 +133,8 @@ class DeckSelectionScene extends Phaser.Scene {
             this.backButton.on('pointerout',  () => {this.backButton.setScale(1)});
             this.backButton.on('pointerdown', () => {this.scene.start(SCENE_ENUMS.TITLE)});
 
+            this.cameras.main.fadeIn(1000, 0, 0, 0); // Fade in over 1 second
+
         }
 
         /** Function to create the match summary panel */

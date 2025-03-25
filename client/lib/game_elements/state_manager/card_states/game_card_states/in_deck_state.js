@@ -6,4 +6,9 @@ class InDeckState extends GameCardState {
     constructor(card) {
         super(card, GAME_CARD_STATES.IN_DECK);
     }
+
+    enter() {
+        this.card.stopDizzyAnimation();
+        super.enter();
+    }
 }

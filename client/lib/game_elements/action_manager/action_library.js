@@ -499,8 +499,8 @@ class ActionLibrary {
             //Reset the eventCounter value
             card.eventCounterPower = 0;
 
-            //Destroy dizzyanumation
-            card.stopDizzyAnimation();
+            //Set State
+            card.setState(CARD_STATES.IN_DISCARD);
         };
         action.start_animation = start_animation;
         action.end = () => {

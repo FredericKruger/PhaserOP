@@ -116,7 +116,7 @@ class GameScene extends Phaser.Scene {
         //Create mask Panel
         this.maskPanel = this.add.rectangle(
             this.screenCenterX, this.screenCenterY, 
-            this.screenWidth, this.screenWidth, 
+            this.screenWidth+200, this.screenWidth+200, 
             COLOR_ENUMS.OP_BLACK, 0.8).setOrigin(0.5).setDepth(3);
         this.maskPanel.setVisible(true);
 

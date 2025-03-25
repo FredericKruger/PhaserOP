@@ -7,4 +7,11 @@ class InDiscardState extends GameCardState {
         super(card, GAME_CARD_STATES.IN_DISCARD);
     }
 
+    enter() {
+        //Destroy dizzyanumation
+        console.log("Entering Discard State");
+        this.card.stopDizzyAnimation();
+        super.enter();
+    }
+
 }

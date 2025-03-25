@@ -299,6 +299,11 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.GAME_START_TURN_IMAGE, `${assetPath}/startTurnIcon.png`);
         this.load.image(ASSET_ENUMS.GAME_DON_BIG, `${assetPath}/don_big.png`);
         this.load.image(ASSET_ENUMS.IMAGE_CLOUD_BACKGROUND, `${assetPath}/cloud_background.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_GOMMU_GOMMU_NO_MI, `${assetPath}/gommu_gommu_no_mi.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_IBI_IBI_NO_MI, `${assetPath}/Ibi_Ibi_no_Mi.webp`);
+        this.load.image(ASSET_ENUMS.IMAGE_WANTED_POSTER, `${assetPath}/wanted_poster.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_MARINE_ARRESTED, `${assetPath}/marine_arrested_logo.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_BERRY_COIN, `${assetPath}/berry_coin.png`);
 
         assetPath = 'assets/battle';
         this.load.image(ASSET_ENUMS.BATTLE_EXPLOSION, `${assetPath}/explosion.png`);
