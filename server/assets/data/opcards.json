@@ -6014,7 +6014,21 @@
         "power":5000,
         "attribute":"STRIKE",
         "isleader":1,
-        "rarity":"LEADER"
+        "rarity":"LEADER",
+        "abilities": [
+            {
+                "id": "ST01-001-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-001-ABILITY1",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "ACTIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":367,
@@ -6031,7 +6045,33 @@
         "attribute":"RANGED",
         "isleader":0,
         "rarity":"COMMON",
-        "counter":1000
+        "counter":1000,
+        "abilities": [
+            {
+                "id": "ST01-002-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-002-ABILITY1",
+                    "posx": 300,
+                    "posy": 560
+                },
+                "type": "WHEN_ATTACKING",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            },
+            {
+                "id": "ST01-002-TRIGGER",
+                "text": "Play this card.",
+                "art": {
+                    "art": "ST01-002-TRIGGER",
+                    "posx": 300,
+                    "posy": 675
+                },
+                "type": "TRIGGER",
+                "phases": ["Main: Trigger"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":368,
@@ -6064,7 +6104,21 @@
         "power":4000,
         "attribute":"STRIKE",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST01-004-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-004-ABILITY1",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "PASSIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":370,
@@ -6080,7 +6134,21 @@
         "power":5000,
         "attribute":"STRIKE",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST01-005-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-005-ABILITY1",
+                    "posx": 300,
+                    "posy": 560
+                },
+                "type": "PASSIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":371,
@@ -6096,7 +6164,21 @@
         "power":1000,
         "attribute":"STRIKE",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST01-006-1",
+                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+                "art": {
+                    "art": "ST01-006-BLOCKER",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "BLOCKER",
+                "phases": ["Main: Block"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":372,
@@ -6113,7 +6195,21 @@
         "attribute":"SPECIAL",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST01-007-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-007-ABILITY1",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "ACTIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":373,
@@ -6181,7 +6277,21 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST01-011-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-011-ABILITY1",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "ON_PLAY",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":377,
@@ -6197,7 +6307,33 @@
         "power":6000,
         "attribute":"STRIKE",
         "isleader":0,
-        "rarity":"SUPER RARE"
+        "rarity":"SUPER RARE",
+        "abilities": [
+            {
+                "id": "ST01-012-RUSH",
+                "text": "",
+                "art": {
+                    "art": "ST01-012-RUSH",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "RUSH",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            },
+            {
+                "id": "ST01-012-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-012-ABILITY1",
+                    "posx": 300,
+                    "posy": 608
+                },
+                "type": "WHEN_ATTACKING",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":378,
@@ -6213,7 +6349,21 @@
         "power":5000,
         "attribute":"SLASH",
         "isleader":0,
-        "rarity":"SUPER RARE"
+        "rarity":"SUPER RARE",
+        "abilities": [
+            {
+                "id": "ST01-013-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-013-ABILITY1",
+                    "posx": 300,
+                    "posy": 538
+                },
+                "type": "PASSIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":379,
@@ -6228,7 +6378,33 @@
         "cost":1,
         "attribute":"",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST01-014-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-014-ABILITY1",
+                    "posx": 300,
+                    "posy": 532
+                },
+                "type": "COUNTER",
+                "phases": ["Main: Counter"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            },
+            {
+                "id": "ST01-014-TRIGGER",
+                "text": "Play this card.",
+                "art": {
+                    "art": "ST01-014-TRIGGER",
+                    "posx": 300,
+                    "posy": 660
+                },
+                "type": "TRIGGER",
+                "phases": ["Main: Trigger"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":380,
@@ -6243,7 +6419,32 @@
         "cost":4,
         "attribute":"",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST01-015-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-015-ABILITY1",
+                    "posx": 300,
+                    "posy": 532
+                },
+                "type": "ACTIVE",
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            },
+            {
+                "id": "ST01-015-TRIGGER",
+                "text": "Play this card.",
+                "art": {
+                    "art": "ST01-015-TRIGGER",
+                    "posx": 300,
+                    "posy": 675
+                },
+                "type": "TRIGGER",
+                "phases": ["Main: Trigger"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":381,
@@ -6258,7 +6459,32 @@
         "cost":1,
         "attribute":"",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST01-016-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-016-ABILITY1",
+                    "posx": 300,
+                    "posy": 545
+                },
+                "type": "ACTIVE",
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            },
+            {
+                "id": "ST01-016-TRIGGER",
+                "text": "Play this card.",
+                "art": {
+                    "art": "ST01-016-TRIGGER",
+                    "posx": 300,
+                    "posy": 660
+                },
+                "type": "TRIGGER",
+                "phases": ["Main: Trigger"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":382,
@@ -6273,7 +6499,21 @@
         "cost":2,
         "attribute":"",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST01-017-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-017-ABILITY1",
+                    "posx": 300,
+                    "posy": 545
+                },
+                "type": "ACTIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },
     {
         "id": 383,

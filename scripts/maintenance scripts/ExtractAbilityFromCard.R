@@ -4,7 +4,7 @@ library(grid)
 folder_path <- "E:\\Documents\\Code\\Phaser\\PhaserOP\\client\\assets\\cardart\\"
 files <- list.files(folder_path)
 
-file <- "ST02-014.png"
+file <- "ST01-017.png"
 
 img <- image_read(paste0(folder_path, file))
 
@@ -12,18 +12,36 @@ img_info <- image_info(img)
 width <- img_info$width
 height <- img_info$height
  
+# #ABILIY 1 line top transparent
+# x_center <- 300# X-coordinate of the circle center
+# y_center <- 538
+# x_radius <- 522
+# y_radius <- 45
+
 # #ABILIY 2 line top transparent
 # x_center <- 300# X-coordinate of the circle center
 # y_center <- 548
 # x_radius <- 522
 # y_radius <- 65
-
+ 
 # #ABILIY 3 line top transparent
 # x_center <- 300# X-coordinate of the circle center
 # y_center <- 560
 # x_radius <- 522
 # y_radius <- 90
- 
+
+# #ABILIY 6 line top transparent
+# x_center <- 300# X-coordinate of the circle center
+# y_center <- 600
+# x_radius <- 522
+# y_radius <- 180
+
+# #ABILIY 1 line top
+# x_center <- 300# X-coordinate of the circle center
+# y_center <- 520
+# x_radius <- 522
+# y_radius <- 45
+#  
 # #ABILIY 2 line top
 # x_center <- 300# X-coordinate of the circle center
 # y_center <- 532
@@ -47,6 +65,18 @@ y_radius <- 90
 # y_center <- 675
 # x_radius <- 522
 # y_radius <- 45
+
+# #TRIGGER 1 2 linestop
+# x_center <- 300# X-coordinate of the circle center
+# y_center <- 660
+# x_radius <- 522
+# y_radius <- 65
+
+# #SECOND ABILITY 2 line top transparent
+# x_center <- 300# X-coordinate of the circle center
+# y_center <- 608
+# x_radius <- 522
+# y_radius <- 65
 
 
 mask <- image_draw(image_blank(width = width, height = height, color = "none"))
@@ -78,4 +108,4 @@ dev.off()
 img_rounded <- image_composite(img_cropped, mask, operator = "copyopacity")
 print(img_rounded)
 
-#image_write(img_rounded, paste0("c:/Users/Freddy/Desktop/abilityart/", "ST02-013-ABILITY1.png"))
+image_write(img_rounded, paste0("c:/Users/Freddy/Desktop/abilityart/", "ST01-017-ABILITY1.png"))
