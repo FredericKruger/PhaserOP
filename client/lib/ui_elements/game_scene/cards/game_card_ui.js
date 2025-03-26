@@ -28,6 +28,7 @@ class GameCardUI extends BaseCardUI{
         //Abilities
         /** @type {Array<Ability>} */
         this.abilities = [];
+        this.abilityButtons = [];
 
         //STATE VARIABLES
         this.fsmState = new InDeckState(this);
@@ -132,7 +133,6 @@ class GameCardUI extends BaseCardUI{
         this.cardData = cardData;
 
         AbilityFactory.attachAbilitiesToCard(this, cardData.abilities); //Create the abilities
-        this.createAbilityButtons(); //Create the ability buttons
         
         let textures = [];
         let cardArtKey = this.cardData.art;
@@ -150,6 +150,8 @@ class GameCardUI extends BaseCardUI{
             this.locationPowerText.setVisible(this.state === CARD_STATES.IN_PLAY || this.state === CARD_STATES.IN_PLAY_RESTED);
             if(flipCard) this.flipCard();
 
+            this.createAbilityButtons(); //Create the ability buttons
+
             this.setDepth(this.cardDepth);
         };
 
@@ -157,6 +159,16 @@ class GameCardUI extends BaseCardUI{
             key: cardArtKey,
             path: `assets/cardart/${cardArtKey}.png`
         });
+
+        for(let ability of this.abilities) {
+            if(ability.art) {
+                textures.push({
+                    key: ability.art.art,
+                    path: `assets/abilityart/${ability.art.art}.png`
+                });
+            }
+        }
+
         this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));       
     }
 
@@ -165,30 +177,145 @@ class GameCardUI extends BaseCardUI{
         for(let ability of this.abilities) {
             if(ability.type === 'BLOCKER') {
                 //Prepare blocker button
-                this.blockerButton = new Button({
-                    scene: this.scene,
-                    x: 0,
-                    y: this.backArt.height*0.25,
-                    width: 400,
-                    height: 200,
-                    backgroundcolor: COLOR_ENUMS.OP_ORANGE,
-                    outlinecolor: COLOR_ENUMS.OP_WHITE,
-                    radius: 25,
-                    text: "BLOCK",
-                    fontsize: 150,
-                    fontfamily: "OnePieceFont"
-                }).setVisible(false);
+                this.blockerButton = this.scene.add.image(
+                    ability.art.posx - this.frontArt.width/2, 
+                    ability.art.posy - this.frontArt.height/2, 
+                    ability.art.art
+                ).setVisible(false).setScale(1.1);
+                this.blockerButton.canActivate = false; //Add variable to check if the button is showing glow
+                
+                this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 4);
+                this.blockerButton.setInteractive();
                 this.obj.push(this.blockerButton);
                 this.add(this.blockerButton);
+
+                this.abilityButtons.push(this.blockerButton);
+                
                 this.blockerButton.on('pointerover', () => {
-                    this.blockerButton.setScale(1.1);
-                    this.blockerButton.postFX.addGlow(COLOR_ENUMS.OP_BLUE, 4);
+                    // Kill any existing tweens on the button to prevent conflicts
+                    this.scene.tweens.killTweensOf(this.blockerButton);
+
+                    // Bring to top within its depth level instead of absolute top
+                    const currentDepth = this.depth;
+                    this.setDepth(currentDepth + 0.1);
+                
+                    // Create smooth scaling tween
+                    this.scene.tweens.add({
+                        targets: this.blockerButton,
+                        scale: 3, // Target scale
+                        duration: 200, // Duration in ms
+                        ease: 'Cubic.easeOut', // Smooth easing function
+                        onUpdate: () => {
+                            // Optional: Adjust glow intensity based on scale
+                            const glowIntensity = 3 + (this.blockerButton.scale - 1.1) * 0.5;
+                            this.blockerButton.preFX.clear();
+                            if(this.blockerButton.canActivate) this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
+                            else this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+                        }
+                    });
                 });
+
                 this.blockerButton.on('pointerout', () => {
-                    this.blockerButton.setScale(1);
-                    this.blockerButton.postFX.clear();
+                    // Kill any existing tweens on the button to prevent conflicts
+                    this.scene.tweens.killTweensOf(this.blockerButton);
+
+                    // Restore original depth
+                    this.setDepth(Math.floor(this.depth));
+                    
+                    // Create smooth scaling down tween
+                    this.scene.tweens.add({
+                        targets: this.blockerButton,
+                        scale: 1.1, // Original scale
+                        duration: 150, // Slightly faster for better UX
+                        ease: 'Cubic.easeOut', // Smooth easing function
+                        onUpdate: () => {
+                            // Optional: Adjust glow intensity based on scale
+                            const glowIntensity = 3 + (this.blockerButton.scale - 1.1) * 0.5;
+                            this.blockerButton.preFX.clear();
+                            if(this.blockerButton.canActivate) this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
+                            else this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+                        }
+                    });
                 });
-                this.blockerButton.on('pointerdown', () => {ability.trigger();});
+
+                this.blockerButton.on('pointerdown', () => {
+                    // Add a quick "press" animation for better feedback
+                    if(this.blockerButton.canActivate) {
+                        this.scene.tweens.add({
+                            targets: this.blockerButton,
+                            scale: this.blockerButton.scale * 0.9, // Slightly smaller on press
+                            duration: 50,
+                            yoyo: true,
+                            onComplete: () => {
+                                // Trigger the ability after the press animation
+                                ability.trigger();
+                            }
+                        });
+                    }
+                });
+            } else {
+                //Prepare blocker button
+                const abilityButton = this.scene.add.image(
+                    ability.art.posx - this.frontArt.width/2, 
+                    ability.art.posy - this.frontArt.height/2, 
+                    ability.art.art
+                ).setVisible(false).setScale(1.1);
+                abilityButton.canActivate = false; //Add variable to check if the button is showing glow
+                abilityButton.name = ability.art.art;
+                
+                abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 4);
+                abilityButton.setInteractive();
+                this.obj.push(abilityButton);
+                this.add(abilityButton);
+
+                this.abilityButtons.push(abilityButton);
+                
+                abilityButton.on('pointerover', () => {
+                    // Kill any existing tweens on the button to prevent conflicts
+                    this.scene.tweens.killTweensOf(abilityButton);
+
+                    // Bring to top within its depth level instead of absolute top
+                    const currentDepth = this.depth;
+                    this.setDepth(currentDepth + 0.1);
+                
+                    // Create smooth scaling tween
+                    this.scene.tweens.add({
+                        targets: abilityButton,
+                        scale: 3, // Target scale
+                        duration: 200, // Duration in ms
+                        ease: 'Cubic.easeOut', // Smooth easing function
+                        onUpdate: () => {
+                            // Optional: Adjust glow intensity based on scale
+                            const glowIntensity = 3 + (abilityButton.scale - 1.1) * 0.5;
+                            abilityButton.preFX.clear();
+                            if(abilityButton.canActivate) abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
+                            else abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+                        }
+                    });
+                });
+
+                abilityButton.on('pointerout', () => {
+                    // Kill any existing tweens on the button to prevent conflicts
+                    this.scene.tweens.killTweensOf(abilityButton);
+
+                    // Restore original depth
+                    this.setDepth(Math.floor(this.depth));
+                    
+                    // Create smooth scaling down tween
+                    this.scene.tweens.add({
+                        targets: abilityButton,
+                        scale: 1.1, // Original scale
+                        duration: 150, // Slightly faster for better UX
+                        ease: 'Cubic.easeOut', // Smooth easing function
+                        onUpdate: () => {
+                            // Optional: Adjust glow intensity based on scale
+                            const glowIntensity = 3 + (abilityButton.scale - 1.1) * 0.5;
+                            abilityButton.preFX.clear();
+                            if(abilityButton.canActivate) abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
+                            else abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+                        }
+                    });
+                });
             }
         }
     }
@@ -519,12 +646,6 @@ class GameCardUI extends BaseCardUI{
                 onUpdate: () => {
                     if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
                     if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
-
-                    // Move dizzy sprite with card if it exists and card was played this turn
-                    if(this.turnPlayed && this.dizzySprite) {
-                        this.dizzySprite.x = this.x;
-                        this.dizzySprite.y = this.y - this.displayHeight/4;
-                    }
                 },
                 onComplete: () => {
                     this.x = x;
@@ -535,12 +656,6 @@ class GameCardUI extends BaseCardUI{
                     // Move attached DON cards and Counters
                     if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
                     if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
-
-                    // Final position for dizzy sprite if it exists
-                    if(this.turnPlayed && this.dizzySprite) {
-                        this.dizzySprite.x = this.x;
-                        this.dizzySprite.y = this.y - this.displayHeight/4;
-                    }
                 }
             });
         } else {
@@ -550,13 +665,6 @@ class GameCardUI extends BaseCardUI{
             // Move attached DON cards and Counters
             if(this.attachedDon.length > 0) this.updateAttachedDonPosition();
             if(this.attachedCounter !== null) this.updateAttachedCounterPosition();
-
-            // Immediately update dizzy sprite position if it exists
-            if(this.turnPlayed && this.dizzySprite) {
-                this.dizzySprite.x = this.x;
-                this.dizzySprite.y = this.y - this.displayHeight/4;
-                this.scene.children.moveAbove(this.dizzySprite, this);
-            }
         }
     }
 
@@ -633,9 +741,10 @@ class GameCardUI extends BaseCardUI{
     startDizzyAnimation() {
         if(this.turnPlayed) {
             this.dizzySprite = this.scene.add.sprite(
-                this.x,
-                this.y - this.displayHeight/4, 
-                ASSET_ENUMS.DIZZY_SPRITESHEET).setScale(0.3).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_PLAY);
+                0,
+                -this.height/4, 
+                ASSET_ENUMS.DIZZY_SPRITESHEET).setScale(2).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_PLAY);
+            this.add(this.dizzySprite);
             this.dizzySprite.play(ANIMATION_ENUMS.DIZZY_ANIMATION);
         }
     }

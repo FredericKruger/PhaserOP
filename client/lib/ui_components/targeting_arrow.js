@@ -18,8 +18,8 @@ class TargetingArrow {
         this.arrowHead = this.scene.add.triangle(100, 100, 0, -20, 0, 20, 40, 0, COLOR_ENUMS.OP_ORANGE).setOrigin(0.5, 0.5).setVisible(false).setDepth(2);
     }*/
     create() {
-        this.arrowStem = this.scene.add.graphics().setDepth(2);
-        this.arrowHead = this.scene.add.triangle(100, 100, 0, -30, 0, 30, 60, 0, this.arrowColor).setOrigin(0.5, 0.5).setVisible(false).setDepth(2);
+        this.arrowStem = this.scene.add.graphics().setDepth(4);
+        this.arrowHead = this.scene.add.triangle(100, 100, 0, -30, 0, 30, 60, 0, this.arrowColor).setOrigin(0.5, 0.5).setVisible(false).setDepth(4);
     }
 
     /** Function to draw a dashed curved line

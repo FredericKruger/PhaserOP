@@ -18,7 +18,7 @@ class MulliganUI {
     /**Function to create the ui */
     create() {
         this.title = this.scene.add.image(this.scene.screenCenterX, 150, ASSET_ENUMS.IMAGE_MULLIGAN_TITLE)
-                .setDepth(4)
+                .setDepth(5)
                 .setOrigin(0.5)
                 .setScale(0.3);
         this.obj.push(this.title);
@@ -36,7 +36,7 @@ class MulliganUI {
             fontsize: 30,
             fontfamily: "OnePieceFont",
             textColor: COLOR_ENUMS_CSS.OP_BLACK,
-        }).setDepth(4);
+        }).setDepth(5);
         this.keepButton.setInteractive();
         this.keepButton.on('pointerover', () => {this.keepButton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2);});
         this.keepButton.on('pointerout', () => {this.keepButton.postFX.clear();});
@@ -56,7 +56,7 @@ class MulliganUI {
             fontsize: 30,
             fontfamily: "OnePieceFont",
             textColor: COLOR_ENUMS_CSS.OP_BLACK,
-        }).setDepth(4);
+        }).setDepth(5);
         this.mulliganButton.setInteractive();
         this.mulliganButton.on('pointerover', () => {this.mulliganButton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2);});
         this.mulliganButton.on('pointerout', () => {this.mulliganButton.postFX.clear();});

@@ -110,7 +110,7 @@ class GameStateManager {
                             ease: 'Quad.easeOut',
                             onComplete: () => {
                                 this.scene.activePlayerScene.leaderLocation.addCard(activePlayerLeaderCard);
-                                activePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
+                                activePlayerLeaderCard.setState(CARD_STATES.IN_DECK);
                                 this.activePlayerReadyForMulligan = true;
                                 this.startMulliganPhase();
                             }
@@ -168,7 +168,7 @@ class GameStateManager {
                             ease: 'Quad.easeOut',
                             onComplete: () => {
                                 this.scene.passivePlayerScene.leaderLocation.addCard(passivePlayerLeaderCard);
-                                passivePlayerLeaderCard.setState(CARD_STATES.IN_PLAY_FIRST_TURN);
+                                passivePlayerLeaderCard.setState(CARD_STATES.IN_DECK);
                                 this.passivePlayerReadyForMulligan = true;
                                 this.startMulliganPhase();
                             }
@@ -333,6 +333,10 @@ class GameStateManager {
 
             //Set Game phase
             this.setPhase(GAME_PHASES.PREPARING_FIRST_TURN);
+
+            //Change state of leader cards
+            this.scene.activePlayerScene.leaderLocation.cards[0].setState(CARD_STATES.IN_PLAY_FIRST_TURN);
+            this.scene.passivePlayerScene.leaderLocation.cards[0].setState(CARD_STATES.IN_PLAY_FIRST_TURN);
             
             //Draw the active player's cards
             let animationCallback = () => {

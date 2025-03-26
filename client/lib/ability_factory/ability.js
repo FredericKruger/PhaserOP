@@ -3,6 +3,7 @@ class Ability {
     constructor(config) {
         this.id = config.id;
         this.text = config.text;
+        this.art = config.art;
         
         this.type = config.type;
         this.phases = config.phases || []; // When this ability can be triggered
@@ -66,7 +67,7 @@ class Ability {
     evaluateCondition(condition, gamePhase) {
         // Example condition evaluation
         switch (condition.type) {
-            case 'MIN_DON':
+            case 'ATTACHED_DON':
                 return this.card.attachedDons.length >= condition.value;
             case 'CHARACTER_COUNT':
                 return this.card.playerScene.characterArea.length >= condition.value;

@@ -63,7 +63,7 @@ class ServerAbility {
     evaluateCondition(condition, gameState) {
         // Example condition evaluation
         switch (condition.type) {
-            case 'MIN_DON':
+            case 'ATTACHED_DON':
                 return this.card.attachedDons.length >= condition.value;
             case 'CHARACTER_COUNT':
                 return this.card.playerScene.characterArea.length >= condition.value;

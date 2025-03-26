@@ -9,11 +9,13 @@ class InPlayState extends GameCardState {
 
     enter() {
         this.card.locationPowerText.setVisible(true);
+        for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(true);
         super.enter();
     }
 
     exit(newState) {
         this.card.locationPowerText.setVisible(false);
+        for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(false);
         super.exit(newState);
     }
 

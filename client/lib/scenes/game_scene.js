@@ -117,7 +117,7 @@ class GameScene extends Phaser.Scene {
         this.maskPanel = this.add.rectangle(
             this.screenCenterX, this.screenCenterY, 
             this.screenWidth+200, this.screenWidth+200, 
-            COLOR_ENUMS.OP_BLACK, 0.8).setOrigin(0.5).setDepth(3);
+            COLOR_ENUMS.OP_BLACK, 0.8).setOrigin(0.5).setDepth(4);
         this.maskPanel.setVisible(true);
 
         //Create Test Button to test new features

@@ -31,7 +31,21 @@
         "power":5000,
         "attribute":"SLASH",
         "isleader":1,
-        "rarity":"LEADER"
+        "rarity":"LEADER",
+        "abilities": [
+            {
+                "id": "OP01-002-1",
+                "text": "",
+                "art": {
+                    "art": "OP01-002-ABILITY1",
+                    "posx": 300,
+                    "posy": 600
+                },
+                "type": "ACTIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },
     {
         "id":3,
@@ -6276,7 +6290,21 @@
         "power":5000,
         "attribute":"SPECIAL",
         "isleader":1,
-        "rarity":"LEADER"
+        "rarity":"LEADER",
+        "abilities": [
+            {
+                "id": "ST02-001-1",
+                "text": "",
+                "art": {
+                    "art": "ST02-001-ABILITY1",
+                    "posx": 300,
+                    "posy": 560
+                },
+                "type": "ACTIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":384,
@@ -6310,7 +6338,28 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST02-003-1",
+                "text": "If you have 3 or more Characers, this card gains +2000 power.",
+                "art": {
+                    "art": "ST02-003-ABILITY1",
+                    "posx": 300,
+                    "posy": 532
+                },
+                "type": "PASSIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 1},
+                    {"type": "CHARACTER_COUNT", "value": 3}
+                ],
+                "actions": [
+                    {"name": "addPowerToCard", "params": {"amount": 2000}}
+                ]
+            }
+        ]
     },    
     {
         "id":386,
@@ -6331,6 +6380,11 @@
             {
                 "id": "ST02-004-1",
                 "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+                "art": {
+                    "art": "ST02-004-BLOCKER",
+                    "posx": 300,
+                    "posy": 532
+                },
                 "type": "BLOCKER",
                 "phases": ["Main: Block"],
                 "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
@@ -6352,7 +6406,33 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST02-005-1",
+                "text": "K.O. up to 1 of your opponent's rested Characters with a cost of 3 or less.",
+                "art": {
+                    "art": "ST02-005-ABILITY1",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "ON_PLAY",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            },
+            {
+                "id": "ST02-005-TRIGGER",
+                "text": "Play this card.",
+                "art": {
+                    "art": "ST02-005-TRIGGER",
+                    "posx": 300,
+                    "posy": 675
+                },
+                "type": "TRIGGER",
+                "phases": ["Main: Trigger"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":388,
@@ -6386,7 +6466,21 @@
         "attribute":"SPECIAL",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST02-007-1",
+                "text": "",
+                "art": {
+                    "art": "ST02-007-ABILITY1",
+                    "posx": 300,
+                    "posy": 590
+                },
+                "type": "ACTIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":390,
@@ -6403,7 +6497,27 @@
         "attribute":"RANGED",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 2000
+        "counter": 2000,
+        "abilities": [
+            {
+                "id": "ST02-008-1",
+                "text": "Rest up to 1 of your opponent's DON!! cards.",
+                "art": {
+                    "art": "ST02-008-ABILITY1",
+                    "posx": 300,
+                    "posy": 532
+                },
+                "type": "WHEN_ATTACKING",
+                "phases": ["Main: Attack"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 1}
+                ],
+                "actions": [
+                    {"name": "restOpponentDonCard", "params": {"amount": 1}}
+                ]
+            }
+        ]
     },    
     {
         "id":391,
@@ -6420,7 +6534,21 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"SUPER RARE",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST02-009-1",
+                "text": "",
+                "art": {
+                    "art": "ST02-009-ABILITY1",
+                    "posx": 300,
+                    "posy": 560
+                },
+                "type": "ON_PLAY",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":392,
@@ -6436,7 +6564,21 @@
         "power":6000,
         "attribute":"SLASH",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST02-010-1",
+                "text": "",
+                "art": {
+                    "art": "ST02-010-ABILITY1",
+                    "posx": 300,
+                    "posy": 532
+                },
+                "type": "ON_PLAY",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":393,
@@ -6486,7 +6628,21 @@
         "power":7000,
         "attribute":"SPECIAL",
         "isleader":0,
-        "rarity":"SUPER RARE"
+        "rarity":"SUPER RARE",
+        "abilities": [
+            {
+                "id": "ST02-013-1",
+                "text": "",
+                "art": {
+                    "art": "ST02-013-ABILITY1",
+                    "posx": 300,
+                    "posy": 560
+                },
+                "type": "ON_PLAY",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":396,
@@ -6503,7 +6659,21 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
-        "counter":1000
+        "counter":1000,
+        "abilities": [
+            {
+                "id": "ST02-014-1",
+                "text": "",
+                "art": {
+                    "art": "ST02-014-ABILITY1",
+                    "posx": 300,
+                    "posy": 560
+                },
+                "type": "ON_PLAY",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },    
     {
         "id":397,
@@ -6523,6 +6693,11 @@
             {
                 "id": "ST02-016-1",
                 "text": "Up to 1 of your Leader or Character cards gains +2000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
+                "art": {
+                    "art": "ST02-015-ABILITY1",
+                    "posx": 300,
+                    "posy": 545
+                },
                 "type": "COUNTER",
                 "phases": ["Main: Counter"],
                 "target": {
@@ -6561,6 +6736,11 @@
             {
                 "id": "ST02-016-1",
                 "text": "Up to 1 of your Leader or Character cards gains +4000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
+                "art": {
+                    "art": "ST02-016-ABILITY1",
+                    "posx": 300,
+                    "posy": 545
+                },
                 "type": "COUNTER",
                 "phases": ["Main: Counter"],
                 "target": {
@@ -6594,7 +6774,33 @@
         "cost":2,
         "attribute":"",
         "isleader":0,
-        "rarity":"COMMON"
+        "rarity":"COMMON",
+        "abilities": [
+            {
+                "id": "ST02-017-1",
+                "text": "",
+                "art": {
+                    "art": "ST02-017-ABILITY1",
+                    "posx": 300,
+                    "posy": 520
+                },
+                "type": "ACTIVE",
+                "phases": [],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            },
+            {
+                "id": "ST02-017-TRIGGER",
+                "text": "Play this card.",
+                "art": {
+                    "art": "ST02-017-TRIGGER",
+                    "posx": 300,
+                    "posy": 660
+                },
+                "type": "TRIGGER",
+                "phases": ["Main: Trigger"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+            }
+        ]
     },
     {
         "id": 400,
