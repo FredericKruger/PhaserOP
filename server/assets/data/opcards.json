@@ -6243,7 +6243,26 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST01-013-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-013-ABILITY1",
+                    "posx": 300,
+                    "posy": 538
+                },
+                "type": "PASSIVE",
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 1}
+                ],
+                "actions": [
+                    {"name": "addPowerToCard", "params": {"amount": 1000}}
+                ]
+            }
+        ]
     },    
     {
         "id":375,
@@ -6360,8 +6379,13 @@
                     "posy": 538
                 },
                 "type": "PASSIVE",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 1}
+                ],
+                "actions": [
+                    {"name": "addPowerToCard", "params": {"amount": 1000}}
+                ]
             }
         ]
     },    

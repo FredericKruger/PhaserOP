@@ -10,6 +10,7 @@ class Ability {
         this.conditions = config.conditions || []; // Array of conditions that must be met
         this.states = config.states || []; // Array of states that must be met
         this.actions = config.actions || []; // Array of actions to execute
+        this.once = config.once || null; // Once per turn/game  (turn, game)
 
         this.target = config.target || null; // Target of the ability
 
@@ -68,9 +69,9 @@ class Ability {
         // Example condition evaluation
         switch (condition.type) {
             case 'ATTACHED_DON':
-                return this.card.attachedDons.length >= condition.value;
+                return this.card.attachedDon.length >= condition.value;
             case 'CHARACTER_COUNT':
-                return this.card.playerScene.characterArea.length >= condition.value;
+                return this.card.playerScene.characterArea.cards.length >= condition.value;
             // More conditions...
             default:
                 return true;
@@ -82,6 +83,7 @@ class Ability {
         this.usedThisTurn = false;
     }
 
+    /** Function to execute active actions from the server */
     executeActions(card, abilityInfo, activePlayer) {
         let abilityTweens = [];
         for (const action of this.actions) {
@@ -92,6 +94,16 @@ class Ability {
         }
 
         return abilityTweens;
+    }
+
+    /** Function to execute active actions from the server */
+    executePassiveActions(card, active) {
+        for (const action of this.actions) {
+            const func = passiveAbilityActions[action.name];
+            if (func) {
+                func(card, action.params, active);
+            }
+        }
     }
 
     /** Function to handle the trigger of the action button */
@@ -219,7 +231,7 @@ const abilityActions = {
 
         return tweens;  
     },
-        /** Function to add Counter to Defender
+    /** Function to add Counter to Defender
      * @param {GameCardUI} card
      * @param {Object} info
      * @returns {Object}
@@ -269,6 +281,15 @@ const abilityActions = {
                 }
             }
         ]);
+        return tweens; 
+    },
+    /** Function to add Counter to Defender
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    addPowerToCard: (card, info, activePlayer) => {
+        //Get Defender Card
         return tweens; 
     }
 };

@@ -1,4 +1,5 @@
 const ServerAbility = require('./server_ability');
+const ServerPassiveAbility = require('./server_passive_ability');
 const ServerBlockerAbility = require('./server_blocker_ability');
 
 
@@ -12,6 +13,8 @@ class ServerAbilityFactory {
         switch (abilityData.type) {
             case 'BLOCKER':
                 return new ServerBlockerAbility(abilityData);
+            case 'PASSIVE':
+                return new ServerPassiveAbility(abilityData);
             default:
                 return new ServerAbility(abilityData);
         }

@@ -25,6 +25,9 @@ class GameCardUI extends BaseCardUI{
         /** @type {number} */
         this.eventCounterPower = 0; //To store the addition power given by a counter event
 
+        /** @type {number} */
+        this.passiveEventPower = 0; //To store the addition power given by a passive event
+
         //Abilities
         /** @type {Array<Ability>} */
         this.abilities = [];
@@ -583,6 +586,7 @@ class GameCardUI extends BaseCardUI{
             if(this.hoveredDon !== null) currentPower += 1000;
         }
         currentPower += this.eventCounterPower;
+        currentPower += this.passiveEventPower;
         if(this.tempAttachedCounter) currentPower += this.tempAttachedCounter.cardData.counter;
         for(let counter of this.attachedCounter) currentPower += counter.cardData.counter;
 
@@ -618,6 +622,16 @@ class GameCardUI extends BaseCardUI{
      */
     removeAttachedCounter(cardId) {
         this.attachedCounter = this.attachedCounter.filter(counter => counter.id !== cardId);
+    }
+
+    /** Function to find the appropriate ability button
+     * @param {string} buttonID
+     */
+    getAbilityButton(buttonID) {
+        for(let button of this.abilityButtons) {
+            if(button.name === buttonID) return button;
+        }
+        return null;
     }
 
     //#endregion

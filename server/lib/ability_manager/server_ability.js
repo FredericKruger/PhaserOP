@@ -47,7 +47,7 @@ class ServerAbility {
 
         // Check all conditions
         for (const condition of this.conditions) {
-            if (!this.evaluateCondition(condition, gameState)) {
+            if (!this.evaluateCondition(card, condition, gameState)) {
                 return false;
             }
         }
@@ -60,13 +60,13 @@ class ServerAbility {
      * @param {string} gameState
      * @returns {boolean}
      */
-    evaluateCondition(condition, gameState) {
+    evaluateCondition(card, condition, gameState) {
         // Example condition evaluation
         switch (condition.type) {
             case 'ATTACHED_DON':
-                return this.card.attachedDons.length >= condition.value;
+                return card.attachedDon.length >= condition.value;
             case 'CHARACTER_COUNT':
-                return this.card.playerScene.characterArea.length >= condition.value;
+                return card.playerScene.characterArea.length >= condition.value;
             // More conditions...
             default:
                 return true;

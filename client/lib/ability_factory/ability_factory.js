@@ -8,6 +8,8 @@ class AbilityFactory {
         switch (abilityData.type) {
             case 'BLOCKER':
                 return new BlockerAbility(abilityData);
+            case 'PASSIVE':
+                return new PassiveAbility(abilityData);
             default:
                 return new Ability(abilityData);
         }

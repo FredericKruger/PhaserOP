@@ -99,6 +99,15 @@ class MatchCard extends Card{
             power += this.eventCounterAmount;
         }
 
+        let passivePower = 0;
+        for(let ability of this.abilities) {
+            if(ability.type === 'PASSIVE') {
+                passivePower += ability.addPassivePower(this, '');
+                if(passivePower !== 0) console.log('Passive Power: ' + passivePower);
+            }
+        }
+        power += passivePower;
+
         return power;
     }
 
