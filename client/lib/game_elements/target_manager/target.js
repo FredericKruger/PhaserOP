@@ -12,6 +12,7 @@ class Target {
             this.cost = {};
             this.states = [];
             this.types = [];
+            this.attributes = [];
             this.power = {};
             return;
         }
@@ -22,6 +23,7 @@ class Target {
         this.cost = serverTarget.cost || {};
         this.states = serverTarget.states?.slice() || [];
         this.types = serverTarget.types?.slice() || [];
+        this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
     }
 
@@ -42,7 +44,10 @@ class Target {
         if (this.states.length > 0 && isValid) isValid = isValid && this.isStateValid(card.state);
 
         // Check card types (attributes, colors, etc.)
-        if (this.types.length > 0 && isValid) isValid = isValid && this.isTypeValid(card.cardData.attributes);
+        if (this.types.length > 0 && isValid) isValid = isValid && this.isTypeValid(card.cardData.types);
+
+        // Check card types (attributes, colors, etc.)
+        if (this.attributes.length > 0 && isValid) isValid = isValid && this.isAttributeValid(card.cardData.attribute);
 
         // Check card cost
         if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.cost);
@@ -90,6 +95,15 @@ class Target {
      */
     isCardTypeValid(cardType) {
         return this.cardtypes.includes(cardType) || this.cardtypes.includes("any");
+    }
+
+    /**
+     * Check if the card type is valid
+     * @param {string} cardAttribute - The card type to check
+     * @returns {boolean} - Whether the card type is valid
+     */
+    isCardAttributeValid(cardAttribute) {
+        return this.attributes.includes(cardAttribute) || this.attributes.includes("any");
     }
 
     /**

@@ -10,15 +10,18 @@ class BlockerInteractionState extends GameState {
 
     onPointerOver(pointer, gameObject) {
         if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOver(pointer, gameObject);
+        else if(gameObject instanceof AbilityButton && gameObject.type === "BLOCKER") gameObject.onPointerOver();
     }
 
     onPointerOut(pointer, gameObject) {
         if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOut(pointer, gameObject);
+        else if(gameObject instanceof AbilityButton && gameObject.type === "BLOCKER") gameObject.onPointerOut();
     }
 
     onPointerDown(pointer, gameObject) {
         if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
         else if(gameObject === this.scene.gameStateUI.surrenderButton) this.scene.gameStateManager.askForSurrender();
+        else if(gameObject instanceof AbilityButton && gameObject.type === "BLOCKER") gameObject.onPointerDown();
     }
 
     update() {

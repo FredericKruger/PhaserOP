@@ -16,8 +16,8 @@ class PassiveAbility extends Ability {
 
             this.executePassiveActions(this.card, true);
 
-            button.preFX.clear();
-            button.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4);
+            button.abilityButton.preFX.clear();
+            button.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4);
 
             this.card.scene.tweens.add({
                 targets: button,
@@ -32,8 +32,8 @@ class PassiveAbility extends Ability {
 
             this.executePassiveActions(this.card, false);
 
-            button.preFX.clear();
-            button.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 3);
+            button.abilityButton.preFX.clear();
+            button.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 3);
         }
     }
 }

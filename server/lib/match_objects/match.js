@@ -10,6 +10,8 @@ const TargetingManager = require("../managers/targeting_manager");
 const { CARD_STATES } = require("./match_card");
 const { AttackManager} = require("../managers/attack_manager");
 const ServerAbilityFactory = require("../ability_manager/server_ability_factory");
+const matchRegistry = require("../managers/match_registry");
+const MatchCardRegistry = require("../managers/match_card_registry");
 
 
 class Match {
@@ -22,10 +24,10 @@ class Match {
      * @param {ServerInstance} serverInstance 
      * @param {boolean} botMatch 
      */
-    constructor(player1, player2, serverInstance, botMatch) {
+    constructor(id, player1, player2, serverInstance, botMatch) {
         this.serverInstance = serverInstance; //Pointer to the server
 
-        this.id = -1; //Match ID
+        this.id = id; //Match ID
         /** @type {boolean} */
         this.botMatch = botMatch; //Flag to keep track if the match is against a bot
         /** @type {AI_Instance} */
@@ -64,6 +66,12 @@ class Match {
 
         /** @type {Boolean} */
         this.gameOver = false;
+
+        /** @type {MatchCardRegistry} */
+        this.matchCardRegistry = new MatchCardRegistry(); //Create a new card registry
+
+        // Register this match in the global registry
+        matchRegistry.register(this);
     }
     //#endregion
 
@@ -566,6 +574,27 @@ class Match {
                 } else {
                     if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_stop_targeting_attack_passiveplayer');
                 }
+                break;
+            case PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED:
+                if(!cancel) {
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
+                    if(validTarget) {
+                        if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
+                        let actionInfos = this.state.pending_action.actionInfos;
+                        let abilityResults = this.resolveAbility(player.currentMatchPlayer, this.state.pending_action.actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
+                        actionInfos.abilityResults = abilityResults;
+
+                        if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                        //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', result.actionInfos, false, false, {});
+                    } else {
+                        player.socket.emit('game_reset_targets');
+                    }
+                } else {
+                    //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_stop_targeting_attack_passiveplayer');
+                    console.log("Canceling ability targeting")
+                    //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
+                }
+                break;
             default:
                 break;
         }
@@ -578,16 +607,39 @@ class Match {
      * @param {Array<number>} targets
      */
     resolveAbility(player, cardId, abilityId, targets) {
-        let card = this.state.getCard(cardId);
+        let card = this.matchCardRegistry.get(cardId);
         let ability = card.getAbility(abilityId);
 
         let abilityResults = {};
-        if(ability && ability.canActivate(card, this.state.current_phase)) {
-            abilityResults = ability.action(card, player, this, targets);
+        if(ability && ability.canActivate()) {
+            abilityResults = ability.action(player, targets);
         } else {
             player.socket.emit('game_ability_failure', cardId, abilityId);
         }
         return abilityResults;
+    }
+
+    /** Function to activate a cards ability
+     * @param {Player} player
+     * @param {number} cardId
+     * @param {string} abilityId
+     */
+    activateAbility(player, cardId, abilityId) {
+        let card = this.matchCardRegistry.get(cardId);
+        let ability = card.getAbility(abilityId);
+
+        if(!ability.canActivate(card, this.current_phase)) {
+            player.socket.emit('game_activate_ability_failure', cardId, abilityId);
+            return;
+        }
+        
+        const targets = card.getAbilityTargets(abilityId);
+        if(targets) {
+            const abilityInfos = {playedCard: cardId, playedCardData: card.cardData, ability: abilityId};
+            this.state.pending_action = {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: abilityInfos, targetData: targets};
+            this.state.resolving_pending_action = true;
+            if(!player.bot) player.socket.emit('game_card_ability_activated', abilityInfos, true, true, targets);
+        }
     }
 
     //#region UTILS
@@ -613,6 +665,9 @@ class Match {
         if(!loser.bot) loser.socket.emit('game_end', false, 0);
 
         //cleanup match and ai in server instance
+        
+        // other cleanup
+        global.matchRegistry.remove(this.id);
     }
 }
 

@@ -260,6 +260,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_end_attack', () => {socket.player.match.flagManager.handleFlag(socket.player, 'RESUME_TURN_READY');})
 
     socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(socket.player, cardID, abilityID);});
+    socket.on('player_activate_ability', (cardID, abilityID) => {socket.player.match.activateAbility(socket.player, cardID, abilityID);});
 
     socket.on('player_start_next_turn', () => {
         if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_complete_current_turn');

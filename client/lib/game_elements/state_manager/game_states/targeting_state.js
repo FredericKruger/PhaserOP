@@ -13,7 +13,7 @@ class TargetingState extends GameState {
 
     onPointerOver(pointer, gameObject) {
         // Call the original behavior
-        gameObject.fsmState.onPointerOver(pointer, gameObject);
+        if(gameObject.fsmState) gameObject.fsmState.onPointerOver(pointer, gameObject);
         
         // Add bump animation for valid targets during targeting
         if (gameObject instanceof GameCardUI && this.scene.targetingArrow.isTargeting) {
@@ -44,7 +44,9 @@ class TargetingState extends GameState {
                 if (!gameObject.originalScale) {
                     gameObject.originalScale = {
                         x: gameObject.scaleX,
-                        y: gameObject.scaleY
+                        y: gameObject.scaleY,
+                        posX: gameObject.x,
+                        posY: gameObject.y
                     };
                 }
                 
@@ -78,7 +80,7 @@ class TargetingState extends GameState {
 
     onPointerOut(pointer, gameObject) {
         // Call the original behavior
-        gameObject.fsmState.onPointerOut(pointer, gameObject);
+        if(gameObject.fsmState) gameObject.fsmState.onPointerOut(pointer, gameObject);
         
         // Reset card animation if we were targeting it
         if (gameObject instanceof GameCardUI && gameObject.originalScale) {
@@ -90,7 +92,7 @@ class TargetingState extends GameState {
                 targets: gameObject,
                 scaleX: gameObject.originalScale.x,
                 scaleY: gameObject.originalScale.y,
-                y: gameObject.y + 5, // Return from lifted position
+                y: gameObject.originalScale.posY, // Return from lifted position
                 duration: 200,
                 ease: 'Back.easeOut',
                 onComplete: () => {
@@ -101,6 +103,8 @@ class TargetingState extends GameState {
 
             this.targettedCard = null; //reset pointer
         }
+        
+        if (gameObject instanceof GameCardUI) gameObject.originalScale = null;
     }
     
     onPointerDown(pointer, gameObject) {
@@ -108,7 +112,7 @@ class TargetingState extends GameState {
             this.scene.actionLibrary.cancelTargetingAction();
         } else {
             if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
-            if(gameObject instanceof GameCardUI) this.scene.targetManager.addTarget(gameObject);
+            else if(gameObject instanceof GameCardUI) this.scene.targetManager.addTarget(gameObject);
             else this.scene.actionLibrary.cancelTargetingAction();
         }
     }

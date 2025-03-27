@@ -217,10 +217,12 @@ class Client {
             if(!this.gameScene.gameStateManager.gameOver) {
                 this.gameScene.targetManager.reset();
                 if(hideArrow) {
-                    if(eventArrow) this.gameScene.eventArrow.stopTargeting();
-                    else this.gameScene.targetingArrow.stopTargeting();
-                } 
-                this.gameScene.gameState.exit(this.gameScene.gameState.previousState);
+                    /*if(eventArrow) this.gameScene.eventArrow.stopTargeting();
+                    else this.gameScene.targetingArrow.stopTargeting();*/
+                    this.gameScene.actionLibrary.cancelTargetingAction();
+                } else {
+                    this.gameScene.gameState.exit(this.gameScene.gameState.previousState);
+                }
             }
         });
         this.socket.on('game_reset_targets', () => {
@@ -234,6 +236,18 @@ class Client {
         });
         this.socket.on('game_ability_failure', (cardId, abilityId) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, false);
+        });
+        this.socket.on('game_card_ability_activated', (actionInfos, activePlayer, requiresTargeting, targetData) => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                if(activePlayer && requiresTargeting) this.gameScene.targetManager.loadFromTargetData(targetData);
+                this.gameScene.gameStateManager.startAbilityTargeting(actionInfos.playedCard, activePlayer);
+            }
+        });
+        this.socket.on('game_card_ability_executed', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                console.log("EXECUTING ABILITY");
+                console.log(actionInfos);
+            }
         });
         //#endregion
 
@@ -346,6 +360,7 @@ class Client {
 
     //#region REQUEST ABILITY
     requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}
+    requestActivateAbility (cardId, abilityId) {this.socket.emit('player_activate_ability', cardId, abilityId);}
     //#endregion
 
     //#region REQUEST END TURN

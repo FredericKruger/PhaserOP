@@ -4,8 +4,8 @@ const Match = require('../match_objects/match');
 
 class ServerBlockerAbility extends ServerAbility {
 
-    constructor(config) {
-        super(config);
+    constructor(config, cardId, matchId) {
+        super(config, cardId, matchId);
     }
 
     /** Function to perform the action

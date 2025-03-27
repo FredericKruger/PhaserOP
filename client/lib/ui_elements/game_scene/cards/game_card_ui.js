@@ -178,7 +178,14 @@ class GameCardUI extends BaseCardUI{
     /** function to create the ability buttons */
     createAbilityButtons() {
         for(let ability of this.abilities) {
-            if(ability.type === 'BLOCKER') {
+            let abilityButton = new AbilityButton(this.scene, this, ability);
+            this.obj.push(abilityButton);
+            this.abilityButtons.push(abilityButton);
+            this.add(abilityButton);
+
+            if(ability.type === 'BLOCKER') this.blockerButton = abilityButton;
+
+            /*if(ability.type === 'BLOCKER') {
                 //Prepare blocker button
                 this.blockerButton = this.scene.add.image(
                     ability.art.posx - this.frontArt.width/2, 
@@ -319,7 +326,7 @@ class GameCardUI extends BaseCardUI{
                         }
                     });
                 });
-            }
+            }*/
         }
     }
 
@@ -626,6 +633,7 @@ class GameCardUI extends BaseCardUI{
 
     /** Function to find the appropriate ability button
      * @param {string} buttonID
+     * @returns {AbilityButton}
      */
     getAbilityButton(buttonID) {
         for(let button of this.abilityButtons) {

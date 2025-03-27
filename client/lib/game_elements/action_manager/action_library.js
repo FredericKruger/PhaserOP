@@ -410,8 +410,13 @@ class ActionLibrary {
             if(card.cardData.card === CARD_TYPES.CHARACTER) {
                 let cardPosition = playerScene.characterArea.update(card);
                 card.enterCharacterArea(cardPosition.x, cardPosition.y);
+            } else if(card.cardData.card === CARD_TYPES.STAGE) {
+                let cardPositionX = playerScene.stageLocation.posX;
+                let cardPositionY = playerScene.stageLocation.posY;
+
+                card.enterCharacterArea(cardPositionX, cardPositionY);
             }
-        };
+        }; 
         updateAction.isPlayerAction = true; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
         //Add action to the action stack
@@ -812,6 +817,11 @@ class ActionLibrary {
             this.scene.game.gameClient.requestCancelTargeting(this.scene.targetManager.targetData);
             this.scene.targetManager.reset();
 
+            //Ned to foce a pointer out to stop the card ffrom hovering on cancel
+            this.scene.gameState.onPointerOut(null, card);
+            for(let abilityButton of card.abilityButtons) abilityButton.onPointerOut();
+
+            //change state
             if(this.scene.gameState.previousState !== null) this.scene.gameState.exit(this.scene.gameState.previousState);
         }
         action.isPlayerAction = true;

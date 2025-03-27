@@ -1,0 +1,95 @@
+class AbilityButton extends Phaser.GameObjects.Container {
+
+    constructor(scene, card, ability) {
+        super(scene, ability.art.posx - card.frontArt.width/2, ability.art.posy - card.frontArt.height/2);
+
+        this.scene = scene;
+        this.card = card;
+        this.ability = ability;
+
+        this.type = ability.type;
+        this.canActivate = false;
+        this.name = ability.art.art;
+
+        //Prepare blocker button
+        this.abilityButton = this.scene.add.image(
+            0, 0, 
+            this.ability.art.art
+        );
+
+        this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 4);
+
+        this.setSize(this.abilityButton.width, this.abilityButton.height);
+
+        this.setVisible(false);
+        this.setScale(1.1);
+        this.setInteractive();
+
+        this.add(this.abilityButton);
+        this.scene.add.existing(this);
+    }
+
+    onPointerOver() {
+        // Kill any existing tweens on the button to prevent conflicts
+        this.scene.tweens.killTweensOf(this);
+
+        // Bring to top within its depth level instead of absolute top
+        const currentDepth = this.card.depth;
+        this.card.setDepth(currentDepth + 0.1);
+
+        // Create smooth scaling tween
+        this.scene.tweens.add({
+            targets: this,
+            scale: 3, // Target scale
+            duration: 200, // Duration in ms
+            ease: 'Cubic.easeOut', // Smooth easing function
+            onUpdate: () => {
+                // Optional: Adjust glow intensity based on scale
+                const glowIntensity = 3 + (this.scale - 1.1) * 0.5;
+                this.abilityButton.preFX.clear();
+                if(this.canActivate) this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
+                else this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+            }
+        });
+    }
+
+    onPointerOut() {
+        // Kill any existing tweens on the button to prevent conflicts
+        this.scene.tweens.killTweensOf(this);
+
+        // Restore original depth
+        this.card.setDepth(Math.floor(this.card.depth));
+
+        // Create smooth scaling down tween
+        this.scene.tweens.add({
+            targets: this,
+            scale: 1.1, // Original scale
+            duration: 150, // Slightly faster for better UX
+            ease: 'Cubic.easeOut', // Smooth easing function
+            onUpdate: () => {
+                // Optional: Adjust glow intensity based on scale
+                const glowIntensity = 3 + (this.scale - 1.1) * 0.5;
+                this.abilityButton.preFX.clear();
+                if(this.canActivate) this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
+                else this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+            }
+        });
+    }
+
+    onPointerDown() {
+        // Add a quick "press" animation for better feedback
+        if(this.type !== "PASSIVE") {
+            this.scene.tweens.add({
+                targets: this,
+                scale: this.scale * 0.9, // Slightly smaller on press
+                duration: 50,
+                yoyo: true,
+                onComplete: () => {
+                    // Trigger the ability after the press animation
+                    this.ability.trigger();
+                }
+            });
+        }
+    }
+
+}

@@ -156,9 +156,8 @@ class ServerInstance {
     async createAIMatch(player) {
         let bot = new Bot(this);
 
-        let match = new Match(player, bot, this, true); //Create a new match
-        match.id = this.lastMatchID++; //Assign a match id
         this.lastMatchID += 1;
+        let match = new Match(this.lastMatchID, player, bot, this, true); //Create a new match
         this.matches.push(match); //Add match to list
 
         bot.match = match; //Give the bot the match he will play
@@ -208,10 +207,8 @@ class ServerInstance {
         player2.socket.emit('match_found_disable_cancel');
 
         //Create the match
-
-        let match = new Match(player1, player2, this, false); //Create a new match
-        match.id = this.lastMatchID++; //Assign a match id
         this.lastMatchID += 1;
+        let match = new Match(this.lastMatchID, player1, player2, this, false); //Create a new match
         this.matches.push(match); //Add match to list
 
          //Assign match to players

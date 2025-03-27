@@ -9,17 +9,17 @@ class ActiveInteractionState extends GameState {
     }
 
     onPointerOver(pointer, gameObject) {
-        if(gameObject === this.scene.activePlayerScene.playerInfo.lifeCardPlaceholder && !this.scene.activePlayerScene.lifeDeck.fanDisplayed) {
+        if(gameObject === this.scene.activePlayerScene.playerInfo.lifeCardPlaceholder && !this.scene.activePlayerScene.lifeDeck.fanDisplayed)
             this.scene.activePlayerScene.lifeDeck.showLifeCardFan();
-        }
         else if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOver(pointer, gameObject);
+        else if(gameObject instanceof AbilityButton) gameObject.onPointerOver();
     }
 
     onPointerOut(pointer, gameObject) {
-        if(gameObject === this.scene.activePlayerScene.playerInfo.lifeCardPlaceholder && this.scene.activePlayerScene.lifeDeck.fanDisplayed){
-            this.scene.activePlayerScene.lifeDeck.hideLifeCardFan();
-        }            
+        if(gameObject === this.scene.activePlayerScene.playerInfo.lifeCardPlaceholder && this.scene.activePlayerScene.lifeDeck.fanDisplayed)
+            this.scene.activePlayerScene.lifeDeck.hideLifeCardFan();            
         else if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOut(pointer, gameObject);
+        else if(gameObject instanceof AbilityButton) gameObject.onPointerOut();
     }
 
     onDragStart(pointer, gameObject) {
@@ -34,6 +34,7 @@ class ActiveInteractionState extends GameState {
         if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
         else if(gameObject === this.scene.gameStateUI.surrenderButton) this.scene.gameStateManager.askForSurrender();
         else if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerDown(pointer, gameObject);
+        else if(gameObject instanceof AbilityButton) gameObject.onPointerDown();
     }
 
     update() {

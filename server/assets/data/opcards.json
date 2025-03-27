@@ -6025,8 +6025,26 @@
                     "posy": 548
                 },
                 "type": "ACTIVE",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "phases": ["Main Phase"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "PLAYER_TURN", "value": true},
+                    {"type": "ONCE", "value": "TURN"}
+                ],
+                "target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"]
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET"}}
+                ]
             }
         ]
     },    
@@ -6527,15 +6545,34 @@
         "abilities": [
             {
                 "id": "ST01-017-1",
-                "text": "",
+                "text": "You may rest this State. Up to 1 {Straw Hat Crew} tpye Leader or Character card on your field gain +1000 power during this turn.",
                 "art": {
                     "art": "ST01-017-ABILITY1",
                     "posx": 300,
                     "posy": 545
                 },
                 "type": "ACTIVE",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "phases": ["Main Phase"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "CARD_RESTED", "value": false},
+                    {"type": "PLAYER_TURN", "value": true}
+                ],
+                "target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"],
+                            "types": ["Straw Hat Crew"]
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET","duration": "TURN"}}
+                ]
             }
         ]
     },
@@ -6565,8 +6602,13 @@
                     "posy": 560
                 },
                 "type": "ACTIVE",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "phases": ["Main Phase"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "PLAYER_TURN", "value": true},
+                    {"type": "ONCE", "value": "TURN"},
+                    {"type": "AVAILABLE_DON", "value": 3}
+                ]
             }
         ]
     },    

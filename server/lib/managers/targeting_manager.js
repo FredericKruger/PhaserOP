@@ -12,6 +12,7 @@ class Target {
             this.cost = {};
             this.states = [];
             this.types = [];
+            this.attributes = [];
             this.power = {};
             return;
         }
@@ -22,6 +23,7 @@ class Target {
         this.cost = serverTarget.cost || {};
         this.states = serverTarget.states?.slice() || [];
         this.types = serverTarget.types?.slice() || [];
+        this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
     }
 }
@@ -81,21 +83,31 @@ class TargetingManager {
 
         // Check if the card belongs to a specific player
         if (this.target.player.length > 0) isValid = isValid && this.isPlayerValid(card, playerCard);
+        //console.log("isPlayerValid", isValid);
   
         // Check card type
         if (this.target.cardtypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
+        //console.log("isCardTypeValid", isValid);
 
         // Check card state
         if (this.target.states.length > 0 && isValid) isValid = isValid && this.isStateValid(card.state);
+        //console.log("isStateValid", isValid);
 
         // Check card types (attributes, colors, etc.)
-        if (this.target.types.length > 0 && isValid) isValid = isValid && this.isTypeValid(card.cardData.attributes);
+        if (this.target.types.length > 0 && isValid) isValid = isValid && this.isTypeValid(card.cardData.type);
+        //console.log("isTypeValid", isValid);
+
+        // Check card types (attributes, colors, etc.)
+        if (this.target.attributes.length > 0 && isValid) isValid = isValid && this.isAttributeValid(card.cardData.attribute);
+        //console.log("isAttributeValid", isValid);
 
         // Check card cost
         if (Object.keys(this.target.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.target.cost);
+        //console.log("compareCost", isValid);
 
         // Check card power
         if (Object.keys(this.target.power).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.power, this.target.power);
+        //console.log("comparePower", isValid);
 
         return isValid;
     }
@@ -112,11 +124,10 @@ class TargetingManager {
             return true;
         }
 
-        const originatorCard = this.match.state.pending_action.actionInfos.playedCardData;
+        const originatorCard = this.match.matchCardRegistry.get(this.match.state.pending_action.actionInfos.playedCard);
         // Check for "owner" in the players array which requires special handling
         if (this.target.player.includes("owner")) {
             // If this is checking the player's own cards, it's valid
-            // This assumes playerScene.isPlayer property indicates if this is the human player
             return card.owner === originatorCard.owner;
         }
         
@@ -156,6 +167,16 @@ class TargetingManager {
     isTypeValid(attributes) {
         if (!attributes) return false;
         return this.target.types.some(type => attributes.includes(type));
+    }
+
+    /**
+     * Check if the card type (attributes, colors, etc.) is valid
+     * @param {Array} attributes - The card attributes to check
+     * @returns {boolean} - Whether the card type is valid
+     */
+    isAttributeValid(attributes) {
+        if (!attributes) return false;
+        return this.target.attributes.some(type => attributes.includes(type));
     }
 
     /**

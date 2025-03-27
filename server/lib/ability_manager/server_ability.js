@@ -1,10 +1,12 @@
 
 class ServerAbility {
 
-    constructor(config) {
+    constructor(config, cardId, matchId) {
         this.id = config.id;
+        this.cardId = cardId;
+        this.matchId = matchId;
+
         this.text = config.text;
-        
         this.type = config.type;
         this.phases = config.phases || []; // When this ability can be triggered
         this.conditions = config.conditions || []; // Array of conditions that must be met
@@ -21,11 +23,12 @@ class ServerAbility {
 
 
     /** Function that tests if an ability can be activated
-     * @param {MatchCard} card 
-     * @param {String} gameState
      * @returns {boolean}
      */
-    canActivate(card, gameState) {
+    canActivate() {
+        const match = matchRegistry.get(this.matchId);
+        const card = match.matchCardRegistry.get(this.cardId);
+        const gameState = match.state.current_phase
         // Check if in correct phase
         //console.log('Checking phases', this.phases, gameState);
         if (this.phases.length > 0 && !this.phases.includes(gameState)) {
@@ -65,8 +68,8 @@ class ServerAbility {
         switch (condition.type) {
             case 'ATTACHED_DON':
                 return card.attachedDon.length >= condition.value;
-            case 'CHARACTER_COUNT':
-                return card.playerScene.characterArea.length >= condition.value;
+            /*case 'CHARACTER_COUNT':
+                return card.playerScene.characterArea.length >= condition.value;*/
             // More conditions...
             default:
                 return true;
@@ -94,7 +97,9 @@ class ServerAbility {
         this.usedThisTurn = false;
     }
 
-    action (card, player, match, targets) {
+    action (player, targets) {
+        const match = matchRegistry.get(this.matchId);
+        const card = match.matchCardRegistry.get(this.cardId);
         return this.executeActions(match, player, card, targets);
     }
 }
@@ -126,6 +131,37 @@ const serverAbilityActions = {
                 let donCard = player.inExertenDon.pop();
                 donCard.setState("DON_ACTIVE");
                 player.inActiveDon.push(donCard);
+                actionResults.donId.push(donCard.id);
+            } else {
+                return actionResults;
+            }
+        }
+        return actionResults;
+    },
+    attachDonCard: (match, player, card, params, targets) => {
+        let actionResults = {};
+        actionResults.targetId = -1;
+        actionResults.donId = [];
+
+        const donAmount = params.amount;
+        const targetParam = params.target;
+
+        switch(targetParam) {
+            case "SELF":
+                actionResults.targetId = card.id;
+                break;
+            case "TARGET":
+                actionResults.targetId = targets[0];
+                break;
+        }
+        const targetCard = match.matchCardRegistry.get(actionResults.targetId);
+
+        for(let i = 0; i < donAmount; i++) {
+            if(player.inActiveDon.length > 0) {
+                let donCard = player.inActiveDon.pop();
+                donCard.setState("DON_ATTACHED");
+                player.inExertenDon.push(donCard);
+                targetCard.attachedDon.push(donCard.id);
                 actionResults.donId.push(donCard.id);
             } else {
                 return actionResults;

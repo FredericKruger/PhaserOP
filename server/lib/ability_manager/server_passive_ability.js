@@ -4,13 +4,17 @@ const Match = require('../match_objects/match');
 
 class ServerPassiveAbility extends ServerAbility {
 
-    constructor(config) {
-        super(config);
+    constructor(config, cardId, matchId) {
+        super(config, cardId, matchId);
     }
 
-    addPassivePower(card, state){
+    /** Function to add Power to a card */
+    addPassivePower(){
+        const match = matchRegistry.get(this.matchId);
+        const card = match.matchCardRegistry.get(this.cardId);
+
         let additionalPower = 0;
-        if(this.canActivate(card, state)) {
+        if(this.canActivate(card, match.state.current_phase)) {
             for(let action of this.actions){
                 if(action.name === 'addPowerToCard'){
                     additionalPower += action.params.amount;

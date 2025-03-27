@@ -10,7 +10,6 @@ class Ability {
         this.conditions = config.conditions || []; // Array of conditions that must be met
         this.states = config.states || []; // Array of states that must be met
         this.actions = config.actions || []; // Array of actions to execute
-        this.once = config.once || null; // Once per turn/game  (turn, game)
 
         this.target = config.target || null; // Target of the ability
 
@@ -42,14 +41,6 @@ class Ability {
             return false;
         }
 
-        // Check if already used (if once-per-turn/game)
-        if (this.once === 'turn' && this.usedThisTurn) {
-            return false;
-        }
-        if (this.once === 'game' && this.usedThisGame) {
-            return false;
-        }
-
         // Check all conditions
         for (const condition of this.conditions) {
             if (!this.evaluateCondition(condition, gamePhase)) {
@@ -72,6 +63,19 @@ class Ability {
                 return this.card.attachedDon.length >= condition.value;
             case 'CHARACTER_COUNT':
                 return this.card.playerScene.characterArea.cards.length >= condition.value;
+            case 'CARD_RESTED':
+                if(this.card.state === CARD_STATES.IN_PLAY_RESTED && condition.value) return true;
+                return false;
+            case 'PLAYER_TURN':
+                if(this.card.playerScene.isPlayerTurn && condition.value) return true;
+                return false;
+            case 'ONCE':
+                if(this.usedThisTurn && condition.value === 'TURN') return false;
+                if(this.usedThisGame && condition.value === 'GAME') return false;
+                return true;
+            case 'AVAILABLE_DON':
+                if(this.card.playerScene.activeDonDeck.getNumberOfActiveCards() >= condition.value) return true;
+                return false;
             // More conditions...
             default:
                 return true;

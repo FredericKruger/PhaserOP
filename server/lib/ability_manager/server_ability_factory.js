@@ -7,16 +7,18 @@ class ServerAbilityFactory {
 
     /** Function to create an ability according to the type
      * @param {Object} abilityData
+     * @param {number} cardId
+     * @param {number} matchId
      * @returns {Ability}
      */
-    static createAbility(abilityData) {
+    static createAbility(abilityData, cardId, matchId) {
         switch (abilityData.type) {
             case 'BLOCKER':
-                return new ServerBlockerAbility(abilityData);
+                return new ServerBlockerAbility(abilityData, cardId, matchId);
             case 'PASSIVE':
-                return new ServerPassiveAbility(abilityData);
+                return new ServerPassiveAbility(abilityData, cardId, matchId);
             default:
-                return new ServerAbility(abilityData);
+                return new ServerAbility(abilityData, cardId, matchId);
         }
     }
 
@@ -24,12 +26,12 @@ class ServerAbilityFactory {
      * @param {Object[]} abilitiesData
      * @param {Match} match
      */
-    static createAbilitiesForCard(abilitiesData) {
+    static createAbilitiesForCard(abilitiesData, cardId, matchId) {
         const abilities = [];
         
         if (abilitiesData && Array.isArray(abilitiesData)) {
             abilitiesData.forEach(abilityData => {
-                const ability = this.createAbility(abilityData);
+                const ability = this.createAbility(abilityData, cardId, matchId);
                 abilities.push(ability);
             });
         }

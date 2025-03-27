@@ -1145,6 +1145,19 @@ class GameStateManager {
         }
     }
 
+    /** Function to start the targetting for an ability
+     * @param {number} cardID - The card ID
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    startAbilityTargeting(cardID, isPlayerTurn) {
+        let playerScene = this.scene.activePlayerScene;
+        if(!isPlayerTurn) playerScene = this.scene.passivePlayerScene;
+
+        let card = playerScene.getCard(cardID);
+
+        this.scene.actionLibrary.startTargetingAction(playerScene, card, true);
+    }
+
     //#endregion
 
     //#region END TURN FUNCTIONS

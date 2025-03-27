@@ -10,6 +10,8 @@ class AbilityFactory {
                 return new BlockerAbility(abilityData);
             case 'PASSIVE':
                 return new PassiveAbility(abilityData);
+            case 'ACTIVE':
+                return new ActiveAbility(abilityData);
             default:
                 return new Ability(abilityData);
         }

@@ -51,13 +51,14 @@ class MatchCard extends Card{
      * @param {Object} cardData 
      * @param {Match} match
      */
-    constructor(cardIndex, id, cardData, match, owner) {
+    constructor(cardIndex, id, cardData, matchId, owner) {
         super(id, owner);
 
+        this.matchId = matchId;
         this.cardIndex = cardIndex;
         this.cardData = cardData;
 
-        this.abilities = ServerAbilityFactory.createAbilitiesForCard(this.cardData.abilities);;
+        this.abilities = ServerAbilityFactory.createAbilitiesForCard(this.cardData.abilities, this.id, this.matchId);
         this.attachedDon = [];
         this.attachedCounter = [];
         this.eventCounterAmount = 0;
@@ -82,14 +83,17 @@ class MatchCard extends Card{
     }
 
     /** Function that returns all the targets for the abilities */
-    getAbilityTargets() {
+    getAbilityTargets(abilityId = null) {
         let targets = null; //FIXME May need several target object
         for(let ability of this.abilities) {
             if(ability.target) targets = ability.target;
+
+            if(abilityId && ability.id === abilityId) return targets;
         }
         return targets;
     }
 
+    /** Function to get the current power of the card */
     getPower(activeTurn) {
         let power = this.currentPower;
         if(activeTurn) power += this.attachedDon.length * 1000;
@@ -101,10 +105,7 @@ class MatchCard extends Card{
 
         let passivePower = 0;
         for(let ability of this.abilities) {
-            if(ability.type === 'PASSIVE') {
-                passivePower += ability.addPassivePower(this, '');
-                if(passivePower !== 0) console.log('Passive Power: ' + passivePower);
-            }
+            if(ability.type === 'PASSIVE') passivePower += ability.addPassivePower(this, '');
         }
         power += passivePower;
 

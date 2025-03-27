@@ -9,18 +9,13 @@ class BlockerAbility extends Ability {
             this.card.blockerButton.canActivate = this.card.playerScene.player.isActivePlayer 
                     && !this.card.playerScene.isPlayerTurn
                     && this.canActivate(this.card.scene.gameStateManager.currentGamePhase);
-            /*this.card.blockerButton.setVisible(
-                this.card.playerScene.player.isActivePlayer 
-                && !this.card.playerScene.isPlayerTurn
-                && this.canActivate(this.card.scene.gameStateManager.currentGamePhase)
-            );*/
         } else {
             this.card.blockerButton.canActivate = this.card.blockerButton_manualOverride;
         }
 
-        this.card.blockerButton.preFX.clear();
-        if(this.card.blockerButton.canActivate) this.card.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4);
-        else this.card.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 3);
+        this.card.blockerButton.abilityButton.preFX.clear();
+        if(this.card.blockerButton.canActivate) this.card.blockerButton.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4);
+        else this.card.blockerButton.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 3);
     }
     
     trigger() {
