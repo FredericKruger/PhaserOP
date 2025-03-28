@@ -65,6 +65,7 @@ class Ability {
                 return this.card.playerScene.characterArea.cards.length >= condition.value;
             case 'CARD_RESTED':
                 if(this.card.state === CARD_STATES.IN_PLAY_RESTED && condition.value) return true;
+                else if(this.card.state !== CARD_STATES.IN_PLAY_RESTED && !condition.value) return true;
                 return false;
             case 'PLAYER_TURN':
                 if(this.card.playerScene.isPlayerTurn && condition.value) return true;
@@ -93,8 +94,15 @@ class Ability {
         for (const action of this.actions) {
             const func = abilityActions[action.name];
             if (func) {
-                abilityTweens = abilityTweens.concat(func(card, abilityInfo[action.name], activePlayer));
+                abilityTweens = abilityTweens.concat(func(this.card.scene, card, abilityInfo[action.name], activePlayer));
             }
+        }
+
+        //Set turn flags
+        let condition = this.conditions.find(condition => condition.type === 'ONCE');
+        if(condition) {
+            if(condition.value === "TURN") this.usedThisTurn = true;
+            if(condition.value === "GAME") this.usedThisGame = true;
         }
 
         return abilityTweens;
@@ -105,7 +113,7 @@ class Ability {
         for (const action of this.actions) {
             const func = passiveAbilityActions[action.name];
             if (func) {
-                func(card, action.params, active);
+                func(this.card.scene, card, action.params, active);
             }
         }
     }
@@ -125,23 +133,24 @@ class Ability {
 
 const abilityActions = {
     /** Function to add Counter to Defender
+     * @param {GameScene} scene
      * @param {GameCardUI} card
      * @param {Object} info
      * @returns {Object}
      */
-    addCounterToCard: (card, info, activePlayer) => {
+    addCounterToCard: (scene, card, info, activePlayer) => {
         //Get Defender Card
-        let defender = card.scene.activePlayerScene.getCard(info.defenderId);
-        if(defender === undefined) defender = card.scene.passivePlayerScene.getCard(info.defenderId);
+        let defender = scene.activePlayerScene.getCard(info.defenderId);
+        if(defender === undefined) defender = scene.passivePlayerScene.getCard(info.defenderId);
  
         let tweens = [];
         if(!activePlayer) {
-            card.scene.eventArrow.originatorObject = card;
-            let arrowTweens = card.scene.eventArrow.animateToPosition(defender.x, defender.y, 600);
+            scene.eventArrow.originatorObject = card;
+            let arrowTweens = scene.eventArrow.animateToPosition(defender.x, defender.y, 600);
             tweens = tweens.concat([
                 {
                     onStart: () => { //Add Tween for target arrow
-                        card.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                        scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
                     },
                     delay: 100,
                 }
@@ -160,7 +169,7 @@ const abilityActions = {
                     defender.showGlow(COLOR_ENUMS.OP_GREEN);
                     
                     // Create a floating number effect showing the buff
-                    const floatingText = card.scene.add.text(
+                    const floatingText = scene.add.text(
                         defender.x, 
                         defender.y - 20, 
                         `+${info.counterAmount}`, 
@@ -180,7 +189,7 @@ const abilityActions = {
                     defender.floatingBuffText = floatingText;
                     
                     // Pulse the card
-                    card.scene.tweens.add({
+                    scene.tweens.add({
                         targets: defender,
                         scaleX: defender.scaleX * 1.2,
                         scaleY: defender.scaleY * 1.2,
@@ -228,7 +237,7 @@ const abilityActions = {
                 scale: 1,
                 duration: 10,
                 onStart: () => {
-                    card.scene.eventArrow.stopTargeting();
+                    scene.eventArrow.stopTargeting();
                 }
             }]);
         }
@@ -236,20 +245,21 @@ const abilityActions = {
         return tweens;  
     },
     /** Function to add Counter to Defender
+     * @param {GameScene} scene
      * @param {GameCardUI} card
      * @param {Object} info
      * @returns {Object}
      */
-    activateExertedDon: (card, info, activePlayer) => {
+    activateExertedDon: (scene, card, info, activePlayer) => {
         //Get Defender Card
         let donCards = [];
         for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
-        card.scene.eventArrow.originatorObject = card;
-        let arrowTweens = card.scene.eventArrow.animateToPosition(card.playerScene.playerInfo.restingDonplaceholder.x, card.playerScene.playerInfo.restingDonplaceholder.y, 600);
+        scene.eventArrow.originatorObject = card;
+        let arrowTweens = scene.eventArrow.animateToPosition(card.playerScene.playerInfo.restingDonplaceholder.x, card.playerScene.playerInfo.restingDonplaceholder.y, 600);
         let tweens = [
             {
                 onStart: () => { //Add Tween for target arrow
-                    card.scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                    scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
                 },
                 delay: 100,
             }
@@ -281,19 +291,250 @@ const abilityActions = {
                 scale: {from: 1.2, to: 1},
                 duration: 150,
                 onComplete: () => {
-                    card.scene.eventArrow.stopTargeting();
+                    scene.eventArrow.stopTargeting();
                 }
             }
         ]);
         return tweens; 
     },
     /** Function to add Counter to Defender
+     *  @param {GameScene} scene
      * @param {GameCardUI} card
      * @param {Object} info
      * @returns {Object}
      */
-    addPowerToCard: (card, info, activePlayer) => {
-        //Get Defender Card
+    addPowerToCard: (scene, card, info, activePlayer) => {
+        let tweens = [];
+
+        let target = scene.getCard(info.cardId);
+        let amount = info.addedPower;
+        let duration = info.duration;
+
+        if(!activePlayer) {
+            scene.eventArrow.originatorObject = card;
+            let arrowTweens = scene.eventArrow.animateToPosition(target.x, target.y, 600);
+            tweens = tweens.concat([
+                {
+                    onStart: () => { //Add Tween for target arrow
+                        scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                    },
+                    delay: 100,
+                }
+            ]);
+            tweens = tweens.concat(arrowTweens);
+        }
+
+        // Create new enhanced animation for counter addition
+        tweens = tweens.concat([
+            {
+                onStart: () => {
+                    // Set the counter value
+                    switch(duration) {
+                        case "TURN":
+                            target.turnEventPowerAmount += amount;
+                            break;
+                        case "GAME":
+                            target.gameEventPowerAmount += amount;
+                            break;
+                    }
+                    
+                    // Create a glow effect around the card
+                    target.showGlow(COLOR_ENUMS.OP_GREEN);
+                    
+                    // Create a floating number effect showing the buff
+                    const floatingText = scene.add.text(
+                        target.x, 
+                        target.y - 20, 
+                        `+${amount}`, 
+                        {
+                            fontFamily: 'OnePieceFont',
+                            fontSize: '32px',
+                            color: '#00ff00',
+                            stroke: '#000000',
+                            strokeThickness: 4,
+                            shadow: { blur: 5, color: '#000000', fill: true }
+                        }
+                    )
+                    .setOrigin(0.5)
+                    .setDepth(DEPTH_VALUES.CARD_ATTACKING + 10);
+                    
+                    // Store reference to remove it later
+                    target.floatingBuffText = floatingText;
+                    
+                    // Pulse the card
+                    scene.tweens.add({
+                        targets: target,
+                        scaleX: target.scaleX * 1.2,
+                        scaleY: target.scaleY * 1.2,
+                        duration: 200,
+                        yoyo: true,
+                        repeat: 1,
+                        ease: 'Sine.easeInOut'
+                    });
+                },
+                targets: target.locationPowerText,
+                scale: { from: 1, to: 1.8 }, // Increased scale
+                duration: 400,
+                yoyo: true,
+                ease: 'Back.easeOut'
+            },
+            {
+                // Float the buff text upward
+                targets: () => target.floatingBuffText,
+                y: '-=70',
+                alpha: { from: 1, to: 0 },
+                duration: 1200,
+                ease: 'Power2',
+                onComplete: () => {
+                    // Clean up the text
+                    if (target.floatingBuffText) {
+                        target.floatingBuffText.destroy();
+                        delete target.floatingBuffText;
+                    }
+                    
+                    // Clean up particles
+                    if (target.buffParticles) {
+                        target.buffParticles.destroy();
+                        delete target.buffParticles;
+                    }
+                    
+                    // Hide the glow
+                    target.hideGlow();
+
+                    target.updatePowerText();
+                }
+            }
+        ]);
+
+        if(!activePlayer) {
+            tweens = tweens.concat([{
+                targets: target.locationPowerText,
+                scale: 1,
+                duration: 10,
+                onStart: () => {
+                    scene.eventArrow.stopTargeting();
+                }
+            }]);
+        }
+
         return tweens; 
+    },
+    /** Function to add Counter to Defender
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    attachDonCard: (scene, card, info, activePlayer) => {
+        const character = scene.getCard(info.targetId);
+        let delay = 0;
+        let tweens = [];
+        
+        if(info.donId.length === 0) return tweens;
+
+        if(!activePlayer) {
+            scene.eventArrow.originatorObject = card;
+            let arrowTweens = scene.eventArrow.animateToPosition(character.x, character.y, 600);
+            tweens.push({
+                    onStart: () => { //Add Tween for target arrow
+                        scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                    },
+                    delay: 100,
+            });
+            tweens = tweens.concat(arrowTweens);
+        }
+
+        for(let donId of info.donId) {
+            let donCard = scene.getDonCard(donId);
+            let player = donCard.playerScene;
+
+            let movingAnimation = scene.animationLibrary.animation_move_don_activearea2characterarea(donCard, character, delay);
+            tweens.push({
+                    targets: {},  // Empty object as target
+                    scale: 0,         // Dummy property
+                    onStart: () => {
+                        donCard.setDepth(DEPTH_VALUES.DON_DRAGGED);
+                    },
+                    delay: delay,
+                    duration: 1
+            });
+            tweens = tweens.concat(movingAnimation);
+            tweens.push({
+                    targets: {},  // Empty object as target
+                    scale: 0,         // Dummy property
+                    onStart: () => {
+                        donCard.setState(CARD_STATES.DON_ATTACHED);
+                        donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                        character.attachedDon.push(donCard); //Add to character pile
+                        character.updateAttachedDonPosition(true, donCard);
+
+                        const donImage = scene.add.image(character.x, character.y + character.displayHeight*0.25, ASSET_ENUMS.GAME_DON_SMALL).setDepth(character.depth+1).setScale(0);
+                        scene.tweens.chain({
+                            targets: donImage,
+                            tweens: scene.animationLibrary.don_image_appearing_animation(donImage, delay)
+                        });
+
+                        // Update the power text with animation
+                        character.updatePowerText();
+                        if (character.powerText) {
+                            scene.tweens.add({
+                                targets: character.powerText,
+                                scale: 1.5,
+                                duration: 150,
+                                delay: delay,
+                                yoyo: true,
+                                ease: 'Back.easeOut'
+                            });
+                        }
+                        
+                        // Update the UI with pulse effect
+                        player.playerInfo.updateCardAmountTexts();
+                        scene.tweens.add({
+                            targets: player.playerInfo.restingDonCardAmountText,
+                            scale: 1.2,
+                            duration: 100,
+                            delay: delay,
+                            yoyo: true,
+                            ease: 'Sine.easeOut'
+                        });
+                    },
+                    duration: 10,
+                    delay: delay
+            });
+            delay = delay + 500;
+        }
+
+        if(!activePlayer) {
+            tweens.push({
+                targets: character,
+                scale: 1,
+                duration: 10,
+                onStart: () => {
+                    scene.eventArrow.stopTargeting();
+                }
+            });
+        }
+
+        return tweens;
+    },
+    /** Function to add Counter to Defender
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    changeCardState: (scene, card, info, activePlayer) => {
+        let target = scene.getCard(info.restedCardId);
+        let newState = info.cardState;
+        let tweens = [];
+
+        tweens.push({
+            targets: {},
+            scale: 1,
+            duration: 1,
+            onStart: () => {target.setState(newState);}
+        });
+
+        return tweens;
     }
 };

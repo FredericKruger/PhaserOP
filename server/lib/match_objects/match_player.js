@@ -5,7 +5,9 @@ const { CARD_STATES } = require('./match_card.js');
 
 class MatchPlayer {
 
-    constructor() {
+    constructor(id) {
+        this.id = id;
+
         this.life = 0;
         this.deck = null;
 

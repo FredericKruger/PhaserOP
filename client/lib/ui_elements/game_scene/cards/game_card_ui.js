@@ -24,6 +24,10 @@ class GameCardUI extends BaseCardUI{
         this.tempAttachedCounter = null; //To store the card that is currently hovered above
         /** @type {number} */
         this.eventCounterPower = 0; //To store the addition power given by a counter event
+        /** @type {number} */
+        this.turnEventPowerAmount = 0; //To store the addition power given by a turn event
+        /** @type {number} */
+        this.gameEventPowerAmount = 0; //To store the addition power given by a turn event
 
         /** @type {number} */
         this.passiveEventPower = 0; //To store the addition power given by a passive event
@@ -184,149 +188,6 @@ class GameCardUI extends BaseCardUI{
             this.add(abilityButton);
 
             if(ability.type === 'BLOCKER') this.blockerButton = abilityButton;
-
-            /*if(ability.type === 'BLOCKER') {
-                //Prepare blocker button
-                this.blockerButton = this.scene.add.image(
-                    ability.art.posx - this.frontArt.width/2, 
-                    ability.art.posy - this.frontArt.height/2, 
-                    ability.art.art
-                ).setVisible(false).setScale(1.1);
-                this.blockerButton.canActivate = false; //Add variable to check if the button is showing glow
-                
-                this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 4);
-                this.blockerButton.setInteractive();
-                this.obj.push(this.blockerButton);
-                this.add(this.blockerButton);
-
-                this.abilityButtons.push(this.blockerButton);
-                
-                this.blockerButton.on('pointerover', () => {
-                    // Kill any existing tweens on the button to prevent conflicts
-                    this.scene.tweens.killTweensOf(this.blockerButton);
-
-                    // Bring to top within its depth level instead of absolute top
-                    const currentDepth = this.depth;
-                    this.setDepth(currentDepth + 0.1);
-                
-                    // Create smooth scaling tween
-                    this.scene.tweens.add({
-                        targets: this.blockerButton,
-                        scale: 3, // Target scale
-                        duration: 200, // Duration in ms
-                        ease: 'Cubic.easeOut', // Smooth easing function
-                        onUpdate: () => {
-                            // Optional: Adjust glow intensity based on scale
-                            const glowIntensity = 3 + (this.blockerButton.scale - 1.1) * 0.5;
-                            this.blockerButton.preFX.clear();
-                            if(this.blockerButton.canActivate) this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
-                            else this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
-                        }
-                    });
-                });
-
-                this.blockerButton.on('pointerout', () => {
-                    // Kill any existing tweens on the button to prevent conflicts
-                    this.scene.tweens.killTweensOf(this.blockerButton);
-
-                    // Restore original depth
-                    this.setDepth(Math.floor(this.depth));
-                    
-                    // Create smooth scaling down tween
-                    this.scene.tweens.add({
-                        targets: this.blockerButton,
-                        scale: 1.1, // Original scale
-                        duration: 150, // Slightly faster for better UX
-                        ease: 'Cubic.easeOut', // Smooth easing function
-                        onUpdate: () => {
-                            // Optional: Adjust glow intensity based on scale
-                            const glowIntensity = 3 + (this.blockerButton.scale - 1.1) * 0.5;
-                            this.blockerButton.preFX.clear();
-                            if(this.blockerButton.canActivate) this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
-                            else this.blockerButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
-                        }
-                    });
-                });
-
-                this.blockerButton.on('pointerdown', () => {
-                    // Add a quick "press" animation for better feedback
-                    if(this.blockerButton.canActivate) {
-                        this.scene.tweens.add({
-                            targets: this.blockerButton,
-                            scale: this.blockerButton.scale * 0.9, // Slightly smaller on press
-                            duration: 50,
-                            yoyo: true,
-                            onComplete: () => {
-                                // Trigger the ability after the press animation
-                                ability.trigger();
-                            }
-                        });
-                    }
-                });
-            } else {
-                //Prepare blocker button
-                const abilityButton = this.scene.add.image(
-                    ability.art.posx - this.frontArt.width/2, 
-                    ability.art.posy - this.frontArt.height/2, 
-                    ability.art.art
-                ).setVisible(false).setScale(1.1);
-                abilityButton.canActivate = false; //Add variable to check if the button is showing glow
-                abilityButton.name = ability.art.art;
-                
-                abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 4);
-                abilityButton.setInteractive();
-                this.obj.push(abilityButton);
-                this.add(abilityButton);
-
-                this.abilityButtons.push(abilityButton);
-                
-                abilityButton.on('pointerover', () => {
-                    // Kill any existing tweens on the button to prevent conflicts
-                    this.scene.tweens.killTweensOf(abilityButton);
-
-                    // Bring to top within its depth level instead of absolute top
-                    const currentDepth = this.depth;
-                    this.setDepth(currentDepth + 0.1);
-                
-                    // Create smooth scaling tween
-                    this.scene.tweens.add({
-                        targets: abilityButton,
-                        scale: 3, // Target scale
-                        duration: 200, // Duration in ms
-                        ease: 'Cubic.easeOut', // Smooth easing function
-                        onUpdate: () => {
-                            // Optional: Adjust glow intensity based on scale
-                            const glowIntensity = 3 + (abilityButton.scale - 1.1) * 0.5;
-                            abilityButton.preFX.clear();
-                            if(abilityButton.canActivate) abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
-                            else abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
-                        }
-                    });
-                });
-
-                abilityButton.on('pointerout', () => {
-                    // Kill any existing tweens on the button to prevent conflicts
-                    this.scene.tweens.killTweensOf(abilityButton);
-
-                    // Restore original depth
-                    this.setDepth(Math.floor(this.depth));
-                    
-                    // Create smooth scaling down tween
-                    this.scene.tweens.add({
-                        targets: abilityButton,
-                        scale: 1.1, // Original scale
-                        duration: 150, // Slightly faster for better UX
-                        ease: 'Cubic.easeOut', // Smooth easing function
-                        onUpdate: () => {
-                            // Optional: Adjust glow intensity based on scale
-                            const glowIntensity = 3 + (abilityButton.scale - 1.1) * 0.5;
-                            abilityButton.preFX.clear();
-                            if(abilityButton.canActivate) abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
-                            else abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
-                        }
-                    });
-                });
-            }*/
         }
     }
 
@@ -545,7 +406,21 @@ class GameCardUI extends BaseCardUI{
                 default:
                     break;
             }
-        }
+        } else if(this.cardData && this.cardData.card === CARD_TYPES.STAGE) {
+            switch(state) {
+                case CARD_STATES.IN_PLAY_RESTED:
+                    this.angleTo(-90, true, false, false);
+                    //this.frontArt.angle = -90;
+                    break;
+                case CARD_STATES.IN_PLAY:
+                case CARD_STATES.IN_PLAY_FIRST_TURN:
+                    this.angleTo(0, true, false, false);
+                    //this.frontArt.angle = 0;
+                    break;
+                default:
+                    break;
+            }
+        } 
     }
 
     /** Checks if a card has a specific ability type
@@ -591,7 +466,9 @@ class GameCardUI extends BaseCardUI{
         if(this.playerScene.isPlayerTurn) {
             currentPower += this.attachedDon.length*1000;
             if(this.hoveredDon !== null) currentPower += 1000;
+            currentPower += this.turnEventPowerAmount;
         }
+        currentPower += this.gameEventPowerAmount; //Add power from permanent effects   
         currentPower += this.eventCounterPower;
         currentPower += this.passiveEventPower;
         if(this.tempAttachedCounter) currentPower += this.tempAttachedCounter.cardData.counter;
@@ -640,6 +517,14 @@ class GameCardUI extends BaseCardUI{
             if(button.name === buttonID) return button;
         }
         return null;
+    }
+
+    /** Reset abilities for the turn */
+    resetTurn() {
+        this.turnEventPowerAmount = 0; //reset power counter
+        for(let ability of this.abilities) {
+            ability.resetTurn();
+        }
     }
 
     //#endregion

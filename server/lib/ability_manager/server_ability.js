@@ -40,17 +40,11 @@ class ServerAbility {
             return false;
         }
 
-        // Check if already used (if once-per-turn/game)
-        if (this.once === 'turn' && this.usedThisTurn) {
-            return false;
-        }
-        if (this.once === 'game' && this.usedThisGame) {
-            return false;
-        }
-
         // Check all conditions
         for (const condition of this.conditions) {
             if (!this.evaluateCondition(card, condition, gameState)) {
+                console.log(condition);
+                console.log("FAILED")
                 return false;
             }
         }
@@ -64,13 +58,28 @@ class ServerAbility {
      * @returns {boolean}
      */
     evaluateCondition(card, condition, gameState) {
+        const match = matchRegistry.get(card.matchId);
+        const cardPlayer =  match.getPlayer(card.owner);
         // Example condition evaluation
         switch (condition.type) {
             case 'ATTACHED_DON':
                 return card.attachedDon.length >= condition.value;
             /*case 'CHARACTER_COUNT':
-                return card.playerScene.characterArea.length >= condition.value;*/
-            // More conditions...
+                return this.card.playerScene.characterArea.cards.length >= condition.value;*/
+            case 'CARD_RESTED':
+                if(card.state === "IN_PLAY_RESTED" && condition.value) return true;
+                else if(card.state !== "IN_PLAY_RESTED" && !condition.value) return true;
+                return false;
+            case 'PLAYER_TURN':
+                if(cardPlayer.id === match.state.current_active_player.id && condition.value) return true;
+                return false;
+            case 'ONCE':
+                if(this.usedThisTurn && condition.value === 'TURN') return false;
+                if(this.usedThisGame && condition.value === 'GAME') return false;
+                return true;
+            case 'AVAILABLE_DON':
+                if(cardPlayer.currentMatchPlayer.inActiveDon.length >= condition.value) return true;
+                return false;
             default:
                 return true;
         }
@@ -89,6 +98,14 @@ class ServerAbility {
                 actionResults[action.name] = func(match, player, card, action.params, targets);
             }
         }
+        
+        //Set turn flags
+        let condition = this.conditions.find(condition => condition.type === 'ONCE');
+        if(condition) {
+            if(condition.value === "TURN") this.usedThisTurn = true;
+            if(condition.value === "GAME") this.usedThisGame = true;
+        }
+
         return actionResults;
     }
 
@@ -142,10 +159,12 @@ const serverAbilityActions = {
         let actionResults = {};
         actionResults.targetId = -1;
         actionResults.donId = [];
+        actionResults.pile = params.pile;
 
         const donAmount = params.amount;
         const targetParam = params.target;
 
+        //Retrieve target
         switch(targetParam) {
             case "SELF":
                 actionResults.targetId = card.id;
@@ -156,17 +175,83 @@ const serverAbilityActions = {
         }
         const targetCard = match.matchCardRegistry.get(actionResults.targetId);
 
-        for(let i = 0; i < donAmount; i++) {
-            if(player.inActiveDon.length > 0) {
-                let donCard = player.inActiveDon.pop();
-                donCard.setState("DON_ATTACHED");
-                player.inExertenDon.push(donCard);
-                targetCard.attachedDon.push(donCard.id);
-                actionResults.donId.push(donCard.id);
-            } else {
-                return actionResults;
-            }
+        //Retrieve Don Pile
+        let donLocation = null;
+        switch(params.pile) {
+            case "EXERTED":
+                donLocation = player.inExertenDon;
+                break;
+            case "ACTIVE":
+                donLocation = player.inActiveDon;
+                break;
         }
+
+        //Attach Don Cards
+        for(let i = 0; i < donAmount; i++) {
+            let cardAvailable = false;
+            if(donLocation.length > 0) {
+                let donCard = donLocation.find(don => don.state === params.state);
+                if(donCard) {
+                    cardAvailable = true;
+                    donLocation.splice(donLocation.indexOf(donCard), 1);
+                    donCard.setState("DON_ATTACHED");
+                    player.inExertenDon.push(donCard);
+                    targetCard.attachedDon.push(donCard.id);
+                    actionResults.donId.push(donCard.id);
+                }
+            } 
+            
+            if(cardAvailable) return actionResults;
+            
+        }
+        return actionResults;
+    },
+    changeCardState: (match, player, card, params, targets) => {
+        let actionResults = {};
+        actionResults.restedCardId = -1;
+        actionResults.cardState = params.state;
+
+        let targetCard = null;
+        switch(params.target) {
+            case "SELF":
+                targetCard = card;
+                break;
+            case "TARGET":
+                targetCard = match.matchCardRegistry.get(targets[0]);
+                break;
+        }
+        actionResults.restedCardId = targetCard.id;
+
+        targetCard.state = params.state;
+
+        return actionResults;
+    },
+    addPowerToCard: (match, player, card, params, targets) => {
+        let actionResults = {};
+        actionResults.cardId = -1;
+        actionResults.addedPower = params.amount;
+        actionResults.duration = params.duration;
+
+        let targetCard = null;
+        switch(params.target) {
+            case "SELF":
+                targetCard = card;
+                break;
+            case "TARGET":
+                targetCard = match.matchCardRegistry.get(targets[0]);
+                break;
+        }
+        actionResults.cardId = targetCard.id;
+
+        switch(params.duration) {
+            case "TURN":
+                targetCard.turnEventPowerAmount += params.amount;
+                break;
+            case "GAME":
+                targetCard.gameEventPowerAmount += params.amount;
+                break;
+        }
+
         return actionResults;
     }
 };

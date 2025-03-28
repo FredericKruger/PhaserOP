@@ -74,12 +74,12 @@ class GameScene extends Phaser.Scene {
 
         // Create a canvas with a gradient
         let canvas = document.createElement('canvas');
-        canvas.width = this.screenWidth;
-        canvas.height = this.screenHeight;
+        canvas.width = this.screenWidth + 200;
+        canvas.height = this.screenHeight + 200;
         let ctx = canvas.getContext('2d');
 
         let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(128, 53, 14, 0.6)'); // Red at the top
+        gradient.addColorStop(0, 'rgba(189, 33, 22, 0.6)'); // Red at the top
         gradient.addColorStop(1, 'rgba(0, 32, 96, 0.6)'); // Blue at the bottom
 
         ctx.fillStyle = gradient;
@@ -124,7 +124,11 @@ class GameScene extends Phaser.Scene {
         this.testButton = this.add.image(100, 100, ASSET_ENUMS.IMAGE_INTRO_LUFFY).setOrigin(0.5).setDepth(10).setScale(0.6);
         this.testButton.setInteractive();
         this.testButton.on('pointerdown', () => {
-            this.gameStateManager.endGame(true, 1000);
+            //this.gameStateManager.endGame(true, 1000);
+            const donCardID = this.activePlayerScene.activeDonDeck.cards[0].id;
+            const cardID = this.activePlayerScene.leaderLocation.cards[0].id;
+            this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: donCardID, receivingCharacter: cardID}, true, true);
+            //this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: 10, receivingCharacter: 50}, true, true);
         });
 
         /** LISTENERS */
@@ -228,6 +232,26 @@ class GameScene extends Phaser.Scene {
 
         this.activePlayerScene.playerInfo.setBackgroundVisible(visible);
         this.passivePlayerScene.playerInfo.setBackgroundVisible(visible);
+    }
+
+    /** Function to return a card anywhere according to the id
+     * @param {number} cardId
+     * @return {GameCardUI}
+     */
+    getCard(cardId) {
+        let card = this.activePlayerScene.getCard(cardId);
+        if(!card) card = this.passivePlayerScene.getCard(cardId);
+        return card;
+    }
+
+    /** Function to return a don card anywer according to the id
+     * @param {number} cardId
+     * @return {DonCardUI}
+     */
+    getDonCard(cardId) {
+        let donCard = this.activePlayerScene.getDonCardById(cardId);
+        if(!donCard) donCard = this.passivePlayerScene.getDonCardById(cardId);
+        return donCard;
     }
     //#endregion
 

@@ -37,7 +37,7 @@ class Match {
         this.lastCardID = 0; //Keep track of the last card id
 
         /** @type {MatchState} */
-        this.state = new MatchState(this); //Create a new match state
+        this.state = new MatchState(this, player1.id, player2.id); //Create a new match state
         /** @type {TargetingManager} */
         this.targetingManager = new TargetingManager(this); //Create a new targeting manager
 
@@ -218,6 +218,7 @@ class Match {
         //Get the cards that need to be refreshed
         let refreshedDon = this.state.refreshDon(this.state.current_active_player.currentMatchPlayer); //Bring dons back to don area
         let refreshedCard = this.state.refreshCards(this.state.current_active_player.currentMatchPlayer); //Change status of cards
+        this.state.resetCards(this.state.current_active_player.currentMatchPlayer); //Refresh abilities and card values
 
         //Send signal to client
         if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_refresh_phase', true, refreshedDon, refreshedCard);
@@ -643,6 +644,17 @@ class Match {
     }
 
     //#region UTILS
+
+    /** Function to return the player from it;s id
+     * @param {number} playerID
+     * @returns {Player}
+     */
+    getPlayer(playerID) {
+        if(this.player1.id === playerID) return this.player1;
+        else return this.player2;
+    }
+
+    //#endregion
 
     //#region GAME OVER
 

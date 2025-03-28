@@ -451,12 +451,15 @@ class GameStateManager {
                                         card.attachedDon = [];
                                         card.updateAttachedDonPosition();
                                         card.updatePowerText();
+                                        card.resetTurn();
                                     }
                                     for(let card of this.scene.activePlayerScene.leaderLocation.cards) {
                                         card.attachedDon = [];
                                         card.updateAttachedDonPosition();
                                         card.updatePowerText();
+                                        card.resetTurn();
                                     }
+                                    for(let card of this.scene.activePlayerScene.characterArea.cards) card.resetTurn();
 
                                     //Refresh all passive player Card Power as attached dons only give power during the active player's turn
                                     for(let card of this.scene.passivePlayerScene.characterArea.cards) card.updatePowerText();
@@ -522,12 +525,15 @@ class GameStateManager {
                 card.attachedDon = [];
                 card.updateAttachedDonPosition();
                 card.updatePowerText();
+                card.resetTurn();
             }
             for(let card of this.scene.passivePlayerScene.leaderLocation.cards) {
                 card.attachedDon = [];
                 card.updateAttachedDonPosition();
                 card.updatePowerText();
+                card.resetTurn();
             }
+            for(let card of this.scene.passivePlayerScene.characterArea.cards) card.resetTurn();
 
             //Refresh all activePlayer Card Power as don cards only give power during the active player's turn
             for(let card of this.scene.activePlayerScene.characterArea.cards) card.updatePowerText();
@@ -762,35 +768,9 @@ class GameStateManager {
             character.attachedDon.push(donCard); //Add to character pile
 
             const donImage = this.scene.add.image(character.x, character.y + character.displayHeight*0.25, ASSET_ENUMS.GAME_DON_SMALL).setDepth(character.depth+1).setScale(0);
-            // Dramatic entry animation sequence
-            this.scene.tweens.add({
-                onStart: () => {donImage.setVisible(true);},
+            this.scene.tweens.chain({
                 targets: donImage,
-                scale: { from: 0, to: 1.8 }, // Zoom in effect (larger than final)
-                duration: 400,
-                ease: 'Back.easeOut',
-                onComplete: () => {                       
-                    // Pulse effect
-                    this.scene.tweens.add({
-                        targets: donImage,
-                        scale: 1.5,
-                        duration: 200,
-                        ease: 'Bounce.easeOut',
-                        onComplete: () => {                                
-                            // Hold for a moment before fading out
-                            this.scene.time.delayedCall(400, () => {
-                                this.scene.tweens.add({
-                                    targets: donImage,
-                                    alpha: { from: 1, to: 0 },
-                                    scale: { from: 1.5, to: 1.7 },
-                                    duration: 600,
-                                    ease: 'Power1.easeIn',
-                                    onComplete: () => {donImage.destroy();}
-                                });
-                            });
-                        }
-                    });
-                }
+                tweens: this.scene.animationLibrary.don_image_appearing_animation(donImage)
             });
 
             //Animate
@@ -799,125 +779,7 @@ class GameStateManager {
             //Update the UI
             player.playerInfo.updateCardAmountTexts();
         } else { //If this is a bot action, this needs an animation to move the card
-            let action = new Action();
-            action.start = () => {
-                donCard.setDepth(DEPTH_VALUES.DON_DRAGGED);
-                // Store the starting position (from the active DON pile)
-                const startX = donCard.x;
-                const startY = donCard.y;
-            };
-            
-            // Create the animation
-            action.start_animation = this.scene.tweens.add({
-                targets: donCard,
-                x: { from: donCard.x, to: character.x },
-                y: { from: donCard.y, to: character.y },
-                scale: { from: donCard.scale, to: donCard.scale * 1.1 },
-                angle: { from: 0, to: 360 }, // Full rotation during travel
-                duration: 500,
-                ease: 'Back.easeOut',
-                onComplete: () => {
-                    // Create impact effect at destination
-                    try {                        
-                        // Power-up effect on character
-                        this.scene.tweens.add({
-                            targets: character,
-                            scaleX: character.scaleX * 1.1,
-                            scaleY: character.scaleY * 1.1,
-                            duration: 200,
-                            yoyo: true,
-                            ease: 'Sine.easeOut'
-                        });
-                        
-                        // Character glow effect
-                        const glow = this.scene.add.graphics();
-                        glow.fillStyle(0xffcc00, 0.3);
-                        glow.fillRoundedRect(
-                            character.x - (character.width * character.scaleX * 0.55),
-                            character.y - (character.height * character.scaleY * 0.55),
-                            character.width * character.scaleX * 1.1,
-                            character.height * character.scaleY * 1.1,
-                            10
-                        );
-                        
-                        this.scene.tweens.add({
-                            targets: glow,
-                            alpha: 0,
-                            duration: 500,
-                            ease: 'Power2.easeOut',
-                            onComplete: () => glow.destroy()
-                        });
-                    } catch (e) {
-                        // Silent fail if effect unavailable
-                    }
-                    
-                    this.scene.actionManager.completeAction();
-                }
-            }).pause();
-
-            action.end = () => {
-                donCard.setState(CARD_STATES.DON_ATTACHED);
-                donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
-                character.attachedDon.push(donCard); //Add to character pile
-                character.updateAttachedDonPosition(true, donCard);
-
-                const donImage = this.scene.add.image(character.x, character.y + character.displayHeight*0.25, ASSET_ENUMS.GAME_DON_SMALL).setDepth(character.depth+1).setScale(0);
-                // Dramatic entry animation sequence
-                this.scene.tweens.add({
-                    onStart: () => {donImage.setVisible(true);},
-                    targets: donImage,
-                    scale: { from: 0, to: 1.8 }, // Zoom in effect (larger than final)
-                    duration: 400,
-                    ease: 'Back.easeOut',
-                    onComplete: () => {                       
-                        // Pulse effect
-                        this.scene.tweens.add({
-                            targets: donImage,
-                            scale: 1.5,
-                            duration: 200,
-                            ease: 'Bounce.easeOut',
-                            onComplete: () => {                                
-                                // Hold for a moment before fading out
-                                this.scene.time.delayedCall(400, () => {
-                                    this.scene.tweens.add({
-                                        targets: donImage,
-                                        alpha: { from: 1, to: 0 },
-                                        scale: { from: 1.5, to: 1.7 },
-                                        duration: 600,
-                                        ease: 'Power1.easeIn',
-                                        onComplete: () => {donImage.destroy();}
-                                    });
-                                });
-                            }
-                        });
-                    }
-                });
-
-                // Update the power text with animation
-                character.updatePowerText();
-                if (character.powerText) {
-                    this.scene.tweens.add({
-                        targets: character.powerText,
-                        scale: 1.5,
-                        duration: 150,
-                        yoyo: true,
-                        ease: 'Back.easeOut'
-                    });
-                }
-                
-                // Update the UI with pulse effect
-                player.playerInfo.updateCardAmountTexts();
-                this.scene.tweens.add({
-                    targets: player.playerInfo.activeDonCardAmountText,
-                    scale: 1.2,
-                    duration: 100,
-                    yoyo: true,
-                    ease: 'Sine.easeOut'
-                });
-            }
-            action.isPlayerAction = false;
-            action.waitForAnimationToComplete = true;
-            this.scene.actionManager.addAction(action);
+            this.scene.actionLibrary.attachDonAction(player, donCard, character);
         }
     }
 
@@ -1156,6 +1018,12 @@ class GameStateManager {
         let card = playerScene.getCard(cardID);
 
         this.scene.actionLibrary.startTargetingAction(playerScene, card, true);
+    }
+
+    resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn) {
+        const card = this.scene.getCard(cardID);
+        const ability = card.getAbility(abilityID);
+        this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.abilityResults);
     }
 
     //#endregion

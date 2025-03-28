@@ -511,6 +511,70 @@ class AnimationLibrary {
     }
     //#endregion
 
+    //#region MOVING DON CARD FUNCTIONS
+
+
+    /** Animation that moves a don card from the active don area to the character area
+     * @param {DonCardUI} donCard - card to be moved from the active don area to a character
+     * @param {CharacterCardUI} characterCard - character card to which the don card will be moved
+     * @returns {Array} - Array of tween configurations
+    */
+    animation_move_don_activearea2characterarea(donCard, characterCard, delay = 0, callback = null) {
+        let tweens = [
+            {
+                targets: donCard,
+                x: { from: donCard.x, to: characterCard.x },
+                y: { from: donCard.y, to: characterCard.y },
+                scale: { from: donCard.scale, to: donCard.scale * 1.1 },
+                angle: 0, 
+                duration: 500,
+                ease: 'Back.easeOut',
+                delay: delay,
+                onComplete: () => {
+                    // Create impact effect at destination
+                    try {                        
+                        // Power-up effect on character
+                        this.scene.tweens.add({
+                            targets: characterCard,
+                            scaleX: characterCard.scaleX * 1.1,
+                            scaleY: characterCard.scaleY * 1.1,
+                            duration: 200,
+                            yoyo: true,
+                            ease: 'Sine.easeOut'
+                        });
+                        
+                        // Character glow effect
+                        const glow = this.scene.add.graphics();
+                        glow.fillStyle(0xffcc00, 0.3);
+                        glow.fillRoundedRect(
+                            characterCard.x - (characterCard.width * characterCard.scaleX * 0.55),
+                            characterCard.y - (characterCard.height * characterCard.scaleY * 0.55),
+                            characterCard.width * characterCard.scaleX * 1.1,
+                            characterCard.height * characterCard.scaleY * 1.1,
+                            10
+                        );
+                        
+                        this.scene.tweens.add({
+                            targets: glow,
+                            alpha: 0,
+                            duration: 500,
+                            ease: 'Power2.easeOut',
+                            onComplete: () => glow.destroy()
+                        });
+                    } catch (e) {
+                        // Silent fail if effect unavailable
+                    }
+
+                    if(callback) callback();
+                }
+            }
+        ];
+
+        return tweens;
+    }
+
+    //#endregion
+
     //#region APPREARING ANIMATIONS
     /** FUNCTION TO MAKE THE CARD DISAPPEAR THROUGH BURNING 
      * @param {GameCardUI} card - card to be destroyed
@@ -631,6 +695,43 @@ class AnimationLibrary {
             }
         }];
         return tweens;
+    }
+    //#endregion
+
+    //#region EFFECT ANIMATION
+
+    don_image_appearing_animation(donImage, delay = 0) {
+        // Dramatic entry animation sequence
+        return [{
+            onStart: () => {donImage.setVisible(true);},
+            targets: donImage,
+            scale: { from: 0, to: 1.8 }, // Zoom in effect (larger than final)
+            duration: 400,
+            delay: delay,
+            ease: 'Back.easeOut',
+            onComplete: () => {                       
+                // Pulse effect
+                this.scene.tweens.add({
+                    targets: donImage,
+                    scale: 1.5,
+                    duration: 200,
+                    ease: 'Bounce.easeOut',
+                    onComplete: () => {                                
+                        // Hold for a moment before fading out
+                        this.scene.time.delayedCall(400, () => {
+                            this.scene.tweens.add({
+                                targets: donImage,
+                                alpha: { from: 1, to: 0 },
+                                scale: { from: 1.5, to: 1.7 },
+                                duration: 600,
+                                ease: 'Power1.easeIn',
+                                onComplete: () => {donImage.destroy();}
+                            });
+                        });
+                    }
+                });
+            }
+        }];
     }
 
     //#endregion

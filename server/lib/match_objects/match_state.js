@@ -27,8 +27,10 @@ class MatchState {
     /**
      * Constructor on the Match State class
      * @param {Match} match 
+     * @param {number} player1Id
+     * @param {number} player2Id
      */
-    constructor(match) {
+    constructor(match, player1Id, player2Id) {
         this.match = match;
 
         this.current_active_player = null;
@@ -38,8 +40,8 @@ class MatchState {
         this.resolving_pending_action = false;
         this.pending_action = null;
 
-        this.player1 = new MatchPlayer();
-        this.player2 = new MatchPlayer();
+        this.player1 = new MatchPlayer(player1Id);
+        this.player2 = new MatchPlayer(player2Id);
     }
     //#endregion
 
@@ -130,6 +132,7 @@ class MatchState {
 
     /** Function that refreshed all exerted charactes to active
      * @param {MatchPlayer} player - player object
+     * @returns {Array<number>} - list of card ids that were refreshed
      */
     refreshCards(player) {
         let cards = [];
@@ -154,6 +157,15 @@ class MatchState {
             cards.push(player.inStageLocation.id);
         }
         return cards;
+    }
+
+    /** Function that refreshed all exerted charactes to active
+     * @param {MatchPlayer} player - player object
+     */
+    resetCards(player) {
+        for(let card of player.inCharacterArea) card.resetTurn();
+        player.inLeaderLocation.resetTurn();
+        if(player.inStageLocation) player.inStageLocation.resetTurn();
     }
     //#endregion
 

@@ -294,6 +294,68 @@ class ActionLibrary {
 
     //#end region
 
+    //#region ATTACH DON ACTION
+    /** Action to attach a don card to a character
+     * @param {PlayerScene} player
+     * @param {DonCardUI} donCard
+     * @param {GameCardUI} character
+     */
+    attachDonAction(player, donCard, character) {
+        let action = new Action();
+        action.start = () => {
+            donCard.setDepth(DEPTH_VALUES.DON_DRAGGED);
+        };
+        
+        // Create the animation
+        let startAnimation = this.scene.animationLibrary.animation_move_don_activearea2characterarea(donCard, character, 0, () => {this.scene.actionManager.completeAction();});
+        action.start_animation = this.scene.tweens.chain(
+            {
+                targets: donCard,
+                tweens: startAnimation
+            }
+        ).pause();
+
+        action.end = () => {
+            donCard.setState(CARD_STATES.DON_ATTACHED);
+            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+            character.attachedDon.push(donCard); //Add to character pile
+            character.updateAttachedDonPosition(true, donCard);
+
+            const donImage = this.scene.add.image(character.x, character.y + character.displayHeight*0.25, ASSET_ENUMS.GAME_DON_SMALL).setDepth(character.depth+1).setScale(0);
+            this.scene.tweens.chain({
+                targets: donImage,
+                tweens: this.scene.animationLibrary.don_image_appearing_animation(donImage)
+            });
+
+            // Update the power text with animation
+            character.updatePowerText();
+            if (character.powerText) {
+                this.scene.tweens.add({
+                    targets: character.powerText,
+                    scale: 1.5,
+                    duration: 150,
+                    yoyo: true,
+                    ease: 'Back.easeOut'
+                });
+            }
+            
+            // Update the UI with pulse effect
+            player.playerInfo.updateCardAmountTexts();
+            this.scene.tweens.add({
+                targets: player.playerInfo.activeDonCardAmountText,
+                scale: 1.2,
+                duration: 100,
+                yoyo: true,
+                ease: 'Sine.easeOut'
+            });
+        }
+        action.isPlayerAction = false;
+        action.waitForAnimationToComplete = true;
+        this.scene.actionManager.addAction(action);
+    }
+
+    //#endregion
+
     //#region PLAY CARD ACTION
     /** Creates the Play Card Action.
          * @param {GameCardUI} card - Card that is being played.
@@ -753,6 +815,41 @@ class ActionLibrary {
         action.isPlayerAction = false;
         action.waitForAnimationToComplete = true;
         this.scene.actionManager.addAction(action);
+    }
+
+    //#endregion
+
+    //#region ABILITY ACTION
+
+    /** Function to resolve the ability
+     * @param {GameCardUI} card
+     * @param {Ability} ability
+     * @param {Object} abilityInfo
+     */
+    resolveAbilityAction(card, ability, abilityInfo) {
+        let abilityTweens = ability.animate(card, abilityInfo); //Add the ability tween
+
+        if(abilityTweens.length === 0) return;
+
+        //If there are abilities to animate
+        abilityTweens = abilityTweens.concat([{ //concat additional tween to call the completeAction function
+            duration: 10,
+            onComplete: () => {this.scene.actionManager.completeAction();}
+        }]);
+        //Create tween chain
+        let startAnimation = this.scene.tweens.chain({
+            targets: card,
+            tweens: abilityTweens
+        }).pause();
+
+        let action = new Action();
+        action.start = () => {};
+        action.start_animation = startAnimation;
+        action.end = () => {};
+        action.waitForAnimationToComplete = true;
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
     }
 
     //#endregion

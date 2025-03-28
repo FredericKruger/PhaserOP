@@ -245,8 +245,7 @@ class Client {
         });
         this.socket.on('game_card_ability_executed', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                console.log("EXECUTING ABILITY");
-                console.log(actionInfos);
+                this.gameScene.gameStateManager.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, activePlayer);
             }
         });
         //#endregion

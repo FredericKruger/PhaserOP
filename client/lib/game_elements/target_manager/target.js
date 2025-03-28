@@ -36,18 +36,23 @@ class Target {
 
         // Check if the card belongs to a specific player
         if (this.players.length > 0) isValid = isValid && this.isPlayerValid(card, card.playerScene);
+        //console.log("isValidPlayer ", isValid);
   
         // Check card type
         if (this.cardtypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
+        //console.log("isValidCardType ", isValid);
 
         // Check card state
         if (this.states.length > 0 && isValid) isValid = isValid && this.isStateValid(card.state);
+        //console.log("isValidState ", isValid);
 
         // Check card types (attributes, colors, etc.)
-        if (this.types.length > 0 && isValid) isValid = isValid && this.isTypeValid(card.cardData.types);
+        if (this.types.length > 0 && isValid) isValid = isValid && this.isTypeValid(card.cardData.type);
+        //console.log("isValidType ", isValid);
 
         // Check card types (attributes, colors, etc.)
         if (this.attributes.length > 0 && isValid) isValid = isValid && this.isAttributeValid(card.cardData.attribute);
+        //console.log("isValidAttribute ", isValid);
 
         // Check card cost
         if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.cost);
@@ -120,9 +125,9 @@ class Target {
      * @param {Array} attributes - The card attributes to check
      * @returns {boolean} - Whether the card type is valid
      */
-    isTypeValid(attributes) {
-        if (!attributes) return false;
-        return this.types.some(type => attributes.includes(type));
+    isTypeValid(types) {
+        if (!types) return false;
+        return this.types.some(type => types.includes(type));
     }
 
     /**

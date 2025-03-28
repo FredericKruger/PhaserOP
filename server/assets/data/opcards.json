@@ -6043,7 +6043,7 @@
                     ]
                 },
                 "actions": [
-                    {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET"}}
+                    {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
                 ]
             }
         ]
@@ -6217,15 +6217,33 @@
         "abilities": [
             {
                 "id": "ST01-007-1",
-                "text": "",
+                "text": "Give up to 1 rested DON!! card to your Leader or 1 of your Characters.",
                 "art": {
                     "art": "ST01-007-ABILITY1",
                     "posx": 300,
                     "posy": 548
                 },
                 "type": "ACTIVE",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "phases": ["Main Phase"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "PLAYER_TURN", "value": true},
+                    {"type": "ONCE", "value": "TURN"}
+                ],
+                "target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"]
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
+                ]
             }
         ]
     },    
@@ -6261,26 +6279,7 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000,
-        "abilities": [
-            {
-                "id": "ST01-013-1",
-                "text": "",
-                "art": {
-                    "art": "ST01-013-ABILITY1",
-                    "posx": 300,
-                    "posy": 538
-                },
-                "type": "PASSIVE",
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
-                "conditions": [
-                    {"type": "ATTACHED_DON", "value": 1}
-                ],
-                "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000}}
-                ]
-            }
-        ]
+        "counter": 1000
     },    
     {
         "id":375,
@@ -6571,6 +6570,7 @@
                     ]
                 },
                 "actions": [
+                    {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}},
                     {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET","duration": "TURN"}}
                 ]
             }

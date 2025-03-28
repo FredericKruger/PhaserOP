@@ -61,7 +61,10 @@ class MatchCard extends Card{
         this.abilities = ServerAbilityFactory.createAbilitiesForCard(this.cardData.abilities, this.id, this.matchId);
         this.attachedDon = [];
         this.attachedCounter = [];
+        
         this.eventCounterAmount = 0;
+        this.turnEventPowerAmount = 0;
+        this.gameEventPowerAmount = 0;
 
         this.state = CARD_STATES.IN_DECK;
 
@@ -101,7 +104,9 @@ class MatchCard extends Card{
         if(!activeTurn) {
             for(let attachedCounter of this.attachedCounter) power += attachedCounter.cardData.counter;
             power += this.eventCounterAmount;
+            power += this.turnEventPowerAmount; //Add power from turn effects
         }
+        power += this.gameEventPowerAmount; //Add power from permanent effects
 
         let passivePower = 0;
         for(let ability of this.abilities) {
@@ -110,6 +115,11 @@ class MatchCard extends Card{
         power += passivePower;
 
         return power;
+    }
+
+    resetTurn() {
+        this.turnEventPowerAmount = 0;
+        for(let ability of this.abilities) ability.resetTurn();
     }
 
 }
