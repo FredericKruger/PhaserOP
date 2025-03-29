@@ -6133,8 +6133,14 @@
                     "posy": 548
                 },
                 "type": "PASSIVE",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "PLAYED_THIS_TURN", "value": true},
+                    {"type": "ATTACHED_DON", "value": 2}
+                ],
+                "actions": [
+                    {"name": "hasRush", "params": {}}
+                ]
             }
         ]
     },    
@@ -6353,9 +6359,14 @@
                     "posx": 300,
                     "posy": 548
                 },
-                "type": "RUSH",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "type": "PASSIVE",
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "PLAYED_THIS_TURN", "value": true}
+                ],
+                "actions": [
+                    {"name": "hasRush", "params": {}}
+                ]
             },
             {
                 "id": "ST01-012-1",

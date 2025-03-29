@@ -354,27 +354,31 @@ class Match {
      * @param {number} cardId
      */
     startTargetingAttack(player, cardId) {
-        let cardData = player.currentMatchPlayer.getCard(cardId).cardData;
-        let actionInfos = {playedCard: cardId, playedCardData: cardData};
-        let targetData = {
-            targetAction: TARGET_ACTION.ATTACK_CARD_ACTION,
-            requiredTargets: 1,
-            targets: [
-                {
-                    minrequiredtargets: 0,
-                    player: ["opponent"],
-                    cardtypes: [CARD_TYPES.CHARACTER],
-                    states: ["IN_PLAY_RESTED"],
-                },{
-                    minrequiredtargets: 0,
-                    player: ["opponent"],
-                    cardtypes: [CARD_TYPES.LEADER]
-                }
-            ]
-        };
-        this.state.pending_action = {actionResult: ATTACK_CARD_STATES.SELECT_TARGET, actionInfos: actionInfos, targetData: targetData};
-        this.state.resolving_pending_action = true;
-        player.socket.emit('game_select_attack_target', actionInfos, true, targetData);
+        let card = this.matchCardRegistry.get(cardId);
+        if(card.state === CARD_STATES.IN_PLAY
+            || (card.state === CARD_STATES.IN_PLAY_FIRST_TURN && card.hasRush())) {
+            let cardData = player.currentMatchPlayer.getCard(cardId).cardData;
+            let actionInfos = {playedCard: cardId, playedCardData: cardData};
+            let targetData = {
+                targetAction: TARGET_ACTION.ATTACK_CARD_ACTION,
+                requiredTargets: 1,
+                targets: [
+                    {
+                        minrequiredtargets: 0,
+                        player: ["opponent"],
+                        cardtypes: [CARD_TYPES.CHARACTER],
+                        states: ["IN_PLAY_RESTED"],
+                    },{
+                        minrequiredtargets: 0,
+                        player: ["opponent"],
+                        cardtypes: [CARD_TYPES.LEADER]
+                    }
+                ]
+            };
+            this.state.pending_action = {actionResult: ATTACK_CARD_STATES.SELECT_TARGET, actionInfos: actionInfos, targetData: targetData};
+            this.state.resolving_pending_action = true;
+            player.socket.emit('game_select_attack_target', actionInfos, true, targetData);
+        }
     }
 
     /** Function that start the attack phase

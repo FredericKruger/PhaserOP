@@ -39,6 +39,13 @@ class FirstTurnState extends GameCardState {
         gameObject.scene.game.gameClient.sendCardPointerOut(gameObject.id, CARD_STATES.IN_PLAY, gameObject.playerScene === gameObject.scene.activePlayerScene);
     }
 
+    onPointerDown(pointer, gameObject) {
+        //Start the attack selection
+        if(this.card.state === CARD_STATES.IN_PLAY_FIRST_TURN && this.card.hasRush) {
+            gameObject.scene.game.gameClient.requestStartTargetingAttack(gameObject.id);
+        }
+    }
+
     update() {
         this.card.updatePowerText();
         for(let ability of this.card.abilities) {

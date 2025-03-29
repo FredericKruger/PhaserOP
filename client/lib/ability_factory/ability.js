@@ -77,6 +77,10 @@ class Ability {
             case 'AVAILABLE_DON':
                 if(this.card.playerScene.activeDonDeck.getNumberOfActiveCards() >= condition.value) return true;
                 return false;
+            case 'PLAYED_THIS_TURN':
+                if(this.card.turnPlayed && condition.value) return true;
+                if(!this.card.turnPlayed && !condition.value) return true;
+                return false;
             // More conditions...
             default:
                 return true;

@@ -25,6 +25,23 @@ class ServerPassiveAbility extends ServerAbility {
         return additionalPower
     }
 
+    /** Function to return if the card has rush */
+    hasRush(){
+        const match = matchRegistry.get(this.matchId);
+        const card = match.matchCardRegistry.get(this.cardId);
+
+        let hasRush = false;
+        if(this.canActivate(card, match.state.current_phase)) {
+            for(let action of this.actions){
+                if(action.name === 'hasRush'){
+                    hasRush = true;
+                }
+            }
+        }
+
+        return hasRush;
+    }
+
 }
 
 module.exports = ServerPassiveAbility;

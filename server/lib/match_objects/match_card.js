@@ -110,11 +110,20 @@ class MatchCard extends Card{
 
         let passivePower = 0;
         for(let ability of this.abilities) {
-            if(ability.type === 'PASSIVE') passivePower += ability.addPassivePower(this, '');
+            if(ability.type === 'PASSIVE') passivePower += ability.addPassivePower();
         }
         power += passivePower;
 
         return power;
+    }
+
+    /** Function that returns if the card has rush */
+    hasRush() {
+        let hasRush = false;
+        for(let ability of this.abilities) {
+            if(ability.type === 'PASSIVE') hasRush = hasRush ;
+        }
+        return hasRush;
     }
 
     resetTurn() {

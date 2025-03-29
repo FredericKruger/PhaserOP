@@ -49,6 +49,8 @@ class GameCardUI extends BaseCardUI{
 
         this.turnPlayed = true; //To store if the card was played in the current turn
 
+        this.hasRush = false; //To store if the card has rush
+
         //Button visibility overrides to show in case of opponent activating buttons
         this.blockerButton_manualOverride = false;
     }
@@ -646,7 +648,7 @@ class GameCardUI extends BaseCardUI{
 
     /** Function to start the dizzy Animation */
     startDizzyAnimation() {
-        if(this.turnPlayed) {
+        if(this.turnPlayed && !this.hasRush) {
             this.dizzySprite = this.scene.add.sprite(
                 0,
                 -this.height/4, 
