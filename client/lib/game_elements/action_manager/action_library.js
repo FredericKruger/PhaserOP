@@ -611,7 +611,8 @@ class ActionLibrary {
         action.end = () => {
             attacker.setState(CARD_STATES.IN_PLAY_ATTACKING);
             defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
-            this.scene.game.gameClient.requestStartBlockerPhase();
+            //this.scene.game.gameClient.requestStartBlockerPhase();
+            this.scene.game.gameClient.requestStartOnAttackEventPhase();
         };
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = true;

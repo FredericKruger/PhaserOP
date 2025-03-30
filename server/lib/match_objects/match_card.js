@@ -117,13 +117,26 @@ class MatchCard extends Card{
         return power;
     }
 
-    /** Function that returns if the card has rush */
+    /** Function that returns if the card has rush 
+     * @returns {boolean}
+    */
     hasRush() {
+        if(this.debugRush) return true;
         let hasRush = false;
         for(let ability of this.abilities) {
             if(ability.type === 'PASSIVE') hasRush = hasRush ;
         }
         return hasRush;
+    }
+
+    /** Function that returns true is a card has an ability that triggers no attacking
+     * @returns {boolean}
+     */
+    hasOnAttackEvents() {
+        for(let ability of this.abilities) {
+            if(ability.type === 'WHEN_ATTACKING' && ability.canActivate()) return true;
+        }
+        return false;
     }
 
     resetTurn() {

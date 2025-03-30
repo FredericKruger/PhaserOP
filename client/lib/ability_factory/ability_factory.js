@@ -12,6 +12,8 @@ class AbilityFactory {
                 return new PassiveAbility(abilityData);
             case 'ACTIVE':
                 return new ActiveAbility(abilityData);
+            case 'WHEN_ATTACKING':
+                return new WhenAttackingAbility(abilityData);
             default:
                 return new Ability(abilityData);
         }

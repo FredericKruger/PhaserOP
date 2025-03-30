@@ -830,7 +830,6 @@ class GameStateManager {
      * @param {boolean} botAction - If it is a bot action
      */
     declareAttackPhase(attackerID, defenderID, isPlayerTurn, botAction) {
-        console.log("AtTACK PHASE" + isPlayerTurn + ' ' + botAction)
         //Create an aciton to declrare the attack
         let action = new Action();
         action.start = () => {
@@ -862,6 +861,18 @@ class GameStateManager {
         action.waitForAnimationToComplete = false;
 
         this.scene.actionManager.addAction(action);
+    }
+
+    /** Function to start the on attack event phase
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    startOnAttackEventPhase(isPlayerTurn) {
+        this.currentGamePhase = GAME_PHASES.ATTACK_PHASE;
+        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+        if(isPlayerTurn) {
+            this.scene.gameState.exit(GAME_STATES.ON_ATTACK_EVENT_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASS);
+        }
     }
 
     /** Function to start the blocker phase

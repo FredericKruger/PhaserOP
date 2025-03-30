@@ -125,10 +125,9 @@ class GameScene extends Phaser.Scene {
         this.testButton.setInteractive();
         this.testButton.on('pointerdown', () => {
             //this.gameStateManager.endGame(true, 1000);
-            const donCardID = this.activePlayerScene.activeDonDeck.cards[0].id;
-            const cardID = this.activePlayerScene.leaderLocation.cards[0].id;
-            this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: donCardID, receivingCharacter: cardID}, true, true);
-            //this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: 10, receivingCharacter: 50}, true, true);
+            const cardID = this.activePlayerScene.characterArea.cards[0].hasRush = true;
+            this.game.gameClient.sendDebug(this.activePlayerScene.characterArea.cards[0].id);
+            //this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: donCardID, receivingCharacter: cardID}, true, true);
         });
 
         /** LISTENERS */

@@ -188,6 +188,9 @@ class Client {
         this.socket.on('game_stop_targeting_attack_passiveplayer', () => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();
         });
+        this.socket.on('game_start_on_attack_event_phase', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startOnAttackEventPhase(activePlayer);
+        });
         this.socket.on('game_start_blocker_phase', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startBlockerPhase(activePlayer);
         });
@@ -255,7 +258,7 @@ class Client {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.changeGameStateActive();
         });
         this.socket.on('game_resume_active', () => {
-            if(!this.gameScene.gameStateManager.gameOver) his.gameScene.gameStateManager.resumeActive();
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.resumeActive();
         });
         this.socket.on('game_resume_passive', () => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.resumePassive();
@@ -347,10 +350,13 @@ class Client {
     requestStartTargetingAttack (cardID) {this.socket.emit('player_start_targeting_attack', cardID);}
     requestStartTargetingPassivePlayer (cardID) {this.socket.emit('player_start_targeting_passiveplayer', cardID);}
     requestUpdateTragetingPassivePlayer (relX, relY) {this.socket.emit('player_udpate_targeting_attack_passiveplayer', relX, relY);}
+    requestStartOnAttackEventPhase () {this.socket.emit('player_on_attack_event_phase_ready');}
+    requestStartOnAttackEventPhasePassivePlayer () {this.socket.emit('player_on_attack_event_phase_ready_passive_player');}
     requestStartBlockerPhase () {this.socket.emit('player_blocker_phase_ready');}
     requestStartBlockerPhasePassivePlayer () {this.socket.emit('player_blocker_phase_ready_passive_player');}
     requestPlayerAttachCounterToCharacter (counterID, characterID) {this.socket.emit('player_attach_counter_to_character', counterID, characterID);}
 
+    requestPassOnAttackEventPhase (passed) {this.socket.emit('player_pass_on_attack_event_phase', passed);}
     requestPassBlockerPhase (passed) {this.socket.emit('player_pass_blocker_phase', passed);}
     requestPassCounterPhase (passed) {this.socket.emit('player_pass_counter_phase', passed);}
     requestStartAttackCleanup () {this.socket.emit('player_start_attack_cleanup');}
@@ -371,5 +377,7 @@ class Client {
     //#region REQUEST SETTINGS
     updatePlayerSettings () {this.socket.emit('update_player_settings', this.playerSettings);}
     //#endregion
+
+    sendDebug(cardID) {this.socket.emit('debug', cardID);}
     
 }

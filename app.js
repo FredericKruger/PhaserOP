@@ -242,6 +242,8 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_start_targeting_attack', (cardID) => {socket.player.match.startTargetingAttack(socket.player, cardID);});
     socket.on('player_start_targeting_passiveplayer', (cardID) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_start_targeting_attack_passiveplayer', cardID);});
     socket.on('player_udpate_targeting_attack_passiveplayer', (relX, relY) => {if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_udpate_targeting_attack_passiveplayer', relX, relY);});
+    socket.on('player_on_attack_event_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY');});
+    socket.on('player_on_attack_event_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER');});
     socket.on('player_blocker_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY');});
     socket.on('player_blocker_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');});
     socket.on('player_attach_counter_to_character', (counterID, characterID) => {socket.player.match.startAttachCounterToCharacter(counterID, characterID);});
@@ -269,6 +271,8 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_current_turn_completed_passiveplayer', () => {socket.player.match.completeCurrentTurn();});
 
     socket.on('player_surrender', () => {socket.player.match.endGame(socket.player.currentOpponentPlayer, socket.player);});
+
+    socket.on('debug', (cardID) => {socket.player.match.matchCardRegistry.get(cardID).debugRush = true;});
 });
 
 //START LISTENING

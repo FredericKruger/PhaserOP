@@ -6154,23 +6154,41 @@
         "card":"CHARACTER",
         "type":["Fish-Man","Straw Hat Crew"],
         "colors":["RED"],
-        "cost":3,
-        "power":5000,
+        "cost": 0,
+        "power": 5000,
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
         "abilities": [
             {
                 "id": "ST01-005-1",
-                "text": "",
+                "text": "Up to 1 of your Leader or Character cards other than this card gains +1000 power during this turn.",
                 "art": {
                     "art": "ST01-005-ABILITY1",
                     "posx": 300,
                     "posy": 560
                 },
-                "type": "PASSIVE",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "type": "WHEN_ATTACKING",
+                "phases": ["Main: Attack"],
+                "states": [],
+                "target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"],
+                            "exclude": ["SELF"]
+                        }
+                    ]
+                },
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 1}
+                ],
+                "actions": [
+                    {"name": "addPower", "params": {"amount": 1000, "target": "TARGET"}}
+                ]
             }
         ]
     },    

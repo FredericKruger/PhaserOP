@@ -407,12 +407,30 @@ class Match {
         if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_declare_attack_phase', attackerID, defenderID, false, player.bot);
     }
 
-    /** Function to start the blocker phase */
-    startBlockerPhase() {
+    /** Function to start the on attack event phase */
+    startOnAttackEventPhase() {
         //Reset all the action flags
         this.state.current_active_player.currentMatchPlayer.matchFlags.resetActionFlags();
         this.state.current_passive_player.currentMatchPlayer.matchFlags.resetActionFlags();
 
+        //test if there are any blockers in the passive players area which are not rested
+        this.attackManager.onAttackEventPhase_Complete = true;
+
+        //Check if there are any events to be reoslved
+        if(this.attackManager.attack.attacker.hasOnAttackEvents()) {
+            console.log("HAS ON ATTACK EVENTS");
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
+
+            /*if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_on_attack_event_phase', false);
+            else this.ai.startOnAttackEventPhase();*/
+        } else {
+            this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
+            this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
+        }
+    }
+
+    /** Function to start the blocker phase */
+    startBlockerPhase() {
         //test if there are any blockers in the passive players area which are not rested
         this.attackManager.blockPhase_Complete = true;
         this.state.current_phase = MATCH_PHASES.BLOCK_PHASE;
