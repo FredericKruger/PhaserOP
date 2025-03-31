@@ -8,6 +8,7 @@ class NextTurnButtonActiveState extends NextTurnButtonState {
         super.enter();
         this.button.makeInteractive(true);
         this.button.buttonText.setText("END TURN");
+        this.button.clearGreyscale();
     }
 
     onPointerDown(pointer, gameObject) {    

@@ -232,7 +232,7 @@ class MatchState {
                 return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
             } else {
                 let cardData = player.getCardFromHand(cardId);
-                actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
+                actionInfos = {actionId: 'PLAY_' + cardId, playedCard: cardId, playedCardData: cardData, replacedCard: -1};
                 let targetData = {
                     targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
                     requiredTargets: 1,
@@ -255,7 +255,7 @@ class MatchState {
                 return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
             } else {
                 let cardData = player.getCardFromHand(cardId);
-                actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
+                actionInfos = {actionId: 'PLAY_' + cardId, playedCard: cardId, playedCardData: cardData, replacedCard: -1};
                 let targetData = {
                     targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
                     requiredTargets: 1,
@@ -283,7 +283,7 @@ class MatchState {
             if(targets !== null) {
                 console.log("TARGETING REQUIRED FOR THIS CARD");
                 let cardData = player.getCardFromHand(cardId);
-                actionInfos = {playedCard: cardId, playedCardData: cardData, replacedCard: -1};
+                actionInfos = {actionId: 'EVENT_' + cardId, playedCard: cardId, playedCardData: cardData, replacedCard: -1};
                 this.pending_action = {actionResult: PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED, actionInfos: actionInfos, targetData: targets};
                 this.resolving_pending_action = true;
                 return this.pending_action;

@@ -41,11 +41,11 @@ class GameScene extends Phaser.Scene {
         //Game Manager
         this.gameStateUI = new GameStateUI(this);
         this.gameStateManager = new GameStateManager(this, this.gameStateUI);
-        this.targetManager = new TargetManager(this);
+        this.targetManagers= []; ///new TargetManager(this);
 
         //Ready the targetting arrow
-        this.targetingArrow = new TargetingArrow(this);
-        this.eventArrow = new TargetingArrow(this, COLOR_ENUMS.OP_GREEN);
+        //this.targetingArrow = new TargetingArrow(this);
+        //this.eventArrow = new TargetingArrow(this, COLOR_ENUMS.OP_GREEN);
 
         this.gameState = new NoInteractionState(this, null);
     }
@@ -110,8 +110,6 @@ class GameScene extends Phaser.Scene {
         this.activePlayerScene.create();
         this.passivePlayerScene.create();
         this.gameStateUI.create();
-        this.targetingArrow.create();
-        this.eventArrow.create();
 
         //Create mask Panel
         this.maskPanel = this.add.rectangle(
@@ -251,6 +249,13 @@ class GameScene extends Phaser.Scene {
         let donCard = this.activePlayerScene.getDonCardById(cardId);
         if(!donCard) donCard = this.passivePlayerScene.getDonCardById(cardId);
         return donCard;
+    }
+
+    /** Function that returns the active target manager
+     * @return {TargetManager}
+     */
+    getActiveTargetManager() {
+        return this.targetManagers.find(targetManager => targetManager.active);
     }
     //#endregion
 

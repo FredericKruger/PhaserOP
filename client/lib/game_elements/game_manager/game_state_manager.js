@@ -721,7 +721,7 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         let card = player.hand.getCard(cardID);
-        if(!isPlayerTurn) this.scene.actionLibraryPassivePlayer.cancelReplacementTarget(this.scene.passivePlayerScene, card);
+        this.scene.actionLibraryPassivePlayer.cancelReplacementTarget(player, card);
     }
 
     //#endregion
@@ -852,7 +852,12 @@ class GameStateManager {
             let attacker = attackerPlayer.getCard(attackerID);
             let defender = defenderPlayer.getCard(defenderID);
     
-            this.scene.attackManager = new AttackManager(this.scene, attacker, defender); //create a new attack manager to keep track of the attacker and defenders
+            //Create new passive targetingManager
+            let targetingManager = new TargetManager(this.scene, 'ATTACK', 'ATTACK_' + attacker.id, false);
+            targetingManager.targetArrow.originatorObject = attacker; //Set the originator object to the attacker
+            this.scene.targetManagers.push(targetingManager);
+
+            this.scene.attackManager = new AttackManager(this.scene, attacker, defender, targetingManager); //create a new attack manager to keep track of the attacker and defenders
     
             if(isPlayerTurn) this.scene.actionLibrary.declareAttackAction(attackerPlayer, attacker, defender);
             else this.scene.actionLibraryPassivePlayer.declareAttackAction(defenderPlayer, attacker, defender, botAction);
@@ -968,6 +973,9 @@ class GameStateManager {
 
         //reset event counter amounts
         player.resetEventCounterAmounts();
+
+        //remove targeting manager
+        this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm.type !== 'ATTACK');
 
         //list of cards that were cleaned up
         let affectedCards = [];
@@ -1241,7 +1249,13 @@ class GameStateManager {
     resumeActive(){
         let action = new Action();
 
-        action.start = () => {this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);}
+        action.start = () => {
+            this.currentGamePhase = GAME_PHASES.MAIN_PHASE;
+            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+
+            this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
+        }
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
 
@@ -1251,7 +1265,13 @@ class GameStateManager {
     resumePassive(){
         let action = new Action();
 
-        action.start = () => {this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);}
+        action.start = () => {
+            this.currentGamePhase = GAME_PHASES.MAIN_PHASE;
+            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+        }
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = false;
 

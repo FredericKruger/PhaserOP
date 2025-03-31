@@ -2,9 +2,16 @@ class TargetManager {
 
     /** Constructor
      * @param {GameScene} scene - The game scene
+     * @param {string} type - The type of the target manager (target, attack, block, etc.)
+     * @param {string} id - The id of the target manager
      */
-    constructor(scene) {
+    constructor(scene, type, id, active = true) {
         this.scene = scene;
+        this.type = type;
+        this.id = id;
+
+        this.active = active; //Is the target active
+        this.waitingForServer = false;
 
         this.originatorCard = null; //Store the reference to the card triggered the targeting
         this.targetData = {};
@@ -12,6 +19,16 @@ class TargetManager {
         this.requiredTargets = 0;
         this.targets = [];
         this.targetIDs = [];
+
+        //determine targeting arrow color depending on type
+        let color = COLOR_ENUMS.OP_WHITE; //Green
+        if(type === 'ATTACK') color = COLOR_ENUMS.OP_RED; //Red
+        else if(type === 'EVENT') color = COLOR_ENUMS.OP_GREEN; //Blue
+        else if(type === 'PLAY') color = COLOR_ENUMS.OP_BLUE; //Blue
+
+        //Attach targeting Arrow to target manager
+        this.targetArrow = new TargetingArrow(this.scene, color); //Target arrow
+        this.targetArrow.create();
     }
 
     /** Function that prepares the target from the server data
@@ -54,7 +71,8 @@ class TargetManager {
         //}
 
         //If all targets are selected, send the targets to the server
-        if(this.targetIDs.length === this.requiredTargets) {
+        if(this.targetIDs.length === this.requiredTargets && !this.waitingForServer) {
+            this.waitingForServer = true;
             this.scene.game.gameClient.requestSendTargets(this.targetIDs);
         }
     }
@@ -62,6 +80,7 @@ class TargetManager {
     /** Reset Target IDs */
     resetTargetIDs() {
         this.targetIDs = [];
+        this.waitingForServer = false;
     }
 
     /** Resets the object */

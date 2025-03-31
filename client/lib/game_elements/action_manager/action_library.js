@@ -447,9 +447,7 @@ class ActionLibrary {
                 }
             }
         };
-        action.finally = () => {
-            card.isInPlayAnimation = false;
-        
+        action.finally = () => {      
             //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) {
                 card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play
@@ -460,7 +458,7 @@ class ActionLibrary {
         };
 
         action.isPlayerAction = true; //This is a player triggered action
-        action.waitForAnimationToComplete = true; //Should wait for the endof the animation
+        action.waitForAnimationToComplete = (replacedCard === null); //Should wait for the endof the animation
         action.name = "PLAY";
 
         //Add action to the action stack
@@ -546,6 +544,7 @@ class ActionLibrary {
             onComplete: () => {this.actionManager.completeAction();}
         });
         let start_animation = this.scene.tweens.chain({
+            targets: card,
             tweens: startAnimation_tweens
         }).pause();
 
@@ -565,7 +564,6 @@ class ActionLibrary {
         action.start = () => {
             //Reset the eventCounter value
             card.eventCounterPower = 0;
-
             //Set State
             card.setState(CARD_STATES.IN_DISCARD);
         };
@@ -595,13 +593,13 @@ class ActionLibrary {
      * @param {GameCardUI} defender
     */
     declareAttackAction(playerScene, attacker, defender) {
-        let tweens = this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 200);
+        let tweens = this.scene.attackManager.targetingManager.targetArrow.animateToPosition(defender.x, defender.y, 200);
         tweens = tweens.concat({
             duration: 10,
             onComplete: () => {this.actionManager.completeAction();}
         });
         let start_animation = this.scene.tweens.chain({
-            targets: this.scene.targetingArrow,
+            targets: this.scene.attackManager.targetingManager.targetArrow,
             tweens: tweens
         }).pause();
 
@@ -648,13 +646,13 @@ class ActionLibrary {
             this.scene.attackManager.attack.switchDefender(blockerCard); //Switch the defender
         };
         //Create anumation to move the targeting arrow toe the defender card
-        let animation = this.scene.targetingArrow.animateToPosition(blockerCard.x, blockerCard.y, 200);
+        let animation = this.scene.attackManager.targetingManager.targetArrow.animateToPosition(blockerCard.x, blockerCard.y, 200);
         animation = animation.concat({
             duration: 10,
             onComplete: () => {this.scene.actionManager.finalizeAction();} //Use a callback to send a message he animation is finished and counter can start
         });
         animation = this.scene.tweens.chain({
-            targets: this.scene.targetingArrow,
+            targets: this.scene.attackManager.targetingManager.targetArrow,
             tweens: animation
         }).pause();
         action.end_animation = animation;
@@ -710,9 +708,13 @@ class ActionLibrary {
         action.start = () => {
             // Set game state to prevent interaction during animation
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
-
+            
+            //Change Phase
+            this.currentGamePhase = GAME_PHASES.ATTACK_PHASE;
+            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+    
             //Hide targeting arrow
-            this.scene.targetingArrow.stopTargeting();
+            this.scene.attackManager.targetingManager.targetArrow.stopTargeting();
 
             // Get the attacker and defender cards from the attack manager
             const attacker = this.scene.attackManager.attack.attacker;
@@ -844,7 +846,11 @@ class ActionLibrary {
         }).pause();
 
         let action = new Action();
-        action.start = () => {};
+        action.start = () => {
+            //Clean up targeting manager
+            let targetingManager = this.scene.getActiveTargetManager();
+            if(targetingManager) this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm !== targetingManager); //Remove the target manager from the list
+        };
         action.start_animation = startAnimation;
         action.end = () => {};
         action.waitForAnimationToComplete = true;
@@ -865,11 +871,10 @@ class ActionLibrary {
             let action = new Action();
             action.start = () => {
                 this.scene.gameState.exit(GAME_STATES.TARGETING);
-                if(card.cardData.card === CARD_TYPES.EVENT) {
-                    this.scene.targetManager.originatorCard = card;
-                    this.scene.eventArrow.startTargeting(card);
-                }
-                else this.scene.targetingArrow.startTargeting(card);
+                
+                let activeTargetManager = this.scene.getActiveTargetManager();
+                activeTargetManager.targetArrow.originatorCard = card;
+                activeTargetManager.targetArrow.startTargeting(card);
             };
             action.isPlayerAction = true;
             action.waitForAnimationToComplete = false;
@@ -880,54 +885,81 @@ class ActionLibrary {
         } else {
             this.scene.gameState.exit(GAME_STATES.TARGETING);
             
-            if(card.cardData.card === CARD_TYPES.EVENT) {
-                this.scene.targetManager.originatorCard = card;
-                this.scene.eventArrow.startTargeting(card);
-            }
-            else this.scene.targetingArrow.startTargeting(card);
+            let activeTargetManager = this.scene.getActiveTargetManager();
+            activeTargetManager.targetArrow.originatorCard = card;
+            activeTargetManager.targetArrow.startTargeting(card);
         }
     }
 
     /** Function to stop the targeting */
-    cancelTargetingAction() {
-        let action = new Action();
-        action.start = () => {
-            let card = null;
-            if(this.scene.targetManager.originatorCard === null) {
-                card = this.scene.targetingArrow.originatorObject;
-                this.scene.targetingArrow.stopTargeting();
-            } else {
-                card = this.scene.eventArrow.originatorObject;
-                this.scene.eventArrow.stopTargeting();
-            }            
+    cancelTargetingAction(serverRequest = false) {
+        let activeTargetManager = this.scene.getActiveTargetManager();
+        if (!activeTargetManager.waitingForServer) {
+            activeTargetManager.waitingForServer = true;
 
-            switch(this.scene.targetManager.targetAction) {
-                case 'EVENT_CARD_ACTION':
-                case 'PLAY_CARD_ACTION':
-                    card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
-                    card.setState(CARD_STATES.IN_HAND);
-                    card.playerScene.hand.update();
-                    break;
-                default:
-                    break;
+            let action = new Action();
+            action.start = () => {               
+                let card = activeTargetManager.targetArrow.originatorObject;
+                activeTargetManager.targetArrow.stopTargeting();          
+
+                switch(activeTargetManager.targetAction) {
+                    case 'EVENT_CARD_ACTION':
+                    case 'PLAY_CARD_ACTION':
+                        card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+                        card.setState(CARD_STATES.IN_HAND);
+                        card.playerScene.hand.update();
+                        break;
+                    case '':
+                        break;
+                    default:
+                        break;
+                }
+
+                if(!serverRequest) this.scene.game.gameClient.requestCancelTargeting(activeTargetManager.targetData);
+                this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm.id !== activeTargetManager.id); //Remove the target manager from the list
+
+                //Ned to foce a pointer out to stop the card ffrom hovering on cancel
+                this.scene.gameState.onPointerOut(null, card);
+                for(let abilityButton of card.abilityButtons) abilityButton.onPointerOut();
+
+                //change state
+                if(this.scene.gameState.previousState !== null) this.scene.gameState.exit(this.scene.gameState.previousState);
             }
+            action.isPlayerAction = true;
+            action.waitForAnimationToComplete = false;
+            action.name = "CANCEL TARGETING";
 
-            this.scene.game.gameClient.requestCancelTargeting(this.scene.targetManager.targetData);
-            this.scene.targetManager.reset();
+            //Add action to the action stack
+            this.actionManager.addAction(action);
+        } 
+    }
 
-            //Ned to foce a pointer out to stop the card ffrom hovering on cancel
-            this.scene.gameState.onPointerOut(null, card);
-            for(let abilityButton of card.abilityButtons) abilityButton.onPointerOut();
-
-            //change state
-            if(this.scene.gameState.previousState !== null) this.scene.gameState.exit(this.scene.gameState.previousState);
-        }
-        action.isPlayerAction = true;
-        action.waitForAnimationToComplete = false;
-        action.name = "CANCEL TARGETING";
-
-        //Add action to the action stack
-        this.actionManager.addAction(action);
+    /** Function to stop the targeting */
+    stopTargetingAction() {
+        let activeTargetManager = this.scene.getActiveTargetManager();
+        //if(!activeTargetManager.waitingForServer) {
+            activeTargetManager.waitingForServer = true;
+            let action = new Action();
+            action.start = () => {            
+                let card = activeTargetManager.targetArrow.originatorObject;
+                activeTargetManager.targetArrow.stopTargeting();          
+    
+                this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm.id !== activeTargetManager.id); //Remove the target manager from the list
+    
+                //Ned to foce a pointer out to stop the card ffrom hovering on cancel
+                this.scene.gameState.onPointerOut(null, card);
+                for(let abilityButton of card.abilityButtons) abilityButton.onPointerOut();
+    
+                //change state
+                if(this.scene.gameState.previousState !== null) this.scene.gameState.exit(this.scene.gameState.previousState);
+            }
+            action.isPlayerAction = true;
+            action.waitForAnimationToComplete = false;
+            action.name = "CANCEL TARGETING";
+    
+            //Add action to the action stack
+            this.actionManager.addAction(action);
+        //}
     }
     //#endregion
 }

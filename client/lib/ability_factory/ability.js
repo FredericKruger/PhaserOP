@@ -147,14 +147,16 @@ const abilityActions = {
         let defender = scene.activePlayerScene.getCard(info.defenderId);
         if(defender === undefined) defender = scene.passivePlayerScene.getCard(info.defenderId);
  
+        let targetingManager = null;
         let tweens = [];
         if(!activePlayer) {
-            scene.eventArrow.originatorObject = card;
-            let arrowTweens = scene.eventArrow.animateToPosition(defender.x, defender.y, 600);
+            targetingManager = new TargetManager(scene, 'EVENT', 'ADD_COUNTER');
+            targetingManager.targetArrow.originatorObject = card;
+            let arrowTweens = targetingManager.targetArrow.animateToPosition(defender.x, defender.y, 600);
             tweens = tweens.concat([
                 {
                     onStart: () => { //Add Tween for target arrow
-                        scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                        targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
                     },
                     delay: 100,
                 }
@@ -241,7 +243,8 @@ const abilityActions = {
                 scale: 1,
                 duration: 10,
                 onStart: () => {
-                    scene.eventArrow.stopTargeting();
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
                 }
             }]);
         }
@@ -258,12 +261,14 @@ const abilityActions = {
         //Get Defender Card
         let donCards = [];
         for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
-        scene.eventArrow.originatorObject = card;
-        let arrowTweens = scene.eventArrow.animateToPosition(card.playerScene.playerInfo.restingDonplaceholder.x, card.playerScene.playerInfo.restingDonplaceholder.y, 600);
+
+        let targetingManager = new TargetManager(scene, 'EVENT', 'ACTIVATE_EXERTED_DON');
+        targetingManager.targetArrow.originatorObject = card;
+        let arrowTweens = targetingManager.targetArrow.animateToPosition(card.playerScene.playerInfo.restingDonplaceholder.x, card.playerScene.playerInfo.restingDonplaceholder.y, 600);
         let tweens = [
             {
                 onStart: () => { //Add Tween for target arrow
-                    scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                    targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
                 },
                 delay: 100,
             }
@@ -295,7 +300,8 @@ const abilityActions = {
                 scale: {from: 1.2, to: 1},
                 duration: 150,
                 onComplete: () => {
-                    scene.eventArrow.stopTargeting();
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
                 }
             }
         ]);
@@ -314,13 +320,15 @@ const abilityActions = {
         let amount = info.addedPower;
         let duration = info.duration;
 
+        let targetingManager = null;
         if(!activePlayer) {
-            scene.eventArrow.originatorObject = card;
-            let arrowTweens = scene.eventArrow.animateToPosition(target.x, target.y, 600);
+            targetingManager = new TargetManager(scene, 'EVENT', 'ADD_POWER');
+            targetingManager.targetArrow.originatorObject = card;
+            let arrowTweens = targetingManager.targetArrow.animateToPosition(target.x, target.y, 600);
             tweens = tweens.concat([
                 {
                     onStart: () => { //Add Tween for target arrow
-                        scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                        targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
                     },
                     delay: 100,
                 }
@@ -416,7 +424,8 @@ const abilityActions = {
                 scale: 1,
                 duration: 10,
                 onStart: () => {
-                    scene.eventArrow.stopTargeting();
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
                 }
             }]);
         }
@@ -436,12 +445,14 @@ const abilityActions = {
         
         if(info.donId.length === 0) return tweens;
 
+        let targetingManager = null;
         if(!activePlayer) {
-            scene.eventArrow.originatorObject = card;
-            let arrowTweens = scene.eventArrow.animateToPosition(character.x, character.y, 600);
+            targetingManager = new TargetManager(scene, 'EVENT', 'ATTACH_DON');
+            targetingManager.targetArrow.originatorObject = card;
+            let arrowTweens = targetingManager.targetArrow.animateToPosition(character.x, character.y, 600);
             tweens.push({
                     onStart: () => { //Add Tween for target arrow
-                        scene.eventArrow.startManualTargetingXY(card, card.x, card.y);
+                        targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
                     },
                     delay: 100,
             });
@@ -514,7 +525,8 @@ const abilityActions = {
                 scale: 1,
                 duration: 10,
                 onStart: () => {
-                    scene.eventArrow.stopTargeting();
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
                 }
             });
         }

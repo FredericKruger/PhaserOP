@@ -151,7 +151,11 @@ class Client {
         });
         this.socket.on('game_play_card_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                if(activePlayer && requiresTargeting) this.gameScene.targetManager.loadFromTargetData(targetData);
+                if(activePlayer && requiresTargeting) {
+                    let targetManager = new TargetManager(this.gameScene, 'PLAY', actionInfos.actionId);
+                    this.gameScene.targetManagers.push(targetManager);
+                    targetManager.loadFromTargetData(targetData);
+                }
                 this.gameScene.gameStateManager.playCard(actionInfos, activePlayer, requiresTargeting);
             }
         });
@@ -172,7 +176,11 @@ class Client {
         //#region SOCKET.ON ATTACK CHARACTER
         this.socket.on('game_select_attack_target', (actionInfos, activePlayer, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                if(activePlayer) this.gameScene.targetManager.loadFromTargetData(targetData);
+                //Create new targeting Manager
+                let targetManager = new TargetManager(this.gameScene, 'ATTACK', actionInfos.actionId);
+                this.gameScene.targetManagers.push(targetManager);
+                if(activePlayer) targetManager.loadFromTargetData(targetData);
+
                 this.gameScene.gameStateManager.selectAttackTarget(actionInfos, activePlayer);
             }
         });
@@ -194,11 +202,12 @@ class Client {
         this.socket.on('game_start_blocker_phase', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startBlockerPhase(activePlayer);
         });
-        this.socket.on('game_start_counter_phase', (activePlayer) => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startCounterPhase(activePlayer);
-        });
         this.socket.on('game_attack_blocked', (activePlayer, blockerID) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackBlocked(activePlayer, blockerID);
+        });
+
+        this.socket.on('game_start_counter_phase', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startCounterPhase(activePlayer);
         });
         
         this.socket.on('game_counter_played_failure', (activePlayer, counterID) => {
@@ -216,20 +225,14 @@ class Client {
         });
 
         //#region SOCKET.ON TARGETTING
-        this.socket.on('game_stop_targetting', (hideArrow = true, eventArrow = false) => {
-            if(!this.gameScene.gameStateManager.gameOver) {
-                this.gameScene.targetManager.reset();
-                if(hideArrow) {
-                    /*if(eventArrow) this.gameScene.eventArrow.stopTargeting();
-                    else this.gameScene.targetingArrow.stopTargeting();*/
-                    this.gameScene.actionLibrary.cancelTargetingAction();
-                } else {
-                    this.gameScene.gameState.exit(this.gameScene.gameState.previousState);
-                }
-            }
+        this.socket.on('game_cancel_targetting', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.actionLibrary.cancelTargetingAction(true);
+        });
+        this.socket.on('game_stop_targetting', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.actionLibrary.stopTargetingAction();
         });
         this.socket.on('game_reset_targets', () => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.targetManager.resetTargetIDs();
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.getActiveTargetManager().resetTargetIDs();
         });
         //#endregion
 
@@ -242,7 +245,10 @@ class Client {
         });
         this.socket.on('game_card_ability_activated', (actionInfos, activePlayer, requiresTargeting, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                if(activePlayer && requiresTargeting) this.gameScene.targetManager.loadFromTargetData(targetData);
+                let targetManager = new TargetManager(this.gameScene, 'EVENT', actionInfos.actionId);
+                this.gameScene.targetManagers.push(targetManager);
+
+                if(activePlayer && requiresTargeting) targetManager.loadFromTargetData(targetData);
                 this.gameScene.gameStateManager.startAbilityTargeting(actionInfos.playedCard, activePlayer);
             }
         });

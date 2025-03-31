@@ -24,7 +24,7 @@
       "action": "playCard",
       "type": "CHARACTER",
       "condition": "hasDon",
-      "strategy": "lowestPowerFirst",
+      "strategy": "highestCostFirst",
       "description": "First priority: Play characters to build board presence"
     },
     {

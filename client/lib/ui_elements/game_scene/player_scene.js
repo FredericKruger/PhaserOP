@@ -73,6 +73,13 @@ class PlayerScene {
             else this.scene.actionLibraryPassivePlayer.playCardAction(this, card, actionInfos.spentDonIds, replacedCard, actionInfos.abilityResults);
         } else {
             if(isPlayerTurn) {
+                //Create a targeting Manager
+                let type = 'PLAY';
+                if(card.cardData.type === CARD_TYPES.EVENT) type = 'EVENT';
+                let targetManager = new TargetManager(this.scene, type, actionInfos.actionId);
+                this.scene.targetManagers.push(targetManager);
+
+                //Start Actions
                 this.scene.actionLibrary.startPlayCardTargetingAction(this, card);
                 this.scene.actionLibrary.startTargetingAction(this, card, false);
             } else {
@@ -89,6 +96,7 @@ class PlayerScene {
         this.scene.game.gameClient.requestStartTargetingPassivePlayer(actionInfos.playedCard);
     }
 
+    /** Function reset counter amounts */
     resetEventCounterAmounts() {
         //For each card in the character area
         for(let card of this.characterArea.cards) {

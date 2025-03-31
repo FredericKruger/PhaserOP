@@ -53,6 +53,10 @@ class GameCardUI extends BaseCardUI{
 
         //Button visibility overrides to show in case of opponent activating buttons
         this.blockerButton_manualOverride = false;
+
+        this.isTargetted = false;
+        this.originalScale = null; //To store the original scale of the card    
+        this.targetingTweens = [];
     }
     //#endregion
 
@@ -594,6 +598,7 @@ class GameCardUI extends BaseCardUI{
             onComplete: () => {
                 this.x = posX;
                 this.y = posY;
+                this.isInPlayAnimation = false;
 
                 if(this.state === CARD_STATES.TRAVELLING_DECK_HAND) this.setState(CARD_STATES.IN_HAND);
                 

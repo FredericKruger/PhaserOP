@@ -358,7 +358,7 @@ class Match {
         if(card.state === CARD_STATES.IN_PLAY
             || (card.state === CARD_STATES.IN_PLAY_FIRST_TURN && card.hasRush())) {
             let cardData = player.currentMatchPlayer.getCard(cardId).cardData;
-            let actionInfos = {playedCard: cardId, playedCardData: cardData};
+            let actionInfos = {actionId: 'ATTACK_' + cardId, playedCard: cardId, playedCardData: cardData};
             let targetData = {
                 targetAction: TARGET_ACTION.ATTACK_CARD_ACTION,
                 requiredTargets: 1,
@@ -416,14 +416,35 @@ class Match {
         //test if there are any blockers in the passive players area which are not rested
         this.attackManager.onAttackEventPhase_Complete = true;
 
+        let skipOnAttackEventPhase = true;
+
         //Check if there are any events to be reoslved
-        if(this.attackManager.attack.attacker.hasOnAttackEvents()) {
-            console.log("HAS ON ATTACK EVENTS");
-            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
+        let onAttackEvent = this.attackManager.attack.attacker.getAbilityByType("WHEN_ATTACKING");
+        if(onAttackEvent && onAttackEvent.canActivate()) {
+            if(onAttackEvent.target) {
+                const targets = onAttackEvent.target;
+                console.log("LOOKING FOR TARGETS")
+                if(this.findValidTarget(targets)) {
+                    console.log("HAS ON ATTACK EVENTS - ACTIVE");
+                    //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
+                    skipOnAttackEventPhase = false;
+                
+                    const abilityInfos = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.name};
+                    this.state.pending_action = {actionResult: PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED, actionInfos: abilityInfos, targetData: targets};
+                    this.state.resolving_pending_action = true;
+                    if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_card_ability_activated', abilityInfos, true, true, targets, true);
+                    //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
+                } 
+            } else {
+                console.log("HAS ON ATTACK EVENTS - PASSIVE");
+                skipOnAttackEventPhase = false;
+            }   
 
             /*if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_on_attack_event_phase', false);
             else this.ai.startOnAttackEventPhase();*/
-        } else {
+        } 
+
+        if(skipOnAttackEventPhase) {
             this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
             this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
         }
@@ -526,10 +547,10 @@ class Match {
     }
 
     /** Function to continue with the rest of the turn */
-    resumeTurn() {
+    resumeTurn() {  
         if( this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_passive_player)) {
-            
+
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_resume_passive');   
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_resume_active');
             else this.ai.resumeTurn(true);
@@ -651,14 +672,14 @@ class Match {
         let card = this.matchCardRegistry.get(cardId);
         let ability = card.getAbility(abilityId);
 
-        if(!ability.canActivate(card, this.current_phase)) {
+        if(!ability.canActivate()) {
             player.socket.emit('game_activate_ability_failure', cardId, abilityId);
             return;
         }
         
         const targets = card.getAbilityTargets(abilityId);
         if(targets) {
-            const abilityInfos = {playedCard: cardId, playedCardData: card.cardData, ability: abilityId};
+            const abilityInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId};
             this.state.pending_action = {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: abilityInfos, targetData: targets};
             this.state.resolving_pending_action = true;
             if(!player.bot) player.socket.emit('game_card_ability_activated', abilityInfos, true, true, targets);
@@ -674,6 +695,35 @@ class Match {
     getPlayer(playerID) {
         if(this.player1.id === playerID) return this.player1;
         else return this.player2;
+    }
+
+    /** Function that tries to find a target */
+    findValidTarget(abilityTarget) {
+        let targetingManager = new TargetingManager(this);
+        let validTarget = false;
+
+        /*** Test Active Player */
+        let players = [this.state.current_active_player, this.state.current_passive_player.currentMatchPlayer];
+        for(let player of players) {
+            //Test Character cards
+            for(let card of player.currentMatchPlayer.inCharacterArea) {
+                validTarget = targetingManager.areValidTargets(player, [card.id], abilityTarget);
+                if(validTarget) return true;
+            }
+            //Test leader
+            validTarget = targetingManager.areValidTargets(player, [player.currentMatchPlayer.inLeaderLocation.id], abilityTarget);
+            if(validTarget) return true;
+            if(player.currentMatchPlayer.inStageLocation) {
+                validTarget = targetingManager.areValidTargets(player, [player.currentMatchPlayer.inStageLocation.id], abilityTarget);
+                if(validTarget) return true;
+            }
+            for(let card of player.currentMatchPlayer.inHand) {
+                validTarget = targetingManager.areValidTargets(player, [card.id], abilityTarget);
+                if(validTarget) return true;
+            }
+        }
+
+        return validTarget;
     }
 
     //#endregion

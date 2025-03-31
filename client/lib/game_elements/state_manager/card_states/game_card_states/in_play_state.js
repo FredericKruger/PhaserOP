@@ -55,7 +55,11 @@ class InPlayState extends GameCardState {
     }
 
     isValidTarget() {
-        let isValid = this.card.scene.targetManager.isValidTarget(this.card);
+        //check is there is a target manager
+        let targetManager = this.card.scene.getActiveTargetManager();
+        if(!targetManager) return;
+
+        let isValid = targetManager.isValidTarget(this.card);
         if(isValid) this.card.showGlow(COLOR_ENUMS.OP_GREEN);
         else this.card.hideGlow();
     }

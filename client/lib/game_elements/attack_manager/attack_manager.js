@@ -48,10 +48,12 @@ class AttackManager {
      * @param {GameScene} matchState
      * @param {GameCardUI} attacker
      * @param {GameCardUI} defender
+     * @param {TargetManager} targetingManager
      */
-    constructor(scene, attacker, defender) {
+    constructor(scene, attacker, defender, targetingManager) {
         this.scene = scene;
         this.attack = new Attack(this, attacker, defender);
+        this.targetingManager = targetingManager;
     }
 
 }

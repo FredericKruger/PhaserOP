@@ -506,13 +506,13 @@ class ActionLibraryPassivePlayer {
         let action = new Action();
 
         if(!botAction) {
-            let tweens =  this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 200);
+            let tweens =  this.scene.attackManager.targetingManager.targetArrow.animateToPosition(defender.x, defender.y, 200);
             tweens = tweens.concat({
                 duration: 10,
                 onComplete: () => {this.actionManager.completeAction();}
             });
             let start_animation = this.scene.tweens.chain({
-                targets: this.scene.targetingArrow,
+                targets: this.scene.attackManager.targetingManager.targetArrow,
                 tweens: tweens
             }).pause();
             action.start_animation = start_animation;
@@ -525,20 +525,20 @@ class ActionLibraryPassivePlayer {
             action.name = "DECLARE ATTACK";
         } else {
             //Set the originator object
-            this.scene.targetingArrow.originatorObject = attacker;
+            this.scene.attackManager.targetingManager.targetArrow.originatorObject = attacker;
             //create the animation
-            let start_animation = this.scene.targetingArrow.animateToPosition(defender.x, defender.y, 500);
+            let start_animation = this.scene.attackManager.targetingManager.targetArrow.animateToPosition(defender.x, defender.y, 500);
             start_animation = start_animation.concat({
                 duration: 10,
                 onComplete: () => {this.actionManager.completeAction();}
             });
             start_animation = this.scene.tweens.chain({
-                targets: this.scene.targetingArrow,
+                targets: this.scene.attackManager.targetingManager.targetArrow,
                 tweens: start_animation
             }).pause();
 
             action.start = () => {
-                this.scene.targetingArrow.startManualTargetingXY(attacker, attacker.x, attacker.y);
+                this.scene.attackManager.targetingManager.targetArrow.startManualTargetingXY(attacker, attacker.x, attacker.y);
             };
             action.start_animation = start_animation;
             action.end = () => {
@@ -564,13 +564,13 @@ class ActionLibraryPassivePlayer {
         };
 
         //Create anumation to move the targeting arrow toe the defender card
-        let animation = this.scene.targetingArrow.animateToPosition(blockerCard.x, blockerCard.y, 0);
+        let animation = this.scene.attackManager.targetingManager.targetArrow.animateToPosition(blockerCard.x, blockerCard.y, 0);
         animation = animation.concat({
             duration: 10,
             onComplete: () => {this.scene.actionManager.completeAction();} //Use a callback to send a message he animation is finished and counter can start
         });
         animation = this.scene.tweens.chain({
-            targets: this.scene.targetingArrow,
+            targets: this.scene.attackManager.targetingManager.targetArrow,
             tweens: animation
         }).restart();
 

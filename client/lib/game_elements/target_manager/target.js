@@ -88,7 +88,7 @@ class Target {
         }
 
         // Check if the player is active or passive based on the criteria
-        const isActive = playerScene.isActivePlayer;
+        const isActive = card.playerScene.isPlayerTurn;
         return (isActive && this.players.includes("active")) || 
                 (!isActive && this.players.includes("passive"));
     }
