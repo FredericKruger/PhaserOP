@@ -14,6 +14,7 @@ class Target {
             this.types = [];
             this.attributes = [];
             this.power = {};
+            this.exclude = [];
             return;
         }
 
@@ -25,6 +26,7 @@ class Target {
         this.types = serverTarget.types?.slice() || [];
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
+        this.exclude = serverTarget.exclude?.slide() || [];
     }
 
     /**
@@ -53,6 +55,8 @@ class Target {
         // Check card types (attributes, colors, etc.)
         if (this.attributes.length > 0 && isValid) isValid = isValid && this.isAttributeValid(card.cardData.attribute);
         //console.log("isValidAttribute ", isValid);
+
+        if (this.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card);
 
         // Check card cost
         if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.cost);
@@ -128,6 +132,12 @@ class Target {
     isTypeValid(types) {
         if (!types) return false;
         return this.types.some(type => types.includes(type));
+    }
+
+    isExcludeValid(card) {
+        const originatorCard = card.scene.getActiveTargetManager().targetAction.playedCard;
+        if(this.target.exclude.includes("SELF") && card.id === originatorCard) return false;
+        return true;
     }
 
     /**

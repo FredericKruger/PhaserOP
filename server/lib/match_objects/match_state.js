@@ -242,6 +242,7 @@ class MatchState {
                             player: ["active"],
                             cardtypes: [CARD_TYPES.STAGE],
                             states: ["IN_PLAY"],
+                            exclude: ["SELF"]
                         }
                     ]
                 }
@@ -265,6 +266,7 @@ class MatchState {
                             player: ["active"],
                             cardtypes: [CARD_TYPES.CHARACTER],
                             states: ["IN_PLAY", "IN_PLAY_RESTED", "IN_PLAY_FIRST_TURN"],
+                            exclude: ["SELF"]
                         }
                     ]
                 }

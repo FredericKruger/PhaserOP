@@ -14,6 +14,7 @@ class Target {
             this.types = [];
             this.attributes = [];
             this.power = {};
+            this.exclude = [];
             return;
         }
 
@@ -25,6 +26,7 @@ class Target {
         this.types = serverTarget.types?.slice() || [];
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
+        this.exclude = serverTarget.exclude?.slice() || [];
     }
 }
 
@@ -100,6 +102,8 @@ class TargetingManager {
         // Check card types (attributes, colors, etc.)
         if (this.target.attributes.length > 0 && isValid) isValid = isValid && this.isAttributeValid(card.cardData.attribute);
         //console.log("isAttributeValid", isValid);
+
+        if (this.target.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card.id)
 
         // Check card cost
         if (Object.keys(this.target.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.target.cost);
@@ -177,6 +181,12 @@ class TargetingManager {
     isAttributeValid(attributes) {
         if (!attributes) return false;
         return this.target.attributes.some(type => attributes.includes(type));
+    }
+
+    isExcludeValid(id) {
+        const originatorCard = this.match.matchCardRegistry.get(this.match.state.pending_action.actionInfos.playedCard);
+        if(this.target.exclude.includes("SELF") && id === originatorCard.id) return false;
+        return true;
     }
 
     /**

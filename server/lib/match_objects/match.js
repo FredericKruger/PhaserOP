@@ -515,7 +515,6 @@ class Match {
             && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_passive_player)){
 
             this.attackManager.resolveAttack_Complete = true;
-            //this.state.current_phase = MATCH_PHASES.RESOLVE_ATTACK;
             
             //Resolve the attack
             let attackResults = this.attackManager.resolveAttack(); 
@@ -639,6 +638,12 @@ class Match {
                     //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
                 }
                 break;
+            case PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED:
+                if(!cancel) {
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
+                } else {
+
+                }
             default:
                 break;
         }
