@@ -152,7 +152,7 @@ class Client {
         this.socket.on('game_play_card_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {
                 if(activePlayer && requiresTargeting) {
-                    let targetManager = new TargetManager(this.gameScene, 'PLAY', actionInfos.actionId);
+                    let targetManager = new TargetManager(this.gameScene, 'PLAY', actionInfos.actionId, actionInfos.playedCard);
                     this.gameScene.targetManagers.push(targetManager);
                     targetManager.loadFromTargetData(targetData);
                 }
@@ -177,7 +177,7 @@ class Client {
         this.socket.on('game_select_attack_target', (actionInfos, activePlayer, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {
                 //Create new targeting Manager
-                let targetManager = new TargetManager(this.gameScene, 'ATTACK', actionInfos.actionId);
+                let targetManager = new TargetManager(this.gameScene, 'ATTACK', actionInfos.actionId, actionInfos.playedCard);
                 this.gameScene.targetManagers.push(targetManager);
                 if(activePlayer) targetManager.loadFromTargetData(targetData);
 
@@ -195,6 +195,9 @@ class Client {
         });
         this.socket.on('game_stop_targeting_attack_passiveplayer', () => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();
+        });
+        this.socket.on('game_cancel_attack', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelAttack(activePlayer);
         });
         this.socket.on('game_start_on_attack_event_phase', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startOnAttackEventPhase(activePlayer);
@@ -245,7 +248,7 @@ class Client {
         });
         this.socket.on('game_card_ability_activated', (actionInfos, activePlayer, requiresTargeting, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                let targetManager = new TargetManager(this.gameScene, 'EVENT', actionInfos.actionId);
+                let targetManager = new TargetManager(this.gameScene, 'EVENT', actionInfos.actionId, actionInfos.playedCard);
                 this.gameScene.targetManagers.push(targetManager);
 
                 if(activePlayer && requiresTargeting) targetManager.loadFromTargetData(targetData);

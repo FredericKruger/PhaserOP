@@ -716,10 +716,14 @@ class ActionLibrary {
             //Hide targeting arrow
             this.scene.attackManager.targetingManager.targetArrow.stopTargeting();
 
+
             // Get the attacker and defender cards from the attack manager
             const attacker = this.scene.attackManager.attack.attacker;
             const defender = this.scene.attackManager.attack.defender;
-        
+
+            //Hide all attached cards on the attacker
+            attacker.hideAttachedCards(true);
+
             // Create and play the battle animation
             const battleAnimationManager = new BattleAnimation(this.scene);
             const battleAnimation = battleAnimationManager.createBattleAnimation(attacker, defender);
@@ -800,10 +804,13 @@ class ActionLibrary {
                         id: attackResults.lifeCardIds[i],
                         cardData: attackResults.lifeCardData[i]
                     };
-                    if(activePlayer) this.scene.actionLibraryPassivePlayer.drawLifeCardAction(this.scene.passivePlayerScene,serverCard);
+                    if(activePlayer) this.scene.actionLibraryPassivePlayer.drawLifeCardAction(this.scene.passivePlayerScene, serverCard);
                     else this.scene.actionLibrary.drawLifeCardAction(this.scene.activePlayerScene,serverCard);
                 }
             }
+
+            //Hide all attached cards on the attacker
+            this.scene.attackManager.attack.attacker.hideAttachedCards(false);
 
             //Create an action to switch states when finished
             let finishAction = new Action();

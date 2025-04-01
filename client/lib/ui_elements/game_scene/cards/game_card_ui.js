@@ -533,6 +533,15 @@ class GameCardUI extends BaseCardUI{
         }
     }
 
+    /** Function to hide all the attached cards 
+     * @param {boolean} hide - Whether to hide the cards or not
+    */
+    hideAttachedCards(hide) {
+        for(let donCard of this.attachedDon) donCard.setVisible(!hide);
+        if(this.attachedDon.length > 1) this.attachedDonText.setVisible(!hide);
+        for(let counterCard of this.attachedCounter) counterCard.setVisible(!hide);
+    }
+
     //#endregion
     
     //#region ANIMATION FUNCTIONS

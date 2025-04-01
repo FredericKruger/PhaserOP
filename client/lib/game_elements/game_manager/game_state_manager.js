@@ -353,7 +353,7 @@ class GameStateManager {
             };
             for(let i=0; i<passivePlayerCards.length; i++) {
                 let callback = (i === (passivePlayerCards.length-1) ? animationCallback : null);
-                this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, passivePlayerCards[i], GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+                this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, {id:passivePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
             }
 
             //Make leader cards dizzy to signal first turn
@@ -853,7 +853,7 @@ class GameStateManager {
             let defender = defenderPlayer.getCard(defenderID);
     
             //Create new passive targetingManager
-            let targetingManager = new TargetManager(this.scene, 'ATTACK', 'ATTACK_' + attacker.id, false);
+            let targetingManager = new TargetManager(this.scene, 'ATTACK', 'ATTACK_' + attacker.id, attacker.id, false);
             targetingManager.targetArrow.originatorObject = attacker; //Set the originator object to the attacker
             this.scene.targetManagers.push(targetingManager);
 
@@ -866,6 +866,36 @@ class GameStateManager {
         action.waitForAnimationToComplete = false;
 
         this.scene.actionManager.addAction(action);
+    }
+
+    /** Function to cancel an attack
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    cancelAttack(isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        //Create an action to send finished to the server
+        const finalAction = new Action();
+        finalAction.start = () => {
+            //Hide targeting arrow
+            this.scene.attackManager.targetingManager.targetArrow.stopTargeting();
+            
+            //remove targeting manager
+            this.scene.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
+
+            //Change Phase
+            this.currentGamePhase = GAME_PHASES.MAIN_PHASE;
+            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+    
+            //Remove targeting Manager
+            this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm.type !== 'ATTACK');
+
+            //change state
+            if(isPlayerTurn) this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+        }
+        finalAction.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(finalAction)
     }
 
     /** Function to start the on attack event phase
@@ -1043,6 +1073,11 @@ class GameStateManager {
         const card = this.scene.getCard(cardID);
         const ability = card.getAbility(abilityID);
         this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.abilityResults);
+
+        if(actionInfos.actionId.startsWith("ON_ATTACK_EVENT")) {
+            if(isPlayerTurn) this.scene.game.gameClient.requestStartBlockerPhase();
+            else this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
+        }
     }
 
     //#endregion

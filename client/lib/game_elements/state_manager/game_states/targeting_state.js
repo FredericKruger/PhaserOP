@@ -16,7 +16,7 @@ class TargetingState extends GameState {
 
     onPointerOver(pointer, gameObject) {
         // Call the original behavior
-        if(gameObject.fsmState) gameObject.fsmState.onPointerOver(pointer, gameObject);
+        //if(gameObject.fsmState) gameObject.fsmState.onPointerOver(pointer, gameObject);
         
         let card = null;
         if(gameObject instanceof GameCardUI) card = gameObject;
@@ -98,7 +98,7 @@ class TargetingState extends GameState {
 
     onPointerOut(pointer, gameObject) {
         // Call the original behavior
-        if(gameObject.fsmState) gameObject.fsmState.onPointerOut(pointer, gameObject);
+        //if(gameObject.fsmState) gameObject.fsmState.onPointerOut(pointer, gameObject);
         
         let card = null;
         if(gameObject instanceof GameCardUI) card = gameObject;

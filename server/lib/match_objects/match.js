@@ -426,10 +426,11 @@ class Match {
                 console.log("LOOKING FOR TARGETS")
                 if(this.findValidTarget(targets)) {
                     console.log("HAS ON ATTACK EVENTS - ACTIVE");
+                    //console.log(onAttackEvent);
                     //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
                     skipOnAttackEventPhase = false;
                 
-                    const abilityInfos = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.name};
+                    const abilityInfos = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
                     this.state.pending_action = {actionResult: PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED, actionInfos: abilityInfos, targetData: targets};
                     this.state.resolving_pending_action = true;
                     if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_card_ability_activated', abilityInfos, true, true, targets, true);
@@ -624,7 +625,7 @@ class Match {
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         let actionInfos = this.state.pending_action.actionInfos;
-                        let abilityResults = this.resolveAbility(player.currentMatchPlayer, this.state.pending_action.actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
+                        let abilityResults = this.resolveAbility(player, this.state.pending_action.actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
                         actionInfos.abilityResults = abilityResults;
 
                         if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
@@ -641,8 +642,24 @@ class Match {
             case PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED:
                 if(!cancel) {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
-                } else {
+                    if(validTarget) {
+                        if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
+                        let actionInfos = this.state.pending_action.actionInfos;
+                        let abilityResults = this.resolveAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
+                        actionInfos.abilityResults = abilityResults;
 
+                        if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                    } else {
+                        player.socket.emit('game_reset_targets');
+                    }
+                } else {
+                    //Send cancel signals
+                    //Set Phase
+                    this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
+                    this.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
+                    
+                    if(!player.bot) player.socket.emit('game_cancel_attack', true);
+                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_cancel_attack', false);
                 }
             default:
                 break;
@@ -661,7 +678,7 @@ class Match {
 
         let abilityResults = {};
         if(ability && ability.canActivate()) {
-            abilityResults = ability.action(player, targets);
+            abilityResults = ability.action(player.currentMatchPlayer, targets);
         } else {
             player.socket.emit('game_ability_failure', cardId, abilityId);
         }

@@ -5,7 +5,7 @@ class TargetManager {
      * @param {string} type - The type of the target manager (target, attack, block, etc.)
      * @param {string} id - The id of the target manager
      */
-    constructor(scene, type, id, active = true) {
+    constructor(scene, type, id, originatorCard, active = true) {
         this.scene = scene;
         this.type = type;
         this.id = id;
@@ -13,7 +13,7 @@ class TargetManager {
         this.active = active; //Is the target active
         this.waitingForServer = false;
 
-        this.originatorCard = null; //Store the reference to the card triggered the targeting
+        this.originatorCard = originatorCard; //Store the reference to the card triggered the targeting
         this.targetData = {};
         this.targetAction = null;
         this.requiredTargets = 0;

@@ -26,7 +26,7 @@ class Target {
         this.types = serverTarget.types?.slice() || [];
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
-        this.exclude = serverTarget.exclude?.slide() || [];
+        this.exclude = serverTarget.exclude?.slice() || [];
     }
 
     /**
@@ -135,8 +135,8 @@ class Target {
     }
 
     isExcludeValid(card) {
-        const originatorCard = card.scene.getActiveTargetManager().targetAction.playedCard;
-        if(this.target.exclude.includes("SELF") && card.id === originatorCard) return false;
+        const originatorCard = card.scene.getActiveTargetManager().originatorCard;
+        if(this.exclude.includes("SELF") && card.id === originatorCard) return false;
         return true;
     }
 

@@ -150,7 +150,7 @@ const abilityActions = {
         let targetingManager = null;
         let tweens = [];
         if(!activePlayer) {
-            targetingManager = new TargetManager(scene, 'EVENT', 'ADD_COUNTER');
+            targetingManager = new TargetManager(scene, 'EVENT', 'ADD_COUNTER', card.id);
             targetingManager.targetArrow.originatorObject = card;
             let arrowTweens = targetingManager.targetArrow.animateToPosition(defender.x, defender.y, 600);
             tweens = tweens.concat([
@@ -262,7 +262,7 @@ const abilityActions = {
         let donCards = [];
         for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
 
-        let targetingManager = new TargetManager(scene, 'EVENT', 'ACTIVATE_EXERTED_DON');
+        let targetingManager = new TargetManager(scene, 'EVENT', 'ACTIVATE_EXERTED_DON', card.id);
         targetingManager.targetArrow.originatorObject = card;
         let arrowTweens = targetingManager.targetArrow.animateToPosition(card.playerScene.playerInfo.restingDonplaceholder.x, card.playerScene.playerInfo.restingDonplaceholder.y, 600);
         let tweens = [
@@ -322,7 +322,7 @@ const abilityActions = {
 
         let targetingManager = null;
         if(!activePlayer) {
-            targetingManager = new TargetManager(scene, 'EVENT', 'ADD_POWER');
+            targetingManager = new TargetManager(scene, 'EVENT', 'ADD_POWER', card.id);
             targetingManager.targetArrow.originatorObject = card;
             let arrowTweens = targetingManager.targetArrow.animateToPosition(target.x, target.y, 600);
             tweens = tweens.concat([
@@ -447,7 +447,7 @@ const abilityActions = {
 
         let targetingManager = null;
         if(!activePlayer) {
-            targetingManager = new TargetManager(scene, 'EVENT', 'ATTACH_DON');
+            targetingManager = new TargetManager(scene, 'EVENT', 'ATTACH_DON', card.id);
             targetingManager.targetArrow.originatorObject = card;
             let arrowTweens = targetingManager.targetArrow.animateToPosition(character.x, character.y, 600);
             tweens.push({

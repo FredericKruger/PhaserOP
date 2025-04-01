@@ -6187,7 +6187,7 @@
                     {"type": "ATTACHED_DON", "value": 1}
                 ],
                 "actions": [
-                    {"name": "addPower", "params": {"amount": 1000, "target": "TARGET"}}
+                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
                 ]
             }
         ]
