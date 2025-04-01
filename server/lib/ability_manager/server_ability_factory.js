@@ -5,13 +5,17 @@ const ServerBlockerAbility = require('./server_blocker_ability');
 
 class ServerAbilityFactory {
 
+    constructor() {
+
+    }
+
     /** Function to create an ability according to the type
      * @param {Object} abilityData
      * @param {number} cardId
      * @param {number} matchId
      * @returns {Ability}
      */
-    static createAbility(abilityData, cardId, matchId) {
+    createAbility(abilityData, cardId, matchId) {
         switch (abilityData.type) {
             case 'BLOCKER':
                 return new ServerBlockerAbility(abilityData, cardId, matchId);
@@ -26,7 +30,7 @@ class ServerAbilityFactory {
      * @param {Object[]} abilitiesData
      * @param {Match} match
      */
-    static createAbilitiesForCard(abilitiesData, cardId, matchId) {
+    createAbilitiesForCard(abilitiesData, cardId, matchId) {
         const abilities = [];
         
         if (abilitiesData && Array.isArray(abilitiesData)) {

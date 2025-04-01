@@ -18,6 +18,8 @@ class Ability {
         this.usedThisGame = false;
         /** @type {GameCardUI} */
         this.card = null
+        /** @type {Aura} */
+        this.aura = null;
     }
 
     /** Function to attach the card
@@ -25,6 +27,13 @@ class Ability {
      */
     attachTo(card) {
         this.card = card;
+    }
+
+    /** Function to attach the card
+     * @param {Aura} aura
+     */
+    attachToAura(aura) {
+        this.aura = aura;
     }
 
     /** Function that tests if an ability can be activated
@@ -552,5 +561,17 @@ const abilityActions = {
         });
 
         return tweens;
+    },
+    /** Function to add Counter to Defender
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    createAura: (scene, card, info, activePlayer) => {
+        //Create a new aura
+        console.log("Creating new aura");
+        let aura = new Aura(scene, info.auraId, info.auraData);
+        scene.auraManager.addAura(aura);
     }
 };

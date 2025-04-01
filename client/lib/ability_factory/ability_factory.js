@@ -37,4 +37,23 @@ class AbilityFactory {
         
         return card;
     }
+
+    /** Function to attach an Ability to a card
+     * @param {Aura} aura
+     * @param {Object[]} abilitiesData
+     * @returns {GameCardUI}
+     */
+    static attachAbilitiesToAura(aura, abilitiesData) {
+        aura.abilities = [];
+        
+        if (abilitiesData && Array.isArray(abilitiesData)) {
+            abilitiesData.forEach(abilityData => {
+                const ability = this.createAbility(abilityData);
+                ability.attachTo(aura);
+                card.abilities.push(ability);
+            });
+        }
+        
+        return aura;
+    }
 }

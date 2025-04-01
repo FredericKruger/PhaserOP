@@ -58,7 +58,7 @@ class MatchCard extends Card{
         this.cardIndex = cardIndex;
         this.cardData = cardData;
 
-        this.abilities = ServerAbilityFactory.createAbilitiesForCard(this.cardData.abilities, this.id, this.matchId);
+        this.abilities = [];
         this.attachedDon = [];
         this.attachedCounter = [];
         
@@ -69,6 +69,9 @@ class MatchCard extends Card{
         this.state = CARD_STATES.IN_DECK;
 
         this.currentPower = cardData.power;
+
+        const match = matchRegistry.get(matchId);
+        this.abilities = match.abilityFactory.createAbilitiesForCard(cardData.abilities, id, matchId);
     }
 
     /** Function that gets an ability from the card

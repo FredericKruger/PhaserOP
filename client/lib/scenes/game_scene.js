@@ -43,9 +43,8 @@ class GameScene extends Phaser.Scene {
         this.gameStateManager = new GameStateManager(this, this.gameStateUI);
         this.targetManagers= []; ///new TargetManager(this);
 
-        //Ready the targetting arrow
-        //this.targetingArrow = new TargetingArrow(this);
-        //this.eventArrow = new TargetingArrow(this, COLOR_ENUMS.OP_GREEN);
+        //Set Auras
+        this.auraManager = new AuraManager(this);
 
         this.gameState = new NoInteractionState(this, null);
     }

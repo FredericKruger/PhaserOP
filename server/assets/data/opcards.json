@@ -6058,7 +6058,7 @@
         "card":"CHARACTER",
         "type":["Straw Hat Crew"],
         "colors":["RED"],
-        "cost":2,
+        "cost":0,
         "power":2000,
         "attribute":"RANGED",
         "isleader":0,
@@ -6074,8 +6074,33 @@
                     "posy": 560
                 },
                 "type": "WHEN_ATTACKING",
-                "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "phases": ["Main: Attack"],
+                "states": [],
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 1}
+                ],
+                "actions": [
+                    {"name": "createAura", 
+                    "params": {
+                        "duration": "BATTLE",
+                        "affectedPlayers": ["owner", "opponent"],
+                        "abilities": [{
+                            "id": "ST01-002-1-AURA",
+                            "type": "PASSIVE",
+                            "phases": ["Main: Block"],
+                            "states": [],
+                            "targets": [
+                                {
+                                    "minrequiredtargets": 0,
+                                    "power": {"operator": "<", "value": 5000}
+                                }
+                            ],
+                            "actions": [
+                                {"name": "canBlock", "params": {}}
+                            ]
+                        }]
+                    }}
+                ]
             },
             {
                 "id": "ST01-002-TRIGGER",
@@ -6154,7 +6179,7 @@
         "card":"CHARACTER",
         "type":["Fish-Man","Straw Hat Crew"],
         "colors":["RED"],
-        "cost": 0,
+        "cost": 3,
         "power": 5000,
         "attribute":"STRIKE",
         "isleader":0,

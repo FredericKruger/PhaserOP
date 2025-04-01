@@ -36,6 +36,9 @@ class Match {
         /** @type {number} */
         this.lastCardID = 0; //Keep track of the last card id
 
+        /** @type {number} */
+        this.lastAuraID = 0; //Keep track of the last aura id
+
         /** @type {MatchState} */
         this.state = new MatchState(this, player1.id, player2.id); //Create a new match state
         /** @type {TargetingManager} */
@@ -69,6 +72,9 @@ class Match {
 
         /** @type {MatchCardRegistry} */
         this.matchCardRegistry = new MatchCardRegistry(); //Create a new card registry
+
+        /** @type {ServerAbilityFactory} */
+        this.abilityFactory = new ServerAbilityFactory(); //Create a new ability factory
 
         // Register this match in the global registry
         matchRegistry.register(this);
@@ -438,6 +444,13 @@ class Match {
                 } 
             } else {
                 console.log("HAS ON ATTACK EVENTS - PASSIVE");
+
+                let actionInfos  = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
+                let abilityResults = this.resolveAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability, []);
+                actionInfos.abilityResults = abilityResults;
+
+                if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_card_ability_executed', actionInfos, true);
+
                 skipOnAttackEventPhase = false;
             }   
 

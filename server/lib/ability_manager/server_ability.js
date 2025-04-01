@@ -1,4 +1,6 @@
 
+const MatchAura = require('../match_objects/match_aura.js');
+
 class ServerAbility {
 
     constructor(config, cardId, matchId) {
@@ -252,6 +254,18 @@ const serverAbilityActions = {
                 break;
         }
 
+        return actionResults;
+    },
+    createAura: (match, player, card, params, targets) => {
+        let actionResults = {};
+
+        //Create a new aura
+        match.lastAuraID++;
+        let auraId = match.lastAuraID;
+        let aura = new MatchAura(auraId, match.id, params);
+
+        actionResults.auraId = auraId;
+        actionResults.auraData = params;
         return actionResults;
     }
 };

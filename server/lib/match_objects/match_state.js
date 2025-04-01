@@ -42,6 +42,9 @@ class MatchState {
 
         this.player1 = new MatchPlayer(player1Id);
         this.player2 = new MatchPlayer(player2Id);
+
+        /** Array of Active Auras created during actions */
+        this.activeAuras = [];
     }
     //#endregion
 
