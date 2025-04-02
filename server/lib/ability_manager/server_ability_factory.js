@@ -1,6 +1,7 @@
 const ServerAbility = require('./server_ability');
 const ServerPassiveAbility = require('./server_passive_ability');
 const ServerBlockerAbility = require('./server_blocker_ability');
+const ServerAuraAbility = require('./server_aura_ability');
 
 
 class ServerAbilityFactory {
@@ -19,6 +20,8 @@ class ServerAbilityFactory {
                 return new ServerBlockerAbility(abilityData, cardId, matchId);
             case 'PASSIVE':
                 return new ServerPassiveAbility(abilityData, cardId, matchId);
+            case 'AURA':
+                return new ServerAuraAbility(abilityData, cardId, matchId);
             default:
                 return new ServerAbility(abilityData, cardId, matchId);
         }
@@ -46,12 +49,12 @@ class ServerAbilityFactory {
     
     /** Function to attach an Ability to a card
      * @param {Object} abilityData
-     * @param {number} auraId
+     * @param {number} cardId
      * @param {number} matchId
      * @returns {Ability}
      */
-    createAbilityForAura(abilityData, auraId, matchId) {
-        const ability = this.createAbility(abilityData, auraId, matchId);
+    createAbilityForAura(abilityData, cardId, matchId) {
+        const ability = this.createAbility(abilityData, cardId, matchId);
         return ability;
     }
 

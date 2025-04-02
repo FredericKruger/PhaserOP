@@ -93,6 +93,10 @@ class Ability {
                 if(this.card.turnPlayed && condition.value) return true;
                 if(!this.card.turnPlayed && !condition.value) return true;
                 return false;
+            case 'CAN_BLOCK':
+                if(this.card.canBlock() && condition.value) return true;
+                if(!this.card.canBlock() && !condition.value) return true;
+                return false;
             // More conditions...
             default:
                 return true;
@@ -104,14 +108,16 @@ class Ability {
         this.usedThisTurn = false;
     }
 
-    /** Function to execute active actions from the server */
+    /** Function to execute active actions from the server 
+     * * @param {GameCardUI} card - The card to execute the action on
+     * @param {Object} abilityInfo - The ability info from the server
+     * @param {boolean} activePlayer - If the action is active or passive
+    */
     executeActions(card, abilityInfo, activePlayer) {
         let abilityTweens = [];
         for (const action of this.actions) {
             const func = abilityActions[action.name];
-            if (func) {
-                abilityTweens = abilityTweens.concat(func(this.card.scene, card, abilityInfo[action.name], activePlayer));
-            }
+            if (func) abilityTweens = abilityTweens.concat(func(this.card.scene, card, abilityInfo[action.name], activePlayer));
         }
 
         //Set turn flags
@@ -124,13 +130,26 @@ class Ability {
         return abilityTweens;
     }
 
-    /** Function to execute active actions from the server */
+    /** Function to execute passive actions 
+     * * @param {GameCardUI} card - The card to execute the action on
+     * @param {boolean} active - If the action is active or passive
+     */
     executePassiveActions(card, active) {
         for (const action of this.actions) {
-            const func = passiveAbilityActions[action.name];
-            if (func) {
-                func(this.card.scene, card, action.params, active);
-            }
+            const func = PassiveAbilityActions[action.name];
+            if (func) func(this.card.scene, card, action.params, active);
+        }
+    }
+
+    /** Functon to execute aura actions
+     * * @param {GameCardUI} card - The card to execute the action on
+     * @param {boolean} active - If the action is active or passive
+     * @param {GameCardUI} target - The target of the action
+     */
+    executeAuraActions(card, active, target) {
+        for (const action of this.actions) {
+            const func = AuraAbilityActions[action.name];
+            if (func) func(this.card.scene, card, action.params, active, target);
         }
     }
 

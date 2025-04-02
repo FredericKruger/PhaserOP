@@ -189,7 +189,7 @@ class MatchPlayer {
      */
     hasAvailableBlockers(gamePhase) {
         for(let card of this.inCharacterArea) {
-            if(card.getAbilityByType('BLOCKER') !== undefined && card.getAbilityByType('BLOCKER').canActivate(card, gamePhase)) return true;
+            if(card.getAbilityByType('BLOCKER') !== undefined && card.getAbilityByType('BLOCKER').canActivate(card, gamePhase) && card.canBlock()) return true;
         }
         return false;
     }

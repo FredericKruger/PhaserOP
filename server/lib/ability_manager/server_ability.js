@@ -37,7 +37,7 @@ class ServerAbility {
             return false;
         }
 
-        //console.log('Checking states', this.states, card.state);
+        console.log('Checking states', this.states, card.state, card.id);
         if (this.states.length > 0 && !this.states.includes(card.state)) {
             return false;
         }

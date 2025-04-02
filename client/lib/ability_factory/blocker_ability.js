@@ -8,6 +8,7 @@ class BlockerAbility extends Ability {
         if(!this.card.blockerButton_manualOverride) {
             this.card.blockerButton.canActivate = this.card.playerScene.player.isActivePlayer 
                     && !this.card.playerScene.isPlayerTurn
+                    && this.card.canBlock
                     && this.canActivate(this.card.scene.gameStateManager.currentGamePhase);
         } else {
             this.card.blockerButton.canActivate = this.card.blockerButton_manualOverride;

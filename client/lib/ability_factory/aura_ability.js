@@ -25,7 +25,7 @@ class AuraAbility extends Ability {
             this.active = true;
             button.canActivate = true;
 
-            console.log("Aura ability activating");
+            //console.log("Aura ability activating");
             this.applyAura(true);
 
             button.abilityButton.preFX.clear();
@@ -42,9 +42,8 @@ class AuraAbility extends Ability {
             this.active = false;
             button.canActivate = false;
 
-            console.log("Aura ability deactivating");
+            //console.log("Aura ability deactivating");
             this.applyAura(false);
-            //this.executePassiveActions(this.card, false);
 
             button.abilityButton.preFX.clear();
             button.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 3);
@@ -69,7 +68,7 @@ class AuraAbility extends Ability {
         //Loop through the target cards and check if they are valid targets
         for(let card of targetCards) {
             if(this.targetManager.isValidTarget(card).isValid) {
-                console.log("Aura ability target found: " + card.id);
+                this.executeAuraActions(this.card, active, card);
             }
         }
     }

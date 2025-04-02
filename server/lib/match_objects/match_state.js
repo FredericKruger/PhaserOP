@@ -410,7 +410,7 @@ class MatchState {
      */
     declareAttackPhase(player, attacker) {
         //Set the state of the card
-        attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+        attacker.setState(CARD_STATES.IN_PLAY_ATTACKING);
     }  
     
     /** Function to resolve the attack

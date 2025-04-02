@@ -1,4 +1,4 @@
-const passiveAbilityActions = {
+const PassiveAbilityActions = {
     /** Function to add Counter to Defender
      * @param {GameScene} scene
      * @param {GameCardUI} card

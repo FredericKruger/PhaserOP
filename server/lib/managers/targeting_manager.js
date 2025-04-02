@@ -81,6 +81,7 @@ class TargetingManager {
     isValidTarget(card, target, playerCard) {
         this.target = new Target(target);
 
+
         let isValid = true;
 
         // Check if the card belongs to a specific player
@@ -110,7 +111,8 @@ class TargetingManager {
         //console.log("compareCost", isValid);
 
         // Check card power
-        if (Object.keys(this.target.power).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.power, this.target.power);
+        let power = card.currentPower || card.getPower(this.match.isPlayerActivePlayer(card.owner));
+        if (Object.keys(this.target.power).length > 0 && isValid) isValid = isValid && this.compareValue(power, this.target.power);
         //console.log("comparePower", isValid);
 
         return isValid;

@@ -6085,7 +6085,7 @@
                 },
                 "target": {
                     "targetAction": "AURA_ACTION",
-                    "requiredTargets": 0,
+                    "requiredTargets": 1,
                     "targets": [
                         {
                             "minrequiredtargets": 0,
@@ -6096,7 +6096,8 @@
                     ]
                 },
                 "actions": [
-                    {"name": "cannotBlock", "params": {}}
+                    {"name": "addPowerToCard_Aura", "params": {"amount": 2000, "duration": "TURN"}},
+                    {"name": "canBlock_Aura", "params": {"value": false}}
                 ]
             },
             {
@@ -6240,7 +6241,10 @@
                 },
                 "type": "BLOCKER",
                 "phases": ["Main: Block"],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "CAN_BLOCK", "value": true}
+                ]
             }
         ]
     },    
@@ -6744,7 +6748,10 @@
                 },
                 "type": "BLOCKER",
                 "phases": ["Main: Block"],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "CAN_BLOCK", "value": true}
+                ]
             }
         ]
     },    

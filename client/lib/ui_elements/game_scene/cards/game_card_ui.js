@@ -53,6 +53,7 @@ class GameCardUI extends BaseCardUI{
         this.turnPlayed = true; //To store if the card was played in the current turn
 
         this.hasRush = false; //To store if the card has rush
+        this.canBlock = true; //To store if the card can block
 
         //Button visibility overrides to show in case of opponent activating buttons
         this.blockerButton_manualOverride = false;

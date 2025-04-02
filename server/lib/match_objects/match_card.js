@@ -33,7 +33,7 @@ class Card {
         this.id = id;
         this.owner = owner;
         
-        this.state = CARD_STATES.READY;
+        this.state = CARD_STATES.IN_DECK;
     }
 
     /** Function to set the state of the card
@@ -67,9 +67,10 @@ class MatchCard extends Card{
         this.turnEventPowerAmount = 0;
         this.gameEventPowerAmount = 0;
 
-        this.state = CARD_STATES.IN_DECK;
+        this.basePower = cardData.power;
+        this.currentPower = this.basePower; //Current power of the card
 
-        this.currentPower = cardData.power;
+        this.auraToIgnore = null; //Aura to ignore for the power calculation
 
         //Create abilities if there are any
         if(cardData.abilities) {
@@ -82,7 +83,7 @@ class MatchCard extends Card{
             for(let aura of auraData) {
                 match.lastAuraID++;
                 let auraId = match.lastAuraID;
-                const newAura = new MatchAura(auraId, this.id, match.id, aura);
+                let newAura = new MatchAura(auraId, this.id, match.id, aura);
     
                 match.auraManager.addAura(newAura); //Add aura to the match
             }
@@ -116,23 +117,33 @@ class MatchCard extends Card{
 
     /** Function to get the current power of the card */
     getPower(activeTurn) {
-        let power = this.currentPower;
-        if(activeTurn) power += this.attachedDon.length * 1000;
+        this.currentPower = this.basePower;
+        if(activeTurn) this.currentPower += this.attachedDon.length * 1000;
         
         if(!activeTurn) {
-            for(let attachedCounter of this.attachedCounter) power += attachedCounter.cardData.counter;
-            power += this.eventCounterAmount;
+            for(let attachedCounter of this.attachedCounter) this.currentPower += attachedCounter.cardData.counter;
+            this.currentPower += this.eventCounterAmount;
         }
-        power += this.turnEventPowerAmount; //Add power from turn effects
-        power += this.gameEventPowerAmount; //Add power from permanent effects
+        this.currentPower += this.turnEventPowerAmount; //Add power from turn effects
+        this.currentPower += this.gameEventPowerAmount; //Add power from permanent effects
 
-        let passivePower = 0;
         for(let ability of this.abilities) {
-            if(ability.type === 'PASSIVE') passivePower += ability.addPassivePower();
+            if(ability.type === 'PASSIVE') this.currentPower += ability.addPassivePower();
         }
-        power += passivePower;
 
-        return power;
+        //Get Power from aura effects
+        let match = matchRegistry.get(this.matchId);
+        for(let aura of match.auraManager.activeAuras) {
+            if(aura.canActivate() && aura.id !== this.auraToIgnore) {
+                this.auraToIgnore = aura.id; //Set the aura to ignore for the next power calculation
+                if (aura.isValidTarget(this)) this.currentPower += aura.ability.addPassivePower(this);
+                this.auraToIgnore = null; //Reset the aura to ignore if the target is not valid
+            }
+        }
+
+        //console.log(`Power of ${this.id} is ${this.currentPower}`);
+
+        return this.currentPower;
     }
 
     /** Function that returns if the card has rush 
@@ -145,6 +156,26 @@ class MatchCard extends Card{
             if(ability.type === 'PASSIVE') hasRush = hasRush ;
         }
         return hasRush;
+    }
+
+    /** Function taht returns if the card can block
+     * @returns {boolean}
+     */
+    canBlock() {
+        if(this.debugBlock) return true;
+        let canBlock = true;
+        
+        //Get Power from aura effects
+        let match = matchRegistry.get(this.matchId);
+        for(let aura of match.auraManager.activeAuras) {
+            if(aura.canActivate()) {
+                if(aura.isValidTarget(this)) canBlock = canBlock && aura.ability.canBlock(this);
+            }
+        }
+
+        console.log(`Can ${this.id} block? ${canBlock}`);
+    
+        return canBlock;
     }
 
     /** Function that returns true is a card has an ability that triggers no attacking

@@ -737,6 +737,15 @@ class Match {
         else return this.player2;
     }
 
+    /** Function that tells if the player is the active player
+     * @param {number} playerID
+     * @returns {boolean}
+     */
+    isPlayerActivePlayer(playerID) {
+        if(this.state.current_active_player.id === playerID) return true;
+        else return false;
+    }
+
     /** Function that tries to find a target */
     findValidTarget(abilityTarget) {
         let targetingManager = new TargetingManager(this);
