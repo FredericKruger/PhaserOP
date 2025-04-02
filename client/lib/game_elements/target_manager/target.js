@@ -2,8 +2,9 @@ class Target {
 
     /** Constructor from server Target Object
      * @param {Object} serverTarget - The server target object
+     * @param {TargetManager} targetManager - The target manager instance
      */
-    constructor(serverTarget) {
+    constructor(serverTarget, targetManager) {
     // Check if serverTarget exists
         if (!serverTarget) {
             // Set default empty values if serverTarget is null/undefined
@@ -27,6 +28,8 @@ class Target {
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
+
+        this.targetManager = targetManager; // Reference to the target manager
     }
 
     /**
@@ -62,7 +65,7 @@ class Target {
         if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.cost);
 
         // Check card power
-        if (Object.keys(this.power).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.power, this.power);
+        if (Object.keys(this.power).length > 0 && isValid) isValid = isValid && this.compareValue(card.getPower(), this.power);
 
         return isValid;
     }
@@ -135,8 +138,7 @@ class Target {
     }
 
     isExcludeValid(card) {
-        const originatorCard = card.scene.getActiveTargetManager().originatorCard;
-        if(this.exclude.includes("SELF") && card.id === originatorCard) return false;
+        if(this.exclude.includes("SELF") && card.id === this.targetManager.originatorCard) return false;
         return true;
     }
 
@@ -147,6 +149,7 @@ class Target {
      * @returns {boolean} - Whether the value meets the constraint
      */
     compareValue(cardValue, constraint) {
+        //console.log(constraint)
         // If there's no constraint, return true
         if (!constraint || !constraint.operator || constraint.value === undefined) {
             return true;
@@ -154,6 +157,7 @@ class Target {
 
         // Get the operator and value
         const { operator, value } = constraint;
+        //console.log(cardValue, operator, value )
 
         // Evaluate based on the operator
         switch (operator) {

@@ -795,7 +795,12 @@ class ActionLibrary {
 
                 //discard the actual defender card
                 this.discardCardAction(defenderPlayer, this.scene.attackManager.attack.defender);
+            } else {
+                this.scene.attackManager.attack.defender.setState(attackResults.newDefenderState); //Set the card state to in play
             }
+
+            //Set the attacker state to exerte
+            this.scene.attackManager.attack.attacker.setState(attackResults.newAttackerState); //Set the card state to in play
 
             //Create an action to draw a card from the life pool if attacker was attacked and update lifepoints
             if(attackResults.lostLeaderLife) {

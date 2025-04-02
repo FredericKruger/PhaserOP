@@ -17,6 +17,7 @@ class TargetManager {
         this.targetData = {};
         this.targetAction = null;
         this.requiredTargets = 0;
+        /** @type {Array<Target>} */
         this.targets = [];
         this.targetIDs = [];
 
@@ -28,7 +29,7 @@ class TargetManager {
 
         //Attach targeting Arrow to target manager
         this.targetArrow = new TargetingArrow(this.scene, color); //Target arrow
-        this.targetArrow.create();
+        if(type !== 'AURA') this.targetArrow.create();
     }
 
     /** Function that prepares the target from the server data
@@ -39,7 +40,7 @@ class TargetManager {
         this.targetAction = targetData.targetAction;
         this.requiredTargets = targetData.requiredTargets;
         for(let el of targetData.targets)
-            this.targets.push(new Target(el));
+            this.targets.push(new Target(el, this));
     }
 
 

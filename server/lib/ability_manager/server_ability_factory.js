@@ -5,9 +5,7 @@ const ServerBlockerAbility = require('./server_blocker_ability');
 
 class ServerAbilityFactory {
 
-    constructor() {
-
-    }
+    constructor() {}
 
     /** Function to create an ability according to the type
      * @param {Object} abilityData
@@ -28,7 +26,9 @@ class ServerAbilityFactory {
 
     /** Function to attach an Ability to a card
      * @param {Object[]} abilitiesData
-     * @param {Match} match
+     * @param {number} cardId
+     * @param {number} matchId
+     * @returns {Ability[]}
      */
     createAbilitiesForCard(abilitiesData, cardId, matchId) {
         const abilities = [];
@@ -41,6 +41,18 @@ class ServerAbilityFactory {
         }
 
         return abilities;
+    }
+
+    
+    /** Function to attach an Ability to a card
+     * @param {Object} abilityData
+     * @param {number} auraId
+     * @param {number} matchId
+     * @returns {Ability}
+     */
+    createAbilityForAura(abilityData, auraId, matchId) {
+        const ability = this.createAbility(abilityData, auraId, matchId);
+        return ability;
     }
 
 }

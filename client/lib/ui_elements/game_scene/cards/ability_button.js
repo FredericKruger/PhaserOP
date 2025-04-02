@@ -78,7 +78,9 @@ class AbilityButton extends Phaser.GameObjects.Container {
 
     onPointerDown() {
         // Add a quick "press" animation for better feedback
-        if(this.type !== "PASSIVE") {
+        if(this.type !== "PASSIVE"
+            && this.type !== "AURA"
+        ) {
             this.scene.tweens.add({
                 targets: this,
                 scale: this.scale * 0.9, // Slightly smaller on press

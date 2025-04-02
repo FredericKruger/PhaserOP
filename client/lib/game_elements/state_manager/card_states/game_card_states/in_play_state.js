@@ -47,11 +47,13 @@ class InPlayState extends GameCardState {
     }
 
     update() {
-        this.card.updatePowerText();
-        
         for(let ability of this.card.abilities) {
             ability.update();
         }
+        for(let aura of this.card.auras) {
+            aura.ability.update();
+        }
+        this.card.updatePowerText();
     }
 
     isValidTarget() {

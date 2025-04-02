@@ -1,6 +1,7 @@
 const Player = require("../game_objects/player");
 const ServerAbilityFactory = require("../ability_manager/server_ability_factory");
 const Match = require("./match");
+const MatchAura = require("./match_aura");
 
 const CARD_STATES = Object.freeze({
     IN_DECK: 'IN_DECK',
@@ -70,8 +71,22 @@ class MatchCard extends Card{
 
         this.currentPower = cardData.power;
 
-        const match = matchRegistry.get(matchId);
-        this.abilities = match.abilityFactory.createAbilitiesForCard(cardData.abilities, id, matchId);
+        //Create abilities if there are any
+        if(cardData.abilities) {
+            const match = matchRegistry.get(matchId);
+            let abilityData = cardData.abilities.filter(ability => ability.type !== 'AURA');
+            this.abilities = match.abilityFactory.createAbilitiesForCard(abilityData, id, matchId);
+            
+            //Create auras from cards
+            let auraData = cardData.abilities.filter(ability => ability.type === 'AURA');
+            for(let aura of auraData) {
+                match.lastAuraID++;
+                let auraId = match.lastAuraID;
+                const newAura = new MatchAura(auraId, this.id, match.id, aura);
+    
+                match.auraManager.addAura(newAura); //Add aura to the match
+            }
+        }
     }
 
     /** Function that gets an ability from the card
@@ -107,8 +122,8 @@ class MatchCard extends Card{
         if(!activeTurn) {
             for(let attachedCounter of this.attachedCounter) power += attachedCounter.cardData.counter;
             power += this.eventCounterAmount;
-            power += this.turnEventPowerAmount; //Add power from turn effects
         }
+        power += this.turnEventPowerAmount; //Add power from turn effects
         power += this.gameEventPowerAmount; //Add power from permanent effects
 
         let passivePower = 0;

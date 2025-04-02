@@ -14,6 +14,8 @@ class AbilityFactory {
                 return new ActiveAbility(abilityData);
             case 'WHEN_ATTACKING':
                 return new WhenAttackingAbility(abilityData);
+            case 'AURA':
+                return new AuraAbility(abilityData);
             default:
                 return new Ability(abilityData);
         }
@@ -30,7 +32,7 @@ class AbilityFactory {
         if (abilitiesData && Array.isArray(abilitiesData)) {
             abilitiesData.forEach(abilityData => {
                 const ability = this.createAbility(abilityData);
-                ability.attachTo(card);
+                ability.attachToCard(card);
                 card.abilities.push(ability);
             });
         }
@@ -40,20 +42,20 @@ class AbilityFactory {
 
     /** Function to attach an Ability to a card
      * @param {Aura} aura
-     * @param {Object[]} abilitiesData
-     * @returns {GameCardUI}
+     * @param {GameCardUI} card
+     * @param {Object} ability
+     * @returns {Aura}
      */
-    static attachAbilitiesToAura(aura, abilitiesData) {
-        aura.abilities = [];
-        
-        if (abilitiesData && Array.isArray(abilitiesData)) {
-            abilitiesData.forEach(abilityData => {
-                const ability = this.createAbility(abilityData);
-                ability.attachTo(aura);
-                card.abilities.push(ability);
-            });
+    static attachAbilityToAura(aura, card, abilityData) {
+        aura.ability = [];
+
+        if (abilityData) {
+            const ability = this.createAbility(abilityData);
+            ability.attachToCard(card);
+            ability.attachToAura(aura);
+            aura.ability = ability;
         }
-        
+
         return aura;
     }
 }

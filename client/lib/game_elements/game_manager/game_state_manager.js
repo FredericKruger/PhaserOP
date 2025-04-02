@@ -461,6 +461,11 @@ class GameStateManager {
                                     }
                                     for(let card of this.scene.activePlayerScene.characterArea.cards) card.resetTurn();
 
+                                    //Refresh cards for passive player
+                                    for(let card of this.scene.passivePlayerScene.characterArea.cards) card.resetTurn();
+                                    for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.resetTurn();
+                                    for(let card of this.scene.passivePlayerScene.stageLocation.cards) card.resetTurn();
+
                                     //Refresh all passive player Card Power as attached dons only give power during the active player's turn
                                     for(let card of this.scene.passivePlayerScene.characterArea.cards) card.updatePowerText();
                                     for(let card of this.scene.passivePlayerScene.leaderLocation.cards) card.updatePowerText();
@@ -534,6 +539,11 @@ class GameStateManager {
                 card.resetTurn();
             }
             for(let card of this.scene.passivePlayerScene.characterArea.cards) card.resetTurn();
+
+            //Update Turn values
+            for(let card of this.scene.activePlayerScene.characterArea.cards) card.resetTurn();
+            for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.resetTurn();
+            for(let card of this.scene.activePlayerScene.stageLocation.cards) card.resetTurn();
 
             //Refresh all activePlayer Card Power as don cards only give power during the active player's turn
             for(let card of this.scene.activePlayerScene.characterArea.cards) card.updatePowerText();

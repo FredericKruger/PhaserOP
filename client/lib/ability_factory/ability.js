@@ -25,7 +25,7 @@ class Ability {
     /** Function to attach the card
      * @param {GameCardUI} card
      */
-    attachTo(card) {
+    attachToCard(card) {
         this.card = card;
     }
 
@@ -43,16 +43,19 @@ class Ability {
     canActivate(gamePhase) {
         // Check if in correct phase
         if (this.phases.length > 0 && !this.phases.includes(gamePhase)) {
+            //console.log(`Ability ${this.id} cannot be activated in phase ${gamePhase}`);
             return false;
         }
 
         if (this.states.length > 0 && !this.states.includes(this.card.state)) {
+            //console.log(`Ability ${this.id} cannot be activated in state ${this.card.state}`);
             return false;
         }
 
         // Check all conditions
         for (const condition of this.conditions) {
             if (!this.evaluateCondition(condition, gamePhase)) {
+                //console.log(`Ability ${this.id} cannot be activated due to condition ${condition.type}`);
                 return false;
             }
         }

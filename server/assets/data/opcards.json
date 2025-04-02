@@ -6073,33 +6073,30 @@
                     "posx": 300,
                     "posy": 560
                 },
-                "type": "WHEN_ATTACKING",
-                "phases": ["Main: Attack"],
-                "states": [],
+                "type": "AURA",
+                "phases": [],
+                "states": ["IN_PLAY_ATTACKING"],
                 "conditions": [
                     {"type": "ATTACHED_DON", "value": 1}
                 ],
+                "aurainfo": {
+                    "duration": "BATTLE",
+                    "affectedPlayers": ["owner", "opponent"]
+                },
+                "target": {
+                    "targetAction": "AURA_ACTION",
+                    "requiredTargets": 0,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "exclude": ["SELF"],
+                            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                            "power": {"operator": ">=", "value": 5000}
+                        }
+                    ]
+                },
                 "actions": [
-                    {"name": "createAura", 
-                    "params": {
-                        "duration": "BATTLE",
-                        "affectedPlayers": ["owner", "opponent"],
-                        "abilities": [{
-                            "id": "ST01-002-1-AURA",
-                            "type": "PASSIVE",
-                            "phases": ["Main: Block"],
-                            "states": [],
-                            "targets": [
-                                {
-                                    "minrequiredtargets": 0,
-                                    "power": {"operator": "<", "value": 5000}
-                                }
-                            ],
-                            "actions": [
-                                {"name": "canBlock", "params": {}}
-                            ]
-                        }]
-                    }}
+                    {"name": "cannotBlock", "params": {}}
                 ]
             },
             {

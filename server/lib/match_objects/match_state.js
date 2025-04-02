@@ -42,9 +42,6 @@ class MatchState {
 
         this.player1 = new MatchPlayer(player1Id);
         this.player2 = new MatchPlayer(player2Id);
-
-        /** Array of Active Auras created during actions */
-        this.activeAuras = [];
     }
     //#endregion
 
@@ -430,6 +427,7 @@ class MatchState {
         } else {
             //If the defender is a character
             defender.state = defender.previousState;
+            attackResults.newDefenderState = defender.state;
         }
 
         if(attackResults.lostLeaderLife) {
@@ -452,6 +450,7 @@ class MatchState {
 
         //Set the attacker state to exerte
         attacker.state = CARD_STATES.IN_PLAY_RESTED;
+        attackResults.newAttackerState = attacker.state;
 
         return attackResults;
     }

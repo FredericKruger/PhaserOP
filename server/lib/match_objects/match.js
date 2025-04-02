@@ -12,6 +12,7 @@ const { AttackManager} = require("../managers/attack_manager");
 const ServerAbilityFactory = require("../ability_manager/server_ability_factory");
 const matchRegistry = require("../managers/match_registry");
 const MatchCardRegistry = require("../managers/match_card_registry");
+const AuraManager = require("../managers/aura_manager");
 
 
 class Match {
@@ -75,6 +76,9 @@ class Match {
 
         /** @type {ServerAbilityFactory} */
         this.abilityFactory = new ServerAbilityFactory(); //Create a new ability factory
+
+        /** @type {AuraManager} */
+        this.auraManager = new AuraManager();
 
         // Register this match in the global registry
         matchRegistry.register(this);
@@ -225,6 +229,7 @@ class Match {
         let refreshedDon = this.state.refreshDon(this.state.current_active_player.currentMatchPlayer); //Bring dons back to don area
         let refreshedCard = this.state.refreshCards(this.state.current_active_player.currentMatchPlayer); //Change status of cards
         this.state.resetCards(this.state.current_active_player.currentMatchPlayer); //Refresh abilities and card values
+        this.state.resetCards(this.state.current_passive_player.currentMatchPlayer); //Refresh abilities and card values
 
         //Send signal to client
         if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_refresh_phase', true, refreshedDon, refreshedCard);

@@ -35,6 +35,9 @@ class GameCardUI extends BaseCardUI{
         //Abilities
         /** @type {Array<Ability>} */
         this.abilities = [];
+        /** @type {Array<Aura>} */
+        this.auras = [];
+        /** @type {Array<AbilityButton>} */
         this.abilityButtons = [];
 
         //STATE VARIABLES
@@ -145,7 +148,18 @@ class GameCardUI extends BaseCardUI{
     updateCardData(cardData, flipCard) {
         this.cardData = cardData;
 
-        AbilityFactory.attachAbilitiesToCard(this, cardData.abilities); //Create the abilities
+        //Create Abilities
+        if(cardData.abilities) {
+            let abilityData = cardData.abilities.filter(ability => ability.type !== 'AURA');
+            AbilityFactory.attachAbilitiesToCard(this, abilityData); //Create the abilities
+            //Create the auras
+            let auraData = cardData.abilities.filter(ability => ability.type === 'AURA');
+            for(let aura of auraData) {
+                let newAura = new Aura(this.scene, this, this.id, aura);
+                this.auras.push(newAura);
+                this.scene.auraManager.addAura(newAura);
+            }
+        }
         
         let textures = [];
         let cardArtKey = this.cardData.art;
@@ -181,6 +195,14 @@ class GameCardUI extends BaseCardUI{
                 });
             }
         }
+        for(let aura of this.auras) {
+            if(aura.ability.art) {
+                textures.push({
+                    key: aura.ability.art.art,
+                    path: `assets/abilityart/${aura.ability.art.art}.png`
+                });
+            }
+        }
 
         this.scene.game.loaderManager.addJob(new LoaderJob(this.scene, textures, callback));       
     }
@@ -194,6 +216,12 @@ class GameCardUI extends BaseCardUI{
             this.add(abilityButton);
 
             if(ability.type === 'BLOCKER') this.blockerButton = abilityButton;
+        }
+        for(let aura of this.auras){
+            let abilityButton = new AbilityButton(this.scene, this, aura.ability);
+            this.obj.push(abilityButton);
+            this.abilityButtons.push(abilityButton);
+            this.add(abilityButton);
         }
     }
 
@@ -472,9 +500,9 @@ class GameCardUI extends BaseCardUI{
         if(this.playerScene.isPlayerTurn) {
             currentPower += this.attachedDon.length*1000;
             if(this.hoveredDon !== null) currentPower += 1000;
-            currentPower += this.turnEventPowerAmount;
         }
-        currentPower += this.gameEventPowerAmount; //Add power from permanent effects   
+        currentPower += this.gameEventPowerAmount; //Add power from permanent effects
+        currentPower += this.turnEventPowerAmount;   
         currentPower += this.eventCounterPower;
         currentPower += this.passiveEventPower;
         if(this.tempAttachedCounter) currentPower += this.tempAttachedCounter.cardData.counter;
