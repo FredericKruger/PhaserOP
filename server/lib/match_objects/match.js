@@ -348,6 +348,7 @@ class Match {
             let actionInfos = {};
             actionInfos.cardPlayed = this.playCardManager.playedCard.id;
             actionInfos.cardPlayedData = this.playCardManager.playedCard.cardData;
+            actionInfos.spentDonIds = this.playCardManager.payedDon;
             actionInfos.replacedCard = this.playCardManager.replacedCard? this.playCardManager.replacedCard.id : null;
             actionInfos.abilityId = this.playCardManager.abilityId;
             actionInfos.eventAction = this.playCardManager.onPlayEventActions;

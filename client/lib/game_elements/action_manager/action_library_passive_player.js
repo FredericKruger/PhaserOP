@@ -279,39 +279,37 @@ class ActionLibraryPassivePlayer {
      * It creates an action to execute the inking and do the animation
      * Calls the completeServerRequest at the end
      */
-    playCardAction(playerScene, card, spentDonIds, replacedCard = null, abilityInfo = null) {
+    startPlayCardAction(playerScene, card) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_PLAY_ANIMATION/2;
         let displayY = this.scene.screenCenterY;
 
         //Create tweens
         let tweens = [];
-        if(replacedCard === null) {
-            // Initial pop-up effect from hand
-            tweens.push({
-                onStart: () => {
-                    this.scene.children.bringToTop(card);
-                },
-                x: card.x - 10, // Small shift back
-                y: card.y - 30, // Pop up slightly
-                scale: CARD_SCALE.IN_HAND * 1.1,
-                angle: -5, // Small tilt
-                duration: 150,
-                ease: 'Back.easeOut'
-            });
+        // Initial pop-up effect from hand
+        tweens.push({
+            onStart: () => {
+                this.scene.children.bringToTop(card);
+            },
+            x: card.x - 10, // Small shift back
+            y: card.y - 30, // Pop up slightly
+            scale: CARD_SCALE.IN_HAND * 1.1,
+            angle: -5, // Small tilt
+            duration: 150,
+            ease: 'Back.easeOut'
+        });
             
-            // Move toward center with arc
-            tweens.push({
-                x: displayX - 50, // Approach point
-                y: displayY - 40, // Arc peak
-                scale: CARD_SCALE.IN_PLAY_ANIMATION * 0.8,
-                angle: 0, // Straighten out
-                duration: 250,
-                ease: 'Sine.easeInOut',
-                onComplete: () => {
-                    playerScene.hand.update();
-                }
-            });
-        }
+        // Move toward center with arc
+        tweens.push({
+            x: displayX - 50, // Approach point
+            y: displayY - 40, // Arc peak
+            scale: CARD_SCALE.IN_PLAY_ANIMATION * 0.8,
+            angle: 0, // Straighten out
+            duration: 250,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                playerScene.hand.update();
+            }
+        });
 
         // Move to final position and scale up
         tweens.push({
@@ -319,18 +317,48 @@ class ActionLibraryPassivePlayer {
             y: displayY,
             scale: CARD_SCALE.IN_PLAY_ANIMATION,
             duration: 150,
-            ease: 'Power2.easeOut'
+            ease: 'Power2.easeOut',
+            onComplete: () => {this.scene.actionManager.completeAction();}
         });
 
-    // Card flip animation - more dramatic
-    tweens.push({
-        scaleX: 0, // Card edge-on for flip
-        scaleY: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, // Slight scale increase during flip
-        rotation: 0.1, // Slight rotation during flip
-        duration: 250,
-        ease: 'Cubic.easeIn'
-    });
-    
+        //Create tween chain
+        let start_animation = this.scene.tweens.chain({
+            targets: card,
+            tweens: tweens
+        }).pause();
+
+        //Create the action
+        let action = new Action();
+        action.start = () => { //Start function
+            card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
+            card.isInPlayAnimation = true;
+        };
+        action.start_animation = start_animation; //Play animation#
+        action.end = () => {
+            //Refresh GameStateUI
+            card.setState(CARD_STATES.BEING_PLAYED);
+        };
+
+        action.isPlayerAction = true; //This is a player triggered action
+        action.waitForAnimationToComplete = true; //Should wait for the endof the animation
+        action.name = "PLAY";
+
+        //Add action to the action stack
+        this.actionManager.addAction(action);
+    }
+
+    /** Function that plays a card for the opponent*/
+     playCardAction(playerScene, card, actionInfos) {
+        //Create tweens
+        let tweens = [];
+        // Card flip animation - more dramatic
+        tweens.push({
+            scaleX: 0, // Card edge-on for flip
+            scaleY: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, // Slight scale increase during flip
+            rotation: 0.1, // Slight rotation during flip
+            duration: 250,
+            ease: 'Cubic.easeIn'
+        });
         // Show card face with slight bounce
         tweens.push({
             onStart: () => {
@@ -342,72 +370,57 @@ class ActionLibraryPassivePlayer {
             duration: 220,
             ease: 'Back.easeOut'
         });
-        
         // Hold to show card
         tweens.push({
             scale: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
-            duration: 600
-        });
-
-        if(replacedCard !== null) tweens = tweens.concat(this.scene.animationLibraryPassivePlayer.animation_target_card(card, replacedCard)); //Tween 4: move replaced card to the deck
-
-        tweens.push({ //Tween 5: empty tween to call completeActin
-            duration: 100,
+            duration: 600,
             onComplete: () => {this.scene.actionManager.completeAction();}
         });
         //Create tween chain
-        let start_animation = this.scene.tweens.chain({
+        let flip_card_animation = this.scene.tweens.chain({
             targets: card,
             tweens: tweens
         }).pause();
 
-        //Create the action
+        //Create action to flip card
+        let flipCardAction = new Action();
+        flipCardAction.start = () => {
+            //PAY COST
+            playerScene.activeDonDeck.payCost(actionInfos.spentDonIds);
+            card.updateCardData(actionInfos.cardPlayedData); //Update the card data
+        }
+        flipCardAction.start_animation = flip_card_animation; //play animation
+        flipCardAction.end = () => {
+            //Refresh GameStateUI
+            playerScene.playerInfo.updateCardAmountTexts();
+        }
+        flipCardAction.waitForAnimationToComplete = true;
+        this.scene.actionManager.addAction(flipCardAction); //Add action to action stack
+
+        /** Replace the card */
+        if(actionInfos.replacedCard !== null) { //If there is a replaced card, animate it
+            let replacedCard = playerScene.getCard(actionInfos.replacedCard);
+
+            let replacedTweens = this.scene.animationLibraryPassivePlayer.animation_target_card(card, replacedCard); //Tween 4: move replaced card to the deck
+            this.discardCardAction(playerScene, replacedCard, replacedTweens); //Create a discard Action
+        }
+
+        /** Create action to play on play event results */
+        if(actionInfos.abilityId && actionInfos.eventAction.length > 0) {
+            let ability = card.getAbility(actionInfos.abilityId);
+            this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.eventAction);
+        }
+
         let action = new Action();
         action.start = () => { //Action start: pay card cost in inkwell. Remove card from hand and add it to the playarea
-            //PAY COST
-            playerScene.activeDonDeck.payCost(spentDonIds);
-            
             playerScene.hand.removeCard(card); //Remove the card form the hand
 
-            card.isInPlayAnimation = true;
             if(card.cardData.card === CARD_TYPES.CHARACTER)
                 playerScene.characterArea.addCard(card); //Add the card to the play area
             else if(card.cardData.card === CARD_TYPES.STAGE)
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
-        }
-        action.start_animation = start_animation; //play animation
-        action.end = () => {
-            //Refresh GameStateUI
-            playerScene.playerInfo.updateCardAmountTexts();
 
-            //If the card of an event
-            if(card.cardData.card === CARD_TYPES.EVENT) {
-                //execute ability and init ability tweens
-                let abilityTweens = [];
-                for(let ability of card.abilities) {
-                    if(ability.canActivate(card.scene.gameStateUI.phaseText.text)) { //For each ability that can be activated
-                        abilityTweens = abilityTweens.concat(ability.animate(card, abilityInfo, false)); //Add the ability tween
-                    }
-                }
-
-                //If there are abilities to animate
-                if(abilityTweens.length>0) {
-                    //Add action finalizer call
-                    abilityTweens = abilityTweens.concat({ //concat additional tween to call the completeAction function
-                        duration: 10,
-                        onComplete: () => {this.actionManager.finalizeAction();}
-                    });
-                    //Create tween chain
-                    this.scene.actionManager.currentAction.end_animation = this.scene.tweens.chain({
-                        targets: card,
-                        tweens: abilityTweens
-                    }).pause();
-                }
-            }
-        }
-        action.finally = () => {
             card.isInPlayAnimation = false;
-        
             //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play
             else if(card.cardData.card === CARD_TYPES.EVENT) {
@@ -415,9 +428,9 @@ class ActionLibraryPassivePlayer {
                 this.scene.actionLibraryPassivePlayer.discardCardAction(playerScene, card); //Create a discard Action 
             }
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
-        }
+        };       
         action.isPlayerAction = false; //This is not a player action
-        action.waitForAnimation = true; //Should wait for animation to complete
+        action.waitForAnimationToComplete = false; //Should wait for animation to complete
         action.name = "PLAY CARD OPPONENT";
 
         //Add action to action stack
@@ -425,7 +438,7 @@ class ActionLibraryPassivePlayer {
 
         //Update playArea action
         let updateAction = new Action();
-        updateAction.start = () => {
+        updateAction.start = () => {   
             card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
             let cardPosition = playerScene.characterArea.update(card);
             card.enterCharacterArea(cardPosition.x, cardPosition.y);
@@ -660,9 +673,11 @@ class ActionLibraryPassivePlayer {
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
      */
-    discardCardAction(playerScene, card) {
+    discardCardAction(playerScene, card, targetingTweens = null) {
         //Get Start Animation
-        let startAnimation_tweens = this.scene.animationLibrary.desintegrationAnimation(card, 0);
+        let startAnimation_tweens = [];
+        if(targetingTweens) startAnimation_tweens = targetingTweens;
+        startAnimation_tweens.push(this.scene.animationLibrary.desintegrationAnimation(card, 0));
         startAnimation_tweens = startAnimation_tweens.concat({
             targets: card,
             duration: 10,

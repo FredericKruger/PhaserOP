@@ -369,7 +369,7 @@ class ActionLibrary {
          *  start: Pay Cost, Remove from hand, add to playarea
          *  end: play exert animation to show card is drying. Send Server a message about card being played
         */
-    startPlayCardAction(playerScene, card, spentDonIds, activePlayer, callback = null) {
+    startPlayCardAction(playerScene, card, spentDonIds, callback = null) {
         let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
         let displayY = this.scene.screenCenterY;
 
@@ -416,10 +416,10 @@ class ActionLibrary {
         action.start_animation = start_animation; //Play animation#
         action.end = () => {
             //Refresh GameStateUI
-            if(activePlayer) playerScene.playerInfo.updateCardAmountTexts();
+            playerScene.playerInfo.updateCardAmountTexts();
             card.setState(CARD_STATES.BEING_PLAYED);
 
-            if(activePlayer && callback) callback();
+            if(callback) callback();
         };
 
         action.isPlayerAction = true; //This is a player triggered action

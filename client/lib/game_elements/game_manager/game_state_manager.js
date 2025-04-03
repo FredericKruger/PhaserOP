@@ -719,8 +719,8 @@ class GameStateManager {
         let callback = () => {
             this.scene.game.gameClient.requestStartPlayCardComplete();
         };
-        if(isPlayerTurn) this.scene.actionLibrary.startPlayCardAction(card.playerScene, card, actionInfos.spentDonIds, isPlayerTurn, callback);
-        else this.scene.actionLibrary.startPlayCardAction(card.playerScene, card, actionInfos.spentDonIds, isPlayerTurn);
+        if(isPlayerTurn) this.scene.actionLibrary.startPlayCardAction(card.playerScene, card, actionInfos.spentDonIds, callback);
+        else this.scene.actionLibraryPassivePlayer.startPlayCardAction(card.playerScene, card);
     }
 
     /** Function to play a card
@@ -741,7 +741,6 @@ class GameStateManager {
         let card = player.getCard(actionInfos.cardPlayed); //Get the card
         if(isPlayerTurn) this.scene.actionLibrary.playCardAction(card.playerScene, card, actionInfos);
         else this.scene.actionLibraryPassivePlayer.playCardAction(card.playerScene, card, actionInfos);
-        //player.playCard(actionInfos, isPlayerTurn);
     }
 
     /** Function to cancel the playing of a card
