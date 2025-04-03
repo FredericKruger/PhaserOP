@@ -710,16 +710,38 @@ class GameStateManager {
         player.hand.update();
     }
 
+    /** Function to  */
+    startPlayCard(actionInfos, isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let card = player.hand.getCard(actionInfos.playedCard); //Get the card
+        let callback = () => {
+            this.scene.game.gameClient.requestStartPlayCardComplete();
+        };
+        if(isPlayerTurn) this.scene.actionLibrary.startPlayCardAction(card.playerScene, card, actionInfos.spentDonIds, isPlayerTurn, callback);
+        else this.scene.actionLibrary.startPlayCardAction(card.playerScene, card, actionInfos.spentDonIds, isPlayerTurn);
+    }
+
     /** Function to play a card
      * @param {Object} actionInfos - The action infos
      * @param {boolean} isPlayerTurn - If it is the player's turn
      * @param {boolean} startTargeting - If the targeting should start
      */
-    playCard(actionInfos, isPlayerTurn, startTargeting) {
+    /*playCard(actionInfos, isPlayerTurn, startTargeting) {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         player.playCard(actionInfos, isPlayerTurn, startTargeting);
+    }*/
+    playCard(actionInfos, isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let card = player.getCard(actionInfos.cardPlayed); //Get the card
+        if(isPlayerTurn) this.scene.actionLibrary.playCardAction(card.playerScene, card, actionInfos);
+        else this.scene.actionLibraryPassivePlayer.playCardAction(card.playerScene, card, actionInfos);
+        //player.playCard(actionInfos, isPlayerTurn);
     }
 
     /** Function to cancel the playing of a card

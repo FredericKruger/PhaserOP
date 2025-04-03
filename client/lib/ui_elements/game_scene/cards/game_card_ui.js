@@ -276,6 +276,8 @@ class GameCardUI extends BaseCardUI{
             case CARD_STATES.IN_PLAY_FIRST_TURN:
                 this.fsmState.exit(GAME_CARD_STATES.FIRST_TURN);
                 break;
+            case CARD_STATES.BEING_PLAYED:
+                this.fsmState.exit(GAME_CARD_STATES.IN_ACTION);
         }
     }
     //#endregion

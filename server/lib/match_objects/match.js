@@ -13,6 +13,7 @@ const ServerAbilityFactory = require("../ability_manager/server_ability_factory"
 const matchRegistry = require("../managers/match_registry");
 const MatchCardRegistry = require("../managers/match_card_registry");
 const AuraManager = require("../managers/aura_manager");
+const PlayCardManager = require("../managers/play_card_manager");
 
 
 class Match {
@@ -67,6 +68,9 @@ class Match {
 
         /** @type {AttackManager} */
         this.attackManager = null; //Create a new attack manager
+
+        /** @type {PlayCardManager} */
+        this.playCardManager = null;
 
         /** @type {Boolean} */
         this.gameOver = false;
@@ -293,15 +297,69 @@ class Match {
     }
     //#endregion
 
-    //#region ACTION FUNCTIONS
+    //#region PLAY CARD FUNCTIONS
     /** Function that handles playing a card
      * @param {Player} player
      * @param {number} cardID
      */
-    startPlayCard(player, cardID) {
-        let result = this.state.playCard(player.currentMatchPlayer, cardID);
+    startPlayCard(player, cardID = null) {
+        if(this.playCardManager === null) {
+            let result = this.state.startPlayCard(player.currentMatchPlayer, cardID);
+            
+            if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
+                if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos, true);
+                if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don', result.actionInfos, false);
+            } else if(result.actionResult === PLAY_CARD_STATES.CARD_BEING_PLAYED) {
+                if(!player.bot) player.socket.emit('game_play_card_being_played', result.actionInfos, true);
+                if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_being_played', result.actionInfos, false);
+            }
+        } else if(this.playCardManager.currentPhase === 'PLAY_PHASE_READY') {
+            console.log("CHECKING IF CARD NEEDS TO BE REPLACED");
+            let result = this.state.startPlayReplaceCard(player.currentMatchPlayer, this.playCardManager.playedCard);
 
-        if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
+            if(result.actionResult === PLAY_CARD_STATES.NO_REPLACEMENT) {
+                this.flagManager.handleFlag(player, 'PLAY_REPLACEMENT_PHASE_READY');
+            }
+            else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
+                //if(!player.bot) player.socket.emit('game_play_select_replacement', result.actionInfos, true);
+                //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_select_replacement', result.actionInfos, false);
+            }
+        } else if(this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
+            console.log("PLAYING CARD REPLACEMENT");
+            let result = this.state.startOnEventPlayCard(player.currentMatchPlayer, this.playCardManager.playedCard);
+            
+            if(result.actionResult === PLAY_CARD_STATES.NO_ON_PLAY_EVENT) {
+                this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+            } else if(result.actionResult === PLAY_CARD_STATES.EVENT_RESOLVED) {
+                this.playCardManager.abilityId = result.actionInfos.abilityId;
+                this.playCardManager.onPlayEventActions = result.actionInfos.abilityResults;
+                this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+            } else if(result.actionResult === PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED) {
+                this.pending_action = result;
+                this.resolving_pending_action = true;
+
+                if(!player.bot) player.socket.emit('game_play_card_event_triggered', result.actionInfos, true, result.targetData);
+            }
+        } else if(this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY') {
+            console.log("READY TO PLAY THE CARD");
+
+            this.state.playCard(player.currentMatchPlayer, this.playCardManager.playedCard);
+
+            let actionInfos = {};
+            actionInfos.cardPlayed = this.playCardManager.playedCard.id;
+            actionInfos.cardPlayedData = this.playCardManager.playedCard.cardData;
+            actionInfos.replacedCard = this.playCardManager.replacedCard? this.playCardManager.replacedCard.id : null;
+            actionInfos.abilityId = this.playCardManager.abilityId;
+            actionInfos.eventAction = this.playCardManager.onPlayEventActions;
+
+            if(!player.bot) player.socket.emit('game_play_card_played', actionInfos, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', actionInfos, false);
+
+            this.playCardManager = null; //Reset the play card manager
+        }
+        
+
+        /*if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
             if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don', result.actionInfos, false);
         } else if(result.actionResult === PLAY_CARD_STATES.CARD_PLAYED) {
@@ -315,7 +373,7 @@ class Match {
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_return_to_hand', result.actionInfos, false);
         } else if(result.actionResult === PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED) {
             if(!player.bot) player.socket.emit('game_play_card_played', result.actionInfos, true, true, result.targetData);
-        }
+        }*/
     }
 
     /** Function that handles playing a card and replacing an old one

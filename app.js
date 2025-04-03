@@ -234,6 +234,8 @@ io.on('connection', function (/** @type {object} */ socket) {
     });
 
     socket.on('player_play_card', (cardID) => {socket.player.match.startPlayCard(socket.player, cardID);});
+    socket.on('player_play_start_play_card_complete', () => {socket.player.match.flagManager.handleFlag(socket.player, 'PLAY_PHASE_READY');});
+
     socket.on('player_attach_don_to_character', (donID, characterID) => {socket.player.match.startAttachDonToCharacter(socket.player, donID, characterID);});
 
     socket.on('player_cancel_targeting', () => {socket.player.match.resolvePendingAction(socket.player, true);});

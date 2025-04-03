@@ -9,6 +9,8 @@ const CARD_STATES = Object.freeze({
     IN_DISCARD: 'IN_DISCARD',
     IN_LIFEDECK: 'IN_LIFEDECK',
 
+    BEING_PLAYED: 'BEING_PLAYED',
+
     IN_PLAY: 'IN_PLAY',
     IN_PLAY_RESTED: 'IN_PLAY_RESTED',
     IN_PLAY_FIRST_TURN: 'IN_PLAY_FIRST_TURN',
@@ -173,7 +175,7 @@ class MatchCard extends Card{
             }
         }
 
-        console.log(`Can ${this.id} block? ${canBlock}`);
+        //console.log(`Can ${this.id} block? ${canBlock}`);
     
         return canBlock;
     }

@@ -146,10 +146,13 @@ class Client {
         this.socket.on('game_play_card_not_enough_don', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.playCardNotEnoughDon(actionInfos, activePlayer);
         });
+        this.socket.on('game_play_card_being_played', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startPlayCard(actionInfos, activePlayer);
+        });
         this.socket.on('game_play_card_return_to_hand', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.playCardReturnToHand(actionInfos, activePlayer);
         });
-        this.socket.on('game_play_card_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
+        /*this.socket.on('game_play_card_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {
                 if(activePlayer && requiresTargeting) {
                     let targetManager = new TargetManager(this.gameScene, 'PLAY', actionInfos.actionId, actionInfos.playedCard);
@@ -157,6 +160,11 @@ class Client {
                     targetManager.loadFromTargetData(targetData);
                 }
                 this.gameScene.gameStateManager.playCard(actionInfos, activePlayer, requiresTargeting);
+            }
+        });*/
+        this.socket.on('game_play_card_played', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                this.gameScene.gameStateManager.playCard(actionInfos, activePlayer);
             }
         });
         this.socket.on('game_play_card_cancel_replacement_target', (cardID, activePlayer) => {
@@ -347,6 +355,7 @@ class Client {
 
     //#region REQUEST CARD PLAY
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
+    requestStartPlayCardComplete () {this.socket.emit('player_play_start_play_card_complete');}
     requestPlayerAttachDonToCharacter (donID, characterID) {this.socket.emit('player_attach_don_to_character', donID, characterID);}
     //#endregion
 

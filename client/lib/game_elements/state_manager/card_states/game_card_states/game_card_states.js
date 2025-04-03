@@ -49,17 +49,17 @@ class GameCardState {
                 newFSMState = new FirstTurnState(this.card);
                 break;
             case GAME_CARD_STATES.IN_DISCARD:
-                this.card.state = new InDiscardState(this.card);
+                newFSMState = new InDiscardState(this.card);
                 break;
             case GAME_CARD_STATES.TRAVELLING_DURING_COUNTER:
                 newFSMState = new TravellingStateDuringCounter(this.card);
                 break;
             /*case GAME_CARD_STATES.ATTACHED:
                 this.card.state = new AttachedState(this.card);
-                break;
-            case GAME_CARD_STATES.IN_ACTION:
-                this.card.state = new InActionState(this.card);
                 break;*/
+            case GAME_CARD_STATES.IN_ACTION:
+                newFSMState = new InActionState(this.card);
+                break;
             default:
                 newFSMState = null;
                 break;

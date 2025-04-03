@@ -4,6 +4,7 @@ const { PLAY_CARD_STATES, CARD_TYPES, ATTACH_DON_TO_CHAR_STATES, MATCH_CONSTANTS
 const MatchPlayer = require('./match_player')
 const {AttackManager} = require('../managers/attack_manager');
 const {MatchCard} = require('./match_card');
+const PlayCardManager = require('../managers/play_card_manager');
 
 //#region MATCH PHASES OBJECT
 const MATCH_PHASES = Object.freeze({
@@ -216,7 +217,72 @@ class MatchState {
      * @param {MatchPlayer} player - player object
      * @param {number} cardId - card id
      */
-    playCard(player, cardId) {
+    startPlayCard(player, cardId) {
+        //Check the card cost and wether there are enough resources to play the card
+        let card = player.inHand.find(card => card.id === cardId);
+        let cardCost = card.cardData.cost;
+        let availableActiveDon = player.inActiveDon.length;
+
+        if(cardCost>availableActiveDon) return {actionResult: PLAY_CARD_STATES.NOT_ENOUGH_DON, actionInfos: {playedCard: cardId}};
+        else {
+            this.match.playCardManager = new PlayCardManager(card);
+            let actionInfos = player.playCard(cardId);
+            return {actionResult: PLAY_CARD_STATES.CARD_BEING_PLAYED, actionInfos: actionInfos};
+        }
+    }
+
+    /** Function to check if card needs to replace another
+     * @param {MatchPlayer} player - player object
+     * @param {MatchCard} card - card id
+     */
+    startPlayReplaceCard(player, card) {
+        if(card.cardData.card === CARD_TYPES.CHARACTER && player.inCharacterArea.length >= MATCH_CONSTANTS.MAX_CHARACTERS_IN_AREA) {
+            return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {playedCard: card.id}};
+        }
+        if(card.cardData.card === CARD_TYPES.STAGE && player.inStageLocation !== null) {
+            return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {playedCard: card.id}};
+        }
+        return {actionResult: PLAY_CARD_STATES.NO_REPLACEMENT, actionInfos: {}};
+    }
+
+    /** Function to check if card needs to replace another
+     * @param {MatchPlayer} player - player object
+     * @param {MatchCard} card - card id
+     */
+    startOnEventPlayCard(player, card) {
+        if(!card.getAbilityByType("ON_PLAY")) {
+            return {actionResult: PLAY_CARD_STATES.NO_ON_PLAY_EVENT, actionInfos: {}};
+        }
+
+        for(let ability of card.abilities) {
+            if(!ability.canActivate(card, this.current_phase)) return {actionResult: PLAY_CARD_STATES.NO_ON_PLAY_EVENT, actionInfos: {}};
+        }
+        
+        //If the ability needs targeting
+        let targets = card.getAbilityTargets();
+        if(targets !== null) {
+            console.log("TARGETING REQUIRED FOR THIS CARD");
+            let cardData = card.cardData;
+            actionInfos = {actionId: 'EVENT_' + cardId, playedCard: card.id, playedCardData: cardData};
+            return actionInfos;
+        } else {
+            //Gather ability infos for the client
+            let abilityResults = null;
+            let abilityId = 0;
+            for(let ability of card.abilities) {
+                abilityResults = this.match.resolveAbility(player, card.id, ability.id);
+                ablityId = ability.id;
+            }
+
+            return {actionResult: PLAY_CARD_STATES.EVENT_RESOLVED, ablityId: abilityId,  abilityResults: abilityResults};
+        }
+    }
+
+    /** Function that determines if a card can be played
+     * @param {MatchPlayer} player - player object
+     * @param {number} cardId - card id
+     */
+    /*playCard(player, cardId) {
         //Check the card cost and wether there are enough resources to play the card
         let card = player.inHand.find(card => card.id === cardId);
         let cardCost = card.cardData.cost;
@@ -300,6 +366,19 @@ class MatchState {
 
                 return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
             }
+        }
+    }*/
+    playCard(player, card) {
+        if(card.cardData.card === CARD_TYPES.CHARACTER) {
+            return player.playCharacter(card, this.match.playCardManager.replacedCard);
+        }
+
+        if(card.cardData.card === CARD_TYPES.STAGE) {
+            return player.playStage(card, this.match.playCardManager.replacedCard);
+        }
+
+        if(card.cardData.card === CARD_TYPES.EVENT) {
+            return player.playEvent(card);
         }
     }
 

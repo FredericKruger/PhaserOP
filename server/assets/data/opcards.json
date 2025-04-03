@@ -6058,7 +6058,7 @@
         "card":"CHARACTER",
         "type":["Straw Hat Crew"],
         "colors":["RED"],
-        "cost":0,
+        "cost":2,
         "power":2000,
         "attribute":"RANGED",
         "isleader":0,
@@ -6077,10 +6077,10 @@
                 "phases": [],
                 "states": ["IN_PLAY_ATTACKING"],
                 "conditions": [
-                    {"type": "ATTACHED_DON", "value": 1}
+                    {"type": "ATTACHED_DON", "value": 2}
                 ],
                 "aurainfo": {
-                    "duration": "BATTLE",
+                    "duration": "GAME",
                     "affectedPlayers": ["owner", "opponent"]
                 },
                 "target": {
@@ -6096,7 +6096,6 @@
                     ]
                 },
                 "actions": [
-                    {"name": "addPowerToCard_Aura", "params": {"amount": 2000, "duration": "TURN"}},
                     {"name": "canBlock_Aura", "params": {"value": false}}
                 ]
             },
@@ -6420,9 +6419,30 @@
                     "posx": 300,
                     "posy": 608
                 },
-                "type": "WHEN_ATTACKING",
+                "type": "AURA",
                 "phases": [],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "states": ["IN_PLAY_ATTACKING"],
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 2}
+                ],
+                "aurainfo": {
+                    "duration": "GAME",
+                    "affectedPlayers": ["owner", "opponent"]
+                },
+                "target": {
+                    "targetAction": "AURA_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "exclude": ["SELF"],
+                            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "canBlock_Aura", "params": {"value": false}}
+                ]
             }
         ]
     },    

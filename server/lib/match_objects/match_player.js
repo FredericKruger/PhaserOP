@@ -88,11 +88,34 @@ class MatchPlayer {
         return startID;
     }
 
-    //#region PLAY EVENT
-    /** Function that plays an event 
+    //#region PLAY CARD
+    /** Function that plays the card and spends the required DON 
      * @param {number} cardID - ID of the card to be played
     */
-    playEvent(cardID) {
+    playCard(cardID) {
+        let card = this.inHand.find(c => c.id === cardID); //Get the card
+
+        card.setState(CARD_STATES.BEING_PLAYED); //Set the state to being played
+
+        //Remove the resources from the active don
+        let donIDs = [];
+        for(let i=0; i<card.cardData.cost; i++) {
+            let donCard = this.inActiveDon.pop();
+            donCard.setState(CARD_STATES.DON_RESTED);
+            this.inExertenDon.push(donCard);
+            donIDs.push(donCard.id);
+        }
+
+        return {playedCard: cardID, playedCardData: card.cardData, spentDonIds: donIDs};
+    }
+
+    //#endregion
+
+    //#region PLAY EVENT
+    /** Function that plays an event 
+     * @param {<atchCard>} cardID - ID of the card to be played
+    */
+    /*playEvent(cardID) {
         let card = this.inHand.find(c => c.id === cardID); //Get the card
 
         this.removeCardFromHand(card); //remove the card from the hand
@@ -108,6 +131,12 @@ class MatchPlayer {
         }
 
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: -1, spentDonIds: donIDs};
+    }*/
+    playEvent(card) {
+        this.removeCardFromHand(card); //remove the card from the hand
+        this.discardCard(card); //discard the card
+
+        return {playedCard: cardID, playedCardData: card.cardData};
     }
     //#endregion
 
@@ -116,7 +145,7 @@ class MatchPlayer {
      * @param {number} cardID - ID of the card to be played
      * @param {boolean} replacePreviousCard - flag to replace the
      */
-    playStage(cardID, replacePreviousCard, replacedCardID = -1) {
+    /*playStage(cardID, replacePreviousCard, replacedCardID = -1) {
         let card = this.inHand.find(c => c.id === cardID); //Get the card
 
         let previousCardID = -1;
@@ -142,6 +171,18 @@ class MatchPlayer {
         }
 
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: previousCardID, spentDonIds: donIDs};
+    }*/
+    playStage(card, replacedCard) {
+        if(replacedCard) {
+            this.inDiscard.push(replacedCard); //push the previous card to the discard if it needs to be replaced
+            replacedCard.setState(CARD_STATES.IN_DISCARD); //set the state  
+        }
+
+        this.inStageLocation = card; //Add stage to the location
+        this.removeCardFromHand(card); //Remove the card from the hand
+        card.setState(CARD_STATES.IN_PLAY); //Set the state
+
+        return;
     }
     //#endregion
 
@@ -151,7 +192,7 @@ class MatchPlayer {
      * @param {boolean} replacePreviousCard - flag to replace the previous card
      * @param {number} replacedCardID - ID of the card to be replaced
      */
-    playCharacter(cardID, replacePreviousCard = false, replacedCardID = -1) {
+    /*playCharacter(cardID, replacePreviousCard = false, replacedCardID = -1) {
         let card = this.inHand.find(c => c.id === cardID); //First get the card from the hand
 
         //If a card is replaced remove it from the character area and add it to the discard
@@ -179,6 +220,21 @@ class MatchPlayer {
         //if(replacePreviousCard) return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
         //else return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
+    }*/
+    playCharacter(card, replacedCard = null) {
+        //If a card is replaced remove it from the character area and add it to the discard
+        if(replacedCard) {
+            this.discardCard(replacedCard); //discard the card
+            this.inCharacterArea = this.inCharacterArea.filter(c => c.id !== replacedCard.id); //remove it from the character area
+        }
+
+        //Add the card to the character area
+        this.inCharacterArea.push(card); //add to the character area
+        this.removeCardFromHand(card); //remove from the hand
+        card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //set the state
+
+        //Return the info for the client
+        return;
     }
     //#endregion
 
