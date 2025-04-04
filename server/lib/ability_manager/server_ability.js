@@ -131,7 +131,7 @@ const serverAbilityActions = {
 
         //find defender
         const counterAmount = params.amount;
-        const defender = match.state.getCard(targets);
+        const defender = match.state.getCard(targets[0]);
         defender.eventCounterAmount = counterAmount;
 
         actionResults.defenderId = defender.id;

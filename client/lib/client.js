@@ -193,15 +193,6 @@ class Client {
         this.socket.on('game_declare_attack_phase', (attackerID, defenderID, activePlayer, botAction) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.declareAttackPhase(attackerID, defenderID, activePlayer, botAction);
         });
-        this.socket.on('game_start_targeting_attack_passiveplayer', (cardID) => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerStartTargetingAttack(cardID);
-        });
-        this.socket.on('game_udpate_targeting_attack_passiveplayer', (relX, relY) => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerUpdateTargetingAttack(relX, relY);
-        });
-        this.socket.on('game_stop_targeting_attack_passiveplayer', () => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.passivePlayerStopTargetingAttack();
-        });
         this.socket.on('game_cancel_attack', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelAttack(activePlayer);
         });
@@ -364,8 +355,6 @@ class Client {
 
     //#region REQUEST ATTACK
     requestStartTargetingAttack (cardID) {this.socket.emit('player_start_targeting_attack', cardID);}
-    requestStartTargetingPassivePlayer (cardID) {this.socket.emit('player_start_targeting_passiveplayer', cardID);}
-    requestUpdateTragetingPassivePlayer (relX, relY) {this.socket.emit('player_udpate_targeting_attack_passiveplayer', relX, relY);}
     requestStartOnAttackEventPhase () {this.socket.emit('player_on_attack_event_phase_ready');}
     requestStartOnAttackEventPhasePassivePlayer () {this.socket.emit('player_on_attack_event_phase_ready_passive_player');}
     requestStartBlockerPhase () {this.socket.emit('player_blocker_phase_ready');}

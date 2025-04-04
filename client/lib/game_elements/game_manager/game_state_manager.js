@@ -835,32 +835,6 @@ class GameStateManager {
         player.selectAttackTarget(actionInfos, isPlayerTurn);
     }
 
-    /** Function to start the targeting from the attack 
-     * @param {number} cardID - The card ID
-    */
-    passivePlayerStartTargetingAttack(cardID) {
-        let card = this.scene.passivePlayerScene.getCard(cardID);
-        this.scene.targetingArrow.startManualTargetingXY(card, card.x, card.y);
-    }
-
-    /** Function to update the targeting arrow from the attack
-     * @param {number} relX - The relative X position
-     * @param {number} relY - The relative Y position
-     */
-    passivePlayerUpdateTargetingAttack(relX, relY) {
-        let posX = relX * this.scene.screenWidth;
-        let posY = relY * this.scene.screenHeight;
-
-        let newY = this.scene.screenHeight - posY;
-
-        this.scene.targetingArrow.update(posX, newY);
-    }
-
-    /*** Function to stop the targetting of an attack */
-    passivePlayerStopTargetingAttack() {
-        this.scene.targetingArrow.stopTargeting();
-    }
-
     /** Function to start the attack phase
      * @param {number} attackerID - The attacker ID
      * @param {number} defenderID - The defender ID

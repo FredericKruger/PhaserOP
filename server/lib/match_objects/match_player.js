@@ -143,7 +143,7 @@ class MatchPlayer {
         this.removeCardFromHand(card); //remove the card from the hand
         this.discardCard(card); //discard the card
 
-        return {playedCard: cardID, playedCardData: card.cardData};
+        return;
     }
     //#endregion
 

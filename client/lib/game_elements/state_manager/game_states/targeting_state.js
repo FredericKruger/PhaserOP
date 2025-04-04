@@ -158,12 +158,6 @@ class TargetingState extends GameState {
             let posY = this.scene.input.mousePointer.y;
 
             this.targetManager.targetArrow.update(posX, posY);
-
-            if(this.targetManager.targetAction === 'ATTACK_CARD_ACTION') {
-                let relX = posX / this.scene.screenWidth;
-                let relY = posY / this.scene.screenHeight;
-                this.scene.game.gameClient.requestUpdateTragetingPassivePlayer(relX, relY);
-            }
         }
 
         //Update all cards in the hand to reflect if they can take an action

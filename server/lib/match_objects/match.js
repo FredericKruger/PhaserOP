@@ -320,7 +320,7 @@ class Match {
                 if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_being_played', result.actionInfos, false);
             }
         } else if(this.playCardManager.currentPhase === 'PLAY_PHASE_READY') {
-            console.log("CHECKING IF CARD NEEDS TO BE REPLACED");
+            //console.log("CHECKING IF CARD NEEDS TO BE REPLACED");
             let result = this.state.startPlayReplaceCard(player.currentMatchPlayer, this.playCardManager.playedCard);
 
             if(result.actionResult === PLAY_CARD_STATES.NO_REPLACEMENT) {
@@ -333,7 +333,7 @@ class Match {
                 if(!player.bot) player.socket.emit('game_play_select_replacement', result.actionInfos, true);
             }
         } else if(this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
-            console.log("CHECKING IF CARDS HAS EVENT");
+            //console.log("CHECKING IF CARDS HAS EVENT");
             let result = this.state.startOnEventPlayCard(player.currentMatchPlayer, this.playCardManager.playedCard);
             
             if(result.actionResult === PLAY_CARD_STATES.NO_ON_PLAY_EVENT) {
@@ -349,8 +349,7 @@ class Match {
                 if(!player.bot) player.socket.emit('game_play_card_event_triggered', result.actionInfos, true);
             }
         } else if(this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY') {
-            console.log("READY TO PLAY THE CARD");
-
+            //console.log("READY TO PLAY THE CARD");
             this.state.playCard(player.currentMatchPlayer, this.playCardManager.playedCard);
 
             let actionInfos = {};
@@ -537,19 +536,23 @@ class Match {
 
     /** Function to start the blocker phase */
     startBlockerPhase() {
-        //test if there are any blockers in the passive players area which are not rested
-        this.attackManager.blockPhase_Complete = true;
-        this.state.current_phase = MATCH_PHASES.BLOCK_PHASE;
+        if( !this.attackManager.blockPhase_Complete
+            && this.flagManager.checkFlag('BLOCKER_PHASE_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('BLOCKER_PHASE_READY_PASSIVE_PLAYER', this.state.current_passive_player)){
+            //test if there are any blockers in the passive players area which are not rested
+            this.attackManager.blockPhase_Complete = true;
+            this.state.current_phase = MATCH_PHASES.BLOCK_PHASE;
 
-        //Check if the player has available blockers
-        if(this.state.current_passive_player.currentMatchPlayer.hasAvailableBlockers(this.state.current_phase)) {
-            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
+            //Check if the player has available blockers
+            if(this.state.current_passive_player.currentMatchPlayer.hasAvailableBlockers(this.state.current_phase)) {
+                if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
 
-            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
-            else this.ai.startBlockPhase();
-        } else { //If no blockers skip the counter
-            if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');
-            if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
+                if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
+                else this.ai.startBlockPhase();
+            } else { //If no blockers skip the counter
+                if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');
+                if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
+            }
         }
     }
 
@@ -617,7 +620,6 @@ class Match {
             && this.flagManager.checkFlag('ATTACK_CLEANUP_READY', this.state.current_passive_player)){
 
                 this.attackManager.attackCleanup_Complete = true;
-                console.log("READY FOR CLEANUP");
 
                 const cleanupResults = this.state.attackCleanup(this.attackManager.attack.defendingPlayer);
 
@@ -721,8 +723,6 @@ class Match {
                     } else {
                         player.socket.emit('game_reset_targets');
                     }
-                } else {
-                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_stop_targeting_attack_passiveplayer');
                 }
                 break;
             case PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED:

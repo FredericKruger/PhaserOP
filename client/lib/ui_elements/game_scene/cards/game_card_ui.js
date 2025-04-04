@@ -484,6 +484,15 @@ class GameCardUI extends BaseCardUI{
         return null;
     }
 
+    canActivateAbility(abilityType) {
+        for(let ability of this.abilities) {
+            if(ability.type === abilityType) {
+                return ability.canActivate(this.scene.gameStateManager.currentGamePhase);
+            } 
+        } 
+        return false; 
+    }
+
     /** Function to test if any ability can be activates
      * @returns {boolean}
      */

@@ -124,7 +124,7 @@ class TravellingStateDuringCounter extends GameCardState {
                     gameObject.scene.game.gameClient.requestPlayerAttachCounterToCharacter(gameObject.id, character.id);
                     sendCardToHand = false;
                 } 
-            } else if(gameObject.cardData.card === CARD_TYPES.EVENT && gameObject.hasAbility("COUNTER")) {
+            } else if(gameObject.cardData.card === CARD_TYPES.EVENT && gameObject.hasAbility("ON_PLAY") && gameObject.canActivateAbility("ON_PLAY")) {
                 sendCardToHand = false;
                 gameObject.scene.game.gameClient.requestPlayerPlayCard(gameObject.id); 
             }

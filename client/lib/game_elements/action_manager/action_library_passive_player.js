@@ -462,9 +462,15 @@ class ActionLibraryPassivePlayer {
         //Update playArea action
         let updateAction = new Action();
         updateAction.start = () => {   
-            card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
-            let cardPosition = playerScene.characterArea.update(card);
-            card.enterCharacterArea(cardPosition.x, cardPosition.y);
+              if(card.cardData.card === CARD_TYPES.CHARACTER) {
+                let cardPosition = playerScene.characterArea.update(card);
+                card.enterCharacterArea(cardPosition.x, cardPosition.y);
+            } else if(card.cardData.card === CARD_TYPES.STAGE) {
+                let cardPositionX = playerScene.stageLocation.posX;
+                let cardPositionY = playerScene.stageLocation.posY;
+
+                card.enterCharacterArea(cardPositionX, cardPositionY);
+            }
         };
         updateAction.isPlayerAction = false; //This is a player triggered action
         updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation

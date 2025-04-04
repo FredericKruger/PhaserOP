@@ -31,7 +31,7 @@ const CARD_TYPES = Object.freeze({
 });
 
 const MATCH_CONSTANTS = Object.freeze({
-    MAX_CHARACTERS_IN_AREA: 1,
+    MAX_CHARACTERS_IN_AREA: 5,
 });
 
 const TARGET_ACTION = Object.freeze({

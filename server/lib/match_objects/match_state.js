@@ -287,7 +287,6 @@ class MatchState {
         //If the ability needs targeting
         let targets = onPlayAbility.target;
         if(targets) {
-            console.log("TARGETING REQUIRED FOR THIS CARD");
             let cardData = card.cardData;
             let actionInfos = {actionId: 'EVENT_' + card.id, playedCard: card.id, ability: onPlayAbility.id, targetData: targets};
             return {actionResult: PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED, actionInfos: actionInfos};

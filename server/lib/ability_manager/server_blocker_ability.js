@@ -13,8 +13,9 @@ class ServerBlockerAbility extends ServerAbility {
      * @param {Player} player
      * @param {Match} match
      */
-    action(card, player, match) {
-        super.action(card, match);
+    action(player, targets) {
+        const match = matchRegistry.get(this.matchId);
+        const card = match.matchCardRegistry.get(this.cardId);
         // Blocker ability action
         match.attackManager.attack.switchDefender(card);
         match.startBlockAttack(card.id);

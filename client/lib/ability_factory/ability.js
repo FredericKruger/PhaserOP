@@ -43,7 +43,6 @@ class Ability {
     canActivate(gamePhase) {
         // Check if in correct phase
         if (this.phases.length > 0 && !this.phases.includes(gamePhase)) {
-            //console.log(`Ability ${this.id} cannot be activated in phase ${gamePhase}`);
             return false;
         }
 
@@ -94,8 +93,8 @@ class Ability {
                 if(!this.card.turnPlayed && !condition.value) return true;
                 return false;
             case 'CAN_BLOCK':
-                if(this.card.canBlock() && condition.value) return true;
-                if(!this.card.canBlock() && !condition.value) return true;
+                if(this.card.canBlock && condition.value) return true;
+                if(!this.card.canBlock && !condition.value) return true;
                 return false;
             // More conditions...
             default:
