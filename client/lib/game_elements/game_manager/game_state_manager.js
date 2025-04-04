@@ -697,19 +697,6 @@ class GameStateManager {
         }
     }
 
-    /** When a card couldnt be played */
-    playCardReturnToHand(actionInfos, isPlayerTurn) {
-        //Get the card
-        let player = this.scene.activePlayerScene;
-        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
-        
-        let card = player.hand.getCard(actionInfos.playedCard);
-        //Change card state to in hand
-        card.setState(CARD_STATES.IN_HAND);
-        card.hideGlow();
-        player.hand.update();
-    }
-
     /** Function to  */
     startPlayCard(actionInfos, isPlayerTurn) {
         let player = this.scene.activePlayerScene;
@@ -746,16 +733,18 @@ class GameStateManager {
     /** Function to start the targeting of a card replacement
      * @param {Object} actionInfos - The action infos
      * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {string} type
      */
-    selectReplacementTarget(actionInfos, isPlayerTurn) {
+    selectTarget(actionInfos, isPlayerTurn, type) {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         let card = player.getCard(actionInfos.playedCard);
-        let targetManager = new TargetManager(this.scene, 'PLAY', actionInfos.actionId, actionInfos.playedCard);
+        let targetManager = new TargetManager(this.scene, type, actionInfos.actionId, actionInfos.playedCard);
         this.scene.targetManagers.push(targetManager);
         targetManager.loadFromTargetData(actionInfos.targetData);
 
+        console.log("STARTING TARGETING " + type)
         this.scene.actionLibrary.startTargetingAction(this, card, false);
     }
 
@@ -1121,7 +1110,7 @@ class GameStateManager {
     resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn) {
         const card = this.scene.getCard(cardID);
         const ability = card.getAbility(abilityID);
-        this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.abilityResults);
+        this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.abilityResults, isPlayerTurn);
 
         if(actionInfos.actionId.startsWith("ON_ATTACK_EVENT")) {
             if(isPlayerTurn) this.scene.game.gameClient.requestStartBlockerPhase();

@@ -12,8 +12,9 @@ class AbilityFactory {
                 return new PassiveAbility(abilityData);
             case 'ACTIVE':
                 return new ActiveAbility(abilityData);
+            case 'ON_PLAY':
             case 'WHEN_ATTACKING':
-                return new WhenAttackingAbility(abilityData);
+                return new OnEventAbility(abilityData);
             case 'AURA':
                 return new AuraAbility(abilityData);
             default:

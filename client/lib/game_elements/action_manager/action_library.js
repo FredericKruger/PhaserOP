@@ -394,7 +394,7 @@ class ActionLibrary {
                     // Phase 4: Hold the card in display position
                     // This phase is shorter since specific card arrival animations will be handled elsewhere
                     scale: CARD_SCALE.IN_PLAY_ANIMATION,
-                    duration: 600,
+                    duration: 50,
                     onComplete: () => {                        
                         // Complete the action
                         this.actionManager.completeAction();
@@ -440,120 +440,6 @@ class ActionLibrary {
          *  start: Pay Cost, Remove from hand, add to playarea
          *  end: play exert animation to show card is drying. Send Server a message about card being played
         */
-    /*playCardAction(playerScene, card, spentDonIds, replacedCard = null, abilityInfo = null) {
-        let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
-        let displayY = this.scene.screenCenterY;
-
-        // Enhanced animation for playing a card - more dynamic initial display only
-        let start_animation = this.scene.tweens.chain({
-            targets: card,
-            tweens: [
-                {
-                    // Phase 2: Move to center display position with dramatic scaling
-                    scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 0.9, to: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, duration: 130},
-                    x: {from: card.x + (displayX - card.x) * 0.3, to: displayX, duration: 130},
-                    y: {from: card.y - 40, to: displayY, duration: 130},
-                    rotation: {from: 0.05, to: 0, duration: 130},
-                    ease: 'Power2.easeInOut'
-                },
-                {
-                    // Phase 3: Quick scale adjustment for emphasis with slight bounce
-                    scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, to: CARD_SCALE.IN_PLAY_ANIMATION, duration: 100},
-                    ease: 'Back.easeOut',
-                },
-                {
-                    // Phase 4: Hold the card in display position
-                    // This phase is shorter since specific card arrival animations will be handled elsewhere
-                    scale: CARD_SCALE.IN_PLAY_ANIMATION,
-                    duration: 600,
-                    onComplete: () => {                        
-                        // Complete the action
-                        this.actionManager.completeAction();
-                    }
-                }
-            ]
-        }).pause();
-
-        //Create the action
-        let action = new Action();
-        action.start = () => { //Start function
-            //PAY COST
-            playerScene.activeDonDeck.payCost(spentDonIds);
-
-            playerScene.hand.removeCard(card); //Remove the card form the hand
-            card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
-
-            card.isInPlayAnimation = true;
-            if(card.cardData.card === CARD_TYPES.CHARACTER)
-                playerScene.characterArea.addCard(card); //Add the card to the play area
-            else if(card.cardData.card === CARD_TYPES.STAGE)
-                playerScene.stageLocation.addCard(card); //Add the card to the play area
-        };
-        if(replacedCard === null) action.start_animation = start_animation; //Play animation#
-        action.end = () => {
-            //Refresh GameStateUI
-            playerScene.playerInfo.updateCardAmountTexts();
-
-            //If the card of an event
-            if(card.cardData.card === CARD_TYPES.EVENT) {
-                //execute ability and init ability tweens
-                let abilityTweens = [];
-                for(let ability of card.abilities) {
-                    if(ability.canActivate(card.scene.gameStateUI.phaseText.text)) { //For each ability that can be activated
-                        abilityTweens = abilityTweens.concat(ability.animate(card, abilityInfo)); //Add the ability tween
-                    }
-                }
-
-                //If there are abilities to animate
-                if(abilityTweens.length>0) {
-                    //Add action finalizer call
-                    abilityTweens = abilityTweens.concat({ //concat additional tween to call the completeAction function
-                        duration: 10,
-                        onComplete: () => {this.actionManager.finalizeAction();}
-                    });
-                    //Create tween chain
-                    this.scene.actionManager.currentAction.end_animation = this.scene.tweens.chain({
-                        targets: card,
-                        tweens: abilityTweens
-                    }).pause();
-                }
-            }
-        };
-        action.finally = () => {      
-            //TODO add check for rush
-            if(card.cardData.card === CARD_TYPES.CHARACTER) {
-                card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play
-            } else if(card.cardData.card === CARD_TYPES.EVENT) {
-                this.scene.actionLibrary.discardCardAction(playerScene, card); //Create a discard Action
-            }
-            else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
-        };
-
-        action.isPlayerAction = true; //This is a player triggered action
-        action.waitForAnimationToComplete = (replacedCard === null); //Should wait for the endof the animation
-        action.name = "PLAY";
-
-        //Add action to the action stack
-        this.actionManager.addAction(action);
-
-        //Update playArea action
-        let updateAction = new Action();
-        updateAction.start = () => {
-            if(card.cardData.card === CARD_TYPES.CHARACTER) {
-                let cardPosition = playerScene.characterArea.update(card);
-                card.enterCharacterArea(cardPosition.x, cardPosition.y);
-            } else if(card.cardData.card === CARD_TYPES.STAGE) {
-                let cardPositionX = playerScene.stageLocation.posX;
-                let cardPositionY = playerScene.stageLocation.posY;
-
-                card.enterCharacterArea(cardPositionX, cardPositionY);
-            }
-        }; 
-        updateAction.isPlayerAction = true; //This is a player triggered action
-        updateAction.waitForAnimationToComplete = false; //Should wait for the endof the animation
-        //Add action to the action stack
-        this.actionManager.addAction(updateAction);
-    }*/
     playCardAction(playerScene, card, actionInfos) {
         /** First create action to resolve replacement */
         if(actionInfos.replacedCard) {
@@ -562,9 +448,10 @@ class ActionLibrary {
         }
 
         /** Create action to play on play event results */
-        if(actionInfos.abilityId && actionInfos.eventAction.length > 0) {
+        if(actionInfos.abilityId && actionInfos.eventAction) {
+            //Get the ability and resolve the action
             let ability = card.getAbility(actionInfos.abilityId);
-            this.resolveAbilityAction(card, ability, actionInfos.eventAction);
+            this.resolveAbilityAction(card, ability, actionInfos.eventAction, true);
         }
 
         //Create the action
@@ -1008,9 +895,10 @@ class ActionLibrary {
      * @param {GameCardUI} card
      * @param {Ability} ability
      * @param {Object} abilityInfo
+     * @param {boolean} activePlayer - If it is the active player
      */
-    resolveAbilityAction(card, ability, abilityInfo) {
-        let abilityTweens = ability.animate(card, abilityInfo); //Add the ability tween
+    resolveAbilityAction(card, ability, abilityInfo, activePlayer = true) {
+        let abilityTweens = ability.animate(card, abilityInfo, activePlayer); //Add the ability tween
 
         if(abilityTweens.length === 0) return;
 

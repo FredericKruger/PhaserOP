@@ -1,4 +1,4 @@
-class WhenAttackingAbility extends Ability {
+class OnEventAbility extends Ability {
 
     constructor(config) {
         super(config);

@@ -6128,7 +6128,37 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "abilities": [
+            {
+                "id": "ST01-004-1",
+                "text": "",
+                "art": {
+                    "art": "ST01-004-ABILITY1",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "ON_PLAY",
+                "states": ["BEING_PLAYED"],
+                "phases": ["Main Phase"],
+                "target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"],
+                            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                            "exclude": ["SELF"]
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "addPowerToCard", "params": {"amount": 5000, "target": "TARGET", "duration": "TURN"}}
+                ]
+            }
+        ]
     },    
     {
         "id":369,

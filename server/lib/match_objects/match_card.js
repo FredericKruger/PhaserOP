@@ -35,13 +35,17 @@ class Card {
         this.id = id;
         this.owner = owner;
         
+        this.previousState = null; //Previous state of the card 
         this.state = CARD_STATES.IN_DECK;
     }
 
     /** Function to set the state of the card
      * @param {string} state - state of the card
      */
-    setState(state) {this.state = state;}
+    setState(state) {
+        this.previousState = this.state;
+        this.state = state;
+    }
 }
 
 /** Plaing card class */
@@ -106,7 +110,9 @@ class MatchCard extends Card{
         return this.abilities.find(ability => ability.type === type);
     }
 
-    /** Function that returns all the targets for the abilities */
+    /** Function that returns all the targets for the abilities 
+     * * @param {string} abilityId - ID of the ability
+    */
     getAbilityTargets(abilityId = null) {
         let targets = null; //FIXME May need several target object
         for(let ability of this.abilities) {

@@ -149,19 +149,6 @@ class Client {
         this.socket.on('game_play_card_being_played', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startPlayCard(actionInfos, activePlayer);
         });
-        this.socket.on('game_play_card_return_to_hand', (actionInfos, activePlayer) => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.playCardReturnToHand(actionInfos, activePlayer);
-        });
-        /*this.socket.on('game_play_card_played', (actionInfos, activePlayer, requiresTargeting, targetData) => {
-            if(!this.gameScene.gameStateManager.gameOver) {
-                if(activePlayer && requiresTargeting) {
-                    let targetManager = new TargetManager(this.gameScene, 'PLAY', actionInfos.actionId, actionInfos.playedCard);
-                    this.gameScene.targetManagers.push(targetManager);
-                    targetManager.loadFromTargetData(targetData);
-                }
-                this.gameScene.gameStateManager.playCard(actionInfos, activePlayer, requiresTargeting);
-            }
-        });*/
         this.socket.on('game_play_card_played', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) {
                 this.gameScene.gameStateManager.playCard(actionInfos, activePlayer);
@@ -169,7 +156,13 @@ class Client {
         });
         this.socket.on('game_play_select_replacement', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                    this.gameScene.gameStateManager.selectReplacementTarget(actionInfos, activePlayer);
+                    this.gameScene.gameStateManager.selectTarget(actionInfos, activePlayer, 'PLAY');
+            }
+        });
+        this.socket.on('game_play_card_event_triggered', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                console.log("Start Targeting");
+                this.gameScene.gameStateManager.selectTarget(actionInfos, activePlayer, 'EVENT');
             }
         });
         this.socket.on('game_play_card_cancel', (cardID, spentDonIDs, activePlayer) => {

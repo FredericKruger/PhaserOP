@@ -280,28 +280,21 @@ class MatchState {
         if(!card.getAbilityByType("ON_PLAY")) {
             return {actionResult: PLAY_CARD_STATES.NO_ON_PLAY_EVENT, actionInfos: {}};
         }
+        let onPlayAbility = card.getAbilityByType("ON_PLAY");
 
-        for(let ability of card.abilities) {
-            if(!ability.canActivate(card, this.current_phase)) return {actionResult: PLAY_CARD_STATES.NO_ON_PLAY_EVENT, actionInfos: {}};
-        }
+        if(!onPlayAbility.canActivate(card, this.current_phase)) return {actionResult: PLAY_CARD_STATES.NO_ON_PLAY_EVENT, actionInfos: {}};
         
         //If the ability needs targeting
-        let targets = card.getAbilityTargets();
-        if(targets !== null) {
+        let targets = onPlayAbility.target;
+        if(targets) {
             console.log("TARGETING REQUIRED FOR THIS CARD");
             let cardData = card.cardData;
-            actionInfos = {actionId: 'EVENT_' + cardId, playedCard: card.id, playedCardData: cardData};
-            return actionInfos;
+            let actionInfos = {actionId: 'EVENT_' + card.id, playedCard: card.id, ability: onPlayAbility.id, targetData: targets};
+            return {actionResult: PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED, actionInfos: actionInfos};
         } else {
             //Gather ability infos for the client
-            let abilityResults = null;
-            let abilityId = 0;
-            for(let ability of card.abilities) {
-                abilityResults = this.match.resolveAbility(player, card.id, ability.id);
-                ablityId = ability.id;
-            }
-
-            return {actionResult: PLAY_CARD_STATES.EVENT_RESOLVED, ablityId: abilityId,  abilityResults: abilityResults};
+            let abilityResults = this.match.resolveAbility(player, card.id, onPlayAbility.id);
+            return {actionResult: PLAY_CARD_STATES.EVENT_RESOLVED, ability: onPlayAbility.id,  abilityResults: abilityResults};
         }
     }
 
@@ -309,92 +302,6 @@ class MatchState {
      * @param {MatchPlayer} player - player object
      * @param {number} cardId - card id
      */
-    /*playCard(player, cardId) {
-        //Check the card cost and wether there are enough resources to play the card
-        let card = player.inHand.find(card => card.id === cardId);
-        let cardCost = card.cardData.cost;
-        let availableActiveDon = player.inActiveDon.length;
-
-        if(cardCost>availableActiveDon) return {actionResult: PLAY_CARD_STATES.NOT_ENOUGH_DON, actionInfos: {playedCard: cardId}};
-
-        let actionInfos = {};
-        //If the player has enough resources remove the resources and play the card
-        if(card.cardData.card === CARD_TYPES.STAGE) {
-            if(player.inStageLocation === null) { //If empty
-                actionInfos = player.playStage(cardId, false);
-                return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
-            } else {
-                let cardData = player.getCardFromHand(cardId);
-                actionInfos = {actionId: 'PLAY_' + cardId, playedCard: cardId, playedCardData: cardData, replacedCard: -1};
-                let targetData = {
-                    targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
-                    requiredTargets: 1,
-                    targets: [
-                        {
-                            minrequiredtargets: 0,
-                            player: ["active"],
-                            cardtypes: [CARD_TYPES.STAGE],
-                            states: ["IN_PLAY"],
-                            exclude: ["SELF"]
-                        }
-                    ]
-                }
-                this.pending_action = {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetData: targetData};
-                this.resolving_pending_action = true;
-                return this.pending_action;
-            }
-        } else if(card.cardData.card === CARD_TYPES.CHARACTER) { //If the card is a character
-            if(player.inCharacterArea.length < MATCH_CONSTANTS.MAX_CHARACTERS_IN_AREA) { //If there is space in the character area
-                actionInfos = player.playCharacter(cardId, false);
-                return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
-            } else {
-                let cardData = player.getCardFromHand(cardId);
-                actionInfos = {actionId: 'PLAY_' + cardId, playedCard: cardId, playedCardData: cardData, replacedCard: -1};
-                let targetData = {
-                    targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
-                    requiredTargets: 1,
-                    targets: [
-                        {
-                            minrequiredtargets: 0,
-                            player: ["active"],
-                            cardtypes: [CARD_TYPES.CHARACTER],
-                            states: ["IN_PLAY", "IN_PLAY_RESTED", "IN_PLAY_FIRST_TURN"],
-                            exclude: ["SELF"]
-                        }
-                    ]
-                }
-                this.pending_action = {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: actionInfos, targetData: targetData};
-                this.resolving_pending_action = true;
-                return this.pending_action;
-            }
-        } else if(card.cardData.card === CARD_TYPES.EVENT) {
-            //test if the event can be played
-            for(let ability of card.abilities) {
-                if(!ability.canActivate(card, this.current_phase)) return {actionResult: PLAY_CARD_STATES.CONDITIONS_NOT_MET, actionInfos: {playedCard: cardId}};
-            }
-
-            //If the ability needs targeting
-            let targets = card.getAbilityTargets();
-            if(targets !== null) {
-                console.log("TARGETING REQUIRED FOR THIS CARD");
-                let cardData = player.getCardFromHand(cardId);
-                actionInfos = {actionId: 'EVENT_' + cardId, playedCard: cardId, playedCardData: cardData, replacedCard: -1};
-                this.pending_action = {actionResult: PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED, actionInfos: actionInfos, targetData: targets};
-                this.resolving_pending_action = true;
-                return this.pending_action;
-            } else {
-                //Gather ability infos for the client
-                actionInfos = player.playEvent(cardId, false);
-                let abilityResults = null;
-                for(let ability of card.abilities) {
-                    abilityResults = this.match.resolveAbility(player, cardId, ability.id);
-                }
-                actionInfos.abilityResults = abilityResults;
-
-                return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
-            }
-        }
-    }*/
     playCard(player, card) {
         if(card.cardData.card === CARD_TYPES.CHARACTER) {
             return player.playCharacter(card, this.match.playCardManager.replacedCard);
@@ -450,19 +357,6 @@ class MatchState {
 
         return {actionResult: PLAY_CARD_STATES.CARD_PLAYED, actionInfos: actionInfos};
     }
-
-    /** Function to cancel the playing of a card
-     * @param {MatchPlayer} player - player object
-     */
-    cancelPlayCard(player) {
-        let cardID = this.pending_action.actionInfos.playedCard; //Get Card ID
-        
-        this.pending_action = null; //Reset pending action variables
-        this.resolving_pending_action = false;
-
-        return cardID;
-    }
-
     //#endregion
 
     //#region ATTACH COUNTER TO CARD

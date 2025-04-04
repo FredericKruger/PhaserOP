@@ -240,6 +240,7 @@ const serverAbilityActions = {
                 targetCard = card;
                 break;
             case "TARGET":
+            default:
                 targetCard = match.matchCardRegistry.get(targets[0]);
                 break;
         }

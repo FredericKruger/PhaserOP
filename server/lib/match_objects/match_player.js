@@ -111,12 +111,18 @@ class MatchPlayer {
 
     /** Function to cancel playing a card
      * @param {number} cardID - ID of the card to be played
+     * @param {number} replacedCardId - ID of the card to be replaced
      * @param {Array<number>} spentDonIds - IDs of the DON cards spent to play the card
      */
-    cancelPlayCard(cardID, spentDonIds) {
+    cancelPlayCard(cardID, replacedCardId, spentDonIds) {
         let card = this.getCard(cardID); //Get the card
 
         card.setState(CARD_STATES.IN_HAND); //Set the state to being played
+
+        if(replacedCardId) {
+            let replacedCard = this.getCard(replacedCardId); //Get the card
+            replacedCard.setState(replacedCard.previousState); //Set the state to being played
+        }
 
         //Remove the resources from the active don
         for(let i=0; i<spentDonIds.length; i++) {
@@ -131,25 +137,8 @@ class MatchPlayer {
 
     //#region PLAY EVENT
     /** Function that plays an event 
-     * @param {<atchCard>} cardID - ID of the card to be played
+     * @param {MatchCard} cardID - ID of the card to be played
     */
-    /*playEvent(cardID) {
-        let card = this.inHand.find(c => c.id === cardID); //Get the card
-
-        this.removeCardFromHand(card); //remove the card from the hand
-        this.discardCard(card); //discard the card
-
-        //Remove the resources from the active don
-        let donIDs = [];
-        for(let i=0; i<card.cardData.cost; i++) {
-            let donCard = this.inActiveDon.pop();
-            donCard.setState(CARD_STATES.DON_RESTED);
-            this.inExertenDon.push(donCard);
-            donIDs.push(donCard.id);
-        }
-
-        return {playedCard: cardID, playedCardData: card.cardData, replacedCard: -1, spentDonIds: donIDs};
-    }*/
     playEvent(card) {
         this.removeCardFromHand(card); //remove the card from the hand
         this.discardCard(card); //discard the card
@@ -163,33 +152,6 @@ class MatchPlayer {
      * @param {number} cardID - ID of the card to be played
      * @param {boolean} replacePreviousCard - flag to replace the
      */
-    /*playStage(cardID, replacePreviousCard, replacedCardID = -1) {
-        let card = this.inHand.find(c => c.id === cardID); //Get the card
-
-        let previousCardID = -1;
-        if(replacePreviousCard) {
-            let previousCard = this.inStageLocation;    //Get the previous card
-            if(previousCard !== null) previousCardID = previousCard.id; //Get the ID of the previous card
-
-            this.inDiscard.push(previousCard); //push the previous card to the discard if it needs to be replaced
-            previousCard.setState(CARD_STATES.IN_DISCARD); //set the state  
-        }
-
-        this.inStageLocation = card; //Add stage to the location
-        this.removeCardFromHand(card); //Remove the card from the hand
-        card.setState(CARD_STATES.IN_PLAY); //Set the state
-
-        //Remove the resources from the active don
-        let donIDs = [];
-        for(let i=0; i<card.cardData.cost; i++) {
-            let donCard = this.inActiveDon.pop();
-            donCard.setState(CARD_STATES.DON_RESTED);
-            this.inExertenDon.push(donCard);
-            donIDs.push(donCard.id);
-        }
-
-        return {playedCard: cardID, playedCardData: card.cardData, replacedCard: previousCardID, spentDonIds: donIDs};
-    }*/
     playStage(card, replacedCard = null) {
         if(replacedCard) {
             let previousCard = this.inStageLocation;    //Get the previous card
@@ -211,35 +173,7 @@ class MatchPlayer {
      * @param {boolean} replacePreviousCard - flag to replace the previous card
      * @param {number} replacedCardID - ID of the card to be replaced
      */
-    /*playCharacter(cardID, replacePreviousCard = false, replacedCardID = -1) {
-        let card = this.inHand.find(c => c.id === cardID); //First get the card from the hand
 
-        //If a card is replaced remove it from the character area and add it to the discard
-        if(replacePreviousCard) {
-            let previousCard = this.inCharacterArea.find(c => c.id === replacedCardID); //Get the card
-            this.discardCard(previousCard); //discard the card
-            this.inCharacterArea = this.inCharacterArea.filter(c => c.id !== replacedCardID); //remove it from the character area
-        }
-
-        //Add the card to the character area
-        this.inCharacterArea.push(card); //add to the character area
-        this.removeCardFromHand(card); //remove from the hand
-        card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //set the state
-
-        //Remove the resources from the active don
-        let donIDs = [];
-        for(let i=0; i<card.cardData.cost; i++) {
-            let donCard = this.inActiveDon.pop();
-            donCard.setState(CARD_STATES.DON_RESTED);
-            this.inExertenDon.push(donCard);
-            donIDs.push(donCard.id);
-        }
-
-        //Return the info for the client
-        //if(replacePreviousCard) return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
-        //else return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
-        return {playedCard: cardID, playedCardData: card.cardData, replacedCard: replacedCardID, spentDonIds: donIDs};
-    }*/
     playCharacter(card, replacedCard = null) {
         //If a card is replaced remove it from the character area and add it to the discard
         if(replacedCard) {

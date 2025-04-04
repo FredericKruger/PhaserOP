@@ -429,9 +429,9 @@ class ActionLibraryPassivePlayer {
         }
 
         /** Create action to play on play event results */
-        if(actionInfos.abilityId && actionInfos.eventAction.length > 0) {
+        if(actionInfos.abilityId && actionInfos.eventAction) {
             let ability = card.getAbility(actionInfos.abilityId);
-            this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.eventAction);
+            this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.eventAction, false);
         }
 
         let action = new Action();
