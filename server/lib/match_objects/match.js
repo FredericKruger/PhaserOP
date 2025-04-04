@@ -303,6 +303,12 @@ class Match {
      * @param {number} cardID
      */
     startPlayCard(player, cardID = null) {
+        //Cancel playing the card if a card is currently being played
+        if(this.playCardManager && cardID !== this.playCardManager.playedCard.id) {
+            this.cancelPlayCard(false, player, cardID, []);
+            return;
+        }
+
         if(this.playCardManager === null) {
             let result = this.state.startPlayCard(player.currentMatchPlayer, cardID);
             
@@ -321,8 +327,10 @@ class Match {
                 this.flagManager.handleFlag(player, 'PLAY_REPLACEMENT_PHASE_READY');
             }
             else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
-                //if(!player.bot) player.socket.emit('game_play_select_replacement', result.actionInfos, true);
-                //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_select_replacement', result.actionInfos, false);
+                this.state.pending_action = result;
+                this.state.resolving_pending_action = true;
+
+                if(!player.bot) player.socket.emit('game_play_select_replacement', result.actionInfos, true);
             }
         } else if(this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
             console.log("PLAYING CARD REPLACEMENT");
@@ -349,7 +357,7 @@ class Match {
             actionInfos.cardPlayed = this.playCardManager.playedCard.id;
             actionInfos.cardPlayedData = this.playCardManager.playedCard.cardData;
             actionInfos.spentDonIds = this.playCardManager.payedDon;
-            actionInfos.replacedCard = this.playCardManager.replacedCard? this.playCardManager.replacedCard.id : null;
+            actionInfos.replacedCard = this.playCardManager.replacedCard;
             actionInfos.abilityId = this.playCardManager.abilityId;
             actionInfos.eventAction = this.playCardManager.onPlayEventActions;
 
@@ -375,6 +383,21 @@ class Match {
         } else if(result.actionResult === PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED) {
             if(!player.bot) player.socket.emit('game_play_card_played', result.actionInfos, true, true, result.targetData);
         }*/
+    }
+
+    /** Function to cancel playing a card 
+     * @param {boolean} resetPlayManager - Should the play card manager be reset
+     * @param {Player} player - The player that is cancelling the play card
+     * @param {number} cardId - The id of the card that is being cancelled
+     * @param {Array<number>} spendDonIds - The ids of the don cards that are being cancelled
+    */
+    cancelPlayCard(resetPlayManager, player, cardId, spendDonIds = []) {
+        player.currentMatchPlayer.cancelPlayCard(cardId, spendDonIds);
+
+        if(!player.bot) player.socket.emit('game_play_card_cancel', cardId, spendDonIds, true);
+        if(resetPlayManager && !player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel', cardId, false);
+
+        if(resetPlayManager) this.playCardManager = null; //Reset the play card manager
     }
 
     /** Function that handles playing a card and replacing an old one
@@ -678,11 +701,17 @@ class Match {
                 }
                 break;
             case PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET:
-                if(cancel) {
-                    let cardID = this.state.cancelPlayCard(player.currentMatchPlayer);
-                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
+                if(cancel) this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.payedDon);
+                else {
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
+                    if(validTarget) {
+                        if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
+                        this.playCardManager.replacedCard = targets[0];
+                        this.flagManager.handleFlag(player, 'PLAY_REPLACEMENT_PHASE_READY');
+                    } 
+                    else {player.socket.emit('game_reset_targets');}
                 } 
-                else this.startPlayReplaceCard(player, this.state.pending_action.actionInfos.playedCard, targets);
+                //else this.startPlayReplaceCard(player, this.state.pending_action.actionInfos.playedCard, targets);
                 break;
             case ATTACK_CARD_STATES.SELECT_TARGET:
                 if(!cancel) {

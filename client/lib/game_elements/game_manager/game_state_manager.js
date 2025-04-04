@@ -743,16 +743,34 @@ class GameStateManager {
         else this.scene.actionLibraryPassivePlayer.playCardAction(card.playerScene, card, actionInfos);
     }
 
-    /** Function to cancel the playing of a card
-     * @param {number} cardID - The card ID
+    /** Function to start the targeting of a card replacement
+     * @param {Object} actionInfos - The action infos
      * @param {boolean} isPlayerTurn - If it is the player's turn
      */
-    cancelReplacementTarget(cardID, isPlayerTurn) {
+    selectReplacementTarget(actionInfos, isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let card = player.getCard(actionInfos.playedCard);
+        let targetManager = new TargetManager(this.scene, 'PLAY', actionInfos.actionId, actionInfos.playedCard);
+        this.scene.targetManagers.push(targetManager);
+        targetManager.loadFromTargetData(actionInfos.targetData);
+
+        this.scene.actionLibrary.startTargetingAction(this, card, false);
+    }
+
+    /** Function to cancel the playing of a card
+     * @param {number} cardID - The card ID
+     * @param {Array<number>} spentDonIds - The spent don IDs
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
+    cancelPlayCard(cardID, spentDonIds, isPlayerTurn) {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         let card = player.hand.getCard(cardID);
-        this.scene.actionLibraryPassivePlayer.cancelReplacementTarget(player, card);
+        if(isPlayerTurn) this.scene.actionLibrary.cancelPlayCard(player, card, spentDonIds, false);
+        else this.scene.actionLibraryPassivePlayer.cancelPlayCard(player, card, false);
     }
 
     //#endregion
@@ -1261,13 +1279,13 @@ class GameStateManager {
                 else if(this.scene.passivePlayerScene.stageLocation.cards.length>0 && this.scene.passivePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.passivePlayerScene.stageLocation.cards[0];
                 else card = this.scene.passivePlayerScene.characterArea.cards.find((card) => card.id === cardID);
 
-                card.showGlow(COLOR_ENUMS.OP_WHITE);
+                if(card) card.showGlow(COLOR_ENUMS.OP_WHITE);
             } else {
                 if(this.scene.activePlayerScene.leaderLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.leaderLocation.cards[0];
                 else if(this.scene.activePlayerScene.stageLocation.cards.length>0 && this.scene.activePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.stageLocation.cards[0];
                 else card = this.scene.activePlayerScene.characterArea.cards.find((card) => card.id === cardID);
 
-                card.showGlow(COLOR_ENUMS.OP_WHITE);
+                if(card) card.showGlow(COLOR_ENUMS.OP_WHITE);
             }
         }
     }
@@ -1288,13 +1306,13 @@ class GameStateManager {
                 else if(this.scene.passivePlayerScene.stageLocation.cards.length>0 && this.scene.passivePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.passivePlayerScene.stageLocation.cards[0];
                 else card = this.scene.passivePlayerScene.characterArea.cards.find((card) => card.id === cardID);
 
-                card.hideGlow();
+                if(card) card.hideGlow();
             } else {
                 if(this.scene.activePlayerScene.leaderLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.leaderLocation.cards[0];
                 else if(this.scene.activePlayerScene.stageLocation.cards.length>0 && this.scene.activePlayerScene.stageLocation.cards[0].id === cardID) card = this.scene.activePlayerScene.stageLocation.cards[0];
                 else card = this.scene.activePlayerScene.characterArea.cards.find((card) => card.id === cardID);
 
-                card.hideGlow();
+                if(card) card.hideGlow();
             }
         }
 

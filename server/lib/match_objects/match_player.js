@@ -109,6 +109,24 @@ class MatchPlayer {
         return {playedCard: cardID, playedCardData: card.cardData, spentDonIds: donIDs};
     }
 
+    /** Function to cancel playing a card
+     * @param {number} cardID - ID of the card to be played
+     * @param {Array<number>} spentDonIds - IDs of the DON cards spent to play the card
+     */
+    cancelPlayCard(cardID, spentDonIds) {
+        let card = this.getCard(cardID); //Get the card
+
+        card.setState(CARD_STATES.IN_HAND); //Set the state to being played
+
+        //Remove the resources from the active don
+        for(let i=0; i<spentDonIds.length; i++) {
+            let donCard = this.getDonCard(spentDonIds[i]);
+            donCard.setState(CARD_STATES.DON_ACTIVE);
+            this.inExertenDon = this.inExertenDon.filter(c => c.id !== donCard.id); //Remove the card from the exerten don
+            this.inActiveDon.push(donCard);
+        }
+    }
+
     //#endregion
 
     //#region PLAY EVENT
@@ -172,10 +190,11 @@ class MatchPlayer {
 
         return {playedCard: cardID, playedCardData: card.cardData, replacedCard: previousCardID, spentDonIds: donIDs};
     }*/
-    playStage(card, replacedCard) {
+    playStage(card, replacedCard = null) {
         if(replacedCard) {
-            this.inDiscard.push(replacedCard); //push the previous card to the discard if it needs to be replaced
-            replacedCard.setState(CARD_STATES.IN_DISCARD); //set the state  
+            let previousCard = this.inStageLocation;    //Get the previous card
+            this.inDiscard.push(previousCard); //push the previous card to the discard if it needs to be replaced
+            previousCard.setState(CARD_STATES.IN_DISCARD); //set the state  
         }
 
         this.inStageLocation = card; //Add stage to the location
@@ -224,8 +243,9 @@ class MatchPlayer {
     playCharacter(card, replacedCard = null) {
         //If a card is replaced remove it from the character area and add it to the discard
         if(replacedCard) {
-            this.discardCard(replacedCard); //discard the card
-            this.inCharacterArea = this.inCharacterArea.filter(c => c.id !== replacedCard.id); //remove it from the character area
+            let previousCard = this.getCard(replacedCard); //Get the card
+            this.discardCard(previousCard); //discard the card
+            this.inCharacterArea = this.inCharacterArea.filter(c => c.id !== replacedCard); //remove it from the character area
         }
 
         //Add the card to the character area

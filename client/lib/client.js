@@ -167,8 +167,13 @@ class Client {
                 this.gameScene.gameStateManager.playCard(actionInfos, activePlayer);
             }
         });
-        this.socket.on('game_play_card_cancel_replacement_target', (cardID, activePlayer) => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelReplacementTarget(cardID, activePlayer);
+        this.socket.on('game_play_select_replacement', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                    this.gameScene.gameStateManager.selectReplacementTarget(actionInfos, activePlayer);
+            }
+        });
+        this.socket.on('game_play_card_cancel', (cardID, spentDonIDs, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelPlayCard(cardID, spentDonIDs, activePlayer);
         });
         //#endregion
 

@@ -237,10 +237,37 @@ class MatchState {
      */
     startPlayReplaceCard(player, card) {
         if(card.cardData.card === CARD_TYPES.CHARACTER && player.inCharacterArea.length >= MATCH_CONSTANTS.MAX_CHARACTERS_IN_AREA) {
-            return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {playedCard: card.id}};
+            let targetData = {
+                targetAction: TARGET_ACTION.PLAY_CARD_ACTION,
+                requiredTargets: 1,
+                targets: [
+                    {
+                        minrequiredtargets: 0,
+                        player: ["active"],
+                        cardtypes: [CARD_TYPES.CHARACTER],
+                        states: ["IN_PLAY", "IN_PLAY_RESTED", "IN_PLAY_FIRST_TURN"],
+                        exclude: ["SELF"]
+                    }
+                ]
+            }
+
+            return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {actionId: 'PLAY_' + card.id, playedCard: card.id, targetData: targetData}};
         }
         if(card.cardData.card === CARD_TYPES.STAGE && player.inStageLocation !== null) {
-            return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {playedCard: card.id}};
+            let targetData = {
+                targetAction: TARGET_ACTION.PLAY_CARD_REPLACE_ACTION,
+                requiredTargets: 1,
+                targets: [
+                    {
+                        minrequiredtargets: 0,
+                        player: ["active"],
+                        cardtypes: [CARD_TYPES.STAGE],
+                        states: ["IN_PLAY"],
+                        exclude: ["SELF"]
+                    }
+                ]
+            }
+            return {actionResult: PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET, actionInfos: {actionId: 'PLAY_' + card.id, playedCard: card.id, targetData: targetData}};
         }
         return {actionResult: PLAY_CARD_STATES.NO_REPLACEMENT, actionInfos: {}};
     }

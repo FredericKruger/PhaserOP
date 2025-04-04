@@ -401,7 +401,30 @@ class ActionLibraryPassivePlayer {
         if(actionInfos.replacedCard !== null) { //If there is a replaced card, animate it
             let replacedCard = playerScene.getCard(actionInfos.replacedCard);
 
-            let replacedTweens = this.scene.animationLibraryPassivePlayer.animation_target_card(card, replacedCard); //Tween 4: move replaced card to the deck
+            let replacedTweens = [];
+            let targetingManager = new TargetManager(this.scene, 'PLAY', 'REPLACE_CARD', card.id);
+            targetingManager.targetArrow.originatorObject = card;
+            let arrowTweens = targetingManager.targetArrow.animateToPosition(replacedCard.x, replacedCard.y, 600);
+            replacedTweens.push({
+                targets: replacedCard,
+                scale: replacedCard.scale,
+                onStart: () => { //Add Tween for target arrow
+                    targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
+                },
+                delay: 100,
+                duration: 1
+            });
+            replacedTweens = replacedTweens.concat(arrowTweens);
+            replacedTweens.push({
+                targets: replacedCard,
+                scale: replacedCard.scale,
+                onStart: () => { //Add Tween for target arrow
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
+                },
+                delay: 300,
+                duration:1
+            });
             this.discardCardAction(playerScene, replacedCard, replacedTweens); //Create a discard Action
         }
 
@@ -490,20 +513,31 @@ class ActionLibraryPassivePlayer {
         this.actionManager.addAction(action);
     }
 
-    cancelReplacementTarget(playerScene, card) {
-        let action = new Action();
-        action.start = () => { //Start function
+    /** Function to cancel the play card action
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} card
+     * */
+    cancelPlayCard(playerScene, card, startAsAction) {
+        if(startAsAction) {
+            let action = new Action();
+            action.start = () => { //Start function
+                card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+                card.setState(CARD_STATES.IN_HAND);
+                playerScene.hand.update(); //Update the hand to show the card
+            };
+    
+            action.isPlayerAction = false; //This is a player triggered action
+            action.waitForAnimationToComplete = false; //Should wait for the endof the animation
+            action.name = "PLAY TARGETTING";
+    
+            //Add action to the action stack
+            this.actionManager.addAction(action);
+        } else {
             card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
             card.setState(CARD_STATES.IN_HAND);
-            //playerScene.hand.update();
-        };
+            playerScene.hand.update(); //Update the hand to show the card
+        }
 
-        action.isPlayerAction = false; //This is a player triggered action
-        action.waitForAnimationToComplete = false; //Should wait for the endof the animation
-        action.name = "PLAY TARGETTING";
-
-        //Add action to the action stack
-        this.actionManager.addAction(action);
     }
     //#endregion
 
@@ -677,19 +711,20 @@ class ActionLibraryPassivePlayer {
         //Get Start Animation
         let startAnimation_tweens = [];
         if(targetingTweens) startAnimation_tweens = targetingTweens;
-        startAnimation_tweens.push(this.scene.animationLibrary.desintegrationAnimation(card, 0));
-        startAnimation_tweens = startAnimation_tweens.concat({
+        startAnimation_tweens = startAnimation_tweens.concat(this.scene.animationLibrary.desintegrationAnimation(card, 0));
+        startAnimation_tweens.push({
             targets: card,
             duration: 10,
             onComplete: () => {this.actionManager.completeAction();}
         });
         let start_animation = this.scene.tweens.chain({
+            targets: card,
             tweens: startAnimation_tweens
         }).pause();
 
         //Get end animation
         let endAnimation_tweens = this.scene.animationLibrary.integrationAnimation(card, 500);
-        endAnimation_tweens = endAnimation_tweens.concat({
+        endAnimation_tweens.push({
             targets: card,
             duration: 10,
             onComplete: () => {this.actionManager.finalizeAction();}

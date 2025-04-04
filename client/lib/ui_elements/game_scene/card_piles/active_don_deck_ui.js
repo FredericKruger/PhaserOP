@@ -45,6 +45,17 @@ class ActiveDonDeckUI extends CardPileUI {
         }
     }
 
+    /** Function to repay cost of an action
+     * @param {Array<number>} spendDonIds
+     */
+    repayCost(spentDonIds) {
+        for(let don of spentDonIds) {
+            let card = this.getCard(don);
+            card.setState(CARD_STATES.DON_ACTIVE);
+            this.scene.children.bringToTop(card);
+        }
+    }
+
     /** Function to attac a don to a card
      * @param {number} cardID
      */
