@@ -245,7 +245,11 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_start_targeting_attack', (cardID) => {socket.player.match.startTargetingAttack(socket.player, cardID);});
     socket.on('player_on_attack_event_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY');});
     socket.on('player_on_attack_event_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER');});
-    socket.on('player_pass_on_attack_event_phase', (passed) => {socket.player.match.resolvePendingAction(socket.player, passed)});
+    socket.on('player_pass_on_attack_event_phase', (passed) => {
+        socket.player.match.flagManager.handleFlag(socket.player.match.state.current_active_player, 'BLOCKER_PHASE_READY');   
+        socket.player.match.flagManager.handleFlag(socket.player.match.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
+        //socket.player.match.resolvePendingAction(socket.player, passed)
+    });
     socket.on('player_blocker_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY');});
     socket.on('player_blocker_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');});
     socket.on('player_attach_counter_to_character', (counterID, characterID) => {socket.player.match.startAttachCounterToCharacter(counterID, characterID);});

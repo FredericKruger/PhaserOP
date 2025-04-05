@@ -10,7 +10,7 @@ class OnAttackEventInteractionState extends GameState {
 
     enter() {
         super.enter();
-        this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ON_PLAY_EVENT);
+        this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ON_ATTACK_EVENT);
     }
 
     onPointerOver(pointer, gameObject) {

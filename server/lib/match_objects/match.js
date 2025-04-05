@@ -506,12 +506,6 @@ class Match {
                     this.state.pending_action = {actionResult: PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED, actionInfos: abilityInfos};
                     this.state.resolving_pending_action = true;
                     if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_on_attack_event_triggered', abilityInfos, true);
-                    
-                    //console.log(onAttackEvent);
-                    //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
-                    
-                
-                    //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
                 } 
             } else {
                 let actionInfos  = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
@@ -676,15 +670,8 @@ class Match {
      * @param {Array<number>} targets
     */
     resolvePendingAction(player, cancel = false, targets = []) {
+        let actionInfos = null;
         switch (this.state.pending_action.actionResult) {
-            /*case PLAY_CARD_STATES.EVENT_TARGETS_REQUIRED:
-                if(cancel) {
-                    let cardID = this.state.cancelPlayCard(player.currentMatchPlayer);
-                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
-                } else {
-                    this.startResolveEvent(player, this.state.pending_action.actionInfos.playedCard, targets);
-                }
-                break;*/
             case PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET:
                 if(cancel) this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.replacedCard, this.playCardManager.payedDon);
                 else {
@@ -699,14 +686,18 @@ class Match {
                 } 
                 break;
             case PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED:
-                if(cancel) this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.replacedCard, this.playCardManager.payedDon);
-                else {
+                actionInfos = this.state.pending_action.actionInfos;
+                if(cancel) {
+                    if(actionInfos.optional) {
+                        //if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
+                        if(!player.bot) player.socket.emit('game_play_card_event_triggered', actionInfos, true);
+                    } else this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.replacedCard, this.playCardManager.payedDon);
+                } else {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
-                        if(!player.bot && this.state.pending_action.actionInfos.optional) player.socket.emit('game_stop_on_play_event_optional');
+                        if(!player.bot && actionInfos.optional) player.socket.emit('game_stop_on_play_event_optional');
                         
-                        let actionInfos = this.state.pending_action.actionInfos;
                         let abilityResults = this.resolveAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
                         this.playCardManager.abilityId = actionInfos.ability;
                         this.playCardManager.onPlayEventActions = abilityResults;
@@ -730,7 +721,7 @@ class Match {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
-                        let actionInfos = this.state.pending_action.actionInfos;
+                        actionInfos = this.state.pending_action.actionInfos;
                         let abilityResults = this.resolveAbility(player, this.state.pending_action.actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
                         actionInfos.abilityResults = abilityResults;
 
@@ -746,11 +737,11 @@ class Match {
                 }
                 break;
             case PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED:
+                actionInfos = this.state.pending_action.actionInfos;
                 if(!cancel) {
-                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
-                        let actionInfos = this.state.pending_action.actionInfos;
                         let abilityResults = this.resolveAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
                         actionInfos.abilityResults = abilityResults;
 
@@ -759,13 +750,17 @@ class Match {
                         player.socket.emit('game_reset_targets');
                     }
                 } else {
-                    //Send cancel signals
-                    //Set Phase
-                    this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
-                    this.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
+                    if(actionInfos.optional) {
+                        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_on_attack_event_triggered', actionInfos, true);
+                    } else {
+                        //Send cancel signals
+                        //Set Phase
+                        this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
+                        this.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
                     
-                    if(!player.bot) player.socket.emit('game_cancel_attack', true);
-                    if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_cancel_attack', false);
+                        if(!player.bot) player.socket.emit('game_cancel_attack', true);
+                        if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_cancel_attack', false);
+                    }
                 }
             default:
                 break;
@@ -803,6 +798,10 @@ class Match {
         if(!ability.canActivate()) {
             if(ability.type === "ON_PLAY") {
                 this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+            } else if(ability.type === "WHEN_ATTACKING") {
+                this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
+                this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
+        
             } else  {
                 player.socket.emit('game_activate_ability_failure', cardId, abilityId);
                 return;
@@ -811,13 +810,14 @@ class Match {
         
         const targets = card.getAbilityTargets(abilityId);
         if(targets) {
-            const actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: targets, optional: ability.optional};
+            let actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: targets, optional: ability.optional};
             let action =  {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
 
             if(ability.type === "ON_PLAY") {
                 action.actionResult = PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED;
             } else if(ability.type === "WHEN_ATTACKING") {
-
+                action.actionResult = PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED;
+                actionInfos.actionId = 'ON_ATTACK_EVENT_' + cardId;
             }
 
             this.state.pending_action = action;

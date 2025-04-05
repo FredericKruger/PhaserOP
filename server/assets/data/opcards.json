@@ -6176,7 +6176,7 @@
         "card":"CHARACTER",
         "type":["Fish-Man","Straw Hat Crew"],
         "colors":["RED"],
-        "cost": 2,
+        "cost": 0,
         "power": 5000,
         "attribute":"STRIKE",
         "isleader":0,
