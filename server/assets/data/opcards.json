@@ -6176,7 +6176,7 @@
         "card":"CHARACTER",
         "type":["Fish-Man","Straw Hat Crew"],
         "colors":["RED"],
-        "cost": 0,
+        "cost": 2,
         "power": 5000,
         "attribute":"STRIKE",
         "isleader":0,
@@ -6191,7 +6191,6 @@
                     "posy": 560
                 },
                 "type": "WHEN_ATTACKING",
-                "optional": true,
                 "phases": ["Main: Attack"],
                 "states": [],
                 "target": {
