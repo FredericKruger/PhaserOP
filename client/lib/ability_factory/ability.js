@@ -153,7 +153,9 @@ class Ability {
     }
 
     /** Function to handle the trigger of the action button */
-    trigger() {this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);}
+    trigger() {
+        this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);
+    }
 
     update() {}
     action() {}

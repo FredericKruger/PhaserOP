@@ -705,6 +705,7 @@ class Match {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
+                        if(!player.bot && this.state.pending_action.actionInfos.optional) player.socket.emit('game_stop_on_play_event_optional');
                         
                         let actionInfos = this.state.pending_action.actionInfos;
                         let abilityResults = this.resolveAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
@@ -801,16 +802,30 @@ class Match {
         let ability = card.getAbility(abilityId);
 
         if(!ability.canActivate()) {
-            player.socket.emit('game_activate_ability_failure', cardId, abilityId);
-            return;
+            if(ability.type === "ON_PLAY") {
+                this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+            } else  {
+                player.socket.emit('game_activate_ability_failure', cardId, abilityId);
+                return;
+            }
         }
         
         const targets = card.getAbilityTargets(abilityId);
         if(targets) {
-            const abilityInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId};
-            this.state.pending_action = {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: abilityInfos, targetData: targets};
+            const actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: targets, optional: ability.optional};
+            let action =  {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
+
+            if(ability.type === "ON_PLAY") {
+                action.actionResult = PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED;
+            } else if(ability.type === "WHEN_ATTACKING") {
+
+            }
+
+            this.state.pending_action = action;
             this.state.resolving_pending_action = true;
-            if(!player.bot) player.socket.emit('game_card_ability_activated', abilityInfos, true, true, targets);
+            if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
+        } else {
+            console.log("NO TARGETS REQUIRED FOR THIS ABILITY");
         }
     }
 

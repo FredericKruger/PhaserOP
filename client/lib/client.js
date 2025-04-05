@@ -169,6 +169,12 @@ class Client {
         this.socket.on('game_play_card_cancel', (cardID, spentDonIDs, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelPlayCard(cardID, spentDonIDs, activePlayer);
         });
+        this.socket.on('game_stop_on_play_event_optional', () => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                this.gameScene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
+                this.gameScene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+            }
+        })
         //#endregion
 
         //#region SOCKET.ON ATTACH DON TO CHARACTER
@@ -244,12 +250,12 @@ class Client {
         this.socket.on('game_ability_failure', (cardId, abilityId) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, false);
         });
-        this.socket.on('game_card_ability_activated', (actionInfos, activePlayer, requiresTargeting, targetData) => {
+        this.socket.on('game_card_ability_activated', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) {
                 let targetManager = new TargetManager(this.gameScene, 'EVENT', actionInfos.actionId, actionInfos.playedCard);
                 this.gameScene.targetManagers.push(targetManager);
 
-                if(activePlayer && requiresTargeting) targetManager.loadFromTargetData(targetData);
+                if(activePlayer) targetManager.loadFromTargetData(actionInfos.targetData);
                 this.gameScene.gameStateManager.startAbilityTargeting(actionInfos.playedCard, activePlayer);
             }
         });
