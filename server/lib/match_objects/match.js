@@ -718,7 +718,7 @@ class Match {
                 break;
             case PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED:
                 if(!cancel) {
-                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.targetData);
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         actionInfos = this.state.pending_action.actionInfos;
