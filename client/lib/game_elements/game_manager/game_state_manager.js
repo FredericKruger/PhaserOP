@@ -1132,6 +1132,9 @@ class GameStateManager {
         } else if(phase === GAME_STATES.COUNTER_INTERACTION) {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.scene.game.gameClient.requestPassCounterPhase(passed);
+        } else if(phase === GAME_STATES.ON_PLAY_EVENT_INTERACTION) {
+            this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+            this.scene.game.gameClient.requestPassOnPlayEventPhase(passed);
         }
     }
 

@@ -161,8 +161,9 @@ class Client {
         });
         this.socket.on('game_play_card_event_triggered', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                console.log("Start Targeting");
-                this.gameScene.gameStateManager.selectTarget(actionInfos, activePlayer, 'EVENT');
+                if(actionInfos.optional) {
+                    this.gameScene.gameState.exit(GAME_STATES.ON_PLAY_EVENT_INTERACTION);
+                } else this.gameScene.gameStateManager.selectTarget(actionInfos, activePlayer, 'EVENT');
             }
         });
         this.socket.on('game_play_card_cancel', (cardID, spentDonIDs, activePlayer) => {
@@ -346,6 +347,7 @@ class Client {
     requestPlayerPlayCard (cardID) {this.socket.emit('player_play_card', cardID);}
     requestStartPlayCardComplete () {this.socket.emit('player_play_start_play_card_complete');}
     requestPlayerAttachDonToCharacter (donID, characterID) {this.socket.emit('player_attach_don_to_character', donID, characterID);}
+    requestPassOnPlayEventPhase (passed) {this.socket.emit('player_pass_on_play_event_phase', passed);}
     //#endregion
 
     //#region REQUEST TARGET

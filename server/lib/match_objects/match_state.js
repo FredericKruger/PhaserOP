@@ -288,7 +288,7 @@ class MatchState {
         let targets = onPlayAbility.target;
         if(targets) {
             let cardData = card.cardData;
-            let actionInfos = {actionId: 'EVENT_' + card.id, playedCard: card.id, ability: onPlayAbility.id, targetData: targets};
+            let actionInfos = {actionId: 'EVENT_' + card.id, playedCard: card.id, ability: onPlayAbility.id, targetData: targets, optional:onPlayAbility.optional};
             return {actionResult: PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED, actionInfos: actionInfos};
         } else {
             //Gather ability infos for the client

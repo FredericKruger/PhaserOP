@@ -3,10 +3,11 @@ const GAME_STATES = Object.freeze({
     ACTIVE_INTERACTION: 'ACTIVE_INTERACTION',
     PASSIVE_INTERACTION: 'PASSIVE_INTERACTION',
     ON_ATTACK_EVENT_INTERACTION: 'ON_ATTACK_EVENT_INTERACTION',
+    ON_PLAY_EVENT_INTERACTION: 'ON_PLAY_EVENT_INTERACTION',
     BLOCKER_INTERACTION: 'BLOCKER_INTERACTION',
     COUNTER_INTERACTION: 'COUNTER_INTERACTION',
     TARGETING: 'TARGETING',
-    DRAGGING: 'DRAGGING'
+    DRAGGING: 'DRAGGING',
 });
 
 class GameState {
@@ -53,6 +54,9 @@ class GameState {
             case GAME_STATES.ON_ATTACK_EVENT_INTERACTION:
                 this.scene.gameState = new OnAttackEventInteractionState(this.scene, this.scene.gameState.name);
                 break;  
+            case GAME_STATES.ON_PLAY_EVENT_INTERACTION:
+                this.scene.gameState = new OnPlayEventInteractionState(this.scene, this.scene.gameState.name);
+                break;
             case GAME_STATES.BLOCKER_INTERACTION:
                 this.scene.gameState = new BlockerInteractionState(this.scene, this.scene.gameState.name);
                 break;

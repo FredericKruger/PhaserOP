@@ -9,6 +9,7 @@ const NEXT_TURN_BUTTON_FSM_STATES = Object.freeze({
     OPPONENT_TURN: 'OPPONENT_TURN',
     OPPONENT_BLOCK: 'OPPONENT_BLOCK',
     OPPONENT_COUNTER: 'OPPONENT_COUNTER',
+    ON_PLAY_EVENT: 'ON_PLAY_EVENT'
 });
 
 class NextTurnButtonState {
@@ -64,6 +65,9 @@ class NextTurnButtonState {
                 break;
             case NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_COUNTER:
                 newFSMState = new NextTurnButtonOpponentCounterState(this.button, this.name);
+                break;
+            case NEXT_TURN_BUTTON_FSM_STATES.ON_PLAY_EVENT:
+                newFSMState = new NextTurnButtonOnPlayEventState(this.button, this.name);
                 break;
             default:
                 newFSMState = null;
