@@ -203,6 +203,13 @@ class Client {
         this.socket.on('game_cancel_attack', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelAttack(activePlayer);
         });
+        this.socket.on('game_on_attack_event_triggered', (actionInfos, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                if(actionInfos.optional) {
+                    this.gameScene.gameState.exit(GAME_STATES.ON_ATTACK_EVENT_INTERACTION);
+                } else this.gameScene.gameStateManager.selectTarget(actionInfos, activePlayer, 'EVENT');
+            }
+        });
         this.socket.on('game_start_on_attack_event_phase', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startOnAttackEventPhase(activePlayer);
         });

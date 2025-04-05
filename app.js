@@ -235,10 +235,7 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     socket.on('player_play_card', (cardID) => {socket.player.match.startPlayCard(socket.player, cardID);});
     socket.on('player_play_start_play_card_complete', () => {socket.player.match.flagManager.handleFlag(socket.player, 'PLAY_PHASE_READY');});
-    socket.on('player_pass_on_play_event_phase', (passed) => {
-        console.log("HERE");
-        if(passed) socket.player.match.flagManager.handleFlag(socket.player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
-    });
+    socket.on('player_pass_on_play_event_phase', (passed) => {if(passed) socket.player.match.flagManager.handleFlag(socket.player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');});
 
     socket.on('player_attach_don_to_character', (donID, characterID) => {socket.player.match.startAttachDonToCharacter(socket.player, donID, characterID);});
 
@@ -248,6 +245,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_start_targeting_attack', (cardID) => {socket.player.match.startTargetingAttack(socket.player, cardID);});
     socket.on('player_on_attack_event_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY');});
     socket.on('player_on_attack_event_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER');});
+    socket.on('player_pass_on_attack_event_phase', (passed) => {socket.player.match.resolvePendingAction(socket.player, passed)});
     socket.on('player_blocker_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY');});
     socket.on('player_blocker_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');});
     socket.on('player_attach_counter_to_character', (counterID, characterID) => {socket.player.match.startAttachCounterToCharacter(counterID, characterID);});

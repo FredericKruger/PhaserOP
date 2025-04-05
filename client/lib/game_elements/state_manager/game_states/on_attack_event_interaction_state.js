@@ -8,6 +8,11 @@ class OnAttackEventInteractionState extends GameState {
         super(scene, GAME_STATES.ON_ATTACK_EVENT_INTERACTION, previousState);
     }
 
+    enter() {
+        super.enter();
+        this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ON_PLAY_EVENT);
+    }
+
     onPointerOver(pointer, gameObject) {
         if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOver(pointer, gameObject);
     }

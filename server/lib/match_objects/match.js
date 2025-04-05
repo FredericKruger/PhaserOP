@@ -499,22 +499,21 @@ class Match {
         if(onAttackEvent && onAttackEvent.canActivate()) {
             if(onAttackEvent.target) {
                 const targets = onAttackEvent.target;
-                console.log("LOOKING FOR TARGETS")
                 if(this.findValidTarget(targets)) {
-                    console.log("HAS ON ATTACK EVENTS - ACTIVE");
+                    skipOnAttackEventPhase = false;
+
+                    const abilityInfos = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, ability: onAttackEvent.id, targetData: targets, optional:onAttackEvent.optional};
+                    this.state.pending_action = {actionResult: PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED, actionInfos: abilityInfos};
+                    this.state.resolving_pending_action = true;
+                    if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_on_attack_event_triggered', abilityInfos, true);
+                    
                     //console.log(onAttackEvent);
                     //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
-                    skipOnAttackEventPhase = false;
+                    
                 
-                    const abilityInfos = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
-                    this.state.pending_action = {actionResult: PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED, actionInfos: abilityInfos, targetData: targets};
-                    this.state.resolving_pending_action = true;
-                    if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_card_ability_activated', abilityInfos, true, true, targets, true);
                     //if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_on_attack_event_phase', true);
                 } 
             } else {
-                console.log("HAS ON ATTACK EVENTS - PASSIVE");
-
                 let actionInfos  = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
                 let abilityResults = this.resolveAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability, []);
                 actionInfos.abilityResults = abilityResults;
