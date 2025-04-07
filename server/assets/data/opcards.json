@@ -6109,7 +6109,22 @@
                 },
                 "type": "TRIGGER",
                 "phases": ["Main: Trigger"],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "states": ["IN_LIFEDECK"],
+                "target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"],
+                            "exclude": ["SELF"]
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+                ]
             }
         ]
     },    

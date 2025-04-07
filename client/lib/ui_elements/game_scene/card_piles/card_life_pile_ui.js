@@ -26,7 +26,7 @@ class CardLifePileUI extends CardPileUI {
             card.x = this.playerScene.playerInfo.lifeCardPlaceholder.x;
             card.y = this.playerScene.playerInfo.lifeCardPlaceholder.y;
             card.angle = 0;
-            card.setDepth(0);
+            card.setDepth(0); 
             this.scene.children.moveBelow(card, this.playerScene.playerInfo.playerInfoBackground);
         }
     }
@@ -47,7 +47,7 @@ class CardLifePileUI extends CardPileUI {
                 x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
                 y: this.playerScene.playerInfo.lifeCardPlaceholder.y - (this.playerScene.playerInfo.lifeCardPlaceholder.height / 2 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT / 2 * CARD_SCALE.IN_DON_DECK) * this.fanPositioner,
                 alpha: { from: 0, to: 1 },
-                duration: 400,
+                duration: 300,
                 ease: 'Power2',
                 delay: i * 10,
                 onComplete: () => {
@@ -55,7 +55,7 @@ class CardLifePileUI extends CardPileUI {
                         let currentIndex = numberCards / 2 - numberCards;
                         for (let j = 0; j < this.cards.length; j++) {
                             let card2 = this.cards[j];
-                            let cardAngle = currentIndex * 5; // Adjust the angle between cards
+                            let cardAngle = currentIndex * 5 * this.fanPositioner; // Adjust the angle between cards
                             let cardY = Math.abs(currentIndex) * 5 * this.fanPositioner; // Adjust the height difference between cards
                             let cardX = currentIndex * 10; // Adjust the horizontal distance between cards
             
@@ -64,7 +64,7 @@ class CardLifePileUI extends CardPileUI {
                                 angle: cardAngle,
                                 x: card2.x + cardX,
                                 y: card2.y + cardY,
-                                duration: 400,
+                                duration: 300,
                                 ease: 'Elastic.easeOut', // Use a more dynamic easing effect
                                 delay: j * 20 // Add a slight delay between each card's animation
                             });

@@ -112,7 +112,7 @@ class ActionLibrary {
         };
 
         //Prepare Tweens
-        let tweens = this.scene.animationLibrary.animation_move_card_lifedeck2display(card, 200);
+        let tweens = this.scene.animationLibrary.animation_move_card_lifedeck2display(card, 600);
         tweens = tweens.concat({
             duration: 10,
             onComplete: () => { this.scene.actionManager.completeAction(); }
@@ -125,14 +125,11 @@ class ActionLibrary {
         //Create Action
         let drawAction = new Action();
         drawAction.start = () => {
-            playerScene.lifeDeck.showLifeCardFan(true);
-            
-            playerScene.lifeDeck.removeCard(card);
-            card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
-            card.setState(CARD_STATES.TRAVELLING_TO_HAND);
-            // Add a pulse effect to the life counter
+            playerScene.lifeDeck.showLifeCardFan();
 
-            playerScene.playerInfo.setLifePoints(playerScene.lifeDeck.cards.length); //udpate the ui
+            card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+
+            playerScene.playerInfo.setLifePoints(playerScene.lifeDeck.cards.length-1); //udpate the ui
             const lifeText = card.playerScene.playerInfo.lifeAmountText;
             this.scene.tweens.add({
                 targets: lifeText,
@@ -143,18 +140,27 @@ class ActionLibrary {
             });
         };
         drawAction.start_animation = start_animation;
-        drawAction.end = () => {
-            playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, updateUI: true});
-        }
-        drawAction.finally = () => {
-            playerScene.lifeDeck.hideLifeCardFan(true);
-        };
         drawAction.isPlayerAction = true;
         drawAction.waitForAnimationToComplete = true;
         drawAction.name = "DRAW CARD ACTION";
 
         //Add Action to the action stack
         this.actionManager.addAction(drawAction);
+    }
+
+    /** Function to add the lifeCard to the hand
+     * @param {PlayerScene} playerScene
+     * @param {Object} serverCard
+     */
+    addLifeCardToHand(playerScene, serverCard) {
+        let card = playerScene.lifeDeck.getCard(serverCard.id);
+        playerScene.lifeDeck.removeCard(card);
+        card.setState(CARD_STATES.TRAVELLING_TO_HAND);
+        
+        playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, updateUI: true});
+        playerScene.hand.update();
+
+        playerScene.lifeDeck.hideLifeCardFan(true);
     }
     //#endregion
 
@@ -857,25 +863,13 @@ class ActionLibrary {
             //Set the attacker state to exerte
             this.scene.attackManager.attack.attacker.setState(attackResults.newAttackerState); //Set the card state to in play
 
-            //Create an action to draw a card from the life pool if attacker was attacked and update lifepoints
-            if(attackResults.lostLeaderLife) {
-                for(let i = 0; i<attackResults.lifeCardIds.length; i++) {
-                    let serverCard = {
-                        id: attackResults.lifeCardIds[i],
-                        cardData: attackResults.lifeCardData[i]
-                    };
-                    if(activePlayer) this.scene.actionLibraryPassivePlayer.drawLifeCardAction(this.scene.passivePlayerScene, serverCard);
-                    else this.scene.actionLibrary.drawLifeCardAction(this.scene.activePlayerScene,serverCard);
-                }
-            }
-
             //Hide all attached cards on the attacker
             this.scene.attackManager.attack.attacker.hideAttachedCards(false);
 
             //Create an action to switch states when finished
             let finishAction = new Action();
             finishAction.start = () => {
-                this.scene.game.gameClient.requestStartAttackCleanup();
+                this.scene.game.gameClient.requestStartTriggerPhase();
             };
             finishAction.waitForAnimationToComplete = false;
             finishAction.isPlayerAction = false;

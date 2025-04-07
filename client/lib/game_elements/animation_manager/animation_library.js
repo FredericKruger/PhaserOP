@@ -301,7 +301,7 @@ class AnimationLibrary {
                 delay: delay,
                 ease: 'Power2.easeInOut', // Smoother easing
                 onComplete: () => {
-                    card.state = CARD_STATES.TRAVELLING_DECK_HAND;
+                    //card.state = CARD_STATES.TRAVELLING_DECK_HAND;
                 }
             },
             { // Phase 2: Flip the card on the x-axis (first half)
@@ -320,6 +320,7 @@ class AnimationLibrary {
                 scaleX: CARD_SCALE.IN_PLAY_ANIMATION,
                 scaleY: CARD_SCALE.IN_PLAY_ANIMATION,
                 y: displayY,
+                angle: 0,
                 duration: 300,
                 ease: 'Power2.easeOut'
             },

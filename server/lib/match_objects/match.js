@@ -599,11 +599,52 @@ class Match {
             
             //Resolve the attack
             let attackResults = this.attackManager.resolveAttack(); 
-            attackResults = this.state.resolveAttack(attackResults, this.attackManager.attack.attacker, this.attackManager.attack.defender, this.attackManager.attack.attackingPlayer, this.attackManager.attack.defendingPlayer);
+            this.attackManager.attackResults = this.state.resolveAttack(attackResults, this.attackManager.attack.attacker, this.attackManager.attack.defender, this.attackManager.attack.attackingPlayer, this.attackManager.attack.defendingPlayer);
 
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_attack_animation', true, attackResults);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_attack_animation', false, attackResults);
         } 
+    }
+
+    /** Function to start the trigger phase */
+    startTriggerPhase() {
+        if (!this.attackManager.trigger_Complete
+            && this.flagManager.checkFlag('TRIGGER_PHASE_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('TRIGGER_PHASE_READY', this.state.current_passive_player)) {
+            
+            this.attackManager.trigger_Complete = true;
+            this.state.current_phase = MATCH_PHASES.TRIGGER_PHASE;
+
+            if(this.attackManager.attackResults.lostLeaderLife) {
+                this.attackManager.attackResults = this.state.drawLifeDeckCard(this.attackManager.attackResults, this.attackManager.attack.defendingPlayer);
+
+                if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_trigger_phase', true, this.attackManager.attackResults.lifeCardData);
+                if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_trigger_phase', false, this.attackManager.attackResults.lifeCardData);
+                /**if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_trigger_phase', false);
+                else this.ai.startTriggerPhase(*/
+
+            } else {
+                this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
+                this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
+            }
+        }
+    }
+
+    /** Function to draw the trigger card 
+     * @param {Player} player
+    */
+    drawTriggerCard() {
+        //Add card to hand
+        let triggerCard = this.attackManager.attackResults.lifeCard;
+        triggerCard.setState(CARD_STATES.IN_HAND);
+        this.attackManager.attack.defendingPlayer.inHand.push(triggerCard);
+
+        //Send messages to client
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_draw_trigger_card', true, this.attackManager.attackResults.lifeCardData);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_draw_trigger_card', false, this.attackManager.attackResults.lifeCardData);
+
+        //this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
+        //this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
     }
 
     /** Function to cleanup after the attack */
@@ -904,6 +945,21 @@ class Match {
         // other cleanup
         global.matchRegistry.remove(this.id);
     }
+
+    //#region DEBUG
+    debug_createFakeAttackManager(player) {
+        let attacker = this.state.current_passive_player.currentMatchPlayer.inLeaderLocation;
+        let defender = this.state.current_active_player.currentMatchPlayer.inLeaderLocation;
+
+        this.attackManager = new AttackManager(this.state, attacker, defender, this.state.current_passive_player.currentMatchPlayer, this.state.current_active_player.currentMatchPlayer);
+        this.attackManager.attackResults = {};
+        this.attackManager.attackResults.lostLeaderLife = true;
+        this.attackManager.attackResults = this.state.drawLifeDeckCard(this.attackManager.attackResults, this.attackManager.attack.defendingPlayer);
+
+        this.flagManager.handleFlag(this.state.current_active_player, 'TRIGGER_PHASE_READY');
+        this.flagManager.handleFlag(this.state.current_passive_player, 'TRIGGER_PHASE_READY');
+    }
+    //#endregion
 }
 
 

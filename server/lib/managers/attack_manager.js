@@ -76,10 +76,13 @@ class AttackManager {
         /** @type {Attack} */
         this.attack = new Attack(attacker, defender, attackingPlayer, defendingPlayer);
 
+        this.attackResults = null;
+
         this.onAttackEventPhase_Complete = false;
         this.blockPhase_Complete = false;
         this.counterPhase_Complete = false;
         this.resolveAttack_Complete = false;
+        this.trigger_Complete = false;
         this.attackCleanup_Complete = false;
     }
 

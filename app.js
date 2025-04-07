@@ -263,7 +263,8 @@ io.on('connection', function (/** @type {object} */ socket) {
         socket.player.match.flagManager.handleFlag(socket.player, 'RESOLVE_ATTACK_READY');
         if(passed && !socket.player.currentOpponentPlayer.bot) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'RESOLVE_ATTACK_READY'); //Pass the opponent as no animations required
     });
-
+    socket.on('player_trigger_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'TRIGGER_PHASE_READY');});
+    socket.on('player_draw_trigger_card', () => {socket.player.match.drawTriggerCard(socket.player);});
     socket.on('player_start_attack_cleanup', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ATTACK_CLEANUP_READY');});
     socket.on('player_end_attack', () => {socket.player.match.flagManager.handleFlag(socket.player, 'RESUME_TURN_READY');})
 
@@ -278,7 +279,12 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     socket.on('player_surrender', () => {socket.player.match.endGame(socket.player.currentOpponentPlayer, socket.player);});
 
-    socket.on('debug', (cardID) => {socket.player.match.matchCardRegistry.get(cardID).debugRush = true;});
+    socket.on('debug', (cardID) => {
+        socket.player.match.matchCardRegistry.get(cardID).debugRush = true;
+        console.log(socket.player.match.matchCardRegistry.get(cardID))
+        //Create Fake AttakManager
+        //socket.player.match.debug_createFakeAttackManager(socket.player);
+    });
 });
 
 //START LISTENING

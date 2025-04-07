@@ -1008,6 +1008,55 @@ class GameStateManager {
         this.scene.actionLibrary.startAttackAnimation(activePlayer, attackResults);
     }
 
+    /** Function to start the attack animation and resolve the attack
+     * @param {boolean} activePlayer - If it is the active player
+     * @param {Object} lifeCardData - The attack results
+     */
+    startTriggerPhase(activePlayer, lifeCardData) {
+        let player = this.scene.activePlayerScene;
+        if(!activePlayer) player = this.scene.passivePlayerScene;
+
+        let serverCard = {
+            id: lifeCardData.cardId,
+            cardData: lifeCardData.cardData
+        };
+
+        //If this is the active player, blocker means that no interaction will be possible until the end of the phase
+        this.currentGamePhase = GAME_PHASES.TRIGGER_PHSE;
+        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+
+        if(activePlayer) {
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+            this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+
+            this.scene.actionLibraryPassivePlayer.drawLifeCardAction(this.scene.passivePlayerScene, serverCard);
+        } else {
+            this.scene.gameState.exit(GAME_STATES.TRIGGER_INTERACTION);
+
+            //Create an action to draw a card from the life pool if attacker was attacked and update lifepoints
+            this.scene.actionLibrary.drawLifeCardAction(this.scene.activePlayerScene, serverCard);
+        }
+    }
+
+    /** Function to draw the Life Card */
+    drawTriggerCard(activePlayer, lifeCardData) {
+        let player = this.scene.activePlayerScene;
+        if(!activePlayer) player = this.scene.passivePlayerScene;
+
+        let serverCard = {
+            id: lifeCardData.cardId,
+            cardData: lifeCardData.cardData
+        };
+
+        console.log(serverCard);
+        
+        if(!activePlayer) {
+            this.scene.actionLibraryPassivePlayer.addLifeCardToHand(this.scene.passivePlayerScene, serverCard);
+        } else {
+            this.scene.actionLibrary.addLifeCardToHand(this.scene.activePlayerScene, serverCard);
+        }
+    }
+
     /** Function to start the attack cleanup action */
     startAttackCleanup(activePlayer, cleanupResults) {
         let player = this.scene.activePlayerScene;
@@ -1138,6 +1187,9 @@ class GameStateManager {
         } else if(phase === GAME_STATES.ON_ATTACK_EVENT_INTERACTION) {
             this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
             this.scene.game.gameClient.requestPassOnAttackEventPhase(passed);
+        } else if(phase === GAME_STATES.TRIGGER_INTERACTION) {
+            this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+            this.scene.game.gameClient.requestDrawTriggerCard();
         }
     }
 

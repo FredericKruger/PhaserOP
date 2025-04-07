@@ -239,7 +239,7 @@ class AnimationLibraryPassivePlayer {
                 }
             },
             { // Phase 6: Merge into life counter
-                scale: 0,
+                scale: CARD_SCALE.IN_DECK * 0.9,
                 alpha: 0,
                 duration: 100, // Faster disappearance
                 ease: 'Power1.easeIn', // Changed from Back to Power for less bounce
@@ -414,24 +414,25 @@ class AnimationLibraryPassivePlayer {
      * @param {number} delay - delay with which to start the tweens 
      */
     animation_move_card_lifedeck2display(card, delay) {
-        let displayX = this.scene.screenWidth - 100 - GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
-        let displayY = this.scene.screenCenterY - 100;
+        let displayX = 100 + GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_PLAY_ANIMATION / 2;
+        let displayY = this.scene.screenCenterY;
 
         let animation = [
-            { // Phase 3: Flip the card on the x-axis (second half) and move to final position
+            { // Phase 1: Flip the card on the x-axis (second half) and move to final position
                 targets: card,
                 scaleX: CARD_SCALE.IN_PLAY_ANIMATION,
                 scaleY: CARD_SCALE.IN_PLAY_ANIMATION,
                 y: displayY,
                 x: displayX,
-                duration: 500,
+                angle: 0,
+                duration: 800,
                 ease: 'Power2.easeOut',
                 delay: delay,
             },
-            { // Phase 4: Pause at display location
+            { // Phase 2: Pause at display location
                 targets: card,
                 scale: CARD_SCALE.IN_PLAY_ANIMATION,
-                duration: 800, // Longer hold duration
+                duration: 1000, // Longer hold duration
                 ease: 'Power2.easeInOut'
             }
         ];

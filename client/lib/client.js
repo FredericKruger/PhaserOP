@@ -234,6 +234,12 @@ class Client {
         this.socket.on('game_start_attack_animation', (activePlayer, attackResults) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackAnimation(activePlayer, attackResults);
         });
+        this.socket.on('game_start_trigger_phase', (activePlayer, lifeCardData) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startTriggerPhase(activePlayer, lifeCardData);
+        });
+        this.socket.on('game_draw_trigger_card', (activePlayer, lifeCardData) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.drawTriggerCard(activePlayer, lifeCardData);
+        });
         this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);
         });
@@ -375,10 +381,11 @@ class Client {
     requestStartBlockerPhase () {this.socket.emit('player_blocker_phase_ready');}
     requestStartBlockerPhasePassivePlayer () {this.socket.emit('player_blocker_phase_ready_passive_player');}
     requestPlayerAttachCounterToCharacter (counterID, characterID) {this.socket.emit('player_attach_counter_to_character', counterID, characterID);}
-
     requestPassOnAttackEventPhase (passed) {this.socket.emit('player_pass_on_attack_event_phase', passed);}
     requestPassBlockerPhase (passed) {this.socket.emit('player_pass_blocker_phase', passed);}
     requestPassCounterPhase (passed) {this.socket.emit('player_pass_counter_phase', passed);}
+    requestStartTriggerPhase () {this.socket.emit('player_trigger_phase_ready');}
+    requestDrawTriggerCard () {this.socket.emit('player_draw_trigger_card');}
     requestStartAttackCleanup () {this.socket.emit('player_start_attack_cleanup');}
     requestEndAttack() {this.socket.emit('player_end_attack');}
     //#endregion

@@ -19,6 +19,7 @@ const MATCH_PHASES = Object.freeze({
     ATTACK_PHASE: 'Main: Attack',
     BLOCK_PHASE: 'Main: Block',
     COUNTER_PHASE: 'Main: Counter',
+    TRIGGER_PHASE: 'Main: Trigger'
 });
 //#endregion
 
@@ -429,28 +430,40 @@ class MatchState {
             attackResults.newDefenderState = defender.state;
         }
 
-        if(attackResults.lostLeaderLife) {
-            defendingPlayer.life--;
-
-            //draw card from lifedeck
-            let card = defendingPlayer.inLifeDeck.pop();
-            card.setState(CARD_STATES.IN_HAND);
-            defendingPlayer.inHand.push(card);
-
-            //Append card information
-            attackResults.lifeCardIds = [card.id]; //TODO handle double strike
-            attackResults.lifeCardData = [card.cardData];
-
-            if(defendingPlayer.life < 0) {
-                //End the game
-                //TODO Create end game
-            }
-        }
-
         //Set the attacker state to exerte
         attacker.state = CARD_STATES.IN_PLAY_RESTED;
         attackResults.newAttackerState = attacker.state;
 
+        return attackResults;
+    }
+
+    /** Function to draw a card from the life deck if needed
+     * @param {Object} attackResults - attack results 
+     * @param {MatchPlayer} defendingPlayer - defending player
+    */
+    drawLifeDeckCard(attackResults, defendingPlayer) {
+        if(attackResults.lostLeaderLife) {
+            defendingPlayer.life--;
+
+            //draw card from lifedeck
+            let card = null;
+            if(defendingPlayer.inLifeDeck.length>0)
+                card = defendingPlayer.inLifeDeck.pop();
+
+            //Append card information
+            attackResults.playerAlive = defendingPlayer.life>=0; 
+            attackResults.lifeCard = card;
+            attackResults.lifeCardData = {};
+            if(card) {
+                attackResults.lifeCardData.cardId = card.id; 
+                attackResults.lifeCardData.cardData = card.cardData;
+            }
+
+            /*if(defendingPlayer.life < 0) {
+                //End the game
+                //TODO Create end game
+            }*/
+        }
         return attackResults;
     }
 

@@ -6,6 +6,7 @@ const GAME_STATES = Object.freeze({
     ON_PLAY_EVENT_INTERACTION: 'ON_PLAY_EVENT_INTERACTION',
     BLOCKER_INTERACTION: 'BLOCKER_INTERACTION',
     COUNTER_INTERACTION: 'COUNTER_INTERACTION',
+    TRIGGER_INTERACTION: 'TRIGGER_INTERACTION',
     TARGETING: 'TARGETING',
     DRAGGING: 'DRAGGING',
 });
@@ -62,6 +63,9 @@ class GameState {
                 break;
             case GAME_STATES.COUNTER_INTERACTION:
                 this.scene.gameState = new CounterInteractionState(this.scene, this.scene.gameState.name);
+                break;
+            case GAME_STATES.TRIGGER_INTERACTION:
+                this.scene.gameState = new TriggerInteractionState(this.scene, this.scene.gameState.name);
                 break;
             default:
                 break;

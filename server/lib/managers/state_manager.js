@@ -59,6 +59,7 @@ class MatchFlags {
             BLOCKER_PHASE_READY_PASSIVE_PLAYER: new WaitFlag("BLOCKER_PHASE_READY_PASSIVE_PLAYER", true, false),
             COUNTER_PHASE_READY: new WaitFlag("COUNTER_PHASE_READY", true, true),
             RESOLVE_ATTACK_READY: new WaitFlag("RESOLVE_ATTACK_READY", true, true),
+            TRIGGER_PHASE_READY: new WaitFlag("TRIGGER_PHASE_READY", true, true),
             ATTACK_CLEANUP_READY: new WaitFlag("ATTACK_CLEANUP_READY", true, true),
             RESUME_TURN_READY: new WaitFlag("RESUME_TURN_READY", true, true)
         }   
@@ -191,6 +192,9 @@ class FlagManager {
                 break;
             case 'RESOLVE_ATTACK_READY':
                 this.match.startResolveAttack();
+                break;
+            case 'TRIGGER_PHASE_READY':
+                this.match.startTriggerPhase();
                 break;
             case 'ATTACK_CLEANUP_READY':
                 this.match.startAttackCleanup();
