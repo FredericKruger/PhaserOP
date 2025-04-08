@@ -1,0 +1,34 @@
+{
+    "id":371,
+    "setid":6,
+    "banned": false,
+    "art":"ST01-006",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Tony Tony.Chopper",
+    "card":"CHARACTER",
+    "type":["Animal","Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":1,
+    "power":1000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST01-006-1",
+            "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+            "art": {
+                "art": "ST01-006-BLOCKER",
+                "posx": 300,
+                "posy": 548
+            },
+            "type": "BLOCKER",
+            "phases": ["Main: Block"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "CAN_BLOCK", "value": true}
+            ]
+        }
+    ]
+}

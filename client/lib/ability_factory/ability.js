@@ -43,6 +43,7 @@ class Ability {
     canActivate(gamePhase) {
         // Check if in correct phase
         if (this.phases.length > 0 && !this.phases.includes(gamePhase)) {
+            //console.log(`Ability ${this.id} cannot be activated in phase ${this.card.phases}`);
             return false;
         }
 

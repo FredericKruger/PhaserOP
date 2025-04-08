@@ -1022,7 +1022,7 @@ class GameStateManager {
         };
 
         //If this is the active player, blocker means that no interaction will be possible until the end of the phase
-        this.currentGamePhase = GAME_PHASES.TRIGGER_PHSE;
+        this.currentGamePhase = GAME_PHASES.TRIGGER_PHASE;
         this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
 
         if(activePlayer) {
@@ -1040,20 +1040,49 @@ class GameStateManager {
 
     /** Function to draw the Life Card */
     drawTriggerCard(activePlayer, lifeCardData) {
-        let player = this.scene.activePlayerScene;
-        if(!activePlayer) player = this.scene.passivePlayerScene;
+        let player = this.scene.passivePlayerScene;
+        if(!activePlayer) player = this.scene.activePlayerScene;
 
         let serverCard = {
             id: lifeCardData.cardId,
             cardData: lifeCardData.cardData
         };
+        this.scene.actionLibrary.addLifeCardToHand(player, serverCard);
+    }
 
-        console.log(serverCard);
-        
-        if(!activePlayer) {
-            this.scene.actionLibraryPassivePlayer.addLifeCardToHand(this.scene.passivePlayerScene, serverCard);
+    /** Function to play the trigger Card 
+     * @param {Object} actionInfos - The action infos
+     * @param {boolean} discardCard - If the card should be discarded
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+    */
+    triggerCardPlayed(actionInfos, discardCard, isPlayerTurn) {
+        let player = this.scene.passivePlayerScene;
+        if(isPlayerTurn) player = this.scene.activePlayerScene;
+
+        let card = this.scene.getCard(actionInfos.playedCard);
+        if(isPlayerTurn) {
+            this.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, isPlayerTurn); //Resolve the ability
+            player.lifeDeck.removeCard(card); //Remove the card from the life deck
+            if(discardCard) this.scene.actionLibrary.discardCardAction(player, card); //Discard the card
+            player.lifeDeck.hideLifeCardFan();
         } else {
-            this.scene.actionLibrary.addLifeCardToHand(this.scene.activePlayerScene, serverCard);
+            card.updateCardData(actionInfos.playedCardData); //Update the card data
+            let flipAnimation = this.scene.animationLibraryPassivePlayer.animation_flip_card(card, 0);
+            flipAnimation = flipAnimation.concat([{
+                targets: card,
+                alpha: 1,
+                duration: 500,
+                onComplete: () => {
+                    this.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, isPlayerTurn); //Resolve the ability
+                    player.lifeDeck.removeCard(card); //Remove the card from the life deck
+                    if(discardCard) this.scene.actionLibrary.discardCardAction(player, card); //Discard the card
+                    player.lifeDeck.hideLifeCardFan();
+                }
+            }]);
+            this.scene.tweens.chain({
+                targets: card,
+                tweens: flipAnimation
+            });
         }
     }
 
@@ -1126,7 +1155,6 @@ class GameStateManager {
         if(!isPlayerTurn) playerScene = this.scene.passivePlayerScene;
 
         let card = playerScene.getCard(cardID);
-
         this.scene.actionLibrary.startTargetingAction(playerScene, card, true);
     }
 

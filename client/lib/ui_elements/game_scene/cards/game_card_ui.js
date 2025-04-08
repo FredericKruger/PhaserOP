@@ -42,6 +42,7 @@ class GameCardUI extends BaseCardUI{
 
         //STATE VARIABLES
         this.fsmState = new InDeckState(this);
+        this.dataLoaded = false; //To store if the card data was loaded
         this.isInPlayAnimation = false;
 
         this.donFanShowing = false;
@@ -181,6 +182,8 @@ class GameCardUI extends BaseCardUI{
             this.createAbilityButtons(); //Create the ability buttons
 
             this.setDepth(this.cardDepth);
+
+            this.dataLoaded = true; //Set the data loaded to true
         };
 
         textures.push({

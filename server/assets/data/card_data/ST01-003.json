@@ -1,0 +1,18 @@
+{
+    "id":368,
+    "setid":3,
+    "banned": false,
+    "art":"ST01-003",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Karoo",
+    "card":"CHARACTER",
+    "type":["Animal", "Alabasta"],
+    "colors":["RED"],
+    "cost":1,
+    "power":3000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000
+}

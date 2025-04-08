@@ -26,6 +26,8 @@ class InActionState extends GameCardState {
     }
 
     update() {
+        if(!this.card.dataLoaded) for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(true);
+
         for(let ability of this.card.abilities) {
             ability.update();
         }

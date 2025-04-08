@@ -174,6 +174,9 @@ class PlayerScene {
         card = this.stageLocation.getCard(cardId);
         if(card !== undefined && card !== null) return card;
 
+        card = this.lifeDeck.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
         card = this.discard.getCard(cardId);
         return card;
     }

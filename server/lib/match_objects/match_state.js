@@ -447,8 +447,10 @@ class MatchState {
 
             //draw card from lifedeck
             let card = null;
-            if(defendingPlayer.inLifeDeck.length>0)
+            if(defendingPlayer.inLifeDeck.length>0) {
                 card = defendingPlayer.inLifeDeck.pop();
+                card.setState(CARD_STATES.BEING_PLAYED);
+            }
 
             //Append card information
             attackResults.playerAlive = defendingPlayer.life>=0; 

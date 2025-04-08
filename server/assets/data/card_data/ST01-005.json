@@ -1,0 +1,49 @@
+{
+    "id":370,
+    "setid":5,
+    "banned": false,
+    "art":"ST01-005",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Jinbe",
+    "card":"CHARACTER",
+    "type":["Fish-Man","Straw Hat Crew"],
+    "colors":["RED"],
+    "cost": 2,
+    "power": 5000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST01-005-1",
+            "text": "Up to 1 of your Leader or Character cards other than this card gains +1000 power during this turn.",
+            "art": {
+                "art": "ST01-005-ABILITY1",
+                "posx": 300,
+                "posy": 560
+            },
+            "type": "WHEN_ATTACKING",
+            "phases": ["Main: Attack"],
+            "states": [],
+            "target": {
+                "targetAction": "ABILITY_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"],
+                        "exclude": ["SELF"]
+                    }
+                ]
+            },
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+            ]
+        }
+    ]
+}

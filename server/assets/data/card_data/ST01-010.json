@@ -1,0 +1,18 @@
+{
+    "id":375,
+    "setid":10,
+    "banned": false,
+    "art":"ST01-010",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Franky",
+    "card":"CHARACTER",
+    "type":["Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":4,
+    "power":6000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000
+}

@@ -110,5 +110,5 @@ const GAME_PHASES = Object.freeze({
     ATTACK_PHASE: 'Main: Attack',
     BLOCK_PHASE: 'Main: Block',
     COUNTER_PHASE: 'Main: Counter',
-    TRIGGER_PHSE: 'Main: Trigger',
+    TRIGGER_PHASE: 'Main: Trigger',
 });

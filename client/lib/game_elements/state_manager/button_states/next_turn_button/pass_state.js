@@ -18,9 +18,21 @@ class NextTurnButtonBlockState extends NextTurnButtonState {
         this.button.clearGreyscale();
     }
 
-    onPointerDown(pointer, gameObject) {    
+    onPointerDown(pointer, gameObject) { 
+        this.button.scene.tweens.add({
+            targets: this.button,
+            scale: this.button.scale * 0.9, // Slightly smaller on press
+            duration: 50,
+            yoyo: true,
+            onComplete: () => {
+                // Trigger the ability after the press animation
+                this.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+                this.button.scene.gameStateManager.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, true);
+            }
+        });
+        
         // Create a more dynamic rotation animation
-        this.button.scene.add.tween({
+        /*this.button.scene.add.tween({
             onStart: () => {
                 this.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
                 
@@ -63,7 +75,7 @@ class NextTurnButtonBlockState extends NextTurnButtonState {
                     }
                 });
             }
-        });
+        });*/
     }
 }
 
@@ -80,9 +92,21 @@ class NextTurnButtonCounterState extends NextTurnButtonState {
         this.button.clearGreyscale();
     }
 
-    onPointerDown(pointer, gameObject) {    
+    onPointerDown(pointer, gameObject) { 
+        this.button.scene.tweens.add({
+            targets: this.button,
+            scale: this.button.scale * 0.9, // Slightly smaller on press
+            duration: 50,
+            yoyo: true,
+            onComplete: () => {
+                // Trigger the ability after the press animation
+                this.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+                this.button.scene.gameStateManager.passToNextPhase(GAME_STATES.COUNTER_INTERACTION, true);
+            }
+        });
+
         // Create a more dynamic rotation animation
-        this.button.scene.add.tween({
+        /*this.button.scene.add.tween({
             onStart: () => {
                 this.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
                 
@@ -125,7 +149,7 @@ class NextTurnButtonCounterState extends NextTurnButtonState {
                     }
                 });
             }
-        });
+        });*/
     }
 }
 
@@ -143,8 +167,17 @@ class NextTurnButtonOnPlayEventState extends NextTurnButtonState {
     }
 
     onPointerDown(pointer, gameObject) {  
-        this.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
-        this.button.scene.gameStateManager.passToNextPhase(GAME_STATES.ON_PLAY_EVENT_INTERACTION, true);  
+        this.button.scene.tweens.add({
+            targets: this.button,
+            scale: this.button.scale * 0.9, // Slightly smaller on press
+            duration: 50,
+            yoyo: true,
+            onComplete: () => {
+                // Trigger the ability after the press animation
+                this.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
+                this.button.scene.gameStateManager.passToNextPhase(GAME_STATES.ON_PLAY_EVENT_INTERACTION, true);  
+            }
+        });
     }
 }
 
@@ -162,8 +195,18 @@ class NextTurnButtonOnAttackEventState extends NextTurnButtonState {
     }
 
     onPointerDown(pointer, gameObject) {  
-        this.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
-        this.button.scene.gameStateManager.passToNextPhase(GAME_STATES.ON_ATTACK_EVENT_INTERACTION, true);  
+        this.button.scene.tweens.add({
+            targets: this.button,
+            scale: this.button.scale * 0.9, // Slightly smaller on press
+            duration: 50,
+            yoyo: true,
+            onComplete: () => {
+                // Trigger the ability after the press animation
+                this.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
+                this.button.scene.gameStateManager.passToNextPhase(GAME_STATES.ON_ATTACK_EVENT_INTERACTION, true);  
+            }
+        });
+
     }
 }
 

@@ -139,6 +139,9 @@ class ActionLibrary {
                 ease: 'Sine.easeInOut'
             });
         };
+        drawAction.end = () => {
+            card.setState(CARD_STATES.BEING_PLAYED);
+        };
         drawAction.start_animation = start_animation;
         drawAction.isPlayerAction = true;
         drawAction.waitForAnimationToComplete = true;
@@ -963,19 +966,6 @@ class ActionLibrary {
             action.start = () => {               
                 let card = activeTargetManager.targetArrow.originatorObject;
                 activeTargetManager.targetArrow.stopTargeting();          
-
-                /*switch(activeTargetManager.targetAction) {
-                    case 'EVENT_CARD_ACTION':
-                    case 'PLAY_CARD_ACTION':
-                        card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
-                        card.setState(CARD_STATES.IN_HAND);
-                        card.playerScene.hand.update();
-                        break;
-                    case '':
-                        break;
-                    default:
-                        break;
-                }*/
 
                 if(!serverRequest) this.scene.game.gameClient.requestCancelTargeting(activeTargetManager.targetData);
                 this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm.id !== activeTargetManager.id); //Remove the target manager from the list

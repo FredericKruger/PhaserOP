@@ -1,0 +1,18 @@
+{
+    "id":374,
+    "setid":9,
+    "banned": false,
+    "art":"ST01-009",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Nefeltari Vivi",
+    "card":"CHARACTER",
+    "type":["Alabasta"],
+    "colors":["RED"],
+    "cost":2,
+    "power":4000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000
+}

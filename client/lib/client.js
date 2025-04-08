@@ -240,6 +240,12 @@ class Client {
         this.socket.on('game_draw_trigger_card', (activePlayer, lifeCardData) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.drawTriggerCard(activePlayer, lifeCardData);
         });
+        this.socket.on('game_trigger_cancel_targeting', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameState.exit(GAME_STATES.TRIGGER_INTERACTION);
+        });
+        this.socket.on('game_trigger_card_played', (actionInfos, discardCard, activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.triggerCardPlayed(actionInfos, discardCard, activePlayer);
+        });
         this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);
         });

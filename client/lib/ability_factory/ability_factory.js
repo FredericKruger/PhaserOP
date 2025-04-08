@@ -14,6 +14,7 @@ class AbilityFactory {
                 return new ActiveAbility(abilityData);
             case 'ON_PLAY':
             case 'WHEN_ATTACKING':
+            case 'TRIGGER':
                 return new OnEventAbility(abilityData);
             case 'AURA':
                 return new AuraAbility(abilityData);

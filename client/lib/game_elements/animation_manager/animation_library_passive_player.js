@@ -425,14 +425,14 @@ class AnimationLibraryPassivePlayer {
                 y: displayY,
                 x: displayX,
                 angle: 0,
-                duration: 800,
+                duration: 300,
                 ease: 'Power2.easeOut',
                 delay: delay,
             },
             { // Phase 2: Pause at display location
                 targets: card,
                 scale: CARD_SCALE.IN_PLAY_ANIMATION,
-                duration: 1000, // Longer hold duration
+                duration: 300, // Longer hold duration
                 ease: 'Power2.easeInOut'
             }
         ];
@@ -463,6 +463,29 @@ class AnimationLibraryPassivePlayer {
                 }
             }
         ];
+        return tweens;
+    }
+
+    /** Animation to flip the card
+     * @param {DonCardUI} card - card to be moved from the don deck to the active don area
+     * @param {number} delay - delay with which to start the tweens
+     */
+    animation_flip_card(card, delay) {
+        const previousScale = card.scale;
+        let tweens = [{ // Phase 2: Begin arc movement & card flip simultaneously 
+            scaleX: 0, // Card edge-on during flip (Y-axis)
+            duration: 115, // 150 * 0.5 = 75
+            ease: 'Quad.easeOut',
+            onComplete: () => {
+                // Flip card to show face
+                card.flipCard();
+            }
+        },
+        { // Phase 3: Continue upward arc with card face showing
+            scaleX: previousScale, // Card unfolds while continuing to move
+            duration: 135, // 180 * 0.5 = 90
+            ease: 'Sine.easeInOut'
+        }];
         return tweens;
     }
 

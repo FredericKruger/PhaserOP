@@ -1,0 +1,50 @@
+{
+    "id":382,
+    "setid":17,
+    "banned": false,
+    "art":"ST01-017",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Thousand Sunny",
+    "card":"STAGE",
+    "type":["Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":2,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST01-017-1",
+            "text": "You may rest this State. Up to 1 {Straw Hat Crew} tpye Leader or Character card on your field gain +1000 power during this turn.",
+            "art": {
+                "art": "ST01-017-ABILITY1",
+                "posx": 300,
+                "posy": 545
+            },
+            "type": "ACTIVE",
+            "phases": ["Main Phase"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "CARD_RESTED", "value": false},
+                {"type": "PLAYER_TURN", "value": true}
+            ],
+            "target": {
+                "targetAction": "ABILITY_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"],
+                        "types": ["Straw Hat Crew"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}},
+                {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET","duration": "TURN"}}
+            ]
+        }
+    ]
+}

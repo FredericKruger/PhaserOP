@@ -1,0 +1,37 @@
+{
+    "id":369,
+    "setid":4,
+    "banned": false,
+    "art":"ST01-004",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Sanji",
+    "card":"CHARACTER",
+    "type":["Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":2,
+    "power":4000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST01-004-1",
+            "text": "This Character gains Rush. (This card can attack on the turn in which it is played).",
+            "art": {
+                "art": "ST01-004-ABILITY1",
+                "posx": 300,
+                "posy": 548
+            },
+            "type": "PASSIVE",
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "PLAYED_THIS_TURN", "value": true},
+                {"type": "ATTACHED_DON", "value": 2}
+            ],
+            "actions": [
+                {"name": "hasRush", "params": {}}
+            ]
+        }
+    ]
+}

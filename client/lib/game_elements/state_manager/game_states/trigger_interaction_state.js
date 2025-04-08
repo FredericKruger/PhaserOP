@@ -15,10 +15,12 @@ class TriggerInteractionState extends GameState {
 
     onPointerOver(pointer, gameObject) {
         if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOver(pointer, gameObject);
+        else if(gameObject instanceof AbilityButton && gameObject.type === "TRIGGER") gameObject.onPointerOver();
     }
 
     onPointerOut(pointer, gameObject) {
         if(gameObject instanceof GameCardUI) gameObject.fsmState.onPointerOut(pointer, gameObject);
+        else if(gameObject instanceof AbilityButton && gameObject.type === "TRIGGER") gameObject.onPointerOut();
     }
 
     onPointerDown(pointer, gameObject) {
@@ -33,6 +35,7 @@ class TriggerInteractionState extends GameState {
         for(let card of this.scene.activePlayerScene.characterArea.cards) card.fsmState.update();
         for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.fsmState.update();
         for(let card of this.scene.activePlayerScene.stageLocation.cards) card.fsmState.update();
+        for(let card of this.scene.activePlayerScene.lifeDeck.cards) card.fsmState.update();
 
         //Update all cards in the hand to reflect if they can take an action
         for(let card of this.scene.passivePlayerScene.characterArea.cards) card.fsmState.update();

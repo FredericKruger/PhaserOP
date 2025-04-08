@@ -281,7 +281,6 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     socket.on('debug', (cardID) => {
         socket.player.match.matchCardRegistry.get(cardID).debugRush = true;
-        console.log(socket.player.match.matchCardRegistry.get(cardID))
         //Create Fake AttakManager
         //socket.player.match.debug_createFakeAttackManager(socket.player);
     });

@@ -1,0 +1,48 @@
+{
+    "id":376,
+    "setid":11,
+    "banned": false,
+    "art":"ST01-011",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Brook",
+    "card":"CHARACTER",
+    "type":["Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":2,
+    "power":3000,
+    "attribute":"SLASH",
+    "isleader":2,
+    "rarity":"COMMON",
+    "counter": 1000,
+    "abilities": [
+        {
+            "id": "ST01-011-1",
+            "text": "Give yp to 2 rested DON!! cards to your Leader of 1 of your Characters.",
+            "art": {
+                "art": "ST01-011-ABILITY1",
+                "posx": 300,
+                "posy": 548
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED"],
+            "phases": ["Main Phase"],
+            "target": {
+                "targetAction": "ABILITY_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                        "exclude": ["SELF"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "attachDonCard", "params": {"amount": 2, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
+            ]
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+{
+    "id":377,
+    "setid":12,
+    "banned": false,
+    "art":"ST01-012",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Monkey.D.Luffy",
+    "card":"CHARACTER",
+    "type":["Supernovas","Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":5,
+    "power":6000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"SUPER RARE",
+    "abilities": [
+        {
+            "id": "ST01-012-RUSH",
+            "text": "(This card can attack on the turn in which it is played.)",
+            "art": {
+                "art": "ST01-012-RUSH",
+                "posx": 300,
+                "posy": 548
+            },
+            "type": "PASSIVE",
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "PLAYED_THIS_TURN", "value": true}
+            ],
+            "actions": [
+                {"name": "hasRush", "params": {}}
+            ]
+        },
+        {
+            "id": "ST01-012-1",
+            "text": "Your opponent cannot active Blocker during this battle.",
+            "art": {
+                "art": "ST01-012-ABILITY1",
+                "posx": 300,
+                "posy": 608
+            },
+            "type": "AURA",
+            "phases": [],
+            "states": ["IN_PLAY_ATTACKING"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 2}
+            ],
+            "aurainfo": {
+                "duration": "GAME",
+                "affectedPlayers": ["owner", "opponent"]
+            },
+            "target": {
+                "targetAction": "AURA_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "exclude": ["SELF"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "canBlock_Aura", "params": {"value": false}}
+            ]
+        }
+    ]
+}

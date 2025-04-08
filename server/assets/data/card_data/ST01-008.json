@@ -1,0 +1,18 @@
+{
+    "id":373,
+    "setid":8,
+    "banned": false,
+    "art":"ST01-008",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Nico Robin",
+    "card":"CHARACTER",
+    "type":["Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":3,
+    "power":5000,
+    "attribute":"WISDOM",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000
+}

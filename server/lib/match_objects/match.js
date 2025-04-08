@@ -643,8 +643,29 @@ class Match {
         if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_draw_trigger_card', true, this.attackManager.attackResults.lifeCardData);
         if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_draw_trigger_card', false, this.attackManager.attackResults.lifeCardData);
 
-        //this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
-        //this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
+        this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
+        this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
+    }
+
+    resolveTriggerCard() {
+        //Get Trigger Card
+        let triggerCard = this.attackManager.attackResults.lifeCard;
+
+        //If the card is an event, discard it
+        let discardCard = false;
+        //if(triggerCard.cardData.type === CARD_TYPES.EVENT) {
+            let player = this.attackManager.attack.defendingPlayer;
+            player.discardCard(triggerCard);
+            discardCard = true;
+        //}
+
+        let actionInfos = this.state.pending_action.actionInfos;
+        //actionInfos.abilityResults;
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_trigger_card_played', actionInfos, discardCard, false);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_trigger_card_played', actionInfos, discardCard, true);
+
+        this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
+        this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
     }
 
     /** Function to cleanup after the attack */
@@ -730,7 +751,6 @@ class Match {
                 actionInfos = this.state.pending_action.actionInfos;
                 if(cancel) {
                     if(actionInfos.optional) {
-                        //if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         if(!player.bot) player.socket.emit('game_play_card_event_triggered', actionInfos, true);
                     } else this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.replacedCard, this.playCardManager.payedDon);
                 } else {
@@ -803,6 +823,25 @@ class Match {
                         if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_cancel_attack', false);
                     }
                 }
+            case PLAY_CARD_STATES.TRIGGER_EVENT_TARGETS_REQUIRED:
+                actionInfos = this.state.pending_action.actionInfos;
+                if(cancel) {
+                    if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_trigger_cancel_targeting');
+                } else {
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
+                    if(validTarget) {
+                        if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
+                        let abilityResults = this.resolveAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
+                        actionInfos.abilityResults = abilityResults;
+
+                        this.resolveTriggerCard();
+
+                        //if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                    } else {
+                        player.socket.emit('game_reset_targets');
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -842,7 +881,6 @@ class Match {
             } else if(ability.type === "WHEN_ATTACKING") {
                 this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
                 this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
-        
             } else  {
                 player.socket.emit('game_activate_ability_failure', cardId, abilityId);
                 return;
@@ -859,10 +897,14 @@ class Match {
             } else if(ability.type === "WHEN_ATTACKING") {
                 action.actionResult = PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED;
                 actionInfos.actionId = 'ON_ATTACK_EVENT_' + cardId;
+            } else if(ability.type === "TRIGGER") {
+                action.actionResult = PLAY_CARD_STATES.TRIGGER_EVENT_TARGETS_REQUIRED;
+                actionInfos.actionId = 'TRIGGER_EVENT_' + cardId;
             }
 
             this.state.pending_action = action;
             this.state.resolving_pending_action = true;
+
             if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
         } else {
             console.log("NO TARGETS REQUIRED FOR THIS ABILITY");

@@ -1,0 +1,69 @@
+{
+    "id":379,
+    "setid":14,
+    "banned": false,
+    "art":"ST01-014",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Guard Point",
+    "card":"EVENT",
+    "type":["Animal","Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":1,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST01-014-1",
+            "text": "Up to 1 of your Leader or Character cards gains +3000 power during this battle.",
+            "art": {
+                "art": "ST01-014-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "ON_PLAY",
+            "phases": ["Main: Counter"],
+            "target": {
+                "targetAction": "EVENT_CARD_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "addCounterToCard", "params": {"amount": 3000}}
+            ]
+        },
+        {
+            "id": "ST01-014-TRIGGER",
+            "text": "Up to 1 of your Leader or Character cards gains +1000 power during this turn.",
+            "art": {
+                "art": "ST01-014-TRIGGER",
+                "posx": 300,
+                "posy": 660
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "target": {
+                "targetAction": "ABILITY_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+            ]
+        }
+    ]
+}
