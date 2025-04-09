@@ -554,7 +554,7 @@ const abilityActions = {
 
         if(!activePlayer) {
             tweens.push({
-                targets: character,
+                targets: {},
                 scale: 1,
                 duration: 10,
                 onStart: () => {

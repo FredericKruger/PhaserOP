@@ -459,8 +459,7 @@ class ActionLibrary {
         /** Create action to play on play event results */
         if(actionInfos.abilityId && actionInfos.eventAction) {
             //Get the ability and resolve the action
-            let ability = card.getAbility(actionInfos.abilityId);
-            this.resolveAbilityAction(card, ability, actionInfos.eventAction, true);
+            this.resolveAbilityAction(card, actionInfos.abilityId, actionInfos.eventAction, true);
         }
 
         //Create the action
@@ -890,11 +889,15 @@ class ActionLibrary {
 
     /** Function to resolve the ability
      * @param {GameCardUI} card
-     * @param {Ability} ability
+     * @param {string} abilityId
      * @param {Object} abilityInfo
      * @param {boolean} activePlayer - If it is the active player
      */
-    resolveAbilityAction(card, ability, abilityInfo, activePlayer = true) {
+    resolveAbilityAction(card, abilityId, abilityInfo, activePlayer = true) {
+        console.log(card);
+        console.log(abilityId);
+        let ability = card.getAbility(abilityId);
+        console.log(ability);
         let abilityTweens = ability.animate(card, abilityInfo, activePlayer); //Add the ability tween
 
         if(abilityTweens.length === 0) return;

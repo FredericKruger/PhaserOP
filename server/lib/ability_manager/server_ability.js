@@ -205,7 +205,7 @@ const serverAbilityActions = {
                 }
             } 
             
-            if(cardAvailable) return actionResults;
+            if(!cardAvailable) return actionResults;
             
         }
         return actionResults;

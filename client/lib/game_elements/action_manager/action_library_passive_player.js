@@ -344,6 +344,8 @@ class ActionLibraryPassivePlayer {
 
     /** Function that plays a card for the opponent*/
      playCardAction(playerScene, card, actionInfos) {
+        card.updateCardData(actionInfos.cardPlayedData); //Update the card data
+        
         //Create tweens
         let tweens = [];
         // Card flip animation - more dramatic
@@ -363,12 +365,7 @@ class ActionLibraryPassivePlayer {
             scaleY: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
             rotation: 0,
             duration: 220,
-            ease: 'Back.easeOut'
-        });
-        // Hold to show card
-        tweens.push({
-            scale: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
-            duration: 600,
+            ease: 'Back.easeOut',
             onComplete: () => {this.scene.actionManager.completeAction();}
         });
         //Create tween chain
@@ -382,7 +379,6 @@ class ActionLibraryPassivePlayer {
         flipCardAction.start = () => {
             //PAY COST
             playerScene.activeDonDeck.payCost(actionInfos.spentDonIds);
-            card.updateCardData(actionInfos.cardPlayedData); //Update the card data
         }
         flipCardAction.start_animation = flip_card_animation; //play animation
         flipCardAction.end = () => {
@@ -425,8 +421,7 @@ class ActionLibraryPassivePlayer {
 
         /** Create action to play on play event results */
         if(actionInfos.abilityId && actionInfos.eventAction) {
-            let ability = card.getAbility(actionInfos.abilityId);
-            this.scene.actionLibrary.resolveAbilityAction(card, ability, actionInfos.eventAction, false);
+            this.scene.actionLibrary.resolveAbilityAction(card, actionInfos.abilityId, actionInfos.eventAction, false);
         }
 
         let action = new Action();

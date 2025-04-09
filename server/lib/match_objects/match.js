@@ -603,6 +603,8 @@ class Match {
 
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_attack_animation', true, attackResults);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_attack_animation', false, attackResults);
+
+            this.attackManager = null;
         } 
     }
 
@@ -876,9 +878,9 @@ class Match {
         let ability = card.getAbility(abilityId);
 
         if(!ability.canActivate()) {
-            if(ability.type === "ON_PLAY") {
+            if(ability.type === "ON_PLAY" && this.playCardManager) {
                 this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
-            } else if(ability.type === "WHEN_ATTACKING") {
+            } else if(ability.type === "WHEN_ATTACKING" && this.attackManager) {
                 this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
                 this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
             } else  {
@@ -918,7 +920,7 @@ class Match {
      * @returns {Player}
      */
     getPlayer(playerID) {
-        if(this.player1.id === playerID) return this.player1;
+        if(this.player1.playerReference === playerID) return this.player1;
         else return this.player2;
     }
 
