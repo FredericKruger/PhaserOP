@@ -83,7 +83,9 @@ class AttackManager {
         this.counterPhase_Complete = false;
         this.resolveAttack_Complete = false;
         this.trigger_Complete = false;
+        this.triggerCleanup_Complete = false;
         this.attackCleanup_Complete = false;
+        this.resumeTurn_Complete = false;
     }
 
     /** Function to resolve the attack

@@ -702,7 +702,7 @@ class GameStateManager {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
-        let card = player.hand.getCard(actionInfos.playedCard); //Get the card
+        let card = player.getCard(actionInfos.playedCard); //Get the card
         let callback = () => {
             this.scene.game.gameClient.requestStartPlayCardComplete();
         };
@@ -1064,7 +1064,7 @@ class GameStateManager {
             this.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, isPlayerTurn); //Resolve the ability
             player.lifeDeck.removeCard(card); //Remove the card from the life deck
             if(discardCard) this.scene.actionLibrary.discardCardAction(player, card); //Discard the card
-            player.lifeDeck.hideLifeCardFan();
+            //player.lifeDeck.hideLifeCardFan();
         } else {
             card.updateCardData(actionInfos.playedCardData); //Update the card data
             let flipAnimation = this.scene.animationLibraryPassivePlayer.animation_flip_card(card, 0);
@@ -1076,7 +1076,7 @@ class GameStateManager {
                     this.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, isPlayerTurn); //Resolve the ability
                     player.lifeDeck.removeCard(card); //Remove the card from the life deck
                     if(discardCard) this.scene.actionLibrary.discardCardAction(player, card); //Discard the card
-                    player.lifeDeck.hideLifeCardFan();
+                    //player.lifeDeck.hideLifeCardFan();
                 }
             }]);
             this.scene.tweens.chain({
@@ -1084,6 +1084,21 @@ class GameStateManager {
                 tweens: flipAnimation
             });
         }
+    }
+
+    /** Function to play the trigger Card
+      * @param {boolean} isPlayerTurn - If it is the player's turn
+      */
+    cleanupTriggerPhase(isPlayerTurn) {
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let action = new Action();
+        action.start = () => {
+            player.lifeDeck.hideLifeCardFan();
+        }
+        action.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(action);
     }
 
     /** Function to start the attack cleanup action */
@@ -1162,10 +1177,11 @@ class GameStateManager {
         const card = this.scene.getCard(cardID);
         this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults, isPlayerTurn);
 
-        if(actionInfos.actionId.startsWith("ON_ATTACK_EVENT")) {
-            if(isPlayerTurn) this.scene.game.gameClient.requestStartBlockerPhase();
-            else this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
-        }
+        //if(actionInfos.actionId.startsWith("ON_ATTACK_EVENT")) {
+        //    if(isPlayerTurn) this.scene.game.gameClient.requestStartBlockerPhase();
+        //    else this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
+        //}
+        if(isPlayerTurn) this.scene.game.gameClient.requestCleanupAction();
     }
 
     //#endregion

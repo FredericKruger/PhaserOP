@@ -246,6 +246,9 @@ class Client {
         this.socket.on('game_trigger_card_played', (actionInfos, discardCard, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.triggerCardPlayed(actionInfos, discardCard, activePlayer);
         });
+        this.socket.on('game_cleanup_trigger_phase', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cleanupTriggerPhase(activePlayer);
+        });
         this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);
         });
@@ -384,8 +387,6 @@ class Client {
     requestStartTargetingAttack (cardID) {this.socket.emit('player_start_targeting_attack', cardID);}
     requestStartOnAttackEventPhase () {this.socket.emit('player_on_attack_event_phase_ready');}
     requestStartOnAttackEventPhasePassivePlayer () {this.socket.emit('player_on_attack_event_phase_ready_passive_player');}
-    requestStartBlockerPhase () {this.socket.emit('player_blocker_phase_ready');}
-    requestStartBlockerPhasePassivePlayer () {this.socket.emit('player_blocker_phase_ready_passive_player');}
     requestPlayerAttachCounterToCharacter (counterID, characterID) {this.socket.emit('player_attach_counter_to_character', counterID, characterID);}
     requestPassOnAttackEventPhase (passed) {this.socket.emit('player_pass_on_attack_event_phase', passed);}
     requestPassBlockerPhase (passed) {this.socket.emit('player_pass_blocker_phase', passed);}
@@ -399,6 +400,7 @@ class Client {
     //#region REQUEST ABILITY
     requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}
     requestActivateAbility (cardId, abilityId) {this.socket.emit('player_activate_ability', cardId, abilityId);}
+    requestCleanupAction () {this.socket.emit('player_cleanup_action');}
     //#endregion
 
     //#region REQUEST END TURN

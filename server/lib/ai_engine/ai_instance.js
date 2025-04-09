@@ -750,7 +750,6 @@ class AI_Instance {
      * @param {Object} counterDecision - The block decision
      */
     executeCounter(counterDecision) {
-        console.log(counterDecision);
         switch(counterDecision.function) {
             case 'counter':
                 //blockDecision.arg.ability.action(counterDecision.arg.blocker, this.match);

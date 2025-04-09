@@ -5,8 +5,9 @@ const { CARD_STATES } = require('./match_card.js');
 
 class MatchPlayer {
 
-    constructor(id) {
+    constructor(id, matchId) {
         this.id = id;
+        this.matchId = matchId;
 
         this.life = 0;
         this.deck = null;
@@ -91,19 +92,23 @@ class MatchPlayer {
     //#region PLAY CARD
     /** Function that plays the card and spends the required DON 
      * @param {number} cardID - ID of the card to be played
+     * @param {boolean} event - flag to indicate if the card is an event
     */
-    playCard(cardID) {
-        let card = this.inHand.find(c => c.id === cardID); //Get the card
+    playCard(cardID, event = false) {
+        let match = matchRegistry.get(this.matchId); //Get the match
+        let card = match.matchCardRegistry.get(cardID);
 
         card.setState(CARD_STATES.BEING_PLAYED); //Set the state to being played
 
-        //Remove the resources from the active don
+        //Remove the resources from the active don if it's not played as part of an event
         let donIDs = [];
-        for(let i=0; i<card.cardData.cost; i++) {
-            let donCard = this.inActiveDon.pop();
-            donCard.setState(CARD_STATES.DON_RESTED);
-            this.inExertenDon.push(donCard);
-            donIDs.push(donCard.id);
+        if(!event) {
+            for(let i=0; i<card.cardData.cost; i++) {
+                let donCard = this.inActiveDon.pop();
+                donCard.setState(CARD_STATES.DON_RESTED);
+                this.inExertenDon.push(donCard);
+                donIDs.push(donCard.id);
+            }
         }
 
         return {playedCard: cardID, playedCardData: card.cardData, spentDonIds: donIDs};
@@ -140,10 +145,11 @@ class MatchPlayer {
      * @param {MatchCard} cardID - ID of the card to be played
     */
     playEvent(card) {
-        this.removeCardFromHand(card); //remove the card from the hand
-        this.discardCard(card); //discard the card
+        let match = matchRegistry.get(cardID.matchId); //Get the match
 
-        return;
+        this.removeCardFromHand(card); //remove the card from the hand
+
+        this.discardCard(card); //discard the card
     }
     //#endregion
 

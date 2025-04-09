@@ -130,6 +130,9 @@ class GameScene extends Phaser.Scene {
             //GIVE CARD RUSH
             this.activePlayerScene.leaderLocation.cards[0].hasRush = true;
             this.game.gameClient.sendDebug(this.activePlayerScene.leaderLocation.cards[0].id);
+            //this.activePlayerScene.characterArea.cards[0].hasRush = true;
+            //this.game.gameClient.sendDebug(this.activePlayerScene.characterArea.cards[0].id);
+            
             
             //this.actionLibraryPassivePlayer.drawLifeCardAction(this.passivePlayerScene, {id: this.passivePlayerScene.lifeDeck.cards[0].id});
 

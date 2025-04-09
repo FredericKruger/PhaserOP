@@ -426,7 +426,12 @@ class ActionLibraryPassivePlayer {
 
         let action = new Action();
         action.start = () => { //Action start: pay card cost in inkwell. Remove card from hand and add it to the playarea
-            playerScene.hand.removeCard(card); //Remove the card form the hand
+            //playerScene.hand.removeCard(card); //Remove the card form the hand
+            if(actionInfos.eventTriggered) {
+                playerScene.lifeDeck.removeCard(card); //Remove the card form the hand
+            } else {
+                playerScene.hand.removeCard(card); //Remove the card form the hand
+            }
 
             if(card.cardData.card === CARD_TYPES.CHARACTER)
                 playerScene.characterArea.addCard(card); //Add the card to the play area
@@ -561,7 +566,7 @@ class ActionLibraryPassivePlayer {
             action.start_animation = start_animation;
             action.end = () => {
                 attacker.setState(CARD_STATES.IN_PLAY_RESTED);
-                this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
+                this.scene.game.gameClient.requestStartOnAttackEventPhasePassivePlayer();
             }
             action.isPlayerAction = true;
             action.waitForAnimationToComplete = true;
@@ -586,6 +591,7 @@ class ActionLibraryPassivePlayer {
             action.start_animation = start_animation;
             action.end = () => {
                 attacker.setState(CARD_STATES.IN_PLAY_RESTED);
+                this.scene.game.gameClient.requestCleanupAction();
                 //this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
                 this.scene.game.gameClient.requestStartOnAttackEventPhasePassivePlayer();
             };

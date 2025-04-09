@@ -465,7 +465,12 @@ class ActionLibrary {
         //Create the action
         let action = new Action();
         action.start = () => { //Start function
-            playerScene.hand.removeCard(card); //Remove the card form the hand
+            if(actionInfos.eventTriggered) {
+                playerScene.lifeDeck.removeCard(card); //Remove the card form the hand
+            } else {
+                playerScene.hand.removeCard(card); //Remove the card form the hand
+            }
+
             card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
 
             card.isInPlayAnimation = true;
@@ -482,6 +487,9 @@ class ActionLibrary {
                 this.scene.actionLibrary.discardCardAction(playerScene, card); //Create a discard Action
             }
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
+        };
+        action.finally = () => {
+            this.scene.game.gameClient.requestCleanupAction(); //Cleanup the aciton server side
         }  
 
         action.isPlayerAction = true; //This is a player triggered action
@@ -672,7 +680,7 @@ class ActionLibrary {
         action.end = () => {
             attacker.setState(CARD_STATES.IN_PLAY_ATTACKING);
             defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
-            //this.scene.game.gameClient.requestStartBlockerPhase();
+
             this.scene.game.gameClient.requestStartOnAttackEventPhase();
         };
         action.isPlayerAction = true;

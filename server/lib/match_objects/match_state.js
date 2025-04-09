@@ -42,8 +42,8 @@ class MatchState {
         this.resolving_pending_action = false;
         this.pending_action = null;
 
-        this.player1 = new MatchPlayer(player1Id);
-        this.player2 = new MatchPlayer(player2Id);
+        this.player1 = new MatchPlayer(player1Id, match.id);
+        this.player2 = new MatchPlayer(player2Id, match.id);
     }
     //#endregion
 
@@ -217,17 +217,19 @@ class MatchState {
     /** Function that determines if a card can be played
      * @param {MatchPlayer} player - player object
      * @param {number} cardId - card id
+     * @param {boolean} event - wether the card is a trigger or not
      */
-    startPlayCard(player, cardId) {
+    startPlayCard(player, cardId, event = false) {
         //Check the card cost and wether there are enough resources to play the card
-        let card = player.inHand.find(card => card.id === cardId);
+        let card = this.match.matchCardRegistry.get(cardId);
         let cardCost = card.cardData.cost;
         let availableActiveDon = player.inActiveDon.length;
 
-        if(cardCost>availableActiveDon) return {actionResult: PLAY_CARD_STATES.NOT_ENOUGH_DON, actionInfos: {playedCard: cardId}};
+        //if it's played during an event no need to pay the cost
+        if(cardCost>availableActiveDon && !event) return {actionResult: PLAY_CARD_STATES.NOT_ENOUGH_DON, actionInfos: {playedCard: cardId}};
         else {
-            this.match.playCardManager = new PlayCardManager(card);
-            let actionInfos = player.playCard(cardId);
+            this.match.playCardManager = new PlayCardManager(card, event);
+            let actionInfos = player.playCard(cardId, event);
             return {actionResult: PLAY_CARD_STATES.CARD_BEING_PLAYED, actionInfos: actionInfos};
         }
     }

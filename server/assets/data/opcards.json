@@ -6110,20 +6110,8 @@
                 "type": "TRIGGER",
                 "phases": ["Main: Trigger"],
                 "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"],
-                            "exclude": ["SELF"]
-                        }
-                    ]
-                },
                 "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+                    {"name": "playCard", "params": {}}
                 ]
             }
         ]
@@ -6530,19 +6518,8 @@
                 "type": "TRIGGER",
                 "phases": ["Main: Trigger"],
                 "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"]
-                        }
-                    ]
-                },
                 "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+                    {"name": "playCard", "params": {}}
                 ]
             }
         ]
@@ -6780,21 +6757,38 @@
         "card":"EVENT",
         "type":["Supernovas","Straw Hat Crew"],
         "colors":["RED"],
-        "cost":4,
+        "cost":0,
         "attribute":"",
         "isleader":0,
         "rarity":"COMMON",
         "abilities": [
             {
                 "id": "ST01-015-1",
-                "text": "",
+                "text": "K.O. up to 1 of your oppoent's Characters with 6000 power or less.",
                 "art": {
                     "art": "ST01-015-ABILITY1",
                     "posx": 300,
                     "posy": 532
                 },
                 "type": "ACTIVE",
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                "states": ["BEING_PLAYED"],
+                "phases": ["Main Phase"],
+                "target": {
+                    "targetAction": "EVENT_CARD_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["opponent"],
+                            "cardtypes": ["CHARACTER"],
+                            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                            "power": {"operator": "<=", "value": 6000}
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "discardCard", "params": {"target": "TARGET"}}
+                ]
             },
             {
                 "id": "ST01-015-TRIGGER",

@@ -4,8 +4,9 @@ class PlayCardManager {
 
     /** Constrcutor
      * @param {MatchCard} playedCard - card that was played
+     * @param {boolean} eventTriggered - if the event was triggered by the played card
      */
-    constructor(playedCard) {
+    constructor(playedCard, eventTriggered = false) {
         /** @type {MatchCard}  */
         this.playedCard = playedCard;
         
@@ -14,6 +15,7 @@ class PlayCardManager {
         this.replacementResults = null;
         this.abilityId = null;
         this.onPlayEventActions = [];
+        this.eventTriggered = eventTriggered;
 
         this.currentPhase = null;
     }

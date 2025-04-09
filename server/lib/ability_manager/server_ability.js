@@ -39,7 +39,7 @@ class ServerAbility {
             return false;
         }
 
-        console.log('Checking states', this.states, card.state, card.id);
+        //console.log('Checking states', this.states, card.state, card.id);
         if (this.states.length > 0 && !this.states.includes(card.state)) {
             return false;
         }
@@ -47,8 +47,8 @@ class ServerAbility {
         // Check all conditions
         for (const condition of this.conditions) {
             if (!this.evaluateCondition(card, condition, gameState)) {
-                console.log(condition);
-                console.log("FAILED")
+                //console.log(condition);
+                //console.log("FAILED")
                 return false;
             }
         }
@@ -270,7 +270,33 @@ const serverAbilityActions = {
         actionResults.auraId = auraId;
         actionResults.auraData = params;
         return actionResults;
+    },
+    playCard: (match, player, card, params, targets) => {
+        //creating Play Card Action
+        let actionResults = {};
+        actionResults.cardId = card.id;
+
+        let cardOwner = match.getPlayer(card.owner); //Cannot be MatchPlayer
+
+        match.startPlayCard(cardOwner, card.id, true);
+
+        return actionResults;
     }
+    /*,
+    discardCard: (match, player, card, params, targets) => {
+        let actionResults = {};
+
+        switch(params.target) {
+            case "SELF":
+                actionResults.cardId = card.id;
+                break;
+            case "TARGET":
+                actionResults.cardId = targets[0];
+                break;
+        }
+
+
+    }*/
 };
 
 module.exports = ServerAbility;
