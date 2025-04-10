@@ -262,13 +262,26 @@ const serverAbilityActions = {
     createAura: (match, player, card, params, targets) => {
         let actionResults = {};
 
+        let targetCard = null;
+        switch(params.target) {
+            case "SELF":
+                targetCard = card;
+                break;
+            case "TARGET":
+            default:
+                targetCard = match.matchCardRegistry.get(targets[0]);
+                break;
+        }
+
         //Create a new aura
         match.lastAuraID++;
         let auraId = match.lastAuraID;
-        let aura = new MatchAura(auraId, match.id, params);
+        let newAura = new MatchAura(auraId, targetCard.id, match.id, params.aura);
+        match.auraManager.addAura(newAura); //Add aura to the match
 
         actionResults.auraId = auraId;
-        actionResults.auraData = params;
+        actionResults.targetId = targetCard.id;
+        actionResults.auraData = params.aura;
         return actionResults;
     },
     playCard: (match, player, card, params, targets) => {

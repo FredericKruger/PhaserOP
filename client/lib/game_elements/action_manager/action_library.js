@@ -603,6 +603,11 @@ class ActionLibrary {
 
     //#region DISCARD ACTION
 
+    /** Function to create discard tweens
+     * @param {PlayerScene} playerScene
+     * @param {GameCardUI} card
+     * @param {number} animationSpeed - Animation speed for the discard action
+     */
     discardActionTweens(playerScene, card, animationSpeed =  500) {
         let tweens = [];
         tweens.push({
@@ -624,6 +629,8 @@ class ActionLibrary {
                 card.setPosition(playerScene.discard.posX, playerScene.discard.posY); //Move card to discard pile
                 card.angle = 0;
                 playerScene.discard.addCard(card, {setCardState: true, setCardDepth: true, updateUI: true}); //Add card to dispacrd pile
+
+                playerScene.characterArea.update();
             }
         }]);
         tweens = tweens.concat(this.scene.animationLibrary.integrationAnimation(card, 500, animationSpeed));

@@ -526,6 +526,15 @@ class GameCardUI extends BaseCardUI{
         return currentPower;
     }
 
+    /** function to return a cards cost
+     * @return {number}
+     */
+    getCost() {
+        let currentCost = this.cardData.cost;
+
+        return currentCost;
+    }
+
     /** Function to retrieve an attached don from the id
      * @param {number} donId
      * @returns {DonCardUI}

@@ -595,8 +595,10 @@ const abilityActions = {
     createAura: (scene, card, info, activePlayer) => {
         //Create a new aura
         console.log("Creating new aura");
-        let aura = new Aura(scene, info.auraId, info.auraData);
+        let aura = new Aura(scene, info.targetId, info.auraId, info.auraData);
         scene.auraManager.addAura(aura);
+
+        return [];
     },
         /** Function to add Counter to Defender
      *  @param {GameScene} scene

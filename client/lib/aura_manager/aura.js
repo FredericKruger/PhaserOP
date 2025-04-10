@@ -4,6 +4,7 @@ class Aura {
         this.card = card;
         this.id = id;
 
+        this.auraId = auraData.id;
         this.duration = auraData.aurainfo.duration;
         this.affectedPlayers = auraData.aurainfo.affectedPlayers;
 

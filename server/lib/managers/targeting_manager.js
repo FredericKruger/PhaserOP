@@ -15,6 +15,7 @@ class Target {
             this.attributes = [];
             this.power = {};
             this.exclude = [];
+            this.hasability = [];
             return;
         }
 
@@ -27,6 +28,7 @@ class Target {
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
+        this.hasability = serverTarget.hasability?.slice() || [];
     }
 }
 
@@ -106,8 +108,11 @@ class TargetingManager {
 
         if (this.target.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card.id)
 
+        if (this.target.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card.abilities);
+
         // Check card cost
-        if (Object.keys(this.target.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.target.cost);
+        let cost = card.currentCost || card.getPower(this.match.isPlayerActivePlayer(card.owner));
+        if (Object.keys(this.target.cost).length > 0 && isValid) isValid = isValid && this.compareValue(cost, this.target.cost);
         //console.log("compareCost", isValid);
 
         // Check card power
@@ -189,6 +194,11 @@ class TargetingManager {
         const originatorCard = this.match.matchCardRegistry.get(this.match.state.pending_action.actionInfos.playedCard);
         if(this.target.exclude.includes("SELF") && id === originatorCard.id) return false;
         return true;
+    }
+
+    hasAbilityValid(abilities) {
+        for(let ability of abilities) if(this.target.hasability.includes(ability.type)) return true;
+        return false;
     }
 
     /**

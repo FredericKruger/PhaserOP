@@ -16,6 +16,7 @@ class Target {
             this.attributes = [];
             this.power = {};
             this.exclude = [];
+            this.hasability = [];
             return;
         }
 
@@ -28,6 +29,7 @@ class Target {
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
+        this.hasability = serverTarget.hasability?.slice() || [];
 
         this.targetManager = targetManager; // Reference to the target manager
     }
@@ -61,8 +63,10 @@ class Target {
 
         if (this.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card);
 
+        if (this.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card);
+
         // Check card cost
-        if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.cardData.cost, this.cost);
+        if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.getCost(), this.cost);
 
         // Check card power
         if (Object.keys(this.power).length > 0 && isValid) isValid = isValid && this.compareValue(card.getPower(), this.power);
@@ -137,9 +141,22 @@ class Target {
         return this.types.some(type => types.includes(type));
     }
 
+    /** Check is the card has exclude tag
+     * * @param {GameCardUI} card - The card to check
+     * * @returns {boolean} - Whether the card type is valid
+     */
     isExcludeValid(card) {
         if(this.exclude.includes("SELF") && card.id === this.targetManager.originatorCard) return false;
         return true;
+    }
+
+    /** Check is the card has a specific ability
+     * * @param {GameCardUI} card - The card to check
+     * * @returns {boolean} - Whether the card type is valid
+     */
+    hasAbilityValid(card) {
+        for(let ability of card.abilities) if(this.hasability.includes(ability.type)) return true;
+        return false;
     }
 
     /**

@@ -76,6 +76,9 @@ class MatchCard extends Card{
         this.basePower = cardData.power;
         this.currentPower = this.basePower; //Current power of the card
 
+        this.baseCost = cardData.cost;
+        this.currentCost = this.baseCost;
+
         this.auraToIgnore = null; //Aura to ignore for the power calculation
 
         //Create abilities if there are any
@@ -152,6 +155,13 @@ class MatchCard extends Card{
         //console.log(`Power of ${this.id} is ${this.currentPower}`);
 
         return this.currentPower;
+    }
+
+    /** Function to get the current power of the card */
+    getCost(activeTurn) {
+        this.currentCost = this.baseCost;
+
+        return this.currentCost;
     }
 
     /** Function that returns if the card has rush 

@@ -239,9 +239,12 @@ class Match {
         this.state.resetCards(this.state.current_active_player.currentMatchPlayer); //Refresh abilities and card values
         this.state.resetCards(this.state.current_passive_player.currentMatchPlayer); //Refresh abilities and card values
 
+        //Go through Auras that where only turn based
+        let removedAuras = this.auraManager.removeTurnAuras();
+
         //Send signal to client
-        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_refresh_phase', true, refreshedDon, refreshedCard);
-        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_refresh_phase', false, refreshedDon, refreshedCard);
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_refresh_phase', true, refreshedDon, refreshedCard, removedAuras);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_refresh_phase', false, refreshedDon, refreshedCard, removedAuras);
     }
     //#endregion
 
@@ -727,22 +730,6 @@ class Match {
 
         this.cleanupAction();
     }
-    //#endregion
-
-    //#region DISCARD FUNCTIONS
-
-    /** Function to start Discarding a card
-     * @param {Player} player
-     * @param {MatchCard} cardToDiscard
-     * @param {Object} abiltyInfo
-     */
-    startDiscardCard(player, cardToDiscard, abiltyInfo) {
-       let discardAction = player.currentMatchPlayer.discardCard(cardToDiscard);
-
-       if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_discard_card', cardToDiscard.id, discardAction, true, abiltyInfo);
-       if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_discard_card', cardToDiscard.id, discardAction, false, abiltyInfo);
-    }
-
     //#endregion
 
     //#region EVENT FUNCTIONS

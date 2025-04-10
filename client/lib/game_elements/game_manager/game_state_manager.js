@@ -370,14 +370,18 @@ class GameStateManager {
      * Start by showing the "you turn" image
      * @param {Array<number>} refreshDon - The Don cards to be moved or added to the pool
      * @param {Array<number>} refreshCards - The cards to be set to active
+     * @param {Array<string>} removedAuras - The cards to be removed from the game
      */
-    startRefreshPhase(refreshDon, refreshCards) {
+    startRefreshPhase(refreshDon, refreshCards, removedAuras) {
         this.scene.time.delayedCall(1000, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE); //Set the phase to Refresh Phase
 
             //If in this phase, the player is the active player
             this.scene.activePlayerScene.isPlayerTurn = true;
             this.scene.passivePlayerScene.isPlayerTurn = false;
+
+            //remove turn auras
+            for(let auraId of removedAuras) this.scene.auraManager.removeAura(auraId);
 
             //Refresh the nextTurn Button
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASSIVE);
@@ -485,14 +489,18 @@ class GameStateManager {
      * All animations can happen sumultaniously
      * @param {Array<number>} refreshDon - The Don cards to be moved or added to the pool
      * @param {Array<number>} refreshCards - The cards to be set
+     * @param {Array<string>} removedAuras - The cards to be removed from the game
      */
-    startRefreshPhasePassivePlayer(refreshDon, refreshCards) {
+    startRefreshPhasePassivePlayer(refreshDon, refreshCards, removedAuras) {
         this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE);
 
             //If in this phase, the player is the pasive player
             this.scene.activePlayerScene.isPlayerTurn = false;
             this.scene.passivePlayerScene.isPlayerTurn = true;
+
+            //remove turn auras
+            for(let auraId of removedAuras) this.scene.auraManager.removeAura(auraId);
 
             //Refresh the nextTurn Button
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);

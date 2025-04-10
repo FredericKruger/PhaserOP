@@ -125,10 +125,10 @@ class Client {
         //#endregion
 
         //#region SOCKET.ON GAME PHASES
-        this.socket.on('game_start_refresh_phase', (activePlayer, refreshDon, refreshCards) => {
+        this.socket.on('game_start_refresh_phase', (activePlayer, refreshDon, refreshCards, removedAuras) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                if(activePlayer) this.gameScene.gameStateManager.startRefreshPhase(refreshDon, refreshCards);
-                else this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards);
+                if(activePlayer) this.gameScene.gameStateManager.startRefreshPhase(refreshDon, refreshCards, removedAuras);
+                else this.gameScene.gameStateManager.startRefreshPhasePassivePlayer(refreshDon, refreshCards, removedAuras);
             }
         });
         this.socket.on('game_start_draw_phase', (activePlayer, newCards) => {
@@ -183,12 +183,6 @@ class Client {
                 if(attachDonSuccessful) this.gameScene.gameStateManager.attachDonToCharacterSuccess(actionInfos, activePlayer, botAction);
                 else this.gameScene.gameStateManager.attachDonToCharacterFailure(actionInfos, activePlayer);
             }
-        });
-        //#endregion
-
-        //#region DISCARD
-        this.socket.on('game_discard_card', (cardId, discardAction, activePlayer, abilityInfo) => {
-            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.discardCard(cardId, discardAction, activePlayer, abilityInfo);
         });
         //#endregion
 

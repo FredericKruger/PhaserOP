@@ -9,6 +9,7 @@ class MatchAura {
         this.cardId = cardId;
         this.matchId = matchId;
 
+        this.auraId = auraData.id;
         this.duration = auraData.aurainfo.duration;
         this.affectedPlayers = auraData.aurainfo.affectedPlayers;
         

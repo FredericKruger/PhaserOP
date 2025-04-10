@@ -13,4 +13,11 @@ class AuraManager {
         this.activeAuras.push(aura);
     }
 
+    /** Function to remove an aura
+     * * @param {string} auraId - Aura id to remove
+     */
+    removeAura(auraId) {
+        this.activeAuras = this.activeAuras.filter(aura => aura.auraId !== auraId);
+    }
+
 }
