@@ -501,7 +501,7 @@ class GameCardUI extends BaseCardUI{
      */
     canActivateAbilities() {
         for(let ability of this.abilities) 
-            if(ability.canActivate(this, this.scene.gameState.name)) return true;
+            if(ability.canActivate(this.scene.gameStateManager.currentGamePhase)) return true;
 
         return false;
     }

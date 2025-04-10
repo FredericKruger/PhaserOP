@@ -142,11 +142,9 @@ class MatchPlayer {
 
     //#region PLAY EVENT
     /** Function that plays an event 
-     * @param {MatchCard} cardID - ID of the card to be played
+     * @param {MatchCard} card - ID of the card to be played
     */
     playEvent(card) {
-        let match = matchRegistry.get(cardID.matchId); //Get the match
-
         this.removeCardFromHand(card); //remove the card from the hand
 
         this.discardCard(card); //discard the card

@@ -744,7 +744,6 @@ class GameStateManager {
         this.scene.targetManagers.push(targetManager);
         targetManager.loadFromTargetData(actionInfos.targetData);
 
-        console.log("STARTING TARGETING " + type)
         this.scene.actionLibrary.startTargetingAction(this, card, false);
     }
 
@@ -823,6 +822,86 @@ class GameStateManager {
 
     //#endregion
 
+    //#region DISCARD FUNCTIONS
+
+    /** Function to start the discard of a card
+     * @param {number} cardId - The card ID
+     * @param {Object} discardAction - The discard action
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {boolean} startAsAction - If it should start as an action
+     */
+    discardCard(cardId, discardAction, isPlayerTurn, startAsAction = true) {
+        let tweens = [];
+        let player = this.scene.activePlayerScene;
+        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+
+        let card = this.scene.getCard(cardId); //Get the card
+
+        if(discardAction && discardAction.attachedDon.length > 0) {
+            let numberAnimations = 0;
+            for(let donid of discardAction.attachedDon) {
+                //If it has any attached don cards move them to the exerted pile
+                let donCard = card.getAttachedDon(donid);
+                if(donCard !== undefined) {
+                    card.removeAttachedDon(donid);
+                    donCard.setState(CARD_STATES.DON_RESTED); //Change state
+                    donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
+
+                    if(startAsAction)
+                        this.scene.tweens.chain({
+                            targets: donCard,
+                            tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(card, numberAnimations*100)
+                        }).restart();
+                    else
+                        tweens = tweens.concat(this.scene.animationLibrary.animation_move_don_characterarea2activearea(card, numberAnimations*100));
+                    numberAnimations++;
+                }
+            }
+        }
+
+        //go through attached counter cards and discard
+        if(discardAction && discardAction.attachedCounter.length > 0) {
+            card.fanOutCounterCards(200, true);
+            for(let cardid of discardAction.attachedCounter) {
+                let counterCard = card.getAttachedCounter(cardid);
+                if(counterCard !== undefined) {
+                    card.removeAttachedCounter(cardid);
+                    if(startAsAction)
+                        this.scene.actionLibrary.discardCardAction(player, counterCard);
+                    else 
+                        tweens = tweens.concat(this.scene.actionLibrary.discardActionTweens(player, counterCard));
+                }
+            }
+
+            //small action to fan in the cards
+            if(startAsAction) {
+                let fanInAction = new Action();
+                fanInAction.start = () => {card.fanInCounterCards(0, true);};
+                fanInAction.waitForAnimationToComplete = false;
+                this.scene.actionManager.addAction(fanInAction);
+            } else {
+                tweens = tweens.concat([{
+                    targets: {},
+                    alpha: 1,
+                    onStart: () => {
+                        card.fanInCounterCards(0, true);
+                    }
+                }]);
+            }
+
+        }
+
+        //discard the actual defender card
+        if(startAsAction)
+            this.scene.actionLibrary.discardCardAction(player, card);
+        else
+            tweens = tweens.concat(this.scene.actionLibrary.discardActionTweens(player, card));
+
+        return tweens;
+    }
+
+    //#endregion
+
     //#region ATTACK FUNCTIONS
     /** Function to select the attack target
      * @param {Object} actionInfos - The action infos
@@ -845,8 +924,7 @@ class GameStateManager {
         //Create an aciton to declrare the attack
         let action = new Action();
         action.start = () => {
-            this.currentGamePhase = GAME_PHASES.ATTACK_PHASE;
-            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+            this.scene.gameStateUI.udpatePhase(GAME_PHASES.ATTACK_PHASE);
     
             //Set the game state
             if(isPlayerTurn) this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
@@ -897,8 +975,7 @@ class GameStateManager {
             this.scene.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
 
             //Change Phase
-            this.currentGamePhase = GAME_PHASES.MAIN_PHASE;
-            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+            this.setPhase(GAME_PHASES.MAIN_PHASE);
     
             //Remove targeting Manager
             this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm.type !== 'ATTACK');
@@ -914,8 +991,7 @@ class GameStateManager {
      * @param {boolean} isPlayerTurn - If it is the player's turn
      */
     startOnAttackEventPhase(isPlayerTurn) {
-        this.currentGamePhase = GAME_PHASES.ATTACK_PHASE;
-        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+        this.setPhase(GAME_PHASES.ATTACK_PHASE);
         if(isPlayerTurn) {
             this.scene.gameState.exit(GAME_STATES.ON_ATTACK_EVENT_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.PASS);
@@ -930,8 +1006,7 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         //If this is the active player, blocker means that no interaction will be possible until the end of the phase
-        this.currentGamePhase = GAME_PHASES.BLOCK_PHASE;
-        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+        this.setPhase(GAME_PHASES.BLOCK_PHASE);
         if(isPlayerTurn) {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
@@ -949,8 +1024,7 @@ class GameStateManager {
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
         //If this is the active player, blocker means that no interaction will be possible until the end of the phase
-        this.currentGamePhase = GAME_PHASES.COUNTER_PHASE;
-        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+        this.setPhase(GAME_PHASES.COUNTER_PHASE);
         if(isPlayerTurn) {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
@@ -1022,8 +1096,7 @@ class GameStateManager {
         };
 
         //If this is the active player, blocker means that no interaction will be possible until the end of the phase
-        this.currentGamePhase = GAME_PHASES.TRIGGER_PHASE;
-        this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+        this.setPhase(GAME_PHASES.TRIGGER_PHASE);
 
         if(activePlayer) {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
@@ -1073,9 +1146,13 @@ class GameStateManager {
                 alpha: 1,
                 duration: 500,
                 onComplete: () => {
+                    console.log(card.state);
                     this.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, isPlayerTurn); //Resolve the ability
+                    console.log(card.state);
                     player.lifeDeck.removeCard(card); //Remove the card from the life deck
+                    console.log(card.state);
                     if(discardCard) this.scene.actionLibrary.discardCardAction(player, card); //Discard the card
+                    console.log(card.state);
                     //player.lifeDeck.hideLifeCardFan();
                 }
             }]);
@@ -1173,14 +1250,15 @@ class GameStateManager {
         this.scene.actionLibrary.startTargetingAction(playerScene, card, true);
     }
 
+    /** Function to resolve ability 
+     * @param {number} cardID - The card ID
+     * @param {number} abilityID - The ability ID
+     * @param {Object} actionInfos - The action infos
+     * @param {boolean} isPlayerTurn - If it is the player's turn
+     */
     resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn) {
         const card = this.scene.getCard(cardID);
         this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults, isPlayerTurn);
-
-        //if(actionInfos.actionId.startsWith("ON_ATTACK_EVENT")) {
-        //    if(isPlayerTurn) this.scene.game.gameClient.requestStartBlockerPhase();
-        //    else this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
-        //}
         if(isPlayerTurn) this.scene.game.gameClient.requestCleanupAction();
     }
 
@@ -1398,8 +1476,7 @@ class GameStateManager {
         let action = new Action();
 
         action.start = () => {
-            this.currentGamePhase = GAME_PHASES.MAIN_PHASE;
-            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+            this.setPhase(GAME_PHASES.MAIN_PHASE);
 
             this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
@@ -1414,8 +1491,7 @@ class GameStateManager {
         let action = new Action();
 
         action.start = () => {
-            this.currentGamePhase = GAME_PHASES.MAIN_PHASE;
-            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+            this.setPhase(GAME_PHASES.MAIN_PHASE);
 
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);

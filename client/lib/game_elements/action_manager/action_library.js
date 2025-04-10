@@ -489,7 +489,7 @@ class ActionLibrary {
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play
         };
         action.finally = () => {
-            this.scene.game.gameClient.requestCleanupAction(); //Cleanup the aciton server side
+            //if(this.scene.game.gameClient.requestCleanupAction(); //Cleanup the aciton server side
         }  
 
         action.isPlayerAction = true; //This is a player triggered action
@@ -602,50 +602,55 @@ class ActionLibrary {
     //#endregion
 
     //#region DISCARD ACTION
+
+    discardActionTweens(playerScene, card, animationSpeed =  500) {
+        let tweens = [];
+        tweens.push({
+            targets: {},
+            alpha: 1,
+            onStart: () => {
+                //Reset the eventCounter value
+                card.eventCounterPower = 0;
+                //Set State
+                card.setState(CARD_STATES.IN_DISCARD);
+            }
+        });
+        tweens = tweens.concat(this.scene.animationLibrary.desintegrationAnimation(card, 0));
+        tweens = tweens.concat([{
+            targets: {},
+            alpha: 1,
+            onStart: () => {
+                playerScene.removeCard(card); //Remove this card from whaterever pile it is in
+                card.setPosition(playerScene.discard.posX, playerScene.discard.posY); //Move card to discard pile
+                card.angle = 0;
+                playerScene.discard.addCard(card, {setCardState: true, setCardDepth: true, updateUI: true}); //Add card to dispacrd pile
+            }
+        }]);
+        tweens = tweens.concat(this.scene.animationLibrary.integrationAnimation(card, 500, animationSpeed));
+
+        return tweens;
+    }
+
     /** Function to discard a card
      * @param {PlayerScene} playerScene
      * @param {GameCardUI} card
      */
     discardCardAction(playerScene, card, animationSpeed = 500) {        
-        //Get Start Animation
-        let startAnimation_tweens = this.scene.animationLibrary.desintegrationAnimation(card, 0);
-        startAnimation_tweens = startAnimation_tweens.concat({
+        //Retrieve discard tweens and play as action
+        let startAnimation = this.discardActionTweens(playerScene, card, animationSpeed);
+        startAnimation = startAnimation.concat([{
+            targets: {},
+            alpha: 1,
+            onStart: () => {this.scene.actionManager.completeAction()}
+        }]);
+        startAnimation = this.scene.tweens.chain({
             targets: card,
-            duration: 10,
-            onComplete: () => {this.actionManager.completeAction();}
-        });
-        let start_animation = this.scene.tweens.chain({
-            targets: card,
-            tweens: startAnimation_tweens
+            tweens: startAnimation
         }).pause();
-
-        //Get end animation
-        let endAnimation_tweens = this.scene.animationLibrary.integrationAnimation(card, 500, animationSpeed);
-        endAnimation_tweens = endAnimation_tweens.concat({
-            targets: card,
-            duration: 10,
-            onComplete: () => {this.actionManager.finalizeAction();}
-        });
-        let end_animation = this.scene.tweens.chain({
-            tweens: endAnimation_tweens
-        }).pause();
-
 
         let action = new Action();
-        action.start = () => {
-            //Reset the eventCounter value
-            card.eventCounterPower = 0;
-            //Set State
-            card.setState(CARD_STATES.IN_DISCARD);
-        };
-        action.start_animation = start_animation;
-        action.end = () => {
-            playerScene.removeCard(card); //Remove this card from whaterever pile it is in
-            card.setPosition(playerScene.discard.posX, playerScene.discard.posY); //Move card to discard pile
-            card.angle = 0;
-            playerScene.discard.addCard(card, {setCardState: true, setCardDepth: true, updateUI: true}); //Add card to dispacrd pile
-        };
-        action.end_animation = end_animation;
+        action.start = () => {};
+        action.start_animation = startAnimation;
 
         action.isPlayerAction = true;
         action.waitForAnimationToComplete = true;
@@ -781,8 +786,7 @@ class ActionLibrary {
             this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
             
             //Change Phase
-            this.currentGamePhase = GAME_PHASES.ATTACK_PHASE;
-            this.scene.gameStateUI.udpatePhase(this.currentGamePhase);
+            this.scene.gameStateManager.setPhase(GAME_PHASES.ATTACK_PHASE);
     
             //Hide targeting arrow
             this.scene.attackManager.targetingManager.targetArrow.stopTargeting();
@@ -826,46 +830,7 @@ class ActionLibrary {
             if(attackResults.defenderDestroyed) {
                 //Create action to discard the card
                 let defenderCard = this.scene.attackManager.attack.defender
-
-                //go through attached don cards and return to active area
-                if(attackResults.defenderAttachedCards && attackResults.defenderAttachedCards.attachedDon.length > 0) {
-                    let numberAnimations = 0;
-                    for(let donid of attackResults.defenderAttachedCards.attachedDon) {
-                        //If it has any attached don cards move them to the exerted pile
-                        let donCard = defenderCard.getAttachedDon(donid);
-                        if(donCard !== undefined) {
-                            defenderCard.removeAttachedDon(donid);
-                            donCard.setState(CARD_STATES.DON_RESTED); //Change state
-                            donCard.setDepth(DEPTH_VALUES.DON_IN_PILE); //Set Depth
-                            this.scene.tweens.chain({
-                                targets: donCard,
-                                tweens: this.scene.animationLibrary.animation_move_don_characterarea2activearea(defenderCard, numberAnimations*100)
-                            }).restart();
-                            numberAnimations++;
-                        }
-                    }
-                }
-
-                //go through attached counter cards and discard
-                if(attackResults.defenderAttachedCards && attackResults.defenderAttachedCards.attachedCounter.length > 0) {
-                    defenderCard.fanOutCounterCards(200, true);
-                    for(let cardid of attackResults.defenderAttachedCards.attachedCounter) {
-                        let counterCard = defenderCard.getAttachedCounter(cardid);
-                        if(counterCard !== undefined) {
-                            defenderCard.removeAttachedCounter(cardid);
-                            this.discardCardAction(defenderPlayer, counterCard);
-                        }
-                    }
-
-                    //small action to fan in the cards
-                    let fanInAction = new Action();
-                    fanInAction.start = () => {defenderCard.fanInCounterCards(0, true);};
-                    fanInAction.waitForAnimationToComplete = false;
-                    this.scene.actionManager.addAction(fanInAction);
-                }
-
-                //discard the actual defender card
-                this.discardCardAction(defenderPlayer, this.scene.attackManager.attack.defender);
+                this.scene.gameStateManager.discardCard(defenderCard.id, attackResults.defenderAttachedCards, activePlayer, true);
             } else {
                 this.scene.attackManager.attack.defender.setState(attackResults.newDefenderState); //Set the card state to in play
             }
@@ -902,10 +867,7 @@ class ActionLibrary {
      * @param {boolean} activePlayer - If it is the active player
      */
     resolveAbilityAction(card, abilityId, abilityInfo, activePlayer = true) {
-        console.log(card);
-        console.log(abilityId);
         let ability = card.getAbility(abilityId);
-        console.log(ability);
         let abilityTweens = ability.animate(card, abilityInfo, activePlayer); //Add the ability tween
 
         if(abilityTweens.length === 0) return;

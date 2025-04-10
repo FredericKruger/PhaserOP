@@ -580,6 +580,8 @@ class Match {
         } else if(!this.attackManager.counterPhase_Complete
             && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_passive_player)) { /** COUNTER PHASE */
+             
+            this.currentAction.phase = "ATTACK_COUNTER_PHASE";
                 
             this.attackManager.counterPhase_Complete = true;
             this.state.current_phase = MATCH_PHASES.COUNTER_PHASE;
@@ -652,6 +654,8 @@ class Match {
 
             //reset Attack object
             this.attackManager = null;
+
+            this.goDownActionStack();
 
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_resume_passive');   
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_resume_active');
@@ -727,69 +731,16 @@ class Match {
 
     //#region DISCARD FUNCTIONS
 
-    startDiscard() {
-        //Cancel playing the card if a card is currently being played
-        if(this.playCardManager && cardID !== this.playCardManager.playedCard.id) {
-            this.cancelPlayCard(false, player, cardID, null, []);
-            return;
-        }
+    /** Function to start Discarding a card
+     * @param {Player} player
+     * @param {MatchCard} cardToDiscard
+     * @param {Object} abiltyInfo
+     */
+    startDiscardCard(player, cardToDiscard, abiltyInfo) {
+       let discardAction = player.currentMatchPlayer.discardCard(cardToDiscard);
 
-        if(this.playCardManager === null) {
-            let result = this.state.startPlayCard(player.currentMatchPlayer, cardID);
-            
-            if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
-                if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos, true);
-                if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don', result.actionInfos, false);
-            } else if(result.actionResult === PLAY_CARD_STATES.CARD_BEING_PLAYED) {
-                if(!player.bot) player.socket.emit('game_play_card_being_played', result.actionInfos, true);
-                if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_being_played', result.actionInfos, false);
-            }
-        } else if(this.playCardManager.currentPhase === 'PLAY_PHASE_READY') {
-            //console.log("CHECKING IF CARD NEEDS TO BE REPLACED");
-            let result = this.state.startPlayReplaceCard(player.currentMatchPlayer, this.playCardManager.playedCard);
-
-            if(result.actionResult === PLAY_CARD_STATES.NO_REPLACEMENT) {
-                this.flagManager.handleFlag(player, 'PLAY_REPLACEMENT_PHASE_READY');
-            }
-            else if(result.actionResult === PLAY_CARD_STATES.SELECT_REPLACEMENT_TARGET) {
-                this.state.pending_action = result;
-                this.state.resolving_pending_action = true;
-
-                if(!player.bot) player.socket.emit('game_play_select_replacement', result.actionInfos, true);
-            }
-        } else if(this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
-            //console.log("CHECKING IF CARDS HAS EVENT");
-            let result = this.state.startOnEventPlayCard(player.currentMatchPlayer, this.playCardManager.playedCard);
-            
-            if(result.actionResult === PLAY_CARD_STATES.NO_ON_PLAY_EVENT) {
-                this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
-            } else if(result.actionResult === PLAY_CARD_STATES.EVENT_RESOLVED) {
-                this.playCardManager.abilityId = result.actionInfos.abilityId;
-                this.playCardManager.onPlayEventActions = result.actionInfos.abilityResults;
-                this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
-            } else if(result.actionResult === PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED) {
-                this.state.pending_action = result;
-                this.state.resolving_pending_action = true;
-
-                if(!player.bot) player.socket.emit('game_play_card_event_triggered', result.actionInfos, true);
-            }
-        } else if(this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY') {
-            //console.log("READY TO PLAY THE CARD");
-            this.state.playCard(player.currentMatchPlayer, this.playCardManager.playedCard);
-
-            let actionInfos = {};
-            actionInfos.cardPlayed = this.playCardManager.playedCard.id;
-            actionInfos.cardPlayedData = this.playCardManager.playedCard.cardData;
-            actionInfos.spentDonIds = this.playCardManager.payedDon;
-            actionInfos.replacedCard = this.playCardManager.replacedCard;
-            actionInfos.abilityId = this.playCardManager.abilityId;
-            actionInfos.eventAction = this.playCardManager.onPlayEventActions;
-
-            if(!player.bot) player.socket.emit('game_play_card_played', actionInfos, true);
-            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', actionInfos, false);
-
-            this.playCardManager = null; //Reset the play card manager
-        }
+       if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_discard_card', cardToDiscard.id, discardAction, true, abiltyInfo);
+       if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_discard_card', cardToDiscard.id, discardAction, false, abiltyInfo);
     }
 
     //#endregion

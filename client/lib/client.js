@@ -186,6 +186,12 @@ class Client {
         });
         //#endregion
 
+        //#region DISCARD
+        this.socket.on('game_discard_card', (cardId, discardAction, activePlayer, abilityInfo) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.discardCard(cardId, discardAction, activePlayer, abilityInfo);
+        });
+        //#endregion
+
         //#region SOCKET.ON ATTACK CHARACTER
         this.socket.on('game_select_attack_target', (actionInfos, activePlayer, targetData) => {
             if(!this.gameScene.gameStateManager.gameOver) {

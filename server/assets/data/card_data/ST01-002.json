@@ -1,0 +1,68 @@
+{
+    "id":367,
+    "setid":2,
+    "art":"ST01-002",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Usopp",
+    "card":"CHARACTER",
+    "type":["Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":2,
+    "power":2000,
+    "attribute":"RANGED",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+    "abilities": [
+        {
+            "id": "ST01-002-1",
+            "text": "Your opponent cannot activate a Blocker Character that has 5000 or more power during this battle.",
+            "art": {
+                "art": "ST01-002-ABILITY1",
+                "posx": 300,
+                "posy": 560
+            },
+            "type": "AURA",
+            "phases": [],
+            "states": ["IN_PLAY_ATTACKING"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 2}
+            ],
+            "aurainfo": {
+                "duration": "GAME",
+                "affectedPlayers": ["owner", "opponent"]
+            },
+            "target": {
+                "targetAction": "AURA_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "exclude": ["SELF"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                        "power": {"operator": ">=", "value": 5000}
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "canBlock_Aura", "params": {"value": false}}
+            ]
+        },
+        {
+            "id": "ST01-002-TRIGGER",
+            "text": "Play this card.",
+            "art": {
+                "art": "ST01-002-TRIGGER",
+                "posx": 300,
+                "posy": 675
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "actions": [
+                {"name": "playCard", "params": {}}
+            ]
+        }
+    ]
+}

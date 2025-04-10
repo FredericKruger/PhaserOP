@@ -43,7 +43,7 @@ class Ability {
     canActivate(gamePhase) {
         // Check if in correct phase
         if (this.phases.length > 0 && !this.phases.includes(gamePhase)) {
-            //console.log(`Ability ${this.id} cannot be activated in phase ${this.card.phases}`);
+            //console.log(`Ability ${this.id} cannot be activated in phase ${this.phases} for phase ${gamePhase}`);
             return false;
         }
 
@@ -597,5 +597,46 @@ const abilityActions = {
         console.log("Creating new aura");
         let aura = new Aura(scene, info.auraId, info.auraData);
         scene.auraManager.addAura(aura);
+    },
+        /** Function to add Counter to Defender
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    discardCard: (scene, card, info, activePlayer) => {
+        const target = scene.getCard(info.cardId);
+        console.log(target);
+        let tweens = [];
+
+        let targetingManager = null;
+        if(!activePlayer) {
+            targetingManager = new TargetManager(scene, 'EVENT', 'DISCARD', card.id);
+            targetingManager.targetArrow.originatorObject = card;
+            let arrowTweens = targetingManager.targetArrow.animateToPosition(target.x, target.y, 600);
+            tweens.push({
+                    onStart: () => { //Add Tween for target arrow
+                        targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
+                    },
+                    delay: 100,
+            });
+            tweens = tweens.concat(arrowTweens);
+        }
+
+        tweens = tweens.concat(scene.gameStateManager.discardCard(target.id, info.discardAction, activePlayer, false));
+
+        if(!activePlayer) {
+            tweens.push({
+                targets: {},
+                scale: 1,
+                duration: 10,
+                onStart: () => {
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
+                }
+            });
+        }
+
+        return tweens;
     }
 };

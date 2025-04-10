@@ -1,0 +1,73 @@
+{
+    "id":380,
+    "setid":15,
+    "art":"ST01-015",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Gum-Gum Jet Pistol",
+    "card":"EVENT",
+    "type":["Supernovas","Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":0,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST01-015-1",
+            "text": "K.O. up to 1 of your oppoent's Characters with 6000 power or less.",
+            "art": {
+                "art": "ST01-015-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED", "IN_HAND"],
+            "phases": ["Main Phase"],
+            "target": {
+                "targetAction": "EVENT_CARD_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["opponent"],
+                        "cardtypes": ["CHARACTER"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                        "power": {"operator": "<=", "value": 6000}
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "discardCard", "params": {"target": "TARGET"}}
+            ]
+        },
+        {
+            "id": "ST01-015-TRIGGER",
+            "text": "Play this card.",
+            "art": {
+                "art": "ST01-015-TRIGGER",
+                "posx": 300,
+                "posy": 675
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "target": {
+                "targetAction": "EVENT_CARD_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["opponent"],
+                        "cardtypes": ["CHARACTER"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                        "power": {"operator": "<=", "value": 6000}
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "discardCard", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}

@@ -281,8 +281,7 @@ const serverAbilityActions = {
         match.startPlayCard(cardOwner, card.id, true);
 
         return actionResults;
-    }
-    /*,
+    },
     discardCard: (match, player, card, params, targets) => {
         let actionResults = {};
 
@@ -295,8 +294,11 @@ const serverAbilityActions = {
                 break;
         }
 
+        let cardToDiscard = match.matchCardRegistry.get(actionResults.cardId);
+        actionResults.discardAction = player.discardCard(cardToDiscard);
 
-    }*/
+        return actionResults;
+    }
 };
 
 module.exports = ServerAbility;

@@ -41,38 +41,41 @@ class CardLifePileUI extends CardPileUI {
         let numberCards = Math.max(this.cards.length - 1, 0);   
         for(let i = 0; i < this.cards.length; i++) {
             let card = this.cards[i];
-            card.setVisible(true);
-            this.scene.tweens.add({
-                targets: card,
-                x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
-                y: this.playerScene.playerInfo.lifeCardPlaceholder.y - (this.playerScene.playerInfo.lifeCardPlaceholder.height / 2 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT / 2 * CARD_SCALE.IN_DON_DECK) * this.fanPositioner,
-                alpha: { from: 0, to: 1 },
-                duration: 300,
-                ease: 'Power2',
-                delay: i * 10,
-                onComplete: () => {
-                    if (i === this.cards.length - 1) {
-                        let currentIndex = numberCards / 2 - numberCards;
-                        for (let j = 0; j < this.cards.length; j++) {
-                            let card2 = this.cards[j];
-                            let cardAngle = currentIndex * 5 * this.fanPositioner; // Adjust the angle between cards
-                            let cardY = Math.abs(currentIndex) * 5 * this.fanPositioner; // Adjust the height difference between cards
-                            let cardX = currentIndex * 10; // Adjust the horizontal distance between cards
-            
-                            this.scene.tweens.add({
-                                targets: card2,
-                                angle: cardAngle,
-                                x: card2.x + cardX,
-                                y: card2.y + cardY,
-                                duration: 300,
-                                ease: 'Elastic.easeOut', // Use a more dynamic easing effect
-                                delay: j * 20 // Add a slight delay between each card's animation
-                            });
-                            currentIndex++;
+
+            if(card.state === CARD_STATES.IN_LIFEDECK) {
+                card.setVisible(true);
+                this.scene.tweens.add({
+                    targets: card,
+                    x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
+                    y: this.playerScene.playerInfo.lifeCardPlaceholder.y - (this.playerScene.playerInfo.lifeCardPlaceholder.height / 2 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT / 2 * CARD_SCALE.IN_DON_DECK) * this.fanPositioner,
+                    alpha: { from: 0, to: 1 },
+                    duration: 300,
+                    ease: 'Power2',
+                    delay: i * 10,
+                    onComplete: () => {
+                        if (i === this.cards.length - 1) {
+                            let currentIndex = numberCards / 2 - numberCards;
+                            for (let j = 0; j < this.cards.length; j++) {
+                                let card2 = this.cards[j];
+                                let cardAngle = currentIndex * 5 * this.fanPositioner; // Adjust the angle between cards
+                                let cardY = Math.abs(currentIndex) * 5 * this.fanPositioner; // Adjust the height difference between cards
+                                let cardX = currentIndex * 10; // Adjust the horizontal distance between cards
+                
+                                this.scene.tweens.add({
+                                    targets: card2,
+                                    angle: cardAngle,
+                                    x: card2.x + cardX,
+                                    y: card2.y + cardY,
+                                    duration: 300,
+                                    ease: 'Elastic.easeOut', // Use a more dynamic easing effect
+                                    delay: j * 20 // Add a slight delay between each card's animation
+                                });
+                                currentIndex++;
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -80,40 +83,40 @@ class CardLifePileUI extends CardPileUI {
     hideLifeCardFan() {
         for(let i = 0; i < this.cards.length; i++) {
             let card = this.cards[i];
-            
-            this.scene.tweens.add({
-                targets: card,
-                x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
-                y: this.playerScene.playerInfo.lifeCardPlaceholder.y - (this.playerScene.playerInfo.lifeCardPlaceholder.height/2 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT/2*CARD_SCALE.IN_DON_DECK) * this.fanPositioner,
-                angle: 0,
-                duration: 400,
-                ease: 'Elastic.easeOut',
-                delay: i * 10,
-                onComplete: () => {
-                    if(i === this.cards.length - 1) {
-                        for(let j = 0; j < this.cards.length; j++) {
-                            let card = this.cards[j];
-                            this.scene.tweens.add({
-                                targets: card,
-                                x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
-                                y: this.playerScene.playerInfo.lifeCardPlaceholder.y,
-                                alpha: {from: 1, to: 0},
-                                duration: 400,
-                                ease: 'Power2',
-                                delay: i * 10,
-                                onComplete: () => {
-                                    card.setVisible(false);
-                                    if(j === this.cards.length - 1) {
-                                        this.fanDisplayed = false;
+            console.log(card.state);
+            if(card.state === CARD_STATES.IN_LIFEDECK) {
+                this.scene.tweens.add({
+                    targets: card,
+                    x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
+                    y: this.playerScene.playerInfo.lifeCardPlaceholder.y - (this.playerScene.playerInfo.lifeCardPlaceholder.height/2 + GAME_UI_CONSTANTS.CARD_ART_HEIGHT/2*CARD_SCALE.IN_DON_DECK) * this.fanPositioner,
+                    angle: 0,
+                    duration: 400,
+                    ease: 'Elastic.easeOut',
+                    delay: i * 10,
+                    onComplete: () => {
+                        if(i === this.cards.length - 1) {
+                            for(let j = 0; j < this.cards.length; j++) {
+                                let card = this.cards[j];
+                                this.scene.tweens.add({
+                                    targets: card,
+                                    x: this.playerScene.playerInfo.lifeCardPlaceholder.x,
+                                    y: this.playerScene.playerInfo.lifeCardPlaceholder.y,
+                                    alpha: {from: 1, to: 0},
+                                    duration: 400,
+                                    ease: 'Power2',
+                                    delay: i * 10,
+                                    onComplete: () => {
+                                        card.setVisible(false);
+                                        if(j === this.cards.length - 1) {
+                                            this.fanDisplayed = false;
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
-                }
-            });  
+                }); 
+            }  
         }
     }
-
-
 }

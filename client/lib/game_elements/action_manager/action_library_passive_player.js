@@ -207,6 +207,9 @@ class ActionLibraryPassivePlayer {
                 ease: 'Sine.easeInOut'
             });
         };
+        drawAction.end = () => {
+            card.setState(CARD_STATES.BEING_PLAYED);
+        };
         drawAction.start_animation = start_animation;
         drawAction.isPlayerAction = true;
         drawAction.waitForAnimationToComplete = true;

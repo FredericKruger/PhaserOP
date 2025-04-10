@@ -6131,35 +6131,7 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000,
-        "abilities": [
-            {
-                "id": "ST01-014-TRIGGER",
-                "text": "Play this card.",
-                "art": {
-                    "art": "ST01-014-TRIGGER",
-                    "posx": 300,
-                    "posy": 660
-                },
-                "type": "TRIGGER",
-                "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"]
-                        }
-                    ]
-                },
-                "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
-                ]
-            }
-        ]
+        "counter": 1000
     },    
     {
         "id":369,
@@ -6342,35 +6314,7 @@
         "attribute":"WISDOM",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000,
-        "abilities": [
-            {
-                "id": "ST01-014-TRIGGER",
-                "text": "Play this card.",
-                "art": {
-                    "art": "ST01-014-TRIGGER",
-                    "posx": 300,
-                    "posy": 660
-                },
-                "type": "TRIGGER",
-                "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"]
-                        }
-                    ]
-                },
-                "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
-                ]
-            }
-        ]
+        "counter": 1000
     },    
     {
         "id":374,
@@ -6387,35 +6331,7 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000,
-        "abilities": [
-            {
-                "id": "ST01-014-TRIGGER",
-                "text": "Play this card.",
-                "art": {
-                    "art": "ST01-014-TRIGGER",
-                    "posx": 300,
-                    "posy": 660
-                },
-                "type": "TRIGGER",
-                "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"]
-                        }
-                    ]
-                },
-                "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
-                ]
-            }
-        ]
+        "counter": 1000
     },    
     {
         "id":375,
@@ -6432,35 +6348,7 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000,
-        "abilities": [
-            {
-                "id": "ST01-014-TRIGGER",
-                "text": "Play this card.",
-                "art": {
-                    "art": "ST01-014-TRIGGER",
-                    "posx": 300,
-                    "posy": 660
-                },
-                "type": "TRIGGER",
-                "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"]
-                        }
-                    ]
-                },
-                "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
-                ]
-            }
-        ]
+        "counter": 1000
     },    
     {
         "id":376,
@@ -6505,21 +6393,6 @@
                 },
                 "actions": [
                     {"name": "attachDonCard", "params": {"amount": 2, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
-                ]
-            },
-            {
-                "id": "ST01-014-TRIGGER",
-                "text": "Play this card.",
-                "art": {
-                    "art": "ST01-014-TRIGGER",
-                    "posx": 300,
-                    "posy": 660
-                },
-                "type": "TRIGGER",
-                "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"],
-                "actions": [
-                    {"name": "playCard", "params": {}}
                 ]
             }
         ]
@@ -6589,32 +6462,6 @@
                 "actions": [
                     {"name": "canBlock_Aura", "params": {"value": false}}
                 ]
-            },
-            {
-                "id": "ST01-014-TRIGGER",
-                "text": "Play this card.",
-                "art": {
-                    "art": "ST01-014-TRIGGER",
-                    "posx": 300,
-                    "posy": 660
-                },
-                "type": "TRIGGER",
-                "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"]
-                        }
-                    ]
-                },
-                "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
-                ]
             }
         ]
     },    
@@ -6649,32 +6496,6 @@
                 ],
                 "actions": [
                     {"name": "addPowerToCard", "params": {"amount": 1000}}
-                ]
-            },
-            {
-                "id": "ST01-014-TRIGGER",
-                "text": "Play this card.",
-                "art": {
-                    "art": "ST01-014-TRIGGER",
-                    "posx": 300,
-                    "posy": 660
-                },
-                "type": "TRIGGER",
-                "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"],
-                "target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"]
-                        }
-                    ]
-                },
-                "actions": [
-                    {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
                 ]
             }
         ]
@@ -6770,8 +6591,8 @@
                     "posx": 300,
                     "posy": 532
                 },
-                "type": "ACTIVE",
-                "states": ["BEING_PLAYED"],
+                "type": "ON_PLAY",
+                "states": ["BEING_PLAYED", "IN_HAND"],
                 "phases": ["Main Phase"],
                 "target": {
                     "targetAction": "EVENT_CARD_ACTION",
@@ -6800,7 +6621,23 @@
                 },
                 "type": "TRIGGER",
                 "phases": ["Main: Trigger"],
-                "states": ["BEING_PLAYED"]
+                "states": ["BEING_PLAYED"],
+                "target": {
+                    "targetAction": "EVENT_CARD_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["opponent"],
+                            "cardtypes": ["CHARACTER"],
+                            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                            "power": {"operator": "<=", "value": 6000}
+                        }
+                    ]
+                },
+                "actions": [
+                    {"name": "discardCard", "params": {"target": "TARGET"}}
+                ]
             }
         ]
     },    
