@@ -332,9 +332,13 @@ class Match {
             if(result.actionResult === PLAY_CARD_STATES.NOT_ENOUGH_DON) {
                 if(!player.bot) player.socket.emit('game_play_card_not_enough_don', result.actionInfos, true);
                 if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_not_enough_don', result.actionInfos, false);
-                this.goDownActionStack();
+                
+                //this.goDownActionStack();
+                this.cleanupAction(player);
 
             } else if(result.actionResult === PLAY_CARD_STATES.CARD_BEING_PLAYED) {
+                this.playCardManager.payedDon =  result.actionInfos.spentDonIds; //assign spent don IDs to play manager
+
                 if(!player.bot) player.socket.emit('game_play_card_being_played', result.actionInfos, true);
                 if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_being_played', result.actionInfos, false);
             }
@@ -362,7 +366,7 @@ class Match {
                 this.playCardManager.abilityId = result.actionInfos.abilityId;
                 this.playCardManager.onPlayEventActions = result.actionInfos.abilityResults;
             
-                this.cleanupAction();
+                this.cleanupAction(player);
             } else if(result.actionResult === PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED) {
                 this.state.pending_action = result;
                 this.state.resolving_pending_action = true;
@@ -386,7 +390,7 @@ class Match {
 
             this.playCardManager = null; //Reset the play card manager
                 
-            this.cleanupAction();
+            this.cleanupAction(player);
         }
     }
 
@@ -398,6 +402,7 @@ class Match {
      * @param {Array<number>} spendDonIds - The ids of the don cards that are being cancelled
     */
     cancelPlayCard(resetPlayManager, player, cardId, replacedCardId, spendDonIds = []) {
+        console.log(this.playCardManager);
         player.currentMatchPlayer.cancelPlayCard(cardId, replacedCardId, spendDonIds);
 
         if(!player.bot) player.socket.emit('game_play_card_cancel', cardId, spendDonIds, true);
@@ -659,6 +664,7 @@ class Match {
             this.attackManager = null;
 
             this.goDownActionStack();
+            //this.cleanupAction(player);
 
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_resume_passive');   
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_resume_active');
@@ -771,7 +777,7 @@ class Match {
                     this.flagManager.handleFlag(this.state.current_passive_player, 'TRIGGER_CLEANUP_READY');
                 }
             }            
-            else if(nextAction.type === "PLAY" && nextAction.phase === "PLAY_ON_PLAY_EVENT_PHASE") {
+            else if(nextAction.type === "PLAY_CARD" && nextAction.phase === "PLAY_ON_PLAY_EVENT_PHASE") {
                 callBack = () => {
                     this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
                 }
@@ -812,6 +818,7 @@ class Match {
                     if(actionInfos.optional) {
                         if(!player.bot) player.socket.emit('game_play_card_event_triggered', actionInfos, true);
                     } else this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.replacedCard, this.playCardManager.payedDon);
+                    this.cleanupAction(player);
                 } else {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
@@ -821,7 +828,9 @@ class Match {
                         let abilityResults = this.resolveAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
                         this.playCardManager.abilityId = actionInfos.ability;
                         this.playCardManager.onPlayEventActions = abilityResults;
-                        this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+                        
+                        this.cleanupAction(player);
+                        //this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
                     } 
                     else {player.socket.emit('game_reset_targets');}
                 } 
@@ -845,6 +854,8 @@ class Match {
                         let abilityResults = this.resolveAbility(player, this.state.pending_action.actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
                         actionInfos.abilityResults = abilityResults;
 
+                        this.cleanupAction(player);
+
                         if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
                         if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
                     } else {
@@ -852,7 +863,8 @@ class Match {
                     }
                 } else {
                     //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_stop_targeting_attack_passiveplayer');
-                    console.log("Canceling ability targeting")
+                    console.log("Canceling ability targeting");
+                    this.cleanupAction(player);
                     //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
                 }
                 break;
@@ -876,7 +888,8 @@ class Match {
                         //Set Phase
                         this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
                         this.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
-                        this.goDownActionStack();
+                        
+                        this.cleanupAction(player);
                     
                         //Send cancel signals
                         if(!player.bot) player.socket.emit('game_cancel_attack', true);
@@ -956,7 +969,7 @@ class Match {
                 return;
             }
         }
-        
+                
         const targets = card.getAbilityTargets(abilityId);
 
         let actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: targets, optional: ability.optional};
@@ -980,6 +993,7 @@ class Match {
         } else {
             let abilityResults = this.resolveAbility(player, cardId, abilityId, []);
             actionInfos.abilityResults = abilityResults;
+            this.cleanupAction(player);
 
             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
         }

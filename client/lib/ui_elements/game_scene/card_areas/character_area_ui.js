@@ -45,12 +45,17 @@ class CharacterAreaUI extends CardPileUI {
 
             let cardX = this.posX - currentIndex * (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_LOCATION + 35);
             let cardY = this.posY;
-            if(newAddedCard !== null && card !== newAddedCard) {
-                card.moveTo(cardX, cardY, true, false, false);
-                card.scaleTo(CARD_SCALE.IN_LOCATION, true, false, false);
+            if(newAddedCard !== null) {
+                if(card !== newAddedCard) {
+                    card.moveTo(cardX, cardY, true, false, false);
+                    card.scaleTo(CARD_SCALE.IN_LOCATION, true, false, false);
+                } else {
+                    newCardPos.x = cardX;
+                    newCardPos.y = cardY;
+                }
             } else {
-                newCardPos.x = cardX;
-                newCardPos.y = cardY;
+                card.moveTo(cardX, cardY, true, false, false);
+                card.scaleTo(CARD_SCALE.IN_LOCATION, true, false, false); 
             }
 
             currentIndex++;

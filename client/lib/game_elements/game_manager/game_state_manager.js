@@ -840,10 +840,10 @@ class GameStateManager {
      */
     discardCard(cardId, discardAction, isPlayerTurn, startAsAction = true) {
         let tweens = [];
-        let player = this.scene.activePlayerScene;
-        if(!isPlayerTurn) player = this.scene.passivePlayerScene;
-
         let card = this.scene.getCard(cardId); //Get the card
+        //let player = this.scene.activePlayerScene;
+        //if(!isPlayerTurn) player = this.scene.passivePlayerScene;
+        let  player = card.playerScene; //Get the player scene
 
         if(discardAction && discardAction.attachedDon.length > 0) {
             let numberAnimations = 0;
@@ -1267,7 +1267,6 @@ class GameStateManager {
     resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn) {
         const card = this.scene.getCard(cardID);
         this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults, isPlayerTurn);
-        if(isPlayerTurn) this.scene.game.gameClient.requestCleanupAction();
     }
 
     //#endregion

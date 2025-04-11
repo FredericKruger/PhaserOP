@@ -594,7 +594,7 @@ class ActionLibraryPassivePlayer {
             action.start_animation = start_animation;
             action.end = () => {
                 attacker.setState(CARD_STATES.IN_PLAY_RESTED);
-                this.scene.game.gameClient.requestCleanupAction();
+                //this.scene.game.gameClient.requestCleanupAction();
                 //this.scene.game.gameClient.requestStartBlockerPhasePassivePlayer();
                 this.scene.game.gameClient.requestStartOnAttackEventPhasePassivePlayer();
             };

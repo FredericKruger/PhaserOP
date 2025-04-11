@@ -32,7 +32,7 @@ class ActiveDonDeckUI extends CardPileUI {
     getNumberOfActiveCards() {return this.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length;}
 
     /** Function that gives the number of don cards in the pile that are not active */
-    getNumberOfRestingCards() {return this.cards.filter(card => card.state !== CARD_STATES.DON_ACTIVE).length;}
+    getNumberOfRestingCards() {return this.cards.filter(card => card.state === CARD_STATES.DON_RESTED).length;}
 
     /** Function to pay cost of an action
      * @param {Array<number>} spendDonIds
@@ -49,11 +49,17 @@ class ActiveDonDeckUI extends CardPileUI {
      * @param {Array<number>} spendDonIds
      */
     repayCost(spentDonIds) {
+        console.log(this.cards);
+        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length);
+        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_RESTED).length);
         for(let don of spentDonIds) {
             let card = this.getCard(don);
             card.setState(CARD_STATES.DON_ACTIVE);
-            this.scene.children.bringToTop(card);
+            this.scene.children.moveBelow(card, this.playerScene.playerInfo.activeDonCardAmountText);
         }
+        console.log(this.cards);
+        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length);
+        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_RESTED).length);
     }
 
     /** Function to attac a don to a card

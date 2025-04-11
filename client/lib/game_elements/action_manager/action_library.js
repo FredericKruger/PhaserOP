@@ -317,6 +317,11 @@ class ActionLibrary {
         
         // Create the animation
         let startAnimation = this.scene.animationLibrary.animation_move_don_activearea2characterarea(donCard, character, 0, () => {this.scene.actionManager.completeAction();});
+        startAnimation = startAnimation.concat([{
+            targets: {},
+            alpha: 1,
+            onComplete: () => {this.scene.actionManager.completeAction();}
+        }]);
         action.start_animation = this.scene.tweens.chain(
             {
                 targets: donCard,

@@ -6592,7 +6592,6 @@
                     "posy": 532
                 },
                 "type": "ON_PLAY",
-                "states": ["BEING_PLAYED", "IN_HAND"],
                 "phases": ["Main Phase"],
                 "target": {
                     "targetAction": "EVENT_CARD_ACTION",
@@ -6666,7 +6665,6 @@
                 },
                 "type": "ON_PLAY",
                 "phases": ["Main Phase"],
-                "states": ["BEING_PLAYED"],
                 "target": {
                     "targetAction": "EVENT_CARD_ACTION",
                     "requiredTargets": 1,

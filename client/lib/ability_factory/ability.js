@@ -155,7 +155,8 @@ class Ability {
 
     /** Function to handle the trigger of the action button */
     trigger() {
-        this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);
+        //this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);
+        this.card.scene.game.gameClient.requestActivateAbility(this.card.id, this.id);
     }
 
     update() {}
@@ -593,12 +594,39 @@ const abilityActions = {
      * @returns {Object}
      */
     createAura: (scene, card, info, activePlayer) => {
+        let tweens = [];
+        let targetingManager = null;
+        if(!activePlayer) {
+            let targetCard = scene.getCard(info.targetId);
+            targetingManager = new TargetManager(scene, 'EVENT', 'ATTACH_DON', card.id);
+            targetingManager.targetArrow.originatorObject = card;
+            let arrowTweens = targetingManager.targetArrow.animateToPosition(targetCard.x, targetCard.y, 600);
+            tweens.push({
+                    onStart: () => { //Add Tween for target arrow
+                        targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
+                    },
+                    delay: 100,
+            });
+            tweens = tweens.concat(arrowTweens);
+        }
+
         //Create a new aura
-        console.log("Creating new aura");
         let aura = new Aura(scene, info.targetId, info.auraId, info.auraData);
         scene.auraManager.addAura(aura);
 
-        return [];
+        if(!activePlayer) {
+            tweens.push({
+                targets: {},
+                scale: 1,
+                duration: 10,
+                onStart: () => {
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
+                }
+            });
+        }
+
+        return tweens;
     },
         /** Function to add Counter to Defender
      *  @param {GameScene} scene
@@ -608,7 +636,6 @@ const abilityActions = {
      */
     discardCard: (scene, card, info, activePlayer) => {
         const target = scene.getCard(info.cardId);
-        console.log(target);
         let tweens = [];
 
         let targetingManager = null;
