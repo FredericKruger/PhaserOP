@@ -341,6 +341,9 @@ class Match {
 
                 if(!player.bot) player.socket.emit('game_play_card_being_played', result.actionInfos, true);
                 if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_being_played', result.actionInfos, false);
+            
+                //handle bot action
+                if(player.bot) this.flagManager.handleFlag(player, 'PLAY_PHASE_READY');
             }
         } else if(this.playCardManager.currentPhase === 'PLAY_PHASE_READY') {
             //console.log("CHECKING IF CARD NEEDS TO BE REPLACED");

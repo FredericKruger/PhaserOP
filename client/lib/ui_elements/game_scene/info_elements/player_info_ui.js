@@ -107,6 +107,10 @@ class PlayerInfoUI extends BaseComponentUI{
 
     /** Function that updates both text amounts */
     updateCardAmountTexts() {
+        //console.log(this.playerScene.activeDonDeck.cards);
+        //console.log("ACTIVE: " + this.playerScene.activeDonDeck.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length);
+        //console.log("RESTED: " + this.playerScene.activeDonDeck.cards.filter(card => card.state === CARD_STATES.DON_RESTED).length);
+        //console.log("ATTACHED: " + this.playerScene.activeDonDeck.cards.filter(card => card.state === CARD_STATES.DON_ATTACHED).length);
         this.updateActiveCardAmountText();
         this.updateRestingCardAmountText();
     }

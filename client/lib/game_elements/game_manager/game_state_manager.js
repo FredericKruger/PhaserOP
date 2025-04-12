@@ -423,6 +423,7 @@ class GameStateManager {
                                     // Original code after animation completes
                                     //Refresh DON Cards
                                     let numberOfAnimations = 0;
+                                    let delay = 0;
                                     for(let i=0; i<refreshDon.length; i++) { //For all the don cards
                                         let donCard = this.scene.activePlayerScene.activeDonDeck.getCard(refreshDon[i]); //Get the card
                                         if(donCard.state === CARD_STATES.DON_ATTACHED) { //If the don card is attached
@@ -438,6 +439,12 @@ class GameStateManager {
                                             numberOfAnimations = numberOfAnimations + 1; //Increase animation delay tracker
                                         } else {
                                             donCard.setState(CARD_STATES.DON_ACTIVE);
+
+                                            this.scene.tweens.chain({
+                                                targets: donCard,
+                                                tweens: this.scene.animationLibrary.repayDonAnimation(donCard.playerScene, donCard, delay)
+                                            });
+                                            delay += 200; //Increase animation delay tracker
                                         }
                                     }
                                     this.scene.activePlayerScene.playerInfo.updateCardAmountTexts(); //Update the ui
@@ -507,6 +514,7 @@ class GameStateManager {
 
             //Refresh Don Cards
             let numberOfAnimations = 0;
+            let delay = 0;
             for(let i=0; i<refreshDon.length; i++) { //For all the don cards in the pile
                 let donCard = this.scene.passivePlayerScene.activeDonDeck.getCard(refreshDon[i]);
                 if(donCard.state === CARD_STATES.DON_ATTACHED) { //If the don is attached
@@ -522,6 +530,12 @@ class GameStateManager {
                     numberOfAnimations = numberOfAnimations + 1; //Increase animation counter
                 } else {
                     donCard.setState(CARD_STATES.DON_ACTIVE);
+
+                    this.scene.tweens.chain({
+                        targets: donCard,
+                        tweens: this.scene.animationLibrary.repayDonAnimation(donCard.playerScene, donCard, delay)
+                    });
+                    delay += 200; //Increase animation delay tracker
                 }
             }
             this.scene.passivePlayerScene.playerInfo.updateCardAmountTexts(); //Update the ui

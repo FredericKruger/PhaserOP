@@ -392,7 +392,7 @@ class MatchState {
             else characterCard = player.inCharacterArea.find(card => card.id === characterID); //If not found then look in the character area
 
             //Attach the don card to the character and modify the state
-            player.inActiveDon.filter(card => card.id !== donID);
+            player.inActiveDon = player.inActiveDon.filter(card => card.id !== donID);
             donCard.setState(CARD_STATES.DON_ATTACHED);
             player.inExertenDon.push(donCard);
             characterCard.attachedDon.push(donID);

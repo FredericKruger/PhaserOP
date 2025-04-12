@@ -38,10 +38,17 @@ class ActiveDonDeckUI extends CardPileUI {
      * @param {Array<number>} spendDonIds
      */
     payCost(spentDonIds) {
+        let delay = 0;
         for(let don of spentDonIds) {
             let card = this.getCard(don);
             card.setState(CARD_STATES.DON_RESTED);
-            this.scene.children.sendToBack(card);
+            //this.scene.children.sendToBack(card);
+            let animation = this.scene.animationLibrary.payDonAnimation(this.playerScene, card, delay);
+            this.scene.tweens.chain({
+                targets: card,
+                tweens: animation
+            });
+            delay += 200;
         }
     }
 
@@ -49,17 +56,18 @@ class ActiveDonDeckUI extends CardPileUI {
      * @param {Array<number>} spendDonIds
      */
     repayCost(spentDonIds) {
-        console.log(this.cards);
-        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length);
-        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_RESTED).length);
+        let delay = 0;
         for(let don of spentDonIds) {
             let card = this.getCard(don);
             card.setState(CARD_STATES.DON_ACTIVE);
-            this.scene.children.moveBelow(card, this.playerScene.playerInfo.activeDonCardAmountText);
+            //this.scene.children.moveBelow(card, this.playerScene.playerInfo.activeDonCardAmountText);
+            let animation = this.scene.animationLibrary.repayDonAnimation(this.playerScene, card, delay);
+            this.scene.tweens.chain({
+                targets: card,
+                tweens: animation
+            });
+            delay += 200;
         }
-        console.log(this.cards);
-        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_ACTIVE).length);
-        console.log(this.cards.filter(card => card.state === CARD_STATES.DON_RESTED).length);
     }
 
     /** Function to attac a don to a card

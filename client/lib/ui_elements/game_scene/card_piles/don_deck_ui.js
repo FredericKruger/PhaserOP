@@ -79,7 +79,6 @@ class DonDeckUI extends CardPileUI {
         });
     }
 
-
     /**
      * Function to add a card visual to the deck
      */

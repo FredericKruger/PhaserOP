@@ -576,6 +576,88 @@ class AnimationLibrary {
 
     //#endregion
 
+    //#region PAYING ANIMATIONS
+
+    /** Function to create tweens to make the card rested
+     * @param {PlayerScene} playerscene - player scene
+     * @param {DonCardUI} card - card to be moved
+     * @param {number} delay - delay with which to start the tweens
+     */
+    payDonAnimation(playerscene, card, delay = 0) {
+        let tweens = [
+            { // Phase 1: Move the card, modify scale and angle with bounce effect
+                targets: card,
+                x: playerscene.playerInfo.restingDonplaceholderPos.x,
+                y: playerscene.playerInfo.restingDonplaceholderPos.y,
+                scale: playerscene.playerInfo.restingDonplaceholder.scale, // Shrink the card slightly during travel
+                angle: playerscene.playerInfo.restingDonplaceholder.angle, // Rotate the card dynamically
+                duration: 400, // Faster movement
+                delay: delay,
+                ease: 'Bounce.easeOut', // Add a bounce effect for dynamic movement
+            },
+            { // Phase 2: Fade out the card quickly
+                targets: card,
+                alpha: 0, // Make the card invisible
+                duration: 200, // Faster fade-out
+                ease: 'Cubic.easeIn', // Abrupt fade-out for a snappier effect
+                onComplete: () => {
+                    card.setVisible(false); // Ensure the card is hidden after animation
+
+                    // Create a pulse effect on the DON counter
+                    card.scene.tweens.add({
+                        targets: card.playerScene.playerInfo.restingDonCardAmountText,
+                        scale: 1.3,
+                        duration: 150,
+                        yoyo: true,
+                        ease: 'Sine.easeInOut'
+                    });
+                }
+            }
+        ];
+
+        return tweens;
+    }
+
+    /** Function to create tweens to make the card rested
+     * @param {PlayerScene} playerscene - player scene
+     * @param {DonCardUI} card - card to be moved
+     * @param {number} delay - delay with which to start the tweens
+     */
+    repayDonAnimation(playerscene, card, delay = 0) {
+        let tweens = [
+            { // Phase 1: Move the card, modify scale and angle with bounce effect
+                onStart: () => {
+                    card.alpha = 1; // Start invisible
+                    card.setVisible(true);
+                },
+                targets: card,
+                x: playerscene.playerInfo.activePlaceholderPos.x,
+                y: playerscene.playerInfo.activePlaceholderPos.y,
+                scale: playerscene.playerInfo.activeDonPlaceholder.scale, // Shrink the card slightly during travel
+                angle: playerscene.playerInfo.activeDonPlaceholder.angle, // Rotate the card dynamically
+                duration: 400, // Faster movement
+                delay: delay,
+                ease: 'Bounce.easeOut', // Add a bounce effect for dynamic movement7
+                onComplete: () => {
+                    this.scene.children.moveBelow(card, playerscene.playerInfo.activeDonCardAmountText);
+
+                    // Create a pulse effect on the DON counter
+                    card.scene.tweens.add({
+                        targets: card.playerScene.playerInfo.activeDonCardAmountText,
+                        scale: 1.3,
+                        duration: 150,
+                        yoyo: true,
+                        ease: 'Sine.easeInOut'
+                    }); 
+                }
+            }
+        ];
+
+        return tweens;
+    }
+
+    //#endregion
+
     //#region APPREARING ANIMATIONS
     /** FUNCTION TO MAKE THE CARD DISAPPEAR THROUGH BURNING 
      * @param {GameCardUI} card - card to be destroyed

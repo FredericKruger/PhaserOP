@@ -330,22 +330,23 @@ class ActionLibraryPassivePlayer {
         action.start = () => { //Start function
             card.setDepth(DEPTH_VALUES.CARD_IN_PLAY);
             card.isInPlayAnimation = true;
-        };
-        action.start_animation = start_animation; //Play animation#
-        action.end = () => {
-            //Refresh GameStateUI
             card.setState(CARD_STATES.BEING_PLAYED);
         };
+        action.start_animation = start_animation; //Play animation#
 
         action.isPlayerAction = true; //This is a player triggered action
         action.waitForAnimationToComplete = true; //Should wait for the endof the animation
         action.name = "PLAY";
 
         //Add action to the action stack
-        this.actionManager.addAction(action);
+        this.scene.actionManager.addAction(action);
     }
 
-    /** Function that plays a card for the opponent*/
+    /** Function that plays a card for the opponent
+     * @param {PlayerScene} playerScene - Card that is being played.
+     * @param {GameCardUI} card - Card that is being played.
+     * @param {Object} actionInfos
+    */
      playCardAction(playerScene, card, actionInfos) {
         card.updateCardData(actionInfos.cardPlayedData); //Update the card data
         
@@ -455,11 +456,11 @@ class ActionLibraryPassivePlayer {
         action.name = "PLAY CARD OPPONENT";
 
         //Add action to action stack
-        this.scene.actionManager.addAction(action);
+        this.actionManager.addAction(action);
 
         //Update playArea action
         let updateAction = new Action();
-        updateAction.start = () => {   
+        updateAction.start = () => {  
               if(card.cardData.card === CARD_TYPES.CHARACTER) {
                 let cardPosition = playerScene.characterArea.update(card);
                 card.enterCharacterArea(cardPosition.x, cardPosition.y);
