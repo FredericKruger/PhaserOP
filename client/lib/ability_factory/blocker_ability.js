@@ -17,6 +17,12 @@ class BlockerAbility extends Ability {
         this.card.blockerButton.abilityButton.preFX.clear();
         if(this.card.blockerButton.canActivate) this.card.blockerButton.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, 4);
         else this.card.blockerButton.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 3);
+
+        if(this.card.blockerButton.canActivate) {
+            if(this.card.blockerButton.canPulsate) this.card.blockerButton.startPusaltingAnimation();
+        } else {
+            this.card.blockerButton.stopPulsatingAnimation();
+        }
     }
     
     trigger() {

@@ -11,6 +11,12 @@ class AbilityButton extends Phaser.GameObjects.Container {
         this.canActivate = false;
         this.name = ability.art.art;
 
+        this.defaultScale = 1.1; // Default scale for the button
+
+        this.isPulsating = false;
+        this.canPulsate = true;
+        this.pulseTween = null;
+
         //Prepare blocker button
         this.abilityButton = this.scene.add.image(
             0, 0, 
@@ -22,7 +28,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
         this.setSize(this.abilityButton.width, this.abilityButton.height);
 
         this.setVisible(false);
-        this.setScale(1.1);
+        this.setScale(this.defaultScale);
         this.setInteractive();
 
         this.add(this.abilityButton);
@@ -31,6 +37,8 @@ class AbilityButton extends Phaser.GameObjects.Container {
 
     onPointerOver() {
         // Kill any existing tweens on the button to prevent conflicts
+        this.canPulsate = false; // Prevent multiple pulsating animations
+        this.stopPulsatingAnimation(); // Stop any existing pulsating animation
         this.scene.tweens.killTweensOf(this);
 
         // Bring to top within its depth level instead of absolute top
@@ -63,7 +71,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
         // Create smooth scaling down tween
         this.scene.tweens.add({
             targets: this,
-            scale: 1.1, // Original scale
+            scale: this.defaultScale, // Original scale
             duration: 150, // Slightly faster for better UX
             ease: 'Cubic.easeOut', // Smooth easing function
             onUpdate: () => {
@@ -72,6 +80,9 @@ class AbilityButton extends Phaser.GameObjects.Container {
                 this.abilityButton.preFX.clear();
                 if(this.canActivate) this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
                 else this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+            },
+            onComplete: () => {
+                this.canPulsate = true; // Allow pulsating again after scaling down
             }
         });
     }
@@ -91,6 +102,31 @@ class AbilityButton extends Phaser.GameObjects.Container {
                     this.ability.trigger();
                 }
             });
+        }
+    }
+
+    startPusaltingAnimation() {
+        // Start pulsing animation
+        if (!this.isPulsating) {
+            this.isPulsating = true;
+            this.pulseTween = this.scene.tweens.add({
+                targets: this,
+                scale: this.defaultScale + 0.2, // Scale up by 20%
+                yoyo: true, // Reverse the tween
+                repeat: -1, // Repeat indefinitely
+                duration: 1000, // 1 second for a full pulse
+                ease: 'Sine.easeInOut'
+            });
+        }
+    }
+
+    stopPulsatingAnimation() {
+        // Stop pulsing animation and reset scale
+        if (this.isPulsating) {
+            this.pulseTween.stop();
+            this.pulseTween = null;
+            this.isPulsating = false;
+            this.setScale(this.defaultScale); // Reset to original scale
         }
     }
 

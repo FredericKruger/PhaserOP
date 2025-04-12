@@ -35,5 +35,11 @@ class PassiveAbility extends Ability {
             button.abilityButton.preFX.clear();
             button.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, 3);
         }
+
+        if(this.canActivate()) {
+            if(button.canPulsate) button.startPusaltingAnimation();
+        } else {
+            button.stopPulsatingAnimation();
+        }
     }
 }
