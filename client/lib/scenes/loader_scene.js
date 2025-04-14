@@ -304,6 +304,7 @@ class LoaderScene extends Phaser.Scene {
         this.load.image(ASSET_ENUMS.IMAGE_WANTED_POSTER, `${assetPath}/wanted_poster.png`);
         this.load.image(ASSET_ENUMS.IMAGE_MARINE_ARRESTED, `${assetPath}/marine_arrested_logo.png`);
         this.load.image(ASSET_ENUMS.IMAGE_BERRY_COIN, `${assetPath}/berry_coin.png`);
+        this.load.image(ASSET_ENUMS.IMAGE_SPEECH_BUBBLE, `${assetPath}/manga-speech-bubble.webp`);
 
         assetPath = 'assets/battle';
         this.load.image(ASSET_ENUMS.BATTLE_EXPLOSION, `${assetPath}/explosion.png`);
