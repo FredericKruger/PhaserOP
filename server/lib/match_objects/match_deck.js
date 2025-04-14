@@ -35,6 +35,13 @@ class MatchDeck {
         return this.cards.pop();
     }
 
+    /** Return the size the deck
+     * @return {number} - size of the deck
+     */
+    getSize() {
+        return this.cards.length;
+    }
+
     /** Function to shuffle the deck */
     shuffle() {
         let len = this.cards.length;

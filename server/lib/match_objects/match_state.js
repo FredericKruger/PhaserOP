@@ -58,10 +58,13 @@ class MatchState {
         let cards = [];
         
         for(let i=0; i<numberCards; i++) { //Draw required cards
-            let card = player.deck.draw(); //Remove from player deck
-            cards.push(card); //Add to hand and return list
-            player.inHand.push(card);
-            card.setState(CARD_STATES.IN_HAND);
+            if(!this.match.isGameOver()) {
+                let card = player.deck.draw(); //Remove from player deck
+                cards.push(card); //Add to hand and return list
+                player.inHand.push(card);
+                card.setState(CARD_STATES.IN_HAND);
+            }
+            else break;
         }
         return cards;
     }
@@ -445,8 +448,6 @@ class MatchState {
     */
     drawLifeDeckCard(attackResults, defendingPlayer) {
         if(attackResults.lostLeaderLife) {
-            defendingPlayer.life--;
-
             //draw card from lifedeck
             let card = null;
             if(defendingPlayer.inLifeDeck.length>0) {

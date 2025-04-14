@@ -54,6 +54,12 @@ class InPlayState extends GameCardState {
             aura.ability.update();
         }
         this.card.updatePowerText();
+
+        //Create animation if the player is on the last card
+        if(this.card.cardData.isleader === 1) {
+            if(this.card.playerScene.lifeDeck.cards.length === 0) this.card.showNoLifeAnimation();
+            else this.card.hideNoLifeAnimation();
+        }
     }
 
     isValidTarget() {

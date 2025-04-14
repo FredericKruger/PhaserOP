@@ -1,0 +1,98 @@
+{
+    "id":381,
+    "setid":16,
+    "art":"ST01-016",
+    "set":"ST01",
+    "setname":"-STRAW HAT CREW- [ST01]",
+    "name":"Diable Jambe",
+    "card":"EVENT",
+    "type":["Straw Hat Crew"],
+    "colors":["RED"],
+    "cost":1,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST01-016-1",
+            "text": "Select up to 1 of your {Straw Hat Crew} type Leader of Character cards. Your opponent cannot active Blocker if that Leader of Character attacks during this turn.",
+            "art": {
+                "art": "ST01-016-ABILITY1",
+                "posx": 300,
+                "posy": 545
+            },
+            "type": "ON_PLAY",
+            "phases": ["Main Phase"],
+            "target": {
+                "targetAction": "EVENT_CARD_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                        "types": ["Straw Hat Crew"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "createAura", "params": { 
+                    "target": "TARGET",
+                    "aura": {
+                        "id": "ST01-016-1-AURA",
+                        "type": "AURA",
+                        "states": ["IN_PLAY_ATTACKING"],
+                        "aurainfo": {
+                            "duration": "TURN",
+                            "affectedPlayers": ["owner", "opponent"]
+                        },
+                        "target": {
+                            "targetAction": "AURA_ACTION",
+                            "requiredTargets": 1,
+                            "targets": [
+                                {
+                                    "minrequiredtargets": 0,
+                                    "exclude": ["SELF"],
+                                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {"name": "canBlock_Aura", "params": {"value": false}}
+                        ]
+                    }
+                }}
+            ]
+        },
+        {
+            "id": "ST01-016-TRIGGER",
+            "text": "Play this card.",
+            "art": {
+                "art": "ST01-016-TRIGGER",
+                "posx": 300,
+                "posy": 660
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "target": {
+                "targetAction": "EVENT_CARD_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["opponent"],
+                        "cardtypes": ["CHARACTER"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                        "hasability": ["BLOCKER"],
+                        "cost": {"operator": "<=", "value": 3}
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "discardCard", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}

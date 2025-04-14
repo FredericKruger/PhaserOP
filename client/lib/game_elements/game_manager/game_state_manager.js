@@ -346,6 +346,7 @@ class GameStateManager {
                 let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
                 this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, {id:activePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
             }
+            if(activePlayerCards.length === 0) animationCallback(); //If no cards, call the callback
             
             //Draw the passive player's cards
             animationCallback = () => {
@@ -355,6 +356,7 @@ class GameStateManager {
                 let callback = (i === (passivePlayerCards.length-1) ? animationCallback : null);
                 this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, {id:passivePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
             }
+            if(passivePlayerCards.length === 0) animationCallback(); //If no cards, call the callback
 
             //Make leader cards dizzy to signal first turn
             this.scene.activePlayerScene.leaderLocation.cards[0].startDizzyAnimation();

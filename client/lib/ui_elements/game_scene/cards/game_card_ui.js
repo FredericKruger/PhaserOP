@@ -62,6 +62,9 @@ class GameCardUI extends BaseCardUI{
         this.isTargetted = false;
         this.originalScale = null; //To store the original scale of the card    
         this.targetingTweens = [];
+
+        // Initialize array to track all effects for this animation
+        this.noLifeEffects = [];
     }
     //#endregion
 
@@ -949,6 +952,113 @@ class GameCardUI extends BaseCardUI{
             });
         }
     }
+    //#endregion
+
+    //#region INFORMATION AINMATIONS
+
+    showNoLifeAnimation() {
+        // Clear any existing no-life animations
+        /*if (this.noLifeEffects) {
+            this.noLifeEffects.forEach(effect => {
+                if (effect) effect.destroy();
+            });
+        }*/
+        if(this.noLifeEffects.length === 0) {
+            // Find the index of frontArt in the container's list
+            const frontArtIndex = this.getAll().indexOf(this.frontArt);
+        
+            // Create a red overlay with the same dimensions as the card
+            const redOverlay = this.scene.add.graphics();
+            redOverlay.fillStyle(0xff0000, 0.5);  // Red with 50% opacity
+            redOverlay.fillRect(
+                -this.backArt.displayWidth/2, 
+                -this.backArt.displayHeight/2, 
+                this.backArt.displayWidth, 
+                this.backArt.displayHeight
+            );
+            redOverlay.setAlpha(0);  // Start invisible
+
+            // Add to container directly after frontArt for proper layering
+            this.addAt(redOverlay, frontArtIndex + 1);
+        
+
+            // Track this effect
+            this.noLifeEffects.push(redOverlay);
+
+            // Create a pulsing border effect
+            const borderEffect = this.scene.add.graphics();
+            borderEffect.lineStyle(6, 0xff0000, 1);  // Red border, 6px thick
+            borderEffect.strokeRect(
+                -this.backArt.displayWidth/2 - 3, 
+                -this.backArt.displayHeight/2 - 3, 
+                this.backArt.displayWidth + 6, 
+                this.backArt.displayHeight + 6
+            );
+            borderEffect.setAlpha(0);
+
+            // Add to container directly after frontArt for proper layering
+            this.addAt(borderEffect, frontArtIndex + 2);
+
+            // Track this effect
+            this.noLifeEffects.push(borderEffect);
+
+            // Initial fade in
+            this.scene.tweens.add({
+                targets: [redOverlay, borderEffect],
+                alpha: { from: 0, to: 0.6 },
+                duration: 400,
+                ease: 'Sine.easeIn',
+                onComplete: () => {
+                    // Continuous pulse (repeat this part)
+                    const overlayPulse = this.scene.tweens.add({
+                        targets: [redOverlay],
+                        alpha: { from: 0.6, to: 0.4 },
+                        duration: 2000,
+                        yoyo: true,
+                        repeat: -1,
+                        ease: 'Sine.easeInOut'
+                    }).play();
+                    this.noLifeEffects.push(overlayPulse);
+
+                    // Border pulse effect
+                    const borderPulse = this.scene.tweens.add({
+                        targets: [borderEffect],
+                        lineWidth: { from: 6, to: 10 },
+                        duration: 2000,
+                        yoyo: true,
+                        repeat: -1,
+                        ease: 'Sine.easeInOut',
+                        offset: 0  // Start at the same time as the overlay pulse
+                    }).play();
+                    this.noLifeEffects.push(borderPulse);
+                }
+            }).play();
+        }
+    }
+
+    /** Function to hide the no life animation */
+    hideNoLifeAnimation() {
+        if (this.noLifeEffects.length > 0) {
+            // Stop and remove all effects
+            this.noLifeEffects.forEach(effect => {
+                if (effect) {
+                    if (effect instanceof Phaser.GameObjects.Graphics) {
+                        effect.clear();
+                        effect.destroy();
+                    } else if (effect instanceof Phaser.Tweens.Tween) {
+                        effect.stop();
+                        effect.remove();
+                    } else if (effect.destroy) {
+                        effect.destroy();
+                    }
+                }
+            });
+            
+            // Clear the effects array
+            this.noLifeEffects = [];
+        }
+    }
+
     //#endregion
 
 }

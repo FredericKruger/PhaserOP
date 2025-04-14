@@ -311,12 +311,12 @@ class Match {
      */
     startPlayCard(player, cardID = null, event = false) {
         //Cancel playing the card if a card is currently being played
-        if(this.playCardManager && cardID !== this.playCardManager.playedCard.id) {
+        if(!this.gameOver && this.playCardManager && cardID !== this.playCardManager.playedCard.id) {
             this.cancelPlayCard(false, player, cardID, null, []);
             return;
         }
 
-        if(this.playCardManager === null) {
+        if(!this.gameOver && this.playCardManager === null) {
             //Create new action
             let playAction = {
                 actionId: 'PLAY_CARD_' + cardID,
@@ -345,7 +345,8 @@ class Match {
                 //handle bot action
                 if(player.bot) this.flagManager.handleFlag(player, 'PLAY_PHASE_READY');
             }
-        } else if(this.playCardManager.currentPhase === 'PLAY_PHASE_READY') {
+        } else if(!this.gameOver 
+            && this.playCardManager.currentPhase === 'PLAY_PHASE_READY') {
             //console.log("CHECKING IF CARD NEEDS TO BE REPLACED");
             let result = this.state.startPlayReplaceCard(player.currentMatchPlayer, this.playCardManager.playedCard);
 
@@ -358,7 +359,8 @@ class Match {
 
                 if(!player.bot) player.socket.emit('game_play_select_replacement', result.actionInfos, true);
             }
-        } else if(this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
+        } else if(!this.gameOver
+            && this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
             this.currentAction.phase = "PLAY_ON_PLAY_EVENT_PHASE";
 
             let result = this.state.startOnEventPlayCard(player.currentMatchPlayer, this.playCardManager.playedCard);
@@ -376,7 +378,8 @@ class Match {
 
                 if(!player.bot) player.socket.emit('game_play_card_event_triggered', result.actionInfos, true);
             }
-        } else if(this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY') {
+        } else if(!this.gameOver
+            && this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY') {
             this.state.playCard(player.currentMatchPlayer, this.playCardManager.playedCard);
 
             let actionInfos = {};
@@ -494,7 +497,7 @@ class Match {
      * @param {number} defenderID
      */
     startAttack(player, attackerID = null, defenderID = null) {
-        if(this.attackManager === null) {
+        if(!this.gameOver && this.attackManager === null) {
             //First send signal to stop targetting to the current active player
             if(!player.bot) player.socket.emit('game_stop_targetting', false);
 
@@ -527,7 +530,7 @@ class Match {
             if(!player.bot) player.socket.emit('game_declare_attack_phase', attackerID, defenderID, true, player.currentOpponentPlayer.bot);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_declare_attack_phase', attackerID, defenderID, false, player.bot);
 
-        } else if(!this.attackManager.onAttackEventPhase_Complete) { /** EVENT PHASE */
+        } else if(!this.gameOver && !this.attackManager.onAttackEventPhase_Complete) { /** EVENT PHASE */
             //test if there are any blockers in the passive players area which are not rested
             this.attackManager.onAttackEventPhase_Complete = true;
 
@@ -569,7 +572,8 @@ class Match {
                 this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
             }
 
-        } else if(!this.attackManager.blockPhase_Complete
+        } else if(!this.gameOver
+            && !this.attackManager.blockPhase_Complete
             && this.flagManager.checkFlag('BLOCKER_PHASE_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('BLOCKER_PHASE_READY_PASSIVE_PLAYER', this.state.current_passive_player)) { /** BLOCKER PHASE */
 
@@ -588,7 +592,8 @@ class Match {
                 if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
             }
 
-        } else if(!this.attackManager.counterPhase_Complete
+        } else if(!this.gameOver
+            && !this.attackManager.counterPhase_Complete
             && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('COUNTER_PHASE_READY', this.state.current_passive_player)) { /** COUNTER PHASE */
              
@@ -601,7 +606,8 @@ class Match {
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_counter_phase', false);
             else this.ai.startCounterPhase();
 
-        } else if(!this.attackManager.resolveAttack_Complete
+        } else if(!this.gameOver
+            && !this.attackManager.resolveAttack_Complete
             && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_passive_player)) { /** RESOLVE ATTACK */
 
@@ -611,10 +617,13 @@ class Match {
             let attackResults = this.attackManager.resolveAttack(); 
             this.attackManager.attackResults = this.state.resolveAttack(attackResults, this.attackManager.attack.attacker, this.attackManager.attack.defender, this.attackManager.attack.attackingPlayer, this.attackManager.attack.defendingPlayer);
 
+            if(this.attackManager.attackResults.lostLeaderLife) this.isGameOver();
+
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_attack_animation', true, attackResults);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_attack_animation', false, attackResults);
         
-        } else if (!this.attackManager.trigger_Complete
+        } else if (!this.gameOver
+            && !this.attackManager.trigger_Complete
             && this.flagManager.checkFlag('TRIGGER_PHASE_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('TRIGGER_PHASE_READY', this.state.current_passive_player)) { /** TRIGGER PHASE */
 
@@ -636,7 +645,8 @@ class Match {
                 this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
             }
 
-        } else if(!this.attackManager.triggerCleanup_Complete
+        } else if(!this.gameOver
+            && !this.attackManager.triggerCleanup_Complete
             && this.flagManager.checkFlag('TRIGGER_CLEANUP_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('TRIGGER_CLEANUP_READY', this.state.current_passive_player)) {
             this.attackManager.triggerCleanup_Complete = true;
@@ -647,7 +657,8 @@ class Match {
             this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
             this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
 
-        }else if(!this.attackManager.attackCleanup_Complete
+        }else if(!this.gameOver
+            && !this.attackManager.attackCleanup_Complete
             && this.flagManager.checkFlag('ATTACK_CLEANUP_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('ATTACK_CLEANUP_READY', this.state.current_passive_player)) { /** ATTACK CLEANUP PHASE */
 
@@ -659,7 +670,8 @@ class Match {
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_cleanup', false, cleanupResults);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_cleanup', true, cleanupResults);
 
-        } else if(!this.attackManager.resumeTurn_Complete
+        } else if(!this.gameOver
+            && !this.attackManager.resumeTurn_Complete
             && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_passive_player)) {
 
@@ -1055,9 +1067,17 @@ class Match {
 
     //#region GAME OVER
 
-    /** Function to determine wether the game is over or not */
+    /** Function to determine wether the game is over or not 
+    */
     isGameOver() {
-
+        if(this.player1.currentMatchPlayer.life < 0 || this.player1.currentMatchPlayer.deck.length === 0) {
+            this.endGame(this.player2, this.player1);
+            return true;
+        } else if(this.player2.currentMatchPlayer.life < 0 || this.player2.currentMatchPlayer.deck.length === 0) {
+            this.endGame(this.player1, this.player2);
+            return true;
+        }
+        return false;
     }
 
     /** Function to handle the game over

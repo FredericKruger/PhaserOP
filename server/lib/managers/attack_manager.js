@@ -103,7 +103,10 @@ class AttackManager {
         //Check if the attack was successful from the attacker perspective
         if(attackerPower >= defenderPower) {
             if(this.attack.defender.cardData.card === CARD_TYPES.CHARACTER) attackResult.defenderDestroyed = true;
-            else if(this.attack.defender.cardData.card === CARD_TYPES.LEADER) attackResult.lostLeaderLife = true;
+            else if(this.attack.defender.cardData.card === CARD_TYPES.LEADER) {
+                this.attack.defendingPlayer.life--;
+                attackResult.lostLeaderLife = true;
+            }
         }
 
         return attackResult;
