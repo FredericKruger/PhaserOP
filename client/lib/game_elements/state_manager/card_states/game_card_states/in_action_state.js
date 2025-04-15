@@ -8,7 +8,7 @@ class InActionState extends GameCardState {
     }
 
     enter() {
-        for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(true);
+        for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(this.card.artFullyVisible);
         super.enter();
     }
 
@@ -26,7 +26,7 @@ class InActionState extends GameCardState {
     }
 
     update() {
-        if(!this.card.dataLoaded) for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(true);
+        for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(this.card.artFullyVisible);
 
         for(let ability of this.card.abilities) {
             ability.update();

@@ -349,7 +349,7 @@ class ActionLibraryPassivePlayer {
     */
      playCardAction(playerScene, card, actionInfos) {
         card.updateCardData(actionInfos.cardPlayedData); //Update the card data
-        
+
         //Create tweens
         let tweens = [];
         // Card flip animation - more dramatic
@@ -362,11 +362,7 @@ class ActionLibraryPassivePlayer {
         });
         // Show card face with slight bounce
         tweens.push({
-            onStart: () => {
-                console.log(card.artFullyVisible);
-                for(let abilityButton of card.abilityButtons) console.log(abilityButton.visible);
-                card.flipCard();
-            },
+            onStart: () => {card.flipCard();},
             scaleX: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
             scaleY: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
             rotation: 0,
@@ -374,7 +370,6 @@ class ActionLibraryPassivePlayer {
             ease: 'Back.easeOut',
             onComplete: () => {
                 card.artFullyVisible = true;
-                console.log(card.artFullyVisible);
                 this.scene.actionManager.completeAction();
             }
         });
