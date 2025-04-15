@@ -7,6 +7,7 @@ class ActiveAbility extends Ability {
     update() {
         //find button
         let button = this.card.getAbilityButton(this.art.art);
+        button.canPulsate = button.card.playerScene.isPlayerTurn;
 
         if(this.canActivate(this.card.scene.gameStateUI.phase)) {
             button.canActivate = true;

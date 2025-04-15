@@ -98,12 +98,24 @@ class BattleAnimation {
             targets: attacker,
             tweens: [
                 {
+                    targets: {},
+                    alpha: 1,
+                    duration: 1,
+                    onStart: () => {
+                        //Show leader chat bubble
+                        new ChatBubble(
+                            this.scene, 
+                            attacker.getSpeechBubblePosition(),
+                            attacker.cardData.animationinfo.speeches.attack
+                        ).show(1500);
+                    }
+                }, {
                     targets: attacker,
                     x: impactX,
                     y: impactY,
                     duration: config.duration.approach,
                     ease: 'Sine.easeIn',
-                    delay: config.duration.angleChange // Wait for angle change to complete
+                    delay: config.duration.angleChange + 1300 // Wait for angle change to complete
                 }, {
                     targets: attacker,
                     x: impactX,
@@ -125,6 +137,14 @@ class BattleAnimation {
                             config.impactFrames,
                             config.duration
                         );
+
+                        //Show leader chat bubble only if it's the leader
+                        if(defender.cardData.isleader === 1) 
+                            new ChatBubble(
+                                this.scene, 
+                                defender.getSpeechBubblePosition(),
+                                defender.cardData.animationinfo.speeches.damages
+                            ).show(1500);
                     }
                 }, {
                     targets: attacker,

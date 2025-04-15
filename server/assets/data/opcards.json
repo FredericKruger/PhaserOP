@@ -6016,13 +6016,15 @@
         "attribute":"STRIKE",
         "isleader":1,
         "rarity":"LEADER",
-        "speeches": {
-            "intro": "I'm gonna be the Pirate King!",
-            "attack": "Gomu Gomu no Pistol!",
-            "damages": "I'm not done yet!",
-            "won": "I'm one step closer to becoming the Pirate King!",
-            "defeated": "I need to get stronger!",
-            "myturn": "Here I come!"
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'm gonna be the Pirate King!",
+                "attack": "Gomu Gomu no Pistol!",
+                "damages": "I'm not done yet!",
+                "won": "I'm one step closer to becoming the Pirate King!",
+                "defeated": "I need to get stronger!",
+                "myturn": "Here I come!"
+            }
         },
         "abilities": [
             {
@@ -6073,6 +6075,13 @@
         "isleader":0,
         "rarity":"COMMON",
         "counter":1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'm definitely not scared!",
+                "attack": "Firebird Star!",
+                "defeated": "Okay, that was just a warm-up!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-002-1",
@@ -6140,7 +6149,14 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Quack! Quack-quack!",
+                "attack": "QUACK!",
+                "defeated": "Qua...ack!"
+            }
+        }
     },    
     {
         "id":369,
@@ -6158,6 +6174,13 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
+        "animationinfo": {
+            "speeches": {
+                "intro": "Get ready to taste the power of my kicks!",
+                "attack": "Diable Jambe!",
+                "defeated": "Guess my kicks weren't spicy enough this time..."
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-004-1",
@@ -6195,6 +6218,13 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
+        "animationinfo": {
+            "speeches": {
+                "intro": "I will defend my friends and fight with honor!",
+                "attack": "Karate: Buraikan!",
+                "defeated": "The fight for justice continues..."
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-005-1",
@@ -6244,6 +6274,13 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'm here to fight and protect my friends!",
+                "attack": "Arm Point!",
+                "defeated": "I... I can't give up now!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-006-1",
@@ -6279,6 +6316,13 @@
         "isleader":0,
         "rarity":"COMMON",
         "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Don't think you can steal my treasure!",
+                "attack": "Thunderbolt Tempo!",
+                "defeated": "I should leave the fighting to the others!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-007-1",
@@ -6327,7 +6371,14 @@
         "attribute":"WISDOM",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Let's see how you handle the power of the Hana Hana no Mi.",
+                "attack": "Cuatro Mano!",
+                "defeated": "I'll find a way to uncover the truth..."
+            }
+        }
     },    
     {
         "id":374,
@@ -6344,7 +6395,14 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "I won't let you harm my people!",
+                "attack": "Peacock Slashers!",
+                "defeated": "I'll find a way to protect my kingdom..."
+            }
+        }
     },    
     {
         "id":375,
@@ -6361,7 +6419,14 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'll show you what true craftsmanship can do!",
+                "attack": "Strong Right!",
+                "defeated": "Looks like I need to make some upgrades!"
+            }
+        }
     },    
     {
         "id":376,
@@ -6380,6 +6445,13 @@
         "isleader":2,
         "rarity":"COMMON",
         "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Yohohoho!",
+                "attack": "Soul Solid!",
+                "defeated": "I'll be back for an encore!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-011-1",
@@ -6427,6 +6499,13 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"SUPER RARE",
+        "animationinfo": {
+            "speeches": {
+                "intro": "Yosh! Did I hear meat?",
+                "attack": "Gomu Gomu no Gatling!",
+                "defeated": "My meat..."
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-012-RUSH",
@@ -6496,6 +6575,13 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"SUPER RARE",
+        "animationinfo": {
+            "speeches": {
+                "intro": "I won't hold back!",
+                "attack": "Oni Giri",
+                "defeated": "This isn't the end..."
+            }
+        },
         "abilities": [
             {
                 "id": "ST01-013-1",
@@ -6822,6 +6908,16 @@
         "attribute":"SPECIAL",
         "isleader":1,
         "rarity":"LEADER",
+        "animationinfo": {
+            "speeches": {
+                "intro": "Get ready to be crushed!",
+                "attack": "Punk Gibson!",
+                "damages": "You think that hurt?",
+                "won": "That's what happens when you challenge Eustass 'Captain' Kid!",
+                "defeated": "This isn't over!",
+                "myturn": "Now it's my turn!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-001-1",
@@ -6857,7 +6953,14 @@
         "attribute":"RANGED",
         "isleader":0,
         "rarity":"COMMON",
-        "counter":1000
+        "counter":1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Get ready for a barrage of bullets!",
+                "attack": "Monster Gun Barrage!",
+                "defeated": "I'll come back with even more firepower!"
+            }
+        }
     },    
     {
         "id":385,
@@ -6875,6 +6978,13 @@
         "isleader":0,
         "rarity":"COMMON",
         "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'll turn your attacks into my strength!",
+                "attack": "Inga Zarashi!",
+                "defeated": "I'm pretty badly beaten, but let's see..."
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-003-1",
@@ -6912,6 +7022,13 @@
         "attribute":"SPECIAL",
         "isleader":0,
         "rarity":"COMMON",
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'll show you why they call me 'Gang' Bege!",
+                "attack": "Big Father!",
+                "defeated": "This isn't over!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-004-1",
@@ -6946,6 +7063,13 @@
         "isleader":0,
         "rarity":"COMMON",
         "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'll cut you down!",
+                "attack": "Punish!",
+                "defeated": "I'll come back more ruthless!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-005-1",
@@ -6988,7 +7112,14 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter":1000
+        "counter":1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "I-I'll do my best!",
+                "attack": "T-take that!",
+                "defeated": "Why...?"
+            }
+        }
     },    
     {
         "id":389,
@@ -7006,6 +7137,13 @@
         "isleader":0,
         "rarity":"COMMON",
         "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'll age you out of existence!",
+                "attack": "Age Manipulation!",
+                "defeated": "I'll come back younger than ever!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-007-1",
@@ -7037,6 +7175,13 @@
         "isleader":0,
         "rarity":"COMMON",
         "counter": 2000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Apapapapapa!",
+                "attack": "Boom!",
+                "defeated": "My performance wasn't loud enough!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-008-1",
@@ -7074,6 +7219,13 @@
         "isleader":0,
         "rarity":"SUPER RARE",
         "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Prepare to be dissected!",
+                "attack": "Room!",
+                "defeated": "This isn't the end..."
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-009-1",
@@ -7104,6 +7256,13 @@
         "attribute":"SLASH",
         "isleader":0,
         "rarity":"COMMON",
+        "animationinfo": {
+            "speeches": {
+                "intro": "You're fate is sealed!",
+                "attack": "Straw Man's Card!",
+                "defeated": "I foresaw that..."
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-010-1",
@@ -7134,7 +7293,14 @@
         "attribute":"SPECIAL",
         "isleader":0,
         "rarity":"COMMON",
-        "counter": 1000
+        "counter": 1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "You're about to feel the heat!",
+                "attack": "Heat Breath!",
+                "defeated": "Where's...my...heat..."
+            }
+        }
     },    
     {
         "id":394,
@@ -7151,7 +7317,14 @@
         "attribute":"STRIKE",
         "isleader":0,
         "rarity":"COMMON",
-        "counter":1000
+        "counter":1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Let's do this for Captain Law!",
+                "attack": "Martial Arts!",
+                "defeated": "I'm sorry, Captain..."
+            }
+        }
     },    
     {
         "id":395,
@@ -7168,6 +7341,13 @@
         "attribute":"SPECIAL",
         "isleader":0,
         "rarity":"SUPER RARE",
+        "animationinfo": {
+            "speeches": {
+                "intro": "Step aside or be crushed!",
+                "attack": "Punk Rotten!",
+                "defeated": "You got lucky this time!"
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-013-1",
@@ -7199,6 +7379,13 @@
         "isleader":0,
         "rarity":"COMMON",
         "counter":1000,
+        "animationinfo": {
+            "speeches": {
+                "intro": "Face the fury of the ancient beast!",
+                "attack": "X-Calibur!",
+                "defeated": "Not...ferocious...enough"
+            }
+        },
         "abilities": [
             {
                 "id": "ST02-014-1",
@@ -7356,7 +7543,17 @@
         "power":5000,
         "attribute":"SPECIAL",
         "isleader":1,
-        "rarity":"LEADER"
+        "rarity":"LEADER",
+        "animationinfo": {
+            "speeches": {
+                "intro": "You're about to face the wrath of the desert!",
+                "attack": "Desert Spada!",
+                "damages": "You dare strike me?",
+                "won": "Did you really think you could defeat me?",
+                "defeated": "This isn't the end! I'll rise again and crush you next time!",
+                "myturn": "Now, feel the fury of the desert! I'll bury you in sand!"
+            }
+        }
     },    
     {
         "id":401,
@@ -7635,7 +7832,17 @@
         "power":5000,
         "attribute":"STRIKE",
         "isleader":1,
-        "rarity":"LEADER"
+        "rarity":"LEADER",
+        "animationinfo": {
+            "speeches": {
+                "intro": "Prepare to face the strongest creature in the world!",
+                "attack": "Raimei Hakke!",
+                "damages": "You dare strike me? I'll show you the true meaning of pain!",
+                "won": "I am Kaido, the strongest creature in the world!",
+                "defeated": "This ... can't be ... happening!",
+                "myturn": "Now, witness the true power of Kaido! I'll crush you with my might!"
+            }
+        }
     },    
     {
         "id":418,

@@ -9,7 +9,7 @@ class InPlayState extends GameCardState {
 
     enter() {
         this.card.locationPowerText.setVisible(true);
-        for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(true);
+        for(let abilityButton of this.card.abilityButtons) abilityButton.setVisible(this.card.frontArt.visible);
         super.enter();
     }
 
@@ -47,12 +47,10 @@ class InPlayState extends GameCardState {
     }
 
     update() {
-        for(let ability of this.card.abilities) {
-            ability.update();
-        }
-        for(let aura of this.card.auras) {
-            aura.ability.update();
-        }
+        for(let ability of this.card.abilities) ability.update();
+        for(let aura of this.card.auras) aura.ability.update();
+        for(let abilityButton of this.card.abilityButtons) abilityButton.update();
+
         this.card.updatePowerText();
 
         //Create animation if the player is on the last card

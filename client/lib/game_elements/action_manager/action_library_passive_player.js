@@ -363,6 +363,8 @@ class ActionLibraryPassivePlayer {
         // Show card face with slight bounce
         tweens.push({
             onStart: () => {
+                console.log(card.artFullyVisible);
+                for(let abilityButton of card.abilityButtons) console.log(abilityButton.visible);
                 card.flipCard();
             },
             scaleX: CARD_SCALE.IN_PLAY_ANIMATION * 1.1,
@@ -370,7 +372,11 @@ class ActionLibraryPassivePlayer {
             rotation: 0,
             duration: 220,
             ease: 'Back.easeOut',
-            onComplete: () => {this.scene.actionManager.completeAction();}
+            onComplete: () => {
+                card.artFullyVisible = true;
+                console.log(card.artFullyVisible);
+                this.scene.actionManager.completeAction();
+            }
         });
         //Create tween chain
         let flip_card_animation = this.scene.tweens.chain({
@@ -388,6 +394,11 @@ class ActionLibraryPassivePlayer {
         flipCardAction.end = () => {
             //Refresh GameStateUI
             playerScene.playerInfo.updateCardAmountTexts();
+
+            //Create event name onomatopea if event
+            if(card.cardData.card === CARD_TYPES.EVENT) {
+                card.showCardName();
+            }
         }
         flipCardAction.waitForAnimationToComplete = true;
         this.scene.actionManager.addAction(flipCardAction); //Add action to action stack
@@ -443,10 +454,8 @@ class ActionLibraryPassivePlayer {
                 playerScene.stageLocation.addCard(card); //Add the card to the play area
 
             card.isInPlayAnimation = false;
-            //TODO add check for rush
             if(card.cardData.card === CARD_TYPES.CHARACTER) card.setState(CARD_STATES.IN_PLAY_FIRST_TURN); //Set the card state to in play
             else if(card.cardData.card === CARD_TYPES.EVENT) {
-                //FIXME: Add event card logic
                 this.scene.actionLibraryPassivePlayer.discardCardAction(playerScene, card); //Create a discard Action 
             }
             else card.setState(CARD_STATES.IN_PLAY); //Set the card state to in play

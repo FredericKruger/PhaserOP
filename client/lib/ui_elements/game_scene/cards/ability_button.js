@@ -4,6 +4,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
         super(scene, ability.art.posx - card.frontArt.width/2, ability.art.posy - card.frontArt.height/2);
 
         this.scene = scene;
+        /** @type {GameCardUI} */
         this.card = card;
         this.ability = ability;
 
@@ -33,6 +34,10 @@ class AbilityButton extends Phaser.GameObjects.Container {
 
         this.add(this.abilityButton);
         this.scene.add.existing(this);
+    }
+
+    update() {
+        this.setVisible(this.card.artFullyVisible);
     }
 
     onPointerOver() {

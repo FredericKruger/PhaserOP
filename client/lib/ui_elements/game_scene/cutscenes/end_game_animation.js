@@ -87,6 +87,14 @@ class EndGameAnimation extends BaseComponentUI {
     /** Function to start the animation */
     startAnimation() {
         const losingLeaderCard = this.isWinner ? this.scene.passivePlayerScene.leaderLocation.cards[0] : this.scene.activePlayerScene.leaderLocation.cards[0];
+        const winningLeaderCard = this.isWinner ? this.scene.activePlayerScene.leaderLocation.cards[0] : this.scene.passivePlayerScene.leaderLocation.cards[0];
+
+        //Show leader chat bubble
+        new ChatBubble(
+            this.scene, 
+            losingLeaderCard.getSpeechBubblePosition(),
+            losingLeaderCard.cardData.animationinfo.speeches.defeated
+        ).show(2000);
 
         //hide all effects
         losingLeaderCard.setState(CARD_STATES.IN_DISCARD);
@@ -101,7 +109,16 @@ class EndGameAnimation extends BaseComponentUI {
             
             // Display appropriate message after explosion
             setTimeout(() => {
-                this.showEndGamePanel();
+                setTimeout(() => {
+                    //Show leader chat bubble
+                    new ChatBubble(
+                        this.scene, 
+                        winningLeaderCard.getSpeechBubblePosition(),
+                        winningLeaderCard.cardData.animationinfo.speeches.won
+                    ).show(2000);
+
+                    this.showEndGamePanel();
+                }, 1200);
             }, this.explosionConfig.duration * 0.8);
         });
     }

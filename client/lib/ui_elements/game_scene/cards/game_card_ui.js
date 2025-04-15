@@ -218,6 +218,7 @@ class GameCardUI extends BaseCardUI{
     createAbilityButtons() {
         for(let ability of this.abilities) {
             let abilityButton = new AbilityButton(this.scene, this, ability);
+            abilityButton.setVisible(false);
             this.obj.push(abilityButton);
             this.abilityButtons.push(abilityButton);
             this.add(abilityButton);
@@ -226,6 +227,7 @@ class GameCardUI extends BaseCardUI{
         }
         for(let aura of this.auras){
             let abilityButton = new AbilityButton(this.scene, this, aura.ability);
+            abilityButton.setVisible(false);
             this.obj.push(abilityButton);
             this.abilityButtons.push(abilityButton);
             this.add(abilityButton);
@@ -597,6 +599,20 @@ class GameCardUI extends BaseCardUI{
         for(let counterCard of this.attachedCounter) counterCard.setVisible(!hide);
     }
 
+    /** Function to return the position at which the speechbuble should pop
+     * @returns {Object}
+     */
+    getSpeechBubblePosition() {
+        let y = this.y - this.displayHeight/2 + this.displayHeight*0.25;
+        let x = this.x - this.displayWidth/2 + this.displayWidth*0.2;
+        if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) {
+            x = this.x + this.displayWidth/2 - this.displayWidth*0.2;
+            y = this.y - this.displayHeight*0.25;
+        }
+
+        return {x: x, y: y, flipX: this.playerScene.playerPosition === PLAYER_POSITIONS.TOP};
+    }
+
     //#endregion
     
     //#region ANIMATION FUNCTIONS
@@ -670,11 +686,124 @@ class GameCardUI extends BaseCardUI{
                 this.playDustExplosionEffect();
 
                 if(this.cardData.card === CARD_TYPES.CHARACTER) {
+                    if(this.cardData.animationinfo) {
+                        //Show chat bubble
+                        new ChatBubble(
+                            this.scene, 
+                            this.getSpeechBubblePosition(),
+                            this.cardData.animationinfo.speeches.intro
+                        ).show(1500);
+                    }
+
                     this.scene.time.delayedCall(300, () => {
                         this.startDizzyAnimation();
                     });
                 }
             }
+        });
+    }
+
+    /**
+     * Shows a card name in large bold font in the middle of the screen
+     * @param {Object} options - Optional configuration
+     * @returns {Promise} Resolves when animation completes
+     */
+    showCardName(options = {}) {
+        return new Promise((resolve) => {
+            // Configuration with defaults
+            const config = {
+                fontSize: options.fontSize || 150,
+                duration: options.duration || 1200,
+                fontFamily: options.fontFamily || 'OnePieceONOFont'
+            };
+            
+            // Generate a random angle between -8 and 8 degrees for tilting
+            const randomAngle = Phaser.Math.Between(-15, 8);
+
+            // Create text object in the middle of the screen
+            const nameText = this.scene.add.text(
+                this.scene.cameras.main.centerX,
+                this.scene.cameras.main.centerY,
+                this.cardData.name.toUpperCase(),
+                {
+                    fontFamily: config.fontFamily,
+                    fontSize: `${config.fontSize}px`,
+                    fontStyle: 'bold',
+                    color: '#000000',
+                    stroke: '#ffffff',
+                    strokeThickness: 1,
+                    align: 'center'
+                }
+            )
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5)
+            .setAngle(randomAngle) // Apply random initial angle
+            .setDepth(999);
+
+            // Add slight shadow offset for depth
+            const shadow = this.scene.add.text(
+                this.scene.cameras.main.centerX + 5,
+                this.scene.cameras.main.centerY + 5,
+                this.cardData.name,
+                {
+                    fontFamily: config.fontFamily,
+                    fontSize: `${config.fontSize}px`,
+                    fontStyle: 'bold',
+                    color: '#00000055', // Semi-transparent black
+                    align: 'center'
+                }
+            )
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5)
+            .setAngle(randomAngle) // Match angle with main text
+            .setDepth(998); // Just below the main text
+        
+            // Animation sequence
+            this.scene.tweens.chain({
+                targets: [nameText, shadow],
+                tweens: [
+                    // Fade in and scale up with slight angle adjustment
+                    {
+                        alpha: 1,
+                        scale: 1, 
+                        angle: randomAngle * 0.7, // Reduce angle slightly during animation
+                        ease: 'Back.easeOut',
+                        duration: 300
+                    },
+                    // Hold with subtle floating motion
+                    {
+                        alpha: 1,
+                        angle: {
+                            from: randomAngle * 0.7,
+                            to: randomAngle * 0.5,
+                            duration: config.duration,
+                            ease: 'Sine.easeInOut'
+                        },
+                        y: {
+                            from: this.scene.cameras.main.centerY,
+                            to: this.scene.cameras.main.centerY - 5,
+                            duration: config.duration,
+                            ease: 'Sine.easeInOut'
+                        },
+                        duration: config.duration
+                    },
+                    // Fade out
+                    {
+                        alpha: 0,
+                        scale: 1.2,
+                        angle: randomAngle * 1.5, // Increase angle slightly during exit
+                        ease: 'Back.easeIn',
+                        duration: 300,
+                        onComplete: () => {
+                            nameText.destroy();
+                            shadow.destroy();
+                            resolve();
+                        }
+                    }
+                ]
+            });
         });
     }
 

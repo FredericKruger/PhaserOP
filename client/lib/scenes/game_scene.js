@@ -138,6 +138,7 @@ class GameScene extends Phaser.Scene {
 
             //ATTACK DON TO CHARACTER
             //this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: donCardID, receivingCharacter: cardID}, true, true);
+
         });
 
         /** LISTENERS */

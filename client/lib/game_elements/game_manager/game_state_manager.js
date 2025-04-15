@@ -50,6 +50,7 @@ class GameStateManager {
             id: activePlayerLeader.id
         });
         activePlayerLeaderCard.updateCardData(activePlayerLeader.cardData, true);
+        activePlayerLeaderCard.artFullyVisible = true; //to allow seeing abilities
 
         let passivePlayerLeaderCard = new GameCardUI(this.scene, this.scene.passivePlayerScene, {
             x: this.scene.screenCenterX,
@@ -61,6 +62,7 @@ class GameStateManager {
             id: passivePlayerLeader.id
         });
         passivePlayerLeaderCard.updateCardData(passivePlayerLeader.cardData, true);
+        passivePlayerLeaderCard.artFullyVisible = true; //to allow seeing abilities
         this.scene.children.moveBelow(passivePlayerLeaderCard, activePlayerLeaderCard);
 
         //Active Player tween
@@ -334,33 +336,51 @@ class GameStateManager {
             //Set Game phase
             this.setPhase(GAME_PHASES.PREPARING_FIRST_TURN);
 
-            //Change state of leader cards
-            this.scene.activePlayerScene.leaderLocation.cards[0].setState(CARD_STATES.IN_PLAY_FIRST_TURN);
-            this.scene.passivePlayerScene.leaderLocation.cards[0].setState(CARD_STATES.IN_PLAY_FIRST_TURN);
-            
-            //Draw the active player's cards
-            let animationCallback = () => {
-                this.scene.game.gameClient.requestFirstTurnSetupComplete();
-            };
-            for(let i=0; i<activePlayerCards.length; i++) {
-                let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
-                this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, {id:activePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
-            }
-            if(activePlayerCards.length === 0) animationCallback(); //If no cards, call the callback
-            
-            //Draw the passive player's cards
-            animationCallback = () => {
-                this.scene.game.gameClient.requestFirstTurnSetupPassivePlayerAnimationComplete();
-            };
-            for(let i=0; i<passivePlayerCards.length; i++) {
-                let callback = (i === (passivePlayerCards.length-1) ? animationCallback : null);
-                this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, {id:passivePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
-            }
-            if(passivePlayerCards.length === 0) animationCallback(); //If no cards, call the callback
+            const activePlayerCallback = () => {
+                //Change state of leader cards
+                this.scene.activePlayerScene.leaderLocation.cards[0].setState(CARD_STATES.IN_PLAY_FIRST_TURN);
 
-            //Make leader cards dizzy to signal first turn
-            this.scene.activePlayerScene.leaderLocation.cards[0].startDizzyAnimation();
-            this.scene.passivePlayerScene.leaderLocation.cards[0].startDizzyAnimation();
+                //Draw the active player's cards
+                let animationCallback = () => {
+                    this.scene.game.gameClient.requestFirstTurnSetupComplete();
+                };
+                for(let i=0; i<activePlayerCards.length; i++) {
+                    let callback = (i === (activePlayerCards.length-1) ? animationCallback : null);
+                    this.scene.actionLibrary.drawCardAction(this.scene.activePlayerScene, {id:activePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false});
+                }
+                if(activePlayerCards.length === 0) animationCallback(); //If no cards, call the callback
+                
+                //Make leader cards dizzy to signal first turn
+                this.scene.activePlayerScene.leaderLocation.cards[0].startDizzyAnimation();
+            };
+            new ChatBubble(
+                this.scene, 
+                this.scene.activePlayerScene.leaderLocation.cards[0].getSpeechBubblePosition(),
+                this.scene.activePlayerScene.leaderLocation.cards[0].cardData.animationinfo.speeches.intro
+            ).show(1000, activePlayerCallback, 0); //Show the speech bubble
+
+            const passivePlayerCallback = () => {
+                //Change state of leader cards
+                this.scene.passivePlayerScene.leaderLocation.cards[0].setState(CARD_STATES.IN_PLAY_FIRST_TURN);
+
+                //Draw the passive player's cards
+                let animationCallback = () => {
+                    this.scene.game.gameClient.requestFirstTurnSetupPassivePlayerAnimationComplete();
+                };
+                for(let i=0; i<passivePlayerCards.length; i++) {
+                    let callback = (i === (passivePlayerCards.length-1) ? animationCallback : null);
+                    this.scene.actionLibraryPassivePlayer.drawCardAction(this.scene.passivePlayerScene, {id:passivePlayerCards[i]}, GAME_PHASES.PREPARING_FIRST_TURN, {delay: i*300, startAnimationCallback: callback}, {waitForAnimationToComplete: false, isServerRequest: false});
+                }
+                if(passivePlayerCards.length === 0) animationCallback(); //If no cards, call the callback
+
+                //Make leader cards dizzy to signal first turn
+                this.scene.passivePlayerScene.leaderLocation.cards[0].startDizzyAnimation();
+            };
+            new ChatBubble(
+                this.scene, 
+                this.scene.passivePlayerScene.leaderLocation.cards[0].getSpeechBubblePosition(),
+                this.scene.passivePlayerScene.leaderLocation.cards[0].cardData.animationinfo.speeches.intro
+            ).show(1000, passivePlayerCallback, 300); //Show the speech bubble
         });
     }
     //#endregion
@@ -392,12 +412,12 @@ class GameStateManager {
             // Enhanced animation for "Your Turn" transition
             this.scene.add.tween({
                 targets: this.gameStateUI.yourTurnImage,
-                delay: 600, // Shorter delay for better pacing
+                delay: 300, // Shorter delay for better pacing
                 alpha: { from: 0, to: 1 }, // Start invisible and fade in
                 scale: { from: 0.55, to: 0.6 }, // Very minimal scale change
                 y: { from: this.gameStateUI.yourTurnImage.y - 10, to: this.gameStateUI.yourTurnImage.y }, // Reduced vertical movement
                 ease: 'Sine.easeOut', // Changed to smoother easing
-                duration: 400, // Slower animation
+                duration: 250, // Slower animation
                 onStart: () => {
                     // Add camera shake for dramatic effect
                     if (this.scene.cameras && this.scene.cameras.main) {
@@ -409,7 +429,7 @@ class GameStateManager {
                     this.scene.tweens.add({
                         targets: this.gameStateUI.yourTurnImage,
                         scale: 0.605, // Very minimal pulse
-                        duration: 350, // Slower pulse
+                        duration: 250, // Slower pulse
                         yoyo: true,
                         repeat: 1,
                         ease: 'Sine.easeInOut',
@@ -419,9 +439,16 @@ class GameStateManager {
                                 targets: this.gameStateUI.yourTurnImage,
                                 alpha: 0,
                                 scale: 0.59, // Minimal scale change
-                                duration: 500, // Slower fade out
+                                duration: 300, // Slower fade out
                                 ease: 'Sine.easeIn',
                                 onComplete: () => {
+                                    //Show leader chat bubble
+                                    new ChatBubble(
+                                        this.scene, 
+                                        this.scene.activePlayerScene.leaderLocation.cards[0].getSpeechBubblePosition(),
+                                        this.scene.activePlayerScene.leaderLocation.cards[0].cardData.animationinfo.speeches.myturn
+                                    ).show(1500);
+
                                     // Original code after animation completes
                                     //Refresh DON Cards
                                     let numberOfAnimations = 0;
@@ -513,6 +540,13 @@ class GameStateManager {
 
             //Refresh the nextTurn Button
             this.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+
+            //Show leader chat bubble
+            new ChatBubble(
+                this.scene, 
+                this.scene.passivePlayerScene.leaderLocation.cards[0].getSpeechBubblePosition(),
+                this.scene.passivePlayerScene.leaderLocation.cards[0].cardData.animationinfo.speeches.myturn
+            ).show(2000);
 
             //Refresh Don Cards
             let numberOfAnimations = 0;
@@ -1170,13 +1204,9 @@ class GameStateManager {
                 alpha: 1,
                 duration: 500,
                 onComplete: () => {
-                    console.log(card.state);
                     this.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, isPlayerTurn); //Resolve the ability
-                    console.log(card.state);
                     player.lifeDeck.removeCard(card); //Remove the card from the life deck
-                    console.log(card.state);
                     if(discardCard) this.scene.actionLibrary.discardCardAction(player, card); //Discard the card
-                    console.log(card.state);
                     //player.lifeDeck.hideLifeCardFan();
                 }
             }]);

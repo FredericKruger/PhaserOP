@@ -44,7 +44,8 @@ class AnimationLibrary {
                 y: card.y - 140, // Higher arc for more dramatic reveal
                 rotation: 0, // Return to normal orientation
                 ease: 'Back.easeOut', // Adds slight overshoot for bouncy feel
-                duration: 200, // Slightly longer for mid-phase
+                duration: 200, // Slightly longer for mid-phase,
+                onComplete: () => {card.artFullyVisible = true;} // Ensure the card is fully visible
             }, 
             { // Phase 3: Final positioning with smooth landing
                 scale: CARD_SCALE.IN_MULLIGAN,
@@ -86,6 +87,7 @@ class AnimationLibrary {
 
         let animation = [
             { // Phase 1: Quick lift and shrink - ultra fast
+                onStart: () => {card.artFullyVisible = true;}, // Ensure the card is fully visible
                 x: card.x, 
                 y: card.y - 30, // Slightly less lift for faster movement
                 rotation: (Math.random() * 0.15) - 0.075, // Smaller rotation for quicker movement
@@ -165,7 +167,7 @@ class AnimationLibrary {
         let posY = card.playerScene.playerInfo.lifeAmountText.y;
         
         // Calculate a dynamic arc path for more natural movement
-        const arcHeight = 120 + Math.random() * 30; // Random arc height
+        const arcHeight = 120 + Math.random() * 10; // Random arc height
         const controlX = card.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.4 - 20; // Control point X
         const randomRotation = (Math.random() * 0.15) - 0.075; // Subtle random rotation
         
@@ -262,6 +264,7 @@ class AnimationLibrary {
                 rotation: -0.05, // Slight rotation for style
                 ease: 'Back.easeOut', // More dynamic easing
                 duration: 400,
+                onComplete: () => {card.artFullyVisible = true;} // Ensure the card is fully visible
             }, 
             { // Phase 3: Quick move toward hand position
                 scaleX: 0.28,
@@ -322,7 +325,8 @@ class AnimationLibrary {
                 y: displayY,
                 angle: 0,
                 duration: 300,
-                ease: 'Power2.easeOut'
+                ease: 'Power2.easeOut',
+                onComplete: () => {card.artFullyVisible = true;} // Ensure the card is fully visible
             },
             { // Phase 4: Pause at display location
                 targets: card,

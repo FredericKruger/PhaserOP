@@ -470,6 +470,11 @@ class ActionLibrary {
         //Create the action
         let action = new Action();
         action.start = () => { //Start function
+            //Create event name onomatopea if event
+            if(card.cardData.card === CARD_TYPES.EVENT) {
+                card.showCardName();
+            }
+
             if(actionInfos.eventTriggered) {
                 playerScene.lifeDeck.removeCard(card); //Remove the card form the hand
             } else {
@@ -842,7 +847,17 @@ class ActionLibrary {
             if(attackResults.defenderDestroyed) {
                 //Create action to discard the card
                 let defenderCard = this.scene.attackManager.attack.defender
-                this.scene.gameStateManager.discardCard(defenderCard.id, attackResults.defenderAttachedCards, activePlayer, true);
+                if(defenderCard.cardData.animationinfo) {
+                    //Show chat bubble
+                    new ChatBubble(
+                        this.scene, 
+                        this.getSpeechBubblePosition(),
+                        defenderCard.cardData.animationinfo.speeches.defeated
+                    ).show(1500, () => {
+                        this.scene.gameStateManager.discardCard(defenderCard.id, attackResults.defenderAttachedCards, activePlayer, true);
+                    });
+                }
+                
             } else {
                 this.scene.attackManager.attack.defender.setState(attackResults.newDefenderState); //Set the card state to in play
             }

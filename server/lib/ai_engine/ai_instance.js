@@ -295,7 +295,7 @@ class AI_Instance {
                 break;
             case 'attack':
                 // Implement attack
-                this.match.startAttackPhase(
+                this.match.startAttack(
                     this.match.state.current_active_player,
                     action.arg.attackerId,
                     action.arg.targetId

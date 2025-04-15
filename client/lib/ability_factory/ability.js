@@ -651,6 +651,26 @@ const abilityActions = {
             });
             tweens = tweens.concat(arrowTweens);
         }
+        if(target.state.startsWith("IN_PLAY") && target.cardData.animationinfo) {
+            tweens = tweens.concat([{
+                targets: {},
+                alpha: 1,
+                duration: 1,
+                onStart: () => {
+                    //Show chat bubble
+                    new ChatBubble(
+                        scene, 
+                        target.getSpeechBubblePosition(),
+                        target.cardData.animationinfo.speeches.defeated
+                    ).show(1500);
+                }
+            }, {
+                targets: {},
+                alpha: 1,
+                duration: 1,
+                delay: 1200
+            }]);
+        }
 
         tweens = tweens.concat(scene.gameStateManager.discardCard(target.id, info.discardAction, activePlayer, false));
 
