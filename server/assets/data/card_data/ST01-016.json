@@ -23,20 +23,22 @@
             },
             "type": "ON_PLAY",
             "phases": ["Main Phase"],
-            "target": {
-                "targetAction": "EVENT_CARD_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["owner"],
-                        "cardtypes": ["CHARACTER", "LEADER"],
-                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
-                        "types": ["Straw Hat Crew"]
-                    }
-                ]
-            },
             "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "EVENT_CARD_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                                "types": ["Straw Hat Crew"]
+                            }
+                        ]
+                    }
+                }},
                 {"name": "createAura", "params": { 
                     "target": "TARGET",
                     "aura": {
