@@ -43,17 +43,41 @@ class Utils {
     /** Asynchronous function that creates a promise to send the card database
      */
     async getCardList () {
-        let cardIndex = {};
+        let cardIndex = [];
         let filepath = this.serverPath + '/server/assets/data/opcards.json'; //Get path of the card database
+        let cardFolderPath = this.serverPath + '/server/assets/data/card_data/'; //Get path of the card folder
 
         try {
             const data = await fs.promises.readFile(filepath); //Read the json file
             cardIndex = JSON.parse(data.toString()); //Turn file into JSON object
-            return cardIndex; //Return the database
+
+            const files = await fs.promises.readdir(cardFolderPath); //Read the folder
+            for (const file of files) { //For each file in the folder
+                const data = await fs.promises.readFile(cardFolderPath + file); //Read the file
+                const jsonData = JSON.parse(data.toString()); //Turn file into JSON object
+                cardIndex[jsonData.id-1] = jsonData; //Push the json data to the arrays
+            }
         } catch (err) {
             console.log(err);
         }
-        return null; //Return nothing in case of error
+        return cardIndex; //Return nothing in case of error
+    }
+
+    /** Asynchronous function that reads the different cards from the card folder */
+    async getCardListFromFolder () {
+        let cardIndex = [];
+        let folderPath = this.serverPath + '/server/assets/data/card_data/'; //Get path of the card folder
+
+        try {
+            const files = await fs.promises.readdir(folderPath); //Read the folder
+            for (const file of files) { //For each file in the folder
+                const data = await fs.promises.readFile(folderPath + file); //Read the file
+                const jsonData = JSON.parse(data.toString()); //Turn file into JSON object
+                cardIndex.push(jsonData); //Push the json data to the array
+            }
+        } catch (err) {console.log(err);}
+
+        return cardIndex;
     }
 
     /** Asynchronous function that creates a promise to send the player the request bot deck

@@ -12,6 +12,7 @@ class GameStateManager {
 
         //Game State Variables
         this.currentGamePhase = null;
+        this.currentTurn = 0;
 
         //Flags for mulligan
         this.activePlayerReadyForMulligan = false;
@@ -397,6 +398,7 @@ class GameStateManager {
     startRefreshPhase(refreshDon, refreshCards, removedAuras) {
         this.scene.time.delayedCall(1000, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE); //Set the phase to Refresh Phase
+            this.currentTurn++; //Increase turn counter
 
             //If in this phase, the player is the active player
             this.scene.activePlayerScene.isPlayerTurn = true;
@@ -530,6 +532,7 @@ class GameStateManager {
     startRefreshPhasePassivePlayer(refreshDon, refreshCards, removedAuras) {
         this.scene.time.delayedCall(100, () => {
             this.setPhase(GAME_PHASES.REFRESH_PHASE);
+            this.currentTurn++; //Increase turn counter
 
             //If in this phase, the player is the pasive player
             this.scene.activePlayerScene.isPlayerTurn = false;
@@ -1178,7 +1181,7 @@ class GameStateManager {
             id: lifeCardData.cardId,
             cardData: lifeCardData.cardData
         };
-        this.scene.actionLibrary.addLifeCardToHand(player, serverCard);
+        this.scene.actionLibrary.addLifeCardToHand(player, serverCard, activePlayer);
     }
 
     /** Function to play the trigger Card 

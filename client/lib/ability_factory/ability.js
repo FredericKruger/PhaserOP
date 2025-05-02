@@ -73,31 +73,33 @@ class Ability {
         switch (condition.type) {
             case 'ATTACHED_DON':
                 return this.card.attachedDon.length >= condition.value;
-            case 'CHARACTER_COUNT':
-                return this.card.playerScene.characterArea.cards.length >= condition.value;
-            case 'CARD_RESTED':
-                if(this.card.state === CARD_STATES.IN_PLAY_RESTED && condition.value) return true;
-                else if(this.card.state !== CARD_STATES.IN_PLAY_RESTED && !condition.value) return true;
-                return false;
-            case 'PLAYER_TURN':
-                if(this.card.playerScene.isPlayerTurn && condition.value) return true;
-                return false;
-            case 'ONCE':
-                if(this.usedThisTurn && condition.value === 'TURN') return false;
-                if(this.usedThisGame && condition.value === 'GAME') return false;
-                return true;
             case 'AVAILABLE_DON':
                 if(this.card.playerScene.activeDonDeck.getNumberOfActiveCards() >= condition.value) return true;
-                return false;
-            case 'PLAYED_THIS_TURN':
-                if(this.card.turnPlayed && condition.value) return true;
-                if(!this.card.turnPlayed && !condition.value) return true;
                 return false;
             case 'CAN_BLOCK':
                 if(this.card.canBlock && condition.value) return true;
                 if(!this.card.canBlock && !condition.value) return true;
                 return false;
-            // More conditions...
+            case 'CARD_RESTED':
+                if(this.card.state === CARD_STATES.IN_PLAY_RESTED && condition.value) return true;
+                else if(this.card.state !== CARD_STATES.IN_PLAY_RESTED && !condition.value) return true;
+                return false;
+            case 'CHARACTER_COUNT':
+                return this.card.playerScene.characterArea.cards.length >= condition.value;
+            case 'MIN_CARDS_IN_HAND':
+                if(this.card.playerScene.hand.cards.length >= condition.value) return true;
+                return false;
+            case 'ONCE':
+                if(this.usedThisTurn && condition.value === 'TURN') return false;
+                if(this.usedThisGame && condition.value === 'GAME') return false;
+                return true;
+            case 'PLAYER_TURN':
+                if(this.card.playerScene.isPlayerTurn && condition.value) return true;
+                return false;
+            case 'PLAYED_THIS_TURN':
+                if(this.card.turnPlayed === this.card.scene.gameStateManager.currentTurn && condition.value) return true;
+                if(this.card.turnPlayed !== this.card.scene.gameStateManager.currentTurn && !condition.value) return true;
+                return false;
             default:
                 return true;
         }
@@ -155,7 +157,6 @@ class Ability {
 
     /** Function to handle the trigger of the action button */
     trigger() {
-        //this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);
         this.card.scene.game.gameClient.requestActivateAbility(this.card.id, this.id);
     }
 
@@ -308,37 +309,28 @@ const abilityActions = {
             }
         ];
         tweens = tweens.concat(arrowTweens);
-        tweens = tweens.concat([{
-                onStart: () => { //Add Tween for target arrow
-                    for(let donCard of donCards) donCard.setState(CARD_STATES.DON_ACTIVE);
-                },
-                targets: card.playerScene.playerInfo.restingDonCardAmountText,
-                scale: {from: 1, to: 1.2},
-                duration: 150,
-                onComplete: () => {
-                    card.playerScene.playerInfo.updateRestingCardAmountText();
-                }
-            }, {
-                targets: card.playerScene.playerInfo.restingDonCardAmountText,
-                scale: {from: 1.2, to: 1},
-                duration: 150,
-            }, {
-                targets: card.playerScene.playerInfo.activeDonCardAmountText,
-                scale: {from: 1, to: 1.2},
-                duration: 150,
-                onComplete: () => {
-                    card.playerScene.playerInfo.updateActiveCardAmountText();
-                }
-            }, {
-                targets: card.playerScene.playerInfo.activeDonCardAmountText,
-                scale: {from: 1.2, to: 1},
-                duration: 150,
-                onComplete: () => {
-                    targetingManager.targetArrow.stopTargeting();
-                    targetingManager = null;
-                }
+
+        tweens.push({
+            onStart: () => { //Add Tween for target arrow
+                for(let donCard of donCards) donCard.setState(CARD_STATES.DON_ACTIVE);
+            },
+            targets: {},
+            scale: 1,
+            duration: 1
+        });
+        for(let donCard of donCards) {
+            tweens = tweens.concat(scene.animationLibrary.repayDonAnimation(donCard.playerScene, donCard, delay));
+            delay += 200; //Increase animation delay tracker
+        }
+        tweens.push({
+            targets: {},
+            scale: 1,
+            duration: 1,
+            onComplete: () => {
+                targetingManager.targetArrow.stopTargeting();
+                targetingManager = null;
             }
-        ]);
+        });
         return tweens; 
     },
     /** Function to add Counter to Defender
@@ -670,6 +662,15 @@ const abilityActions = {
                 duration: 1,
                 delay: 1200
             }]);
+        } else if (target.state.startsWith("IN_HAND")) {
+            tweens = tweens.concat([{
+                targets: target,
+                onStart: () => {
+                    target.isInPlayAnimation = true;
+                },
+                y: target.y - 200,
+                duration: 200
+            }]);
         }
 
         tweens = tweens.concat(scene.gameStateManager.discardCard(target.id, info.discardAction, activePlayer, false));
@@ -687,5 +688,53 @@ const abilityActions = {
         }
 
         return tweens;
+    },
+    /** Function to add Counter to Defender
+     * @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    restDon: (scene, card, info, activePlayer) => {
+        //Get Defender Card
+        let donCards = [];
+        for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
+        let delay = 0;
+
+        let targetingManager = new TargetManager(scene, 'EVENT', 'REST_DON', card.id);
+        targetingManager.targetArrow.originatorObject = card;
+        let arrowTweens = targetingManager.targetArrow.animateToPosition(card.playerScene.playerInfo.activeDonPlaceholder.x, card.playerScene.playerInfo.activeDonPlaceholder.y, 600);
+        let tweens = [
+            {
+                onStart: () => { //Add Tween for target arrow
+                    targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
+                },
+                delay: 100,
+            }
+        ];
+        tweens = tweens.concat(arrowTweens);
+
+        tweens.push({
+            onStart: () => { //Add Tween for target arrow
+                for(let donCard of donCards) donCard.setState(CARD_STATES.DON_RESTED);
+            },
+            targets: {},
+            scale: 1,
+            duration: 1
+        });
+        for(let donCard of donCards) {
+            tweens = tweens.concat(scene.animationLibrary.payDonAnimation(donCard.playerScene, donCard, delay));
+            delay += 200; //Increase animation delay tracker
+        }
+        tweens.push({
+            targets: {},
+            scale: 1,
+            duration: 1,
+            onComplete: () => {
+                targetingManager.targetArrow.stopTargeting();
+                targetingManager = null;
+            }
+        });
+        return tweens; 
     }
 };

@@ -228,6 +228,7 @@ class Match {
     startNewTurn() {
         //Start the refresh phase
         this.state.current_phase = MATCH_PHASES.REFRESH_PHASE;
+        this.state.current_turn++;
 
         //Refresh all the game flags all players (this has to be done for the passsive player animation flags)
         this.state.current_active_player.currentMatchPlayer.matchFlags.resetTurnFlags();
@@ -637,8 +638,7 @@ class Match {
 
                 if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_trigger_phase', true, this.attackManager.attackResults.lifeCardData);
                 if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_trigger_phase', false, this.attackManager.attackResults.lifeCardData);
-                //if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_trigger_phase', false);
-                //else this.ai.startTriggerPhase(
+                else this.ai.startTriggerPhase()
 
             } else {
                 this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
@@ -678,6 +678,9 @@ class Match {
             //reset Attack object
             this.attackManager = null;
 
+            //Change game state
+            this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
+
             this.goDownActionStack();
             //this.cleanupAction(player);
 
@@ -715,34 +718,32 @@ class Match {
     }
 
 
-    /** Function to draw the trigger card 
-     * @param {Player} player
-    */
-    drawTriggerCard() {
+    /** Function to draw the trigger card */
+    drawTriggerCard(ai_action = false) {
         //Add card to hand
         let triggerCard = this.attackManager.attackResults.lifeCard;
         triggerCard.setState(CARD_STATES.IN_HAND);
         this.attackManager.attack.defendingPlayer.inHand.push(triggerCard);
 
         //Send messages to client
-        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_draw_trigger_card', true, this.attackManager.attackResults.lifeCardData);
-        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_draw_trigger_card', false, this.attackManager.attackResults.lifeCardData);
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_draw_trigger_card', true, this.attackManager.attackResults.lifeCardData, ai_action);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_draw_trigger_card', false, this.attackManager.attackResults.lifeCardData, ai_action);
 
         this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
         this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
     }
 
+    /** Function to resolve the trigger card */
     resolveTriggerCard() {
         //Get Trigger Card
         let triggerCard = this.attackManager.attackResults.lifeCard;
 
         //If the card is an event, discard it
         let discardCard = false;
-        //if(triggerCard.cardData.type === CARD_TYPES.EVENT) {
-            let player = this.attackManager.attack.defendingPlayer;
-            player.discardCard(triggerCard);
-            discardCard = true;
-        //}
+
+        let player = this.attackManager.attack.defendingPlayer;
+        player.discardCard(triggerCard);
+        discardCard = true;
 
         let actionInfos = this.state.pending_action.actionInfos;
         //actionInfos.abilityResults;
@@ -976,9 +977,11 @@ class Match {
         if(!ability.canActivate()) {
             if(ability.type === "ON_PLAY" && this.playCardManager) {
                 this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+                return;
             } else if(ability.type === "WHEN_ATTACKING" && this.attackManager) {
                 this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
                 this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
+                return;
             } else  {
                 player.socket.emit('game_activate_ability_failure', cardId, abilityId);
                 return;
@@ -986,6 +989,15 @@ class Match {
         }
                 
         const targets = card.getAbilityTargets(abilityId);
+
+        //Create new action
+        let abilityAction = {
+            actionId: 'ABILITY_' + cardId + '_' + abilityId,
+            type: "ABILITY",
+            phase: null,
+            actionCallback: null
+        };
+        this.addActionToStack(abilityAction);
 
         let actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: targets, optional: ability.optional};
         if(targets) {

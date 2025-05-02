@@ -38,6 +38,7 @@ class MatchState {
         this.current_active_player = null;
         this.current_passive_player = null;
         this.current_phase = MATCH_PHASES.WAITING_TO_START;
+        this.current_turn = 0;
 
         this.resolving_pending_action = false;
         this.pending_action = null;

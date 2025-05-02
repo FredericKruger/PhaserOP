@@ -14,6 +14,15 @@
     "attribute":"STRIKE",
     "isleader":0,
     "rarity":"SUPER RARE",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Yosh! Did I hear meat?",
+            "attack": "Gomu Gomu no Gatling!",
+            "defeated": "My meat..."
+        }
+    },
+    
     "abilities": [
         {
             "id": "ST01-012-RUSH",
@@ -41,7 +50,6 @@
                 "posy": 608
             },
             "type": "AURA",
-            "phases": [],
             "states": ["IN_PLAY_ATTACKING"],
             "conditions": [
                 {"type": "ATTACHED_DON", "value": 2}

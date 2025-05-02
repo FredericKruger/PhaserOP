@@ -41,8 +41,16 @@ class TargetingState extends GameState {
         
             // Check if this is a valid target for the current targeting action
             const isValidTarget = this.targetManager.isValidTarget(card);
+
+                    //If the card is in the hand
+            if( isValidTarget.isValid &&
+                (card.state === CARD_STATES.IN_HAND || card.state === CARD_STATES.IN_HAND_HOVERED)) {
+                card.fsmState.onPointerOver(pointer, gameObject);
+                return;
+            } 
             
             if (isValidTarget.isValid && !card.isTargetted && !this.inPointerOver) {
+
                 //Save the current targetting object
                 this.inPointerOver = true;
                 card.isTargetted = true;
@@ -104,6 +112,13 @@ class TargetingState extends GameState {
         if(gameObject instanceof GameCardUI) card = gameObject;
         else if(gameObject instanceof AbilityButton) card = gameObject.card;
 
+        //If the card is in the hand
+        if( card instanceof GameCardUI &&
+            (card.state === CARD_STATES.IN_HAND || card.state === CARD_STATES.IN_HAND_HOVERED)) {
+            card.fsmState.onPointerOut(pointer, gameObject);
+            return;
+        } 
+
         // Reset card animation if we were targeting it
         if (card instanceof GameCardUI 
             && card.isTargetted
@@ -164,6 +179,7 @@ class TargetingState extends GameState {
         for(let card of this.scene.activePlayerScene.characterArea.cards) card.fsmState.isValidTarget();
         for(let card of this.scene.activePlayerScene.leaderLocation.cards) card.fsmState.isValidTarget();
         for(let card of this.scene.activePlayerScene.stageLocation.cards) card.fsmState.isValidTarget();
+        for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.isValidTarget();
 
         //Update all cards in the hand to reflect if they can take an action
         for(let card of this.scene.activePlayerScene.hand.cards) card.fsmState.update(); 

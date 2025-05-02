@@ -79,6 +79,8 @@ class MatchCard extends Card{
         this.baseCost = cardData.cost;
         this.currentCost = this.baseCost;
 
+        this.turnPlayed = -1; //Turn played in the match
+
         this.auraToIgnore = null; //Aura to ignore for the power calculation
 
         //Create abilities if there are any

@@ -15,7 +15,6 @@ serverInstance.util.getCardList().then((result) => {
 });
 serverInstance.io = io; //to allow communication inside the objects
 
-
 //Setup static directories
 app.use('/plugins', server.static(__dirname + '/client/plugins'));
 app.use('/scripts', server.static(__dirname + '/client/lib'));

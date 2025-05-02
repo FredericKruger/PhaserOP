@@ -15,6 +15,15 @@
     "isleader":0,
     "rarity":"COMMON",
     "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Don't think you can steal my treasure!",
+            "attack": "Thunderbolt Tempo!",
+            "defeated": "I should leave the fighting to the others!"
+        }
+    },
+
     "abilities": [
         {
             "id": "ST01-007-1",

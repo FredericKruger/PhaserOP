@@ -14,6 +14,15 @@
     "attribute":"STRIKE",
     "isleader":0,
     "rarity":"COMMON",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I will defend my friends and fight with honor!",
+            "attack": "Karate: Buraikan!",
+            "defeated": "The fight for justice continues..."
+        }
+    },
+
     "abilities": [
         {
             "id": "ST01-005-1",
@@ -25,7 +34,6 @@
             },
             "type": "WHEN_ATTACKING",
             "phases": ["Main: Attack"],
-            "states": [],
             "target": {
                 "targetAction": "ABILITY_ACTION",
                 "requiredTargets": 1,

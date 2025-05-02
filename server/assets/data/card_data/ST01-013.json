@@ -14,6 +14,15 @@
     "attribute":"SLASH",
     "isleader":0,
     "rarity":"SUPER RARE",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I won't hold back!",
+            "attack": "Oni Giri",
+            "defeated": "This isn't the end..."
+        }
+    },
+    
     "abilities": [
         {
             "id": "ST01-013-1",

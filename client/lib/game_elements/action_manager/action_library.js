@@ -155,15 +155,27 @@ class ActionLibrary {
      * @param {PlayerScene} playerScene
      * @param {Object} serverCard
      */
-    addLifeCardToHand(playerScene, serverCard) {
-        let card = playerScene.lifeDeck.getCard(serverCard.id);
-        playerScene.lifeDeck.removeCard(card);
-        card.setState(CARD_STATES.TRAVELLING_TO_HAND);
-        
-        playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, updateUI: true});
-        playerScene.hand.update();
+    addLifeCardToHand(playerScene, serverCard, executeAsAction = false) {
+        let codeToExecute = () => {
+            let card = playerScene.lifeDeck.getCard(serverCard.id);
+            playerScene.lifeDeck.removeCard(card);
+            card.setState(CARD_STATES.TRAVELLING_TO_HAND);
+            
+            playerScene.hand.addCards([card], {setCardState: true, setCardDepth: true, updateUI: true});
+            playerScene.hand.update();
 
-        playerScene.lifeDeck.hideLifeCardFan(true);
+            playerScene.lifeDeck.hideLifeCardFan(true);
+        };
+
+        if(executeAsAction) {
+            let action = new Action();
+            action.start = codeToExecute;
+            action.waitForAnimationToComplete = false;
+
+            this.scene.actionManager.addAction(action);
+        } else {
+            codeToExecute();
+        }
     }
     //#endregion
 
@@ -512,6 +524,9 @@ class ActionLibrary {
         //Update playArea action
         let updateAction = new Action();
         updateAction.start = () => {
+            //Set the turn the card was played on
+            card.turnPlayed = this.scene.gameStateManager.currentTurn;
+
             if(card.cardData.card === CARD_TYPES.CHARACTER) {
                 let cardPosition = playerScene.characterArea.update(card);
                 card.enterCharacterArea(cardPosition.x, cardPosition.y);

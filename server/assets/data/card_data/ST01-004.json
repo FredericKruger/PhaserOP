@@ -14,6 +14,15 @@
     "attribute":"STRIKE",
     "isleader":0,
     "rarity":"COMMON",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Get ready to taste the power of my kicks!",
+            "attack": "Diable Jambe!",
+            "defeated": "Guess my kicks weren't spicy enough this time..."
+        }
+    },
+
     "abilities": [
         {
             "id": "ST01-004-1",

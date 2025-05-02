@@ -465,7 +465,10 @@ class ActionLibraryPassivePlayer {
         //Update playArea action
         let updateAction = new Action();
         updateAction.start = () => {  
-              if(card.cardData.card === CARD_TYPES.CHARACTER) {
+            //Set the turn the card was played on
+            card.turnPlayed = this.scene.gameStateManager.currentTurn;
+
+            if(card.cardData.card === CARD_TYPES.CHARACTER) {
                 let cardPosition = playerScene.characterArea.update(card);
                 card.enterCharacterArea(cardPosition.x, cardPosition.y);
             } else if(card.cardData.card === CARD_TYPES.STAGE) {

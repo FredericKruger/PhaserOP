@@ -14,5 +14,13 @@
     "attribute":"WISDOM",
     "isleader":0,
     "rarity":"COMMON",
-    "counter": 1000
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Let's see how you handle the power of the Hana Hana no Mi.",
+            "attack": "Cuatro Mano!",
+            "defeated": "I'll find a way to uncover the truth..."
+        }
+    }
 }

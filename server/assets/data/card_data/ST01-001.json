@@ -15,6 +15,18 @@
     "attribute":"STRIKE",
     "isleader":1,
     "rarity":"LEADER",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I'm gonna be the Pirate King!",
+            "attack": "Gomu Gomu no Pistol!",
+            "damages": "I'm not done yet!",
+            "won": "I'm one step closer to becoming the Pirate King!",
+            "defeated": "I need to get stronger!",
+            "myturn": "Here I come!"
+        }
+    },
+    
     "abilities": [
         {
             "id": "ST01-001-1",

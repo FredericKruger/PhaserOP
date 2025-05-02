@@ -14,5 +14,13 @@
     "attribute":"SLASH",
     "isleader":0,
     "rarity":"COMMON",
-    "counter": 1000
+    "counter": 1000,
+    
+    "animationinfo": {
+        "speeches": {
+            "intro": "I won't let you harm my people!",
+            "attack": "Peacock Slashers!",
+            "defeated": "I'll find a way to protect my kingdom..."
+        }
+    }
 }

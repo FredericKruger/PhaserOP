@@ -51,7 +51,7 @@ class GameCardUI extends BaseCardUI{
         this.counterFanShowing = false;
         this.counterFanShowingManual = false;
 
-        this.turnPlayed = true; //To store if the card was played in the current turn
+        this.turnPlayed = -1; //To store the turn the card was played on
 
         this.hasRush = false; //To store if the card has rush
         this.canBlock = true; //To store if the card can block

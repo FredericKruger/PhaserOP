@@ -14,5 +14,13 @@
     "attribute":"STRIKE",
     "isleader":0,
     "rarity":"COMMON",
-    "counter": 1000
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Quack! Quack-quack!",
+            "attack": "QUACK!",
+            "defeated": "Qua...ack!"
+        }
+    }
 }

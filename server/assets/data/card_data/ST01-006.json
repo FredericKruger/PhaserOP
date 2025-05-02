@@ -14,6 +14,15 @@
     "attribute":"STRIKE",
     "isleader":0,
     "rarity":"COMMON",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I'm here to fight and protect my friends!",
+            "attack": "Arm Point!",
+            "defeated": "I... I can't give up now!"
+        }
+    },
+
     "abilities": [
         {
             "id": "ST01-006-1",

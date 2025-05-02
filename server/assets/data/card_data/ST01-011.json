@@ -15,6 +15,15 @@
     "isleader":2,
     "rarity":"COMMON",
     "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Yohohoho!",
+            "attack": "Soul Solid!",
+            "defeated": "I'll be back for an encore!"
+        }
+    },
+    
     "abilities": [
         {
             "id": "ST01-011-1",

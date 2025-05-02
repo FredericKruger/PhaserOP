@@ -763,6 +763,30 @@ class AI_Instance {
 
     //#endregion
 
+    //#region TRIGGER STRATEGY
+    startTriggerPhase() {
+        console.log('AI TRIGGER PHASE');
+        //let triggerDecision = this.evaluateTrigger();
+        let triggerDecision = {
+            function: 'draw'
+        };
+
+        this.executeTrigger(triggerDecision);
+    }
+
+    /** Function to execute the trigger decision
+     * @param {Object} triggerDecision - The trigger decision
+     */
+    executeTrigger(triggerDecision) {
+        switch(triggerDecision.function) {
+            case 'draw':
+                this.match.drawTriggerCard(true);
+                break;
+        }
+    }
+
+    //#endregion
+
 }
 
 module.exports = AI_Instance;

@@ -47,6 +47,7 @@ class CardHandUI extends CardPileUI {
         }
 
         //Iterate through cards
+        let currentDepth = DEPTH_VALUES.CARD_IN_HAND;
         for(let i=0; i<this.cards.length; i++) {
             let card = this.cards[i];
             if(card.state === CARD_STATES.IN_HAND || card.state === CARD_STATES.TRAVELLING_TO_HAND   
@@ -81,11 +82,8 @@ class CardHandUI extends CardPileUI {
 
                 currentIndex++;
             }
-            this.scene.children.bringToTop(card); //TODO FIX THIS
-            //if(card.playerScene.player.isActivePlayer) this.scene.children.bringToTop(card);
-            //else {
-            //    if(i>0) this.scene.children.moveAbove(card, this.cards[i-1]);
-            //} //reorder the cards if they are in the main player's hand and not in the mulligan
+            card.depth = currentDepth; // Set the depth of the card to be above the rest of the cards
+            currentDepth += 0.1; // Increase the depth for the next card
         }
     }
 

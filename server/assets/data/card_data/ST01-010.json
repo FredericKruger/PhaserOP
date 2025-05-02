@@ -14,5 +14,13 @@
     "attribute":"STRIKE",
     "isleader":0,
     "rarity":"COMMON",
-    "counter": 1000
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I'll show you what true craftsmanship can do!",
+            "attack": "Strong Right!",
+            "defeated": "Looks like I need to make some upgrades!"
+        }
+    }
 }

@@ -99,6 +99,7 @@ class MatchPlayer {
         let card = match.matchCardRegistry.get(cardID);
 
         card.setState(CARD_STATES.BEING_PLAYED); //Set the state to being played
+        card.turnPlayed = match.state.current_turn; //Set the turn played
 
         //Remove the resources from the active don if it's not played as part of an event
         let donIDs = [];

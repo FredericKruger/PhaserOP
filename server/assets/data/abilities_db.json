@@ -1,0 +1,211 @@
+[
+    {
+        "_comment": "THIS LISTS ALL THE DIFFERENT ABILITIES IMPLEMENTED",
+        "id": "DUMMY",
+        "text": "",
+        "art": {
+            "art": "DUMMY",
+            "posx": 0,
+            "posy": 0
+        },
+        "type": "ACTIVE / AURA / TRIGGER / PASSIVE / WHEN_ATTACKING / BLOCKER / ON_PLAY",
+        "phases": ["Main Phase", "Main: Trigger", "Main: Attack", "Main: Block", "Main: Counter"],
+        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_ATTACKING", "BEING_PLAYED"],
+        "conditions": [
+            {"type": "ATTACHED_DON", "value": 2},
+            {"type": "AVAILABLE_DON", "value": 3},
+            {"type": "CAN_BLOCK", "value": true},
+            {"type": "CARD_RESTED", "value": false},
+            {"type": "CHARACTER_COUNT", "value": 1},
+            {"type": "MIN_CARDS_IN_HAND", "value": 1},
+            {"type": "ONCE", "value": "TURN"},
+            {"type": "PLAYED_THIS_TURN", "value": true},
+            {"type": "PLAYER_TURN", "value": true}
+        ],
+        "target": {
+            "targetAction": "ABILITY_ACTION / AURA_ACTION / EVENT_CARD_ACTION",
+            "requiredTargets": 1,
+            "targets": [
+                {
+                    "minrequiredtargets": 0,
+                    "player": ["owner"],
+                    "cardtypes": ["CHARACTER", "LEADER"],
+                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                    "power": {"operator": ">=", "value": 5000},
+                    "types": ["Straw Hat Crew"],
+                    "exclude": ["SELF"],
+                    "hasability": ["BLOCKER"],
+                    "cost": {"operator": "<=", "value": 3}
+                }
+            ]
+        },
+        "aurainfo": {
+            "duration": "GAME",
+            "affectedPlayers": ["owner", "opponent"]
+        },
+        "actions": [
+            {"name": "activateExertedDon", "params": {"amount": 1}},
+            {"name": "addCounterToCard", "params": {"amount": 4000}},
+            {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN / GAME"}},
+            {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}},
+            {"name": "canBlock_Aura", "params": {"value": false}},
+            {"name": "changeCardState", "params": {"target": "SELF/ TARGET", "state": "IN_PLAY_RESTED"}},
+            {"name": "createAura", "params": { 
+                "target": "TARGET",
+                "aura": {
+                    "id": "ST01-016-1-AURA",
+                    "type": "AURA",
+                    "states": ["IN_PLAY_ATTACKING"],
+                    "aurainfo": {
+                        "duration": "TURN",
+                        "affectedPlayers": ["owner", "opponent"]
+                    },
+                    "target": {
+                        "targetAction": "AURA_ACTION",
+                        "requiredTargets": 1,
+                        "targets": []
+                    },
+                    "actions": []
+                }
+            }},
+            {"name": "discardCard", "params": {"target": "TARGET"}},
+            {"name": "hasRush", "params": {}},
+            {"name": "playCard", "params": {}},
+            {"name": "restDon", "params": {"amount": 3}}
+        ]
+    },
+
+    {
+        "_comment": "EXAMPLE OF AURA",
+        "type": "AURA",
+        "states": ["IN_PLAY_ATTACKING"],
+        "conditions": [
+            {"type": "ATTACHED_DON", "value": 2}
+        ],
+        "aurainfo": {
+            "duration": "GAME",
+            "affectedPlayers": ["owner", "opponent"]
+        },
+        "target": {
+            "targetAction": "AURA_ACTION",
+            "requiredTargets": 1,
+            "targets": [
+                {
+                    "minrequiredtargets": 0,
+                    "exclude": ["SELF"],
+                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                    "power": {"operator": ">=", "value": 5000}
+                }
+            ]
+        },
+        "actions": [
+            {"name": "canBlock_Aura", "params": {"value": false}}
+        ]
+    },
+
+    {
+        "_comment": "EXAMPLE OF TRIGGER",
+        "type": "TRIGGER",
+        "phases": ["Main: Trigger"],
+        "states": ["BEING_PLAYED"],
+        "actions": [
+            {"name": "playCard", "params": {}}
+        ]
+    },
+
+    {
+        "_comment": "EXAMPLE OF PASSIVE",
+        "type": "PASSIVE",
+        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+        "conditions": [
+            {"type": "PLAYED_THIS_TURN", "value": true},
+            {"type": "ATTACHED_DON", "value": 2}
+        ],
+        "actions": [
+            {"name": "hasRush", "params": {}}
+        ]
+    },
+
+    {
+        "_comment": "EXAMPLE OF WHEN ATTACKING",
+        "type": "WHEN_ATTACKING",
+        "phases": ["Main: Attack"],
+        "target": {
+            "targetAction": "ABILITY_ACTION",
+            "requiredTargets": 1,
+            "targets": [
+                {
+                    "minrequiredtargets": 0,
+                    "player": ["owner"],
+                    "cardtypes": ["CHARACTER", "LEADER"],
+                    "exclude": ["SELF"]
+                }
+            ]
+        },
+        "conditions": [
+            {"type": "ATTACHED_DON", "value": 1}
+        ],
+        "actions": [
+            {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+        ]
+    },
+
+    {
+        "_comment": "EXAMPLE OF BLOCKER",
+        "type": "BLOCKER",
+        "phases": ["Main: Block"],
+        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+        "conditions": [
+            {"type": "CAN_BLOCK", "value": true}
+        ]
+    },
+
+    {
+        "_comment": "EXAMPLE OF ACTIVE",
+        "type": "ACTIVE",
+        "phases": ["Main Phase"],
+        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+        "conditions": [
+            {"type": "PLAYER_TURN", "value": true},
+            {"type": "ONCE", "value": "TURN"}
+        ],
+        "target": {
+            "targetAction": "ABILITY_ACTION",
+            "requiredTargets": 1,
+            "targets": [
+                {
+                    "minrequiredtargets": 0,
+                    "player": ["owner"],
+                    "cardtypes": ["CHARACTER", "LEADER"]
+                }
+            ]
+        },
+        "actions": [
+            {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
+        ]    
+    },
+
+    {
+        "_comment": "EXAMPLE ON PLAY",
+        "type": "ON_PLAY",
+        "states": ["BEING_PLAYED"],
+        "phases": ["Main Phase"],
+        "target": {
+            "targetAction": "ABILITY_ACTION",
+            "requiredTargets": 1,
+            "targets": [
+                {
+                    "minrequiredtargets": 0,
+                    "player": ["owner"],
+                    "cardtypes": ["CHARACTER", "LEADER"],
+                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                    "exclude": ["SELF"]
+                }
+            ]
+        },
+        "actions": [
+            {"name": "attachDonCard", "params": {"amount": 2, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
+        ]
+    }
+
+]

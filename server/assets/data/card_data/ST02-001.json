@@ -1,0 +1,66 @@
+{
+    "id": 383,
+    "setid": 1,
+    "banned": false,    
+    "art":"ST02-001",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Eustass'Captain'Kid",
+    "card":"LEADER",
+    "type":["Supernovas", "Kid Pirates"],
+    "colors":["GREEN"],
+    "life":5,
+    "cost":0,
+    "power":5000,
+    "attribute":"SPECIAL",
+    "isleader":1,
+    "rarity":"LEADER",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Get ready to be crushed!",
+            "attack": "Punk Gibson!",
+            "damages": "You think that hurt?",
+            "won": "That's what happens when you challenge Eustass 'Captain' Kid!",
+            "defeated": "This isn't over!",
+            "myturn": "Now it's my turn!"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-001-1",
+            "text": "3 (You may rest the specified number of DON!! cards in your cose area.) You may trash 1 card from your hand: Set this Leader as active.",
+            "art": {
+                "art": "ST02-001-ABILITY1",
+                "posx": 300,
+                "posy": 560
+            },
+            "type": "ACTIVE",
+            "phases": ["Main Phase"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+            "conditions": [
+                {"type": "PLAYER_TURN", "value": true},
+                {"type": "ONCE", "value": "TURN"},
+                {"type": "AVAILABLE_DON", "value": 1},
+                {"type": "MIN_CARDS_IN_HAND", "value": 1}
+            ],
+            "target": {
+                "targetAction": "ABILITY_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "state": ["IN_HAND"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "restDon", "params": {"amount": 1}},
+                {"name": "discardCard", "params": {"target": "TARGET"}},
+                {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY"}}
+            ]
+        }
+    ]
+}

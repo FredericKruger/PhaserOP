@@ -66,6 +66,8 @@ class InHandState extends GameCardState {
                 ) this.card.showGlow(COLOR_ENUMS.OP_RED);
                 else this.card.hideGlow();
                 break;
+            case GAME_STATES.TARGETING:
+                break;
             default: this.card.hideGlow();
         }
         
@@ -77,4 +79,14 @@ class InHandState extends GameCardState {
         }
     }
     //#endregion
+
+    isValidTarget() {
+        //check is there is a target manager
+        let targetManager = this.card.scene.getActiveTargetManager();
+        if(!targetManager) return;
+
+        let isValid = targetManager.isValidTarget(this.card);
+        if(isValid) this.card.showGlow(COLOR_ENUMS.OP_GREEN);
+        else this.card.hideGlow();
+    }
 }
