@@ -362,23 +362,30 @@ class Match {
             }
         } else if(!this.gameOver
             && this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
-            this.currentAction.phase = "PLAY_ON_PLAY_EVENT_PHASE";
+            let skipOnPlayEventPhase = true;
 
-            let result = this.state.startOnEventPlayCard(player.currentMatchPlayer, this.playCardManager.playedCard);
-            
-            if(result.actionResult === PLAY_CARD_STATES.NO_ON_PLAY_EVENT) {
-                this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
-            } else if(result.actionResult === PLAY_CARD_STATES.EVENT_RESOLVED) {
-                this.playCardManager.abilityId = result.actionInfos.abilityId;
-                this.playCardManager.onPlayEventActions = result.actionInfos.abilityResults;
-            
-                this.cleanupAction(player);
-            } else if(result.actionResult === PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED) {
-                this.state.pending_action = result;
-                this.state.resolving_pending_action = true;
+            //check if there are anu events to be resolved
+            let onPlayEvent = this.playCardManager.playedCard.getAbilityByType("ON_PLAY");
+            if(onPlayEvent && onPlayEvent.canActivate(this.playCardManager.playedCard, this.state.current_phase)) {
+                this.currentAction.phase = "PLAY_ON_PLAY_EVENT_PHASE";
+                let executeAbility = false;
 
-                if(!player.bot) player.socket.emit('game_play_card_event_triggered', result.actionInfos, true);
+                let actionInfos  = {actionId: 'EVENT_' + this.playCardManager.playedCard.id, playedCard: this.playCardManager.playedCard.id, ability: onPlayEvent.id, targetData: {}, optional:onPlayEvent.optional};
+                this.state.pending_action = {actionInfos: actionInfos}; //Add to make sure 
+
+                const targets = onPlayEvent.getTargets();
+                if(targets.length > 0) { //If targeting is required
+                    if(this.findValidTargets(targets)) executeAbility = true;
+                } else executeAbility = true;
+
+                if(executeAbility) {
+                    skipOnPlayEventPhase = false;
+                    this.activateAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability);
+                }
             }
+
+            if(skipOnPlayEventPhase) this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+
         } else if(!this.gameOver
             && this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY') {
             this.state.playCard(player.currentMatchPlayer, this.playCardManager.playedCard);
@@ -540,9 +547,11 @@ class Match {
             //Check if there are any events to be reoslved
             let onAttackEvent = this.attackManager.attack.attacker.getAbilityByType("WHEN_ATTACKING");
             if(onAttackEvent && onAttackEvent.canActivate()) {
-
                 this.currentAction.phase = "ON_ATTACK_EVENT_PHASE";
                 let executeAbility = false;
+
+                let actionInfos  = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
+                this.state.pending_action = {actionInfos: actionInfos}; //Add to make sure
 
                 const targets = onAttackEvent.getTargets();
                 if(targets.length > 0) { //If targeting is required
@@ -551,7 +560,6 @@ class Match {
 
                 if(executeAbility) {
                     skipOnAttackEventPhase = false;
-                    let actionInfos  = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
                     this.activateAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability);
                 }
 
@@ -794,7 +802,6 @@ class Match {
                 callBack = () => {
                     this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
                 }
-
             }
         }
 
@@ -838,12 +845,16 @@ class Match {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         if(!player.bot && actionInfos.optional) player.socket.emit('game_stop_on_play_event_optional');
                         
-                        let abilityResults = this.resolveAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
-                        this.playCardManager.abilityId = actionInfos.ability;
-                        this.playCardManager.onPlayEventActions = abilityResults;
-                        
-                        this.cleanupAction(player);
-                        //this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
+                        let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
+
+                        if(abilityResults.status === "DONE") {
+                            this.playCardManager.abilityId = this.state.pending_action.actionInfos.ability;
+                            this.playCardManager.onPlayEventActions = abilityResults.abilityResults;
+                            
+                            actionInfos.abilityResults = abilityResults.actionResults;
+                            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                            this.cleanupAction(player);
+                        }
                     } 
                     else {player.socket.emit('game_reset_targets');}
                 } 
@@ -894,7 +905,7 @@ class Match {
                             actionInfos.abilityResults = abilityResults.actionResults;
 
                             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
-                            
+
                             this.cleanupAction(player);
                         }
                     } else {

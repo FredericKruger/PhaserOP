@@ -24,18 +24,20 @@
             },
             "type": "ON_PLAY",
             "phases": ["Main: Counter"],
-            "target": {
-                "targetAction": "EVENT_CARD_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["owner"],
-                        "cardtypes": ["CHARACTER", "LEADER"]
-                    }
-                ]
-            },
             "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "EVENT_CARD_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"]
+                            }
+                        ]
+                    }
+                }},
                 {"name": "addCounterToCard", "params": {"amount": 3000}}
             ]
         },
@@ -50,18 +52,20 @@
             "type": "TRIGGER",
             "phases": ["Main: Trigger"],
             "states": ["BEING_PLAYED"],
-            "target": {
-                "targetAction": "ABILITY_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["owner"],
-                        "cardtypes": ["CHARACTER", "LEADER"]
-                    }
-                ]
-            },
             "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"]
+                            }
+                        ]
+                    }
+                }},
                 {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
             ]
         }

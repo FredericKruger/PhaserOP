@@ -29,19 +29,21 @@
                 {"type": "CARD_RESTED", "value": false},
                 {"type": "PLAYER_TURN", "value": true}
             ],
-            "target": {
-                "targetAction": "ABILITY_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["owner"],
-                        "cardtypes": ["CHARACTER", "LEADER"],
-                        "types": ["Straw Hat Crew"]
-                    }
-                ]
-            },
             "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "types": ["Straw Hat Crew"]
+                            }
+                        ]
+                    }
+                }},
                 {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}},
                 {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET","duration": "TURN"}}
             ]

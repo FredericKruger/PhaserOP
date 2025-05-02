@@ -76,21 +76,23 @@
             "type": "TRIGGER",
             "phases": ["Main: Trigger"],
             "states": ["BEING_PLAYED"],
-            "target": {
-                "targetAction": "EVENT_CARD_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["opponent"],
-                        "cardtypes": ["CHARACTER"],
-                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
-                        "hasability": ["BLOCKER"],
-                        "cost": {"operator": "<=", "value": 3}
-                    }
-                ]
-            },
             "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "EVENT_CARD_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["opponent"],
+                                "cardtypes": ["CHARACTER"],
+                                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                                "hasability": ["BLOCKER"],
+                                "cost": {"operator": "<=", "value": 3}
+                            }
+                        ]
+                    }
+                }},
                 {"name": "discardCard", "params": {"target": "TARGET"}}
             ]
         }
