@@ -1,0 +1,72 @@
+{
+    "id":387,
+    "setid":5,
+    "banned": false,
+    "art":"ST02-005",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"`Killer`",
+    "card":"CHARACTER",
+    "type":["Supernovas","Kid Pirates"],
+    "colors":["GREEN"],
+    "cost":3,
+    "power":3000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I'll cut you down!",
+            "attack": "Punish!",
+            "defeated": "I'll come back more ruthless!"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-005-1",
+            "text": "K.O. up to 1 of your opponent's rested Characters with a cost of 3 or less.",
+            "art": {
+                "art": "ST02-005-ABILITY1",
+                "posx": 300,
+                "posy": 548
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED"],
+            "phases": ["Main Phase"],
+            "actions": [
+                {"name": "target", "params": {"target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["opponent"],
+                            "cardtypes": ["CHARACTER"],
+                            "states": ["IN_PLAY_RESTED"],
+                            "cost": {"operator": "<=", "value": 3}
+                        }
+                    ]
+                }}},
+                {"name": "discardCard", "params": {"target": "TARGET"}}
+            ]
+        },
+        {
+            "id": "ST02-005-TRIGGER",
+            "text": "Play this card.",
+            "art": {
+                "art": "ST02-005-TRIGGER",
+                "posx": 300,
+                "posy": 675
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "actions": [
+                {"name": "playCard", "params": {}}
+            ]
+        }
+    ]
+}

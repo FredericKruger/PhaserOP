@@ -1,0 +1,48 @@
+{
+    "id":385,
+    "setid":3,
+    "banned": false,
+    "art":"ST02-003",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Urouge",
+    "card":"CHARACTER",
+    "type":["Supernovas", "Fallen Monk Pirates"],
+    "colors":["GREEN"],
+    "cost":2,
+    "power":3000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I'll turn your attacks into my strength!",
+            "attack": "Inga Zarashi!",
+            "defeated": "I'm pretty badly beaten, but let's see..."
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-003-1",
+            "text": "If you have 3 or more Characers, this card gains +2000 power.",
+            "art": {
+                "art": "ST02-003-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "PASSIVE",
+            "phases": [],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 1},
+                {"type": "CHARACTER_COUNT", "value": 3}
+            ],
+            "actions": [
+                {"name": "addPowerToCard", "params": {"amount": 2000, "target": "SELF", "duration": "GAME"}}
+            ]
+        }
+    ]
+}

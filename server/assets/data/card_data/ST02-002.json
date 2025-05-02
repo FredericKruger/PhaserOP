@@ -1,0 +1,26 @@
+{
+    "id":384,
+    "setid":2,
+    "banned": false,
+    "art":"ST02-002",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Vito",
+    "card":"CHARACTER",
+    "type":["Firetank Pirates"],
+    "colors":["GREEN"],
+    "cost":3,
+    "power":5000,
+    "attribute":"RANGED",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Get ready for a barrage of bullets!",
+            "attack": "Monster Gun Barrage!",
+            "defeated": "I'll come back with even more firepower!"
+        }
+    }
+}

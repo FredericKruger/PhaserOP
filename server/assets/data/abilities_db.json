@@ -146,7 +146,7 @@
             {"type": "ATTACHED_DON", "value": 1}
         ],
         "actions": [
-            {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+            {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET / SELF", "duration": "TURN / GAME"}}
         ]
     },
 

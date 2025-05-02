@@ -1,0 +1,26 @@
+{
+    "id":388,
+    "setid":6,
+    "banned": false,
+    "art":"ST02-006",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Koby",
+    "card":"CHARACTER",
+    "type":["Navy"],
+    "colors":["GREEN"],
+    "cost":4,
+    "power":6000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+    
+    "animationinfo": {
+        "speeches": {
+            "intro": "I-I'll do my best!",
+            "attack": "T-take that!",
+            "defeated": "Why...?"
+        }
+    }
+}

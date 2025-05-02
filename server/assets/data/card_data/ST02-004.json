@@ -1,0 +1,43 @@
+{
+    "id":386,
+    "setid":4,
+    "banned": false,
+    "art":"ST02-004",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Capone'Gang'Bege",
+    "card":"CHARACTER",
+    "type":["Supernovas", "Firetank Pirates"],
+    "colors":["GREEN"],
+    "cost":1,
+    "power":1000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"COMMON",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I'll show you why they call me 'Gang' Bege!",
+            "attack": "Big Father!",
+            "defeated": "This isn't over!"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-004-1",
+            "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+            "art": {
+                "art": "ST02-004-BLOCKER",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "BLOCKER",
+            "phases": ["Main: Block"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "CAN_BLOCK", "value": true}
+            ]
+        }
+    ]
+}
