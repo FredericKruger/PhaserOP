@@ -169,13 +169,17 @@ const serverAbilityActions = {
         let actionResults = {};
         actionResults.donId = [];
 
+        let targetPlayer = player;
+        if(params.player === "opponnent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+
+
         const donAmount = params.amount;
         for(let i = 0; i < donAmount; i++) {
             //Find an exerted Don
-            if(player.inExertenDon.length > 0) {
-                let donCard = player.inExertenDon.pop();
+            if(targetPlayer.inExertenDon.length > 0) {
+                let donCard = targetPlayer.inExertenDon.pop();
                 donCard.setState("DON_ACTIVE");
-                player.inActiveDon.push(donCard);
+                targetPlayer.inActiveDon.push(donCard);
                 actionResults.donId.push(donCard.id);
             } else {
                 return actionResults;
@@ -355,13 +359,16 @@ const serverAbilityActions = {
         let actionResults = {};
         actionResults.donId = [];
 
+        let targetPlayer = player;
+        if(params.player === "opponnent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+
         const donAmount = params.amount;
         for(let i = 0; i < donAmount; i++) {
             //Find an exerted Don
-            if(player.inActiveDon.length > 0) {
-                let donCard = player.inActiveDon.pop();
+            if(targetPlayer.inActiveDon.length > 0) {
+                let donCard = targetPlayer.inActiveDon.pop();
                 donCard.setState("DON_RESTED");
-                player.inExertenDon.push(donCard);
+                targetPlayer.inExertenDon.push(donCard);
                 actionResults.donId.push(donCard.id);
             } else {
                 return actionResults;

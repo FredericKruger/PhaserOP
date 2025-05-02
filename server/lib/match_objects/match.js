@@ -1067,6 +1067,15 @@ class Match {
         else return this.player2;
     }
 
+    /** Function to return the player from it;s id
+     * @param {number} playerID
+     * @returns {Player}
+     */
+    getOpponentPlayer(playerID) {
+        if(this.player1.playerReference === playerID) return this.player2;
+        else return this.player1;
+    }
+
     /** Function that tells if the player is the active player
      * @param {number} playerID
      * @returns {boolean}

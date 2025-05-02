@@ -27,7 +27,7 @@
             "affectedPlayers": ["owner", "opponent"]
         },
         "actions": [
-            {"name": "activateExertedDon", "params": {"amount": 1}},
+            {"name": "activateExertedDon", "params": {"amount": 1, "player": "owner / opponent"}},
             {"name": "addCounterToCard", "params": {"amount": 4000}},
             {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN / GAME"}},
             {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}},
@@ -54,7 +54,7 @@
             {"name": "discardCard", "params": {"target": "TARGET"}},
             {"name": "hasRush", "params": {}},
             {"name": "playCard", "params": {}},
-            {"name": "restDon", "params": {"amount": 3}},
+            {"name": "restDon", "params": {"amount": 3, "player": "owner / opponent"}},
             {"name": "target", "params": {"target": {
                 "targetAction": "ABILITY_ACTION / AURA_ACTION / EVENT_CARD_ACTION",
                 "requiredTargets": 1,

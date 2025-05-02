@@ -294,13 +294,16 @@ const abilityActions = {
      * @returns {Object}
      */
     activateExertedDon: (scene, card, info, activePlayer) => {
+        let playerScene = card.playerScene;
+        if(params.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
+
         //Get Defender Card
         let donCards = [];
-        for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
+        for(let donId of info.donId) donCards.push(playerScene.getDonCardById(donId));
 
         let targetingManager = new TargetManager(scene, 'EVENT', 'ACTIVATE_EXERTED_DON', card.id);
         targetingManager.targetArrow.originatorObject = card;
-        let arrowTweens = targetingManager.targetArrow.animateToPosition(card.playerScene.playerInfo.restingDonplaceholder.x, card.playerScene.playerInfo.restingDonplaceholder.y, 600);
+        let arrowTweens = targetingManager.targetArrow.animateToPosition(playerScene.playerInfo.restingDonplaceholder.x, playerScene.playerInfo.restingDonplaceholder.y, 600);
         let tweens = [
             {
                 onStart: () => { //Add Tween for target arrow
@@ -320,7 +323,7 @@ const abilityActions = {
             duration: 1
         });
         for(let donCard of donCards) {
-            tweens = tweens.concat(scene.animationLibrary.repayDonAnimation(donCard.playerScene, donCard, delay));
+            tweens = tweens.concat(scene.animationLibrary.repayDonAnimation(playerScene, donCard, delay));
             delay += 200; //Increase animation delay tracker
         }
         tweens.push({
@@ -699,14 +702,17 @@ const abilityActions = {
      * @returns {Object}
      */
     restDon: (scene, card, info, activePlayer) => {
+        let playerScene = card.playerScene;
+        if(params.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
+
         //Get Defender Card
         let donCards = [];
-        for(let donId of info.donId) donCards.push(card.playerScene.getDonCardById(donId));
+        for(let donId of info.donId) donCards.push(playerScene.getDonCardById(donId));
         let delay = 0;
 
         let targetingManager = new TargetManager(scene, 'EVENT', 'REST_DON', card.id);
         targetingManager.targetArrow.originatorObject = card;
-        let arrowTweens = targetingManager.targetArrow.animateToPosition(card.playerScene.playerInfo.activeDonPlaceholder.x, card.playerScene.playerInfo.activeDonPlaceholder.y, 600);
+        let arrowTweens = targetingManager.targetArrow.animateToPosition(playerScene.playerInfo.activeDonPlaceholder.x, playerScene.playerInfo.activeDonPlaceholder.y, 600);
         let tweens = [
             {
                 onStart: () => { //Add Tween for target arrow
@@ -726,7 +732,7 @@ const abilityActions = {
             duration: 1
         });
         for(let donCard of donCards) {
-            tweens = tweens.concat(scene.animationLibrary.payDonAnimation(donCard.playerScene, donCard, delay));
+            tweens = tweens.concat(scene.animationLibrary.payDonAnimation(playerScene, donCard, delay));
             delay += 200; //Increase animation delay tracker
         }
         tweens.push({
