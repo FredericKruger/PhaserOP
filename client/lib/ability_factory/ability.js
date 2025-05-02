@@ -117,9 +117,10 @@ class Ability {
     */
     executeActions(card, abilityInfo, activePlayer) {
         let abilityTweens = [];
-        for (const action of this.actions) {
+        for (let i = 0; i < this.actions.length; i++) {
+            const action = this.actions[i];
             const func = abilityActions[action.name];
-            if (func) abilityTweens = abilityTweens.concat(func(this.card.scene, card, abilityInfo[action.name], activePlayer));
+            if (func) abilityTweens = abilityTweens.concat(func(this.card.scene, card, abilityInfo[i], activePlayer));
         }
 
         //Set turn flags
@@ -489,16 +490,18 @@ const abilityActions = {
             let donCard = scene.getDonCard(donId);
             let player = donCard.playerScene;
 
-            let movingAnimation = scene.animationLibrary.animation_move_don_activearea2characterarea(donCard, character, delay);
             tweens.push({
                     targets: {},  // Empty object as target
                     scale: 0,         // Dummy property
                     onStart: () => {
                         donCard.setDepth(DEPTH_VALUES.DON_DRAGGED);
+                        donCard.alpha = 1;
+                        donCard.setVisible(true);
                     },
                     delay: delay,
                     duration: 1
             });
+            let movingAnimation = scene.animationLibrary.animation_move_don_activearea2characterarea(donCard, character, delay);
             tweens = tweens.concat(movingAnimation);
             tweens.push({
                     targets: {},  // Empty object as target
@@ -736,5 +739,14 @@ const abilityActions = {
             }
         });
         return tweens; 
+    },
+    /** Function to add Counter to Defender
+     * @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    target: (scene, card, info, activePlayer) => {
+        return [];
     }
 };

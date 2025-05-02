@@ -542,27 +542,18 @@ class Match {
             if(onAttackEvent && onAttackEvent.canActivate()) {
 
                 this.currentAction.phase = "ON_ATTACK_EVENT_PHASE";
+                let executeAbility = false;
 
-                if(onAttackEvent.target) { //If targeting is required
-                    const targets = onAttackEvent.target;
-                    if(this.findValidTarget(targets)) {
-                        skipOnAttackEventPhase = false;
+                const targets = onAttackEvent.getTargets();
+                if(targets.length > 0) { //If targeting is required
+                    if(this.findValidTargets(targets)) executeAbility = true;
+                } else executeAbility = true; 
 
-                        const abilityInfos = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, ability: onAttackEvent.id, targetData: targets, optional:onAttackEvent.optional};
-                        this.state.pending_action = {actionResult: PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED, actionInfos: abilityInfos};
-                        this.state.resolving_pending_action = true;
-
-                        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_on_attack_event_triggered', abilityInfos, true);
-                    } 
-                } else { //If no targeting required
-                    let actionInfos  = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
-                    let abilityResults = this.resolveAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability, []);
-                    actionInfos.abilityResults = abilityResults;
-
-                    if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_card_ability_executed', actionInfos, true);
-
+                if(executeAbility) {
                     skipOnAttackEventPhase = false;
-                }   
+                    let actionInfos  = {actionId: 'ON_ATTACK_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEvent.id};
+                    this.activateAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability);
+                }
 
                 /*if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_on_attack_event_phase', false);
                 else this.ai.startOnAttackEventPhase();*/
@@ -792,7 +783,13 @@ class Match {
                     this.flagManager.handleFlag(this.state.current_active_player, 'TRIGGER_CLEANUP_READY');
                     this.flagManager.handleFlag(this.state.current_passive_player, 'TRIGGER_CLEANUP_READY');
                 }
-            }            
+            }
+            else if(nextAction.type === "ATTACK" && nextAction.phase === "ON_ATTACK_EVENT_PHASE") {
+                callBack = () => {
+                    this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
+                    this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
+                }
+            }           
             else if(nextAction.type === "PLAY_CARD" && nextAction.phase === "PLAY_ON_PLAY_EVENT_PHASE") {
                 callBack = () => {
                     this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
@@ -867,21 +864,22 @@ class Match {
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         actionInfos = this.state.pending_action.actionInfos;
-                        let abilityResults = this.resolveAbility(player, this.state.pending_action.actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
-                        actionInfos.abilityResults = abilityResults;
+                        let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
+                        
+                        if(abilityResults.status === "DONE") {
+                            actionInfos.abilityResults = abilityResults.actionResults;
 
-                        this.cleanupAction(player);
+                            this.cleanupAction(player);
 
-                        if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
-                        if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
+                            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
+                        }
                     } else {
                         player.socket.emit('game_reset_targets');
                     }
                 } else {
-                    //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_stop_targeting_attack_passiveplayer');
                     console.log("Canceling ability targeting");
                     this.cleanupAction(player);
-                    //if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel_replacement_target', cardID, false);
                 }
                 break;
             case PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED:
@@ -890,10 +888,15 @@ class Match {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
-                        let abilityResults = this.resolveAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
-                        actionInfos.abilityResults = abilityResults;
+                        let abilityResults = this.executeAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
+                        
+                        if(abilityResults.status === "DONE") {
+                            actionInfos.abilityResults = abilityResults.actionResults;
 
-                        if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                            
+                            this.cleanupAction(player);
+                        }
                     } else {
                         player.socket.emit('game_reset_targets');
                     }
@@ -937,13 +940,8 @@ class Match {
         }
     }
 
-    /** Function to resolve the ability
-     * @param {Player} player
-     * @param {number} cardId
-     * @param {string} abilityId
-     * @param {Array<number>} targets
-     */
-    resolveAbility(player, cardId, abilityId, targets) {
+
+    /*resolveAbility(player, cardId, abilityId, targets) {
         let card = this.matchCardRegistry.get(cardId);
         let ability = card.getAbility(abilityId);
 
@@ -962,6 +960,48 @@ class Match {
         } else {
             player.socket.emit('game_ability_failure', cardId, abilityId);
         }
+        return abilityResults;
+    }*/
+
+    /** Function to resolve the ability
+     * @param {Player} player
+     * @param {number} cardId
+     * @param {string} abilityId
+     * @param {Array<number>} targets
+     */
+    executeAbility(player, cardId, abilityId, targets) {
+        let card = this.matchCardRegistry.get(cardId);
+        let ability = card.getAbility(abilityId);
+
+        ability.currentTargets = targets; //Save the current target
+        let actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: null, optional: ability.optional};
+
+        let abilityResults = ability.action(player.currentMatchPlayer, targets);
+        
+        //If the ability ccompleted
+        if(abilityResults.status === "DONE") {
+            actionInfos.abilityResults = abilityResults.actionResults;
+        } else if(abilityResults.status === "TARGETING") { //If the ability requires targeting
+            actionInfos.targetData = abilityResults.targetData;
+            let action =  {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
+
+            if(ability.type === "ON_PLAY") {
+                action.actionResult = PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED;
+            } else if(ability.type === "WHEN_ATTACKING") {
+                action.actionResult = PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED;
+                actionInfos.actionId = 'ON_ATTACK_EVENT_' + cardId;
+            } else if(ability.type === "TRIGGER") {
+                action.actionResult = PLAY_CARD_STATES.TRIGGER_EVENT_TARGETS_REQUIRED;
+                actionInfos.actionId = 'TRIGGER_EVENT_' + cardId;
+            }
+
+            this.state.pending_action = action;
+            this.state.resolving_pending_action = true;
+
+            if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
+        }
+
+        
         return abilityResults;
     }
 
@@ -987,8 +1027,6 @@ class Match {
                 return;
             }
         }
-                
-        const targets = card.getAbilityTargets(abilityId);
 
         //Create new action
         let abilityAction = {
@@ -999,30 +1037,11 @@ class Match {
         };
         this.addActionToStack(abilityAction);
 
-        let actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: targets, optional: ability.optional};
-        if(targets) {
-            let action =  {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
+        const abilityResults = this.executeAbility(player, cardId, abilityId, []);
+        if(abilityResults.status === "DONE") {
+            if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults.actionInfos, true);
 
-            if(ability.type === "ON_PLAY") {
-                action.actionResult = PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED;
-            } else if(ability.type === "WHEN_ATTACKING") {
-                action.actionResult = PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED;
-                actionInfos.actionId = 'ON_ATTACK_EVENT_' + cardId;
-            } else if(ability.type === "TRIGGER") {
-                action.actionResult = PLAY_CARD_STATES.TRIGGER_EVENT_TARGETS_REQUIRED;
-                actionInfos.actionId = 'TRIGGER_EVENT_' + cardId;
-            }
-
-            this.state.pending_action = action;
-            this.state.resolving_pending_action = true;
-
-            if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
-        } else {
-            let abilityResults = this.resolveAbility(player, cardId, abilityId, []);
-            actionInfos.abilityResults = abilityResults;
             this.cleanupAction(player);
-
-            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
         }
     }
 
@@ -1046,11 +1065,32 @@ class Match {
         else return false;
     }
 
-    /** Function that tries to find a target */
+    /** Function that tries to find a valid target for every required targeting
+     * @param {Array<object>} abilityTargets - Array of targets to find
+     * @returns {boolean} - True if all targets are valid, false otherwise
+     */
+    findValidTargets(abilityTargets) {
+        let validTargets = [];
+
+        for(let i=0; i<abilityTargets.length; i++) {
+            validTargets[i] = this.findValidTarget(abilityTargets[i]);
+        }
+
+        // If we want a logical AND of all targets being valid, 
+        // we would check if validTargets length equals the required number of targets
+        const allValid = validTargets.length > 0 && validTargets.every(v => v === true);
+        
+        return allValid;
+    }
+
+    /** Function that tries to find a target
+     * @param {object} abilityTarget - Target to find
+     * @returns {boolean} - True if a valid target was found, false otherwise
+     */
     findValidTarget(abilityTarget) {
         let targetingManager = new TargetingManager(this);
         let validTarget = false;
-
+        
         /*** Test Active Player */
         let players = [this.state.current_active_player, this.state.current_passive_player.currentMatchPlayer];
         for(let player of players) {

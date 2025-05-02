@@ -22,23 +22,6 @@
             {"type": "PLAYED_THIS_TURN", "value": true},
             {"type": "PLAYER_TURN", "value": true}
         ],
-        "target": {
-            "targetAction": "ABILITY_ACTION / AURA_ACTION / EVENT_CARD_ACTION",
-            "requiredTargets": 1,
-            "targets": [
-                {
-                    "minrequiredtargets": 0,
-                    "player": ["owner"],
-                    "cardtypes": ["CHARACTER", "LEADER"],
-                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
-                    "power": {"operator": ">=", "value": 5000},
-                    "types": ["Straw Hat Crew"],
-                    "exclude": ["SELF"],
-                    "hasability": ["BLOCKER"],
-                    "cost": {"operator": "<=", "value": 3}
-                }
-            ]
-        },
         "aurainfo": {
             "duration": "GAME",
             "affectedPlayers": ["owner", "opponent"]
@@ -71,7 +54,24 @@
             {"name": "discardCard", "params": {"target": "TARGET"}},
             {"name": "hasRush", "params": {}},
             {"name": "playCard", "params": {}},
-            {"name": "restDon", "params": {"amount": 3}}
+            {"name": "restDon", "params": {"amount": 3}},
+            {"name": "target", "params": {"target": {
+                "targetAction": "ABILITY_ACTION / AURA_ACTION / EVENT_CARD_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                        "power": {"operator": ">=", "value": 5000},
+                        "types": ["Straw Hat Crew"],
+                        "exclude": ["SELF"],
+                        "hasability": ["BLOCKER"],
+                        "cost": {"operator": "<=", "value": 3}
+                    }
+                ]
+            }}}
         ]
     },
 

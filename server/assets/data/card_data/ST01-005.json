@@ -9,7 +9,7 @@
     "card":"CHARACTER",
     "type":["Fish-Man","Straw Hat Crew"],
     "colors":["RED"],
-    "cost": 2,
+    "cost": 3,
     "power": 5000,
     "attribute":"STRIKE",
     "isleader":0,
@@ -34,22 +34,24 @@
             },
             "type": "WHEN_ATTACKING",
             "phases": ["Main: Attack"],
-            "target": {
-                "targetAction": "ABILITY_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["owner"],
-                        "cardtypes": ["CHARACTER", "LEADER"],
-                        "exclude": ["SELF"]
-                    }
-                ]
-            },
             "conditions": [
                 {"type": "ATTACHED_DON", "value": 1}
             ],
             "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "exclude": ["SELF"]
+                            }
+                        ]
+                    }
+                }},
                 {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
             ]
         }

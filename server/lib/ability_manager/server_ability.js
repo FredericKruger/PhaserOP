@@ -23,6 +23,11 @@ class ServerAbility {
         // Tracking
         this.usedThisTurn = false;
         this.usedThisGame = false;
+
+        //Execution pile
+        this.currentAction = 0; // Current action being executed
+        this.actionResults = []; // Array of results from the actions executed
+        this.currentTargets = []; // Array of targets selected by the player
     }
 
 
@@ -101,14 +106,28 @@ class ServerAbility {
      * @param {Match} match
     */
     executeActions(match, player, card, targets) {
-        let actionResults = {};
-        for (const action of this.actions) {
+        let actionResults = {}
+        for (let i = this.currentAction; i<this.actions.length; i++) {
+
+            const action = this.actions[i];
             const func = serverAbilityActions[action.name];
             if (func) {
-                actionResults[action.name] = func(match, player, card, action.params, targets);
+                let results = func(match, player, card, action.params, targets);
+                this.actionResults.push(results);
+
+                this.currentAction++;
+                if(action.name === "target") return {status: "TARGETING", targetData: results}; // Target action is not executed //Stop to start targeting
             }
         }
         
+        //If arrived at this stage it means it didnt leave for targeting anymore
+        this.currentAction = 0;
+        actionResults = {
+            status: "DONE",
+            actionResults: this.actionResults
+        };
+        this.actionResults = []; // Reset action results
+
         //Set turn flags
         let condition = this.conditions.find(condition => condition.type === 'ONCE');
         if(condition) {
@@ -117,6 +136,20 @@ class ServerAbility {
         }
 
         return actionResults;
+    }
+
+    /** Function that returns a list of all targets
+     * @returns {Array} targets
+     */
+    getTargets() {
+        let targets = [];
+        for(let i = 0; i < this.actions.length; i++) {
+            const action = this.actions[i];
+            if(action.name === "target") {
+                targets.push(action.params.target);
+            }
+        }
+        return targets;
     }
 
     /** Function to reset the turn variables */
@@ -336,6 +369,9 @@ const serverAbilityActions = {
         }
         return actionResults;
     },
+    target: (match, player, card, params) => {
+        return params.target; // Return the target id
+    }
 };
 
 module.exports = ServerAbility;

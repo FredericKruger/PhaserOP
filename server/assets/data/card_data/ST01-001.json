@@ -43,18 +43,18 @@
                 {"type": "PLAYER_TURN", "value": true},
                 {"type": "ONCE", "value": "TURN"}
             ],
-            "target": {
-                "targetAction": "ABILITY_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["owner"],
-                        "cardtypes": ["CHARACTER", "LEADER"]
-                    }
-                ]
-            },
             "actions": [
+                {"name": "target", "params": {"target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "player": ["owner"],
+                            "cardtypes": ["CHARACTER", "LEADER"]
+                        }
+                    ]
+                }}},
                 {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
             ]
         }
