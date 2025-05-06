@@ -1315,7 +1315,7 @@ class GameStateManager {
      */
     resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn) {
         const card = this.scene.getCard(cardID);
-        this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults, isPlayerTurn);
+        this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults.actionResults, isPlayerTurn);
     }
 
     //#endregion

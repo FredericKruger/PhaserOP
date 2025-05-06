@@ -295,7 +295,7 @@ const abilityActions = {
      */
     activateExertedDon: (scene, card, info, activePlayer) => {
         let playerScene = card.playerScene;
-        if(params.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
+        if(info.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
 
         //Get Defender Card
         let donCards = [];
@@ -703,7 +703,7 @@ const abilityActions = {
      */
     restDon: (scene, card, info, activePlayer) => {
         let playerScene = card.playerScene;
-        if(params.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
+        if(info.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
 
         //Get Defender Card
         let donCards = [];

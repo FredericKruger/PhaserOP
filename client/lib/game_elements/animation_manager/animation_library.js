@@ -590,6 +590,7 @@ class AnimationLibrary {
     payDonAnimation(playerscene, card, delay = 0) {
         let tweens = [
             { // Phase 1: Move the card, modify scale and angle with bounce effect
+                onStart: () => {playerscene.playerInfo.updateActiveCardAmountText();},
                 targets: card,
                 x: playerscene.playerInfo.restingDonplaceholderPos.x,
                 y: playerscene.playerInfo.restingDonplaceholderPos.y,
@@ -606,6 +607,7 @@ class AnimationLibrary {
                 ease: 'Cubic.easeIn', // Abrupt fade-out for a snappier effect
                 onComplete: () => {
                     card.setVisible(false); // Ensure the card is hidden after animation
+                    playerscene.playerInfo.updateRestingCardAmountText(); // Update the DON counter text
 
                     // Create a pulse effect on the DON counter
                     card.scene.tweens.add({
@@ -633,6 +635,7 @@ class AnimationLibrary {
                 onStart: () => {
                     card.alpha = 1; // Start invisible
                     card.setVisible(true);
+                    playerscene.playerInfo.updateRestingCardAmountText(); // Update the DON counter text
                 },
                 targets: card,
                 x: playerscene.playerInfo.activePlaceholderPos.x,
@@ -644,6 +647,7 @@ class AnimationLibrary {
                 ease: 'Bounce.easeOut', // Add a bounce effect for dynamic movement7
                 onComplete: () => {
                     this.scene.children.moveBelow(card, playerscene.playerInfo.activeDonCardAmountText);
+                    playerscene.playerInfo.updateActiveCardAmountText(); // Update the DON counter text
 
                     // Create a pulse effect on the DON counter
                     card.scene.tweens.add({

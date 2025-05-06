@@ -1,0 +1,43 @@
+{
+    "id":390,
+    "setid":8,
+    "art":"ST02-008",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Scratchmen Apoo",
+    "card":"CHARACTER",
+    "type":["Supernovas", "On-Air Pirates"],
+    "colors":["GREEN"],
+    "cost":2,
+    "power":3000,
+    "attribute":"RANGED",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 2000,
+    "animationinfo": {
+        "speeches": {
+            "intro": "Apapapapapa!",
+            "attack": "Boom!",
+            "defeated": "My performance wasn't loud enough!"
+        }
+    },
+    "abilities": [
+        {
+            "id": "ST02-008-1",
+            "text": "Rest up to 1 of your opponent's DON!! cards.",
+            "art": {
+                "art": "ST02-008-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "WHEN_ATTACKING",
+            "phases": ["Main: Attack"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "restDon", "params": {"amount": 1, "player": "opponent"}}
+            ]
+        }
+    ]
+}

@@ -951,29 +951,6 @@ class Match {
         }
     }
 
-
-    /*resolveAbility(player, cardId, abilityId, targets) {
-        let card = this.matchCardRegistry.get(cardId);
-        let ability = card.getAbility(abilityId);
-
-        let abilityResults = {};
-        if(ability && ability.canActivate()) {
-            //Create Action
-            //Create new action
-            let eventAction = {
-                actionId: 'EVENT_' + abilityId,
-                type: "EVENT",
-                actionCallback: null
-            };
-            this.addActionToStack(eventAction);
-
-            abilityResults = ability.action(player.currentMatchPlayer, targets);
-        } else {
-            player.socket.emit('game_ability_failure', cardId, abilityId);
-        }
-        return abilityResults;
-    }*/
-
     /** Function to resolve the ability
      * @param {Player} player
      * @param {number} cardId
@@ -991,7 +968,7 @@ class Match {
         
         //If the ability ccompleted
         if(abilityResults.status === "DONE") {
-            actionInfos.abilityResults = abilityResults.actionResults;
+            actionInfos.abilityResults = abilityResults;
         } else if(abilityResults.status === "TARGETING") { //If the ability requires targeting
             actionInfos.targetData = abilityResults.targetData;
             let action =  {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
@@ -1013,7 +990,7 @@ class Match {
         }
 
         
-        return abilityResults;
+        return actionInfos;
     }
 
     /** Function to activate a cards ability
@@ -1048,9 +1025,9 @@ class Match {
         };
         this.addActionToStack(abilityAction);
 
-        const abilityResults = this.executeAbility(player, cardId, abilityId, []);
-        if(abilityResults.status === "DONE") {
-            if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults.actionInfos, true);
+        const actionInfos = this.executeAbility(player, cardId, abilityId, []);
+        if(actionInfos.abilityResults.status === "DONE") {
+            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
 
             this.cleanupAction(player);
         }
@@ -1072,7 +1049,7 @@ class Match {
      * @returns {Player}
      */
     getOpponentPlayer(playerID) {
-        if(this.player1.playerReference === playerID) return this.player2;
+        if(this.player1.id === playerID) return this.player2;
         else return this.player1;
     }
 

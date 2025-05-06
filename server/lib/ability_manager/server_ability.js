@@ -168,10 +168,10 @@ const serverAbilityActions = {
     activateExertedDon: (match, player, card, params) => {
         let actionResults = {};
         actionResults.donId = [];
+        actionResults.player = params.player;
 
         let targetPlayer = player;
-        if(params.player === "opponnent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
-
+        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
 
         const donAmount = params.amount;
         for(let i = 0; i < donAmount; i++) {
@@ -358,9 +358,10 @@ const serverAbilityActions = {
     restDon: (match, player, card, params) => {
         let actionResults = {};
         actionResults.donId = [];
+        actionResults.player = params.player;
 
         let targetPlayer = player;
-        if(params.player === "opponnent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
 
         const donAmount = params.amount;
         for(let i = 0; i < donAmount; i++) {
