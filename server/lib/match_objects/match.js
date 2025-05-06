@@ -733,7 +733,7 @@ class Match {
     }
 
     /** Function to resolve the trigger card */
-    resolveTriggerCard() {
+    resolveTriggerCard(actionInfos) {
         //Get Trigger Card
         let triggerCard = this.attackManager.attackResults.lifeCard;
 
@@ -744,7 +744,7 @@ class Match {
         player.discardCard(triggerCard);
         discardCard = true;
 
-        let actionInfos = this.state.pending_action.actionInfos;
+        //let actionInfos = this.state.pending_action.actionInfos;
         //actionInfos.abilityResults;
         if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_trigger_card_played', actionInfos, discardCard, false);
         if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_trigger_card_played', actionInfos, discardCard, true);
@@ -847,12 +847,12 @@ class Match {
                         
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
 
-                        if(abilityResults.status === "DONE") {
+                        if(abilityResults.abilityResults.status === "DONE") {
                             this.playCardManager.abilityId = this.state.pending_action.actionInfos.ability;
-                            this.playCardManager.onPlayEventActions = abilityResults.abilityResults;
-                            
-                            actionInfos.abilityResults = abilityResults.actionResults;
-                            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                            this.playCardManager.onPlayEventActions = abilityResults.abilityResults.actionResults;                         
+
+                            //NO NEED TO SEND THE RESULTS TO THE CLIENTS, THEY ARE SENT IN THE PLAY CARD ACTION
+                            //if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
                             this.cleanupAction(player);
                         }
                     } 
@@ -877,13 +877,13 @@ class Match {
                         actionInfos = this.state.pending_action.actionInfos;
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
                         
-                        if(abilityResults.status === "DONE") {
-                            actionInfos.abilityResults = abilityResults.actionResults;
+                        if(abilityResults.abilityResults.status === "DONE") {
+                            //actionInfos.abilityResults = abilityResults.actionResults;
 
                             this.cleanupAction(player);
 
-                            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
-                            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
+                            if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
+                            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
                         }
                     } else {
                         player.socket.emit('game_reset_targets');
@@ -901,10 +901,10 @@ class Match {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
                         
-                        if(abilityResults.status === "DONE") {
-                            actionInfos.abilityResults = abilityResults.actionResults;
+                        if(abilityResults.abilityResults.status === "DONE") {
+                            //actionInfos.abilityResults = abilityResults.actionResults;
 
-                            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+                            if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
 
                             this.cleanupAction(player);
                         }
@@ -935,10 +935,10 @@ class Match {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
-                        let abilityResults = this.resolveAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
-                        actionInfos.abilityResults = abilityResults;
+                        let abilityResults = this.executeAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
+                        //actionInfos.abilityResults = abilityResults;
 
-                        this.resolveTriggerCard();
+                        this.resolveTriggerCard(abilityResults);
 
                         //if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
                     } else {
@@ -967,9 +967,8 @@ class Match {
         let abilityResults = ability.action(player.currentMatchPlayer, targets);
         
         //If the ability ccompleted
-        if(abilityResults.status === "DONE") {
-            actionInfos.abilityResults = abilityResults;
-        } else if(abilityResults.status === "TARGETING") { //If the ability requires targeting
+        actionInfos.abilityResults = abilityResults;
+        if(abilityResults.status === "TARGETING") { //If the ability requires targeting
             actionInfos.targetData = abilityResults.targetData;
             let action =  {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
 
@@ -1089,7 +1088,7 @@ class Match {
         let validTarget = false;
         
         /*** Test Active Player */
-        let players = [this.state.current_active_player, this.state.current_passive_player.currentMatchPlayer];
+        let players = [this.state.current_active_player, this.state.current_passive_player];
         for(let player of players) {
             //Test Character cards
             for(let card of player.currentMatchPlayer.inCharacterArea) {

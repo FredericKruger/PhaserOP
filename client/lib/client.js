@@ -283,6 +283,7 @@ class Client {
         });
         this.socket.on('game_card_ability_executed', (actionInfos, activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) {
+                console.log("EXECUTING ACTION")
                 this.gameScene.gameStateManager.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, activePlayer);
             }
         });
