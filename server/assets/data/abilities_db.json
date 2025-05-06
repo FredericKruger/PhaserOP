@@ -49,7 +49,10 @@
                         "requiredTargets": 1,
                         "targets": []
                     },
-                    "actions": []
+                    "actions": [
+                        {"name": "addPowerToCard_Aura", "params": {"amount": 1000}},
+                        {"name": "canBlock_Aura", "params": {"value": false}}
+                    ]
                 }
             }},
             {"name": "discardCard", "params": {"target": "TARGET"}},
@@ -59,7 +62,7 @@
             {"name": "hasLeader", "params": {}},
             {"name": "hasPower", "params": {"operator": ">=", "value": 5000}},
             {"name": "hasRush", "params": {}},
-            {"name": "playCard", "params": {}},
+            {"name": "playCard", "params": {"target": "SELF/ TARGET"}},
             {"name": "restDon", "params": {"amount": 3, "player": "owner / opponent"}},
             {"name": "target", "params": {"target": {
                 "targetAction": "ABILITY_ACTION / AURA_ACTION / EVENT_CARD_ACTION",

@@ -334,11 +334,19 @@ const serverAbilityActions = {
     playCard: (match, player, card, params, targets) => {
         //creating Play Card Action
         let actionResults = {};
-        actionResults.cardId = card.id;
 
-        let cardOwner = match.getPlayer(card.owner); //Cannot be MatchPlayer
+        let cardToPlay = card;
+        if(params.target === "TARGET") {
+            cardToPlay = match.matchCardRegistry.get(targets[0]);
+        } else if(params.target === "SELF") {
+            cardToPlay = card;
+        }
+        
+        actionResults.cardId = cardToPlay.id;
 
-        match.startPlayCard(cardOwner, card.id, true);
+        let cardOwner = match.getPlayer(cardToPlay.owner); //Cannot be MatchPlayer
+
+        match.startPlayCard(cardOwner, cardToPlay.id, true);
 
         return actionResults;
     },

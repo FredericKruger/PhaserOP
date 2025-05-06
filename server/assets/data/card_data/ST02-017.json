@@ -1,0 +1,78 @@
+{
+    "id":399,
+    "setid":17,
+    "banned": false,
+    "art":"ST02-017",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Straw Sword",
+    "card":"EVENT",
+    "type":["Supernovas", "Hawkins Pirate"],
+    "colors":["GREEN"],
+    "cost":2,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+
+    "abilities": [
+        {
+            "id": "ST02-017-1",
+            "text": "Rest up to 1 of your opponent's Characters.",
+            "art": {
+                "art": "ST02-017-ABILITY1",
+                "posx": 300,
+                "posy": 520
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED", "IN_HAND"],
+            "phases": ["Main Phase"],
+            "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "EVENT_CARD_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["opponent"],
+                                "cardtypes": ["CHARACTER"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "changeCardState", "params": {"target": "TARGET", "state": "IN_PLAY_RESTED"}}
+            ]
+        },
+        {
+            "id": "ST02-017-TRIGGER",
+            "text": "Play this card.",
+            "art": {
+                "art": "ST02-017-TRIGGER",
+                "posx": 300,
+                "posy": 660
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "EVENT_CARD_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER"],
+                                "states": ["IN_HAND"],
+                                "types": ["Supernovas"],
+                                "cost": {"operator": "<=", "value": 2}
+                            }
+                        ]
+                    }
+                }},
+                {"name": "playCard", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}

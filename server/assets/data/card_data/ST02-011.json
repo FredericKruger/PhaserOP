@@ -1,0 +1,26 @@
+{
+    "id":393,
+    "setid":11,
+    "banned": false,
+    "art":"ST02-011",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Heat",
+    "card":"CHARACTER",
+    "type":["Kid Pirates"],
+    "colors":["GREEN"],
+    "cost":2,
+    "power":4000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+    
+    "animationinfo": {
+        "speeches": {
+            "intro": "You're about to feel the heat!",
+            "attack": "Heat Breath!",
+            "defeated": "Where's...my...heat..."
+        }
+    }
+}

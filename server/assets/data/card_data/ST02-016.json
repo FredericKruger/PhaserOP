@@ -1,0 +1,58 @@
+{
+    "id":398,
+    "setid":16,
+    "banned": false,
+    "art":"ST02-016",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Repel",
+    "card":"EVENT",
+    "type":["Supernovas", "Kid Pirates"],
+    "colors":["GREEN"],
+    "cost":2,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+    
+    "abilities": [
+        {
+            "id": "ST02-016-1",
+            "text": "Up to 1 of your Leader or Character cards gains +4000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
+            "art": {
+                "art": "ST02-016-ABILITY1",
+                "posx": 300,
+                "posy": 545
+            },
+            "type": "ON_PLAY",
+            "phases": ["Main: Counter"],
+            "target": {
+                "targetAction": "EVENT_CARD_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "player": ["owner"],
+                        "cardtypes": ["CHARACTER", "LEADER"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "EVENT_CARD_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "addCounterToCard", "params": {"amount": 4000}},
+                {"name": "activateExertedDon", "params": {"amount": 1, "player": "owner"}}
+            ]
+        }
+    ]
+}

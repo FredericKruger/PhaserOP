@@ -1,0 +1,60 @@
+{
+    "id":397,
+    "setid":15,
+    "art":"ST02-015",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Scalpel",
+    "card":"EVENT",
+    "type":["Supernovas","Heart Pirates"],
+    "colors":["GREEN"],
+    "cost":1,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+    "abilities": [
+        {
+            "id": "ST02-015-1",
+            "text": "Up to 1 of your Leader or Character cards gains +2000 power during this battle. Then, set up to 1 of your DON!! cards as active.",
+            "art": {
+                "art": "ST02-015-ABILITY1",
+                "posx": 300,
+                "posy": 545
+            },
+            "type": "ON_PLAY",
+            "phases": ["Main: Counter"],
+            "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "EVENT_CARD_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "addCounterToCard", "params": {"amount": 2000}},
+                {"name": "activateExertedDon", "params": {"amount": 1, "player": "owner"}}
+            ]
+        }, 
+        {
+            "id": "ST02-015-TRIGGER",
+            "text": "Set up to 2 of your DON!! cards as active.",
+            "art": {
+                "art": "ST02-015-TRIGGER",
+                "posx": 300,
+                "posy": 660
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "actions": [
+                {"name": "activateExertedDon", "params": {"amount": 2, "player":"owner"}}
+            ]
+        }
+    ]
+}

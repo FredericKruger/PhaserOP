@@ -65,7 +65,7 @@
             "phases": ["Main: Trigger"],
             "states": ["BEING_PLAYED"],
             "actions": [
-                {"name": "playCard", "params": {}}
+                {"name": "playCard", "params": {"target": "SELF"}}
             ]
         }
     ]

@@ -1,0 +1,62 @@
+{
+    "id":396,
+    "setid":14,
+    "banned": false,
+    "art":"ST02-014",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"X.Drake",
+    "card":"CHARACTER",
+    "type":["Navy", "Supernovas", "Drake Pirates"],
+    "colors":["GREEN"],
+    "cost":4,
+    "power":5000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Face the fury of the ancient beast!",
+            "attack": "X-Calibur!",
+            "defeated": "Not...ferocious...enough"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-014-1",
+            "text": "If this Character is rested, your {Supernovas} or {Navy} type Leaders and Characters gain +1000 power.",
+            "art": {
+                "art": "ST02-014-ABILITY1",
+                "posx": 300,
+                "posy": 560
+            },
+            "type": "AURA",
+            "states": ["IN_PLAY_RESTED"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 1},
+                {"type": "PLAYER_TURN", "value": true}
+            ],
+            "aurainfo": {
+                "duration": "GAME",
+                "affectedPlayers": ["owner"]
+            },
+            "target": {
+                "targetAction": "AURA_ACTION",
+                "requiredTargets": 1,
+                "targets": [
+                    {
+                        "minrequiredtargets": 0,
+                        "cardtypes": ["CHARACTER", "LEADER"],
+                        "types": ["Supernovas", "Navy"]
+                    }
+                ]
+            },
+            "actions": [
+                {"name": "addPowerToCard_Aura", "params": {"amount": 1000}}
+            ]
+        }
+    ]
+}

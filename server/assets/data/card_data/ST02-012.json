@@ -1,0 +1,26 @@
+{
+    "id":394,
+    "setid":12,
+    "banned": false,
+    "art":"ST02-012",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Bepo",
+    "card":"CHARACTER",
+    "type":["Minks", "Heart Pirates"],
+    "colors":["GREEN"],
+    "cost":1,
+    "power":3000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+    
+    "animationinfo": {
+        "speeches": {
+            "intro": "Let's do this for Captain Law!",
+            "attack": "Martial Arts!",
+            "defeated": "I'm sorry, Captain..."
+        }
+    }
+}
