@@ -62,7 +62,9 @@ class MatchFlags {
             TRIGGER_PHASE_READY: new WaitFlag("TRIGGER_PHASE_READY", true, true),
             TRIGGER_CLEANUP_READY: new WaitFlag("TRIGGER_CLEANUP_READY", true, true),
             ATTACK_CLEANUP_READY: new WaitFlag("ATTACK_CLEANUP_READY", true, true),
-            RESUME_TURN_READY: new WaitFlag("RESUME_TURN_READY", true, true)
+            ON_END_OF_ATTACK_READY: new WaitFlag("ON_END_OF_ATTACK_READY", true, true),
+            RESUME_TURN_READY: new WaitFlag("RESUME_TURN_READY", true, true),
+            RESUME_TURN_READY_PASSIVE_PLAYER: new WaitFlag("RESUME_TURN_READY_PASSIVE_PLAYER", true, true)
         }   
     }
 
@@ -193,7 +195,16 @@ class FlagManager {
             case 'TRIGGER_PHASE_READY':
             case 'TRIGGER_CLEANUP_READY':
             case 'ATTACK_CLEANUP_READY':
+            case 'ON_END_OF_ATTACK_READY':
             case 'RESUME_TURN_READY':
+                this.match.startAttack(player);
+                break;
+            case 'RESUME_TURN_READY':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('RESUME_TURN_READY_PASSIVE_PLAYER', true);
+                this.match.startAttack(player);
+                break;
+            case'RESUME_TURN_READY_PASSIVE_PLAYER':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('RESUME_TURN_READY', true);
                 this.match.startAttack(player);
                 break;
         }

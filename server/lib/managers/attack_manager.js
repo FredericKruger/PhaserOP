@@ -85,6 +85,7 @@ class AttackManager {
         this.trigger_Complete = false;
         this.triggerCleanup_Complete = false;
         this.attackCleanup_Complete = false;
+        this.onEndOfAttack_Complete = false;
         this.resumeTurn_Complete = false;
     }
 

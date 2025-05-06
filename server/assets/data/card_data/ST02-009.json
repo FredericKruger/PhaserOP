@@ -1,6 +1,7 @@
 {
     "id":391,
     "setid":9,
+    "banned": false,
     "art":"ST02-009",
     "set":"ST02",
     "setname":"-THE WORST GENERATION- [ST02]",
@@ -14,6 +15,7 @@
     "isleader":0,
     "rarity":"SUPER RARE",
     "counter": 1000,
+
     "animationinfo": {
         "speeches": {
             "intro": "Prepare to be dissected!",
@@ -21,6 +23,7 @@
             "defeated": "This isn't the end..."
         }
     },
+    
     "abilities": [
         {
             "id": "ST02-009-1",

@@ -32,6 +32,9 @@ class GameCardUI extends BaseCardUI{
         /** @type {number} */
         this.passiveEventPower = 0; //To store the addition power given by a passive event
 
+        /** @type {boolean} */
+        this.hasAttackedThisTurn = false;
+
         //Abilities
         /** @type {Array<Ability>} */
         this.abilities = [];
@@ -585,10 +588,20 @@ class GameCardUI extends BaseCardUI{
     /** Reset abilities for the turn */
     resetTurn() {
         this.turnEventPowerAmount = 0; //reset power counter
+        this.hasAttackedThisTurn = false;
         for(let ability of this.abilities) {
             ability.resetTurn();
         }
     }
+
+    /** Function to set if the card has attacked this turn
+     * @param {boolean} hasAttackedThisTurn - Whether the card has attacked this turn
+     */
+    setHasAttackedThisTurn(hasAttackedThisTurn) {this.hasAttackedThisTurn = hasAttackedThisTurn;}
+    /** Function to return if the card has attacked this turn
+     * @return {boolean}
+     */
+    hasAttackedThisTurn() {return this.hasAttackedThisTurn;}
 
     /** Function to hide all the attached cards 
      * @param {boolean} hide - Whether to hide the cards or not

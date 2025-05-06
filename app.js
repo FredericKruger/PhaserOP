@@ -266,6 +266,7 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(socket.player, cardID, abilityID);});
     socket.on('player_activate_ability', (cardID, abilityID) => {socket.player.match.activateAbility(socket.player, cardID, abilityID);});
+    socket.on('player_on_attack_end', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_END_OF_ATTACK_READY');})
     socket.on('player_cleanup_action', () => {socket.player.match.cleanupAction(socket.player);})
 
     socket.on('player_start_next_turn', () => {

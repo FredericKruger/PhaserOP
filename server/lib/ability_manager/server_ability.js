@@ -44,15 +44,15 @@ class ServerAbility {
             return false;
         }
 
-       // console.log('Checking states', this.states, card.state, card.id);
+       //console.log('Checking states', this.states, card.state, card.id);
         if (this.states.length > 0 && !this.states.includes(card.state)) {
             return false;
         }
 
         // Check all conditions
         for (const condition of this.conditions) {
+            //console.log(condition);
             if (!this.evaluateCondition(card, condition, gameState)) {
-                //console.log(condition);
                 //console.log("FAILED")
                 return false;
             }
@@ -82,6 +82,10 @@ class ServerAbility {
                 return false;
             case 'CHARACTER_COUNT':
                 return cardPlayer.currentMatchPlayer.inCharacterArea.length >= condition.value;
+            case 'HAS_ATTACKED_THIS_TURN':
+                if(card.hasAttackedThisTurn && condition.value) return true;
+                if(!card.hasAttackedThisTurn && !condition.value) return true;
+                return false;
             case 'MIN_CARDS_IN_HAND':
                 return cardPlayer.currentMatchPlayer.inHand.length >= condition.value;
             case 'ONCE':

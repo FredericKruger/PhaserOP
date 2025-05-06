@@ -42,6 +42,8 @@ class ServerPassiveAbility extends ServerAbility {
         return hasRush;
     }
 
+    /** Funciton to return if the card is active */
+
 }
 
 module.exports = ServerPassiveAbility;

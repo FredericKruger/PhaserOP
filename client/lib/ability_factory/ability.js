@@ -86,6 +86,10 @@ class Ability {
                 return false;
             case 'CHARACTER_COUNT':
                 return this.card.playerScene.characterArea.cards.length >= condition.value;
+            case 'HAS_ATTACKED_THIS_TURN':
+                if(this.card.hasAttackedThisTurn() && condition.value) return true;
+                if(!this.card.hasAttackedThisTurn() && !condition.value) return true;
+                return false; 
             case 'MIN_CARDS_IN_HAND':
                 if(this.card.playerScene.hand.cards.length >= condition.value) return true;
                 return false;

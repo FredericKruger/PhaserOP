@@ -1,0 +1,47 @@
+{
+    "id":392,
+    "setid":10,
+    "banned": false,
+    "art":"ST02-010",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Basil Hawkins",
+    "card":"CHARACTER",
+    "type":["Supernovas", "Hawkins Pirate"],
+    "colors":["GREEN"],
+    "cost":5,
+    "power":6000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "You're fate is sealed!",
+            "attack": "Straw Man's Card!",
+            "defeated": "I foresaw that..."
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-010-1",
+            "text": "If this Character battles your opponent's Character, set this card as active.",
+            "art": {
+                "art": "ST02-010-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "ON_END_OF_ATTACK",
+            "states": ["IN_PLAY_RESTED"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 1},
+                {"type": "HAS_ATTACKED_THIS_TURN", "value": true},
+                {"type": "ONCE", "value": "TURN"}
+            ],
+            "actions": [
+                {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY"}}
+            ]
+        }
+    ]
+}

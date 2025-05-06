@@ -568,8 +568,8 @@ class Match {
             } 
 
             if(skipOnAttackEventPhase) {
-                this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
-                this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
+                if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
+                if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
             }
 
         } else if(!this.gameOver
@@ -656,12 +656,18 @@ class Match {
             this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
             this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
 
-        }else if(!this.gameOver
+        } else if(!this.gameOver
             && !this.attackManager.attackCleanup_Complete
             && this.flagManager.checkFlag('ATTACK_CLEANUP_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('ATTACK_CLEANUP_READY', this.state.current_passive_player)) { /** ATTACK CLEANUP PHASE */
 
             this.attackManager.attackCleanup_Complete = true;
+            console.log("ATTACK CLEANUP");
+
+            //Tell the attacker it has attacked
+            this.attackManager.attack.attacker.setHasAttackThisTurn(true);
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_attacker_cleanup', false, this.attackManager.attack.attacker.id);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_attacker_cleanup', true, this.attackManager.attack.attacker.id);
 
             const cleanupResults = this.state.attackCleanup(this.attackManager.attack.defendingPlayer);
 
@@ -670,9 +676,51 @@ class Match {
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_cleanup', true, cleanupResults);
 
         } else if(!this.gameOver
+            && !this.attackManager.onEndOfAttack_Complete
+            && this.flagManager.checkFlag('ON_END_OF_ATTACK_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('ON_END_OF_ATTACK_READY', this.state.current_passive_player)) {
+
+            this.attackManager.onEndOfAttack_Complete = true;
+
+            let skipOnAttackEndEventPhase = true;
+
+            //Check if there are any events to be reoslved
+            let onAttackEndEvent = this.attackManager.attack.attacker.getAbilityByType("ON_END_OF_ATTACK");
+            console.log("ON_END_OF_ATTACK_READY");
+            if(onAttackEndEvent && onAttackEndEvent.canActivate()) {
+                this.currentAction.phase = "ON_ATTACK_END_EVENT_PHASE";
+                let executeAbility = false;
+
+                let actionInfos  = {actionId: 'ON_ATTACK_END_EVENT_' + this.attackManager.attack.attacker.id, playedCard: this.attackManager.attack.attacker.id, playedCardData: this.attackManager.attack.attacker.cardData, ability: onAttackEndEvent.id};
+                this.state.pending_action = {actionInfos: actionInfos}; //Add to make sure
+
+                const targets = onAttackEndEvent.getTargets();
+                if(targets.length > 0) { //If targeting is required
+                    if(this.findValidTargets(targets)) executeAbility = true;
+                } else executeAbility = true; 
+
+                if(executeAbility) {
+                    console.log("ACTIVATING ABILITY")
+                    skipOnAttackEndEventPhase = false;
+                    this.activateAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability);
+                }
+
+                /*if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_on_attack_event_phase', false);
+                else this.ai.startOnAttackEventPhase();*/
+            } 
+
+            if(skipOnAttackEndEventPhase) {
+                this.flagManager.handleFlag(this.state.current_active_player, 'RESUME_TURN_READY');
+                this.flagManager.handleFlag(this.state.current_passive_player, 'RESUME_TURN_READY_PASSIVE_PLAYER');
+            }
+
+        } else if(!this.gameOver
             && !this.attackManager.resumeTurn_Complete
             && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_active_player)
-            && this.flagManager.checkFlag('RESUME_TURN_READY', this.state.current_passive_player)) {
+            && this.flagManager.checkFlag('RESUME_TURN_READY_PASSIVE_PLAYER', this.state.current_passive_player)) {
+
+            this.attackManager.resumeTurn_Complete = true;
+            console.log("RESUMING_TURN");
 
             //reset Attack object
             this.attackManager = null;
@@ -686,7 +734,6 @@ class Match {
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_resume_passive');   
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_resume_active');
             else this.ai.resumeTurn(true);
-
         }  
     }
 
@@ -796,6 +843,12 @@ class Match {
                 callBack = () => {
                     this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
                     this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
+                }
+            }
+            else if(nextAction.type === "ATTACK" && nextAction.phase === "ON_ATTACK_END_EVENT_PHASE") {
+                callBack = () => {
+                    this.flagManager.handleFlag(this.state.current_active_player, 'RESUME_TURN_READY');
+                    this.flagManager.handleFlag(this.state.current_passive_player, 'RESUME_TURN_READY_PASSIVE_PLAYER');
                 }
             }           
             else if(nextAction.type === "PLAY_CARD" && nextAction.phase === "PLAY_ON_PLAY_EVENT_PHASE") {
@@ -977,7 +1030,10 @@ class Match {
             } else if(ability.type === "WHEN_ATTACKING") {
                 action.actionResult = PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED;
                 actionInfos.actionId = 'ON_ATTACK_EVENT_' + cardId;
-            } else if(ability.type === "TRIGGER") {
+            } else if(ability.type === "ON_END_OF_ATTACK") {
+                action.actionResult = PLAY_CARD_STATES.ON_END_OF_ATTACK_EVENT_TARGETS_REQUIRED;
+                actionInfos.actionId = 'ON_ATTACK_END_EVENT_' + cardId;
+            }else if(ability.type === "TRIGGER") {
                 action.actionResult = PLAY_CARD_STATES.TRIGGER_EVENT_TARGETS_REQUIRED;
                 actionInfos.actionId = 'TRIGGER_EVENT_' + cardId;
             }
@@ -1009,7 +1065,10 @@ class Match {
                 this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
                 this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
                 return;
-            } else  {
+            } else if(ability.type === "ON_END_OF_ATTACK" && this.attackManager) {
+                this.flagManager.handleFlag(this.state.current_active_player, 'RESUME_TURN_READY');
+                this.flagManager.handleFlag(this.state.current_passive_player, 'RESUME_TURN_READY');
+            } else {
                 player.socket.emit('game_activate_ability_failure', cardId, abilityId);
                 return;
             }

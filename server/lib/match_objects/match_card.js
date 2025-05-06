@@ -83,6 +83,8 @@ class MatchCard extends Card{
 
         this.auraToIgnore = null; //Aura to ignore for the power calculation
 
+        this.hasAttackedThisTurn = false; //Has the card attacked this turn
+
         //Create abilities if there are any
         if(cardData.abilities) {
             const match = matchRegistry.get(matchId);
@@ -198,6 +200,10 @@ class MatchCard extends Card{
         return canBlock;
     }
 
+    getState() {
+        
+    }
+
     /** Function that returns true is a card has an ability that triggers no attacking
      * @returns {boolean}
      */
@@ -208,8 +214,14 @@ class MatchCard extends Card{
         return false;
     }
 
+    /** Function to set if the card has attacked this turn
+     * @param {boolean} hasAttacked - true if the card has attacked this turn
+     */
+    setHasAttackThisTurn(hasAttacked) {this.hasAttackedThisTurn = hasAttacked;}
+
     resetTurn() {
         this.turnEventPowerAmount = 0;
+        this.hasAttackedThisTurn = false;
         for(let ability of this.abilities) ability.resetTurn();
     }
 

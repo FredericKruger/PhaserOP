@@ -8,7 +8,7 @@
             "posx": 0,
             "posy": 0
         },
-        "type": "ACTIVE / AURA / TRIGGER / PASSIVE / WHEN_ATTACKING / BLOCKER / ON_PLAY",
+        "type": "ACTIVE / AURA / TRIGGER / PASSIVE / WHEN_ATTACKING / BLOCKER / ON_PLAY / ON_END_OF_ATTACK",
         "phases": ["Main Phase", "Main: Trigger", "Main: Attack", "Main: Block", "Main: Counter"],
         "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_ATTACKING", "BEING_PLAYED"],
         "conditions": [
@@ -17,6 +17,7 @@
             {"type": "CAN_BLOCK", "value": true},
             {"type": "CARD_RESTED", "value": false},
             {"type": "CHARACTER_COUNT", "value": 1},
+            {"type": "HAS_ATTACKED_THIS_TURN", "value": true},
             {"type": "MIN_CARDS_IN_HAND", "value": 1},
             {"type": "ONCE", "value": "TURN"},
             {"type": "PLAYED_THIS_TURN", "value": true},
@@ -52,6 +53,11 @@
                 }
             }},
             {"name": "discardCard", "params": {"target": "TARGET"}},
+            {"name": "hasBlocker", "params": {"value": false}},
+            {"name": "hasCounter", "params": {"value": 1}},
+            {"name": "hasDon", "params": {"amount": 2, "player": "owner / opponent"}},
+            {"name": "hasLeader", "params": {}},
+            {"name": "hasPower", "params": {"operator": ">=", "value": 5000}},
             {"name": "hasRush", "params": {}},
             {"name": "playCard", "params": {}},
             {"name": "restDon", "params": {"amount": 3, "player": "owner / opponent"}},

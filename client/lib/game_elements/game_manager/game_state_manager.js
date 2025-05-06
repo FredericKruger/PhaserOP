@@ -1235,7 +1235,22 @@ class GameStateManager {
         this.scene.actionManager.addAction(action);
     }
 
-    /** Function to start the attack cleanup action */
+    /** Function to  set that the attacker has attacked this turn at the end of the attack
+     * @param {boolean} activePlayer - If it is the active player
+     * @param {number} attackerID - The attacker ID
+    */
+    startAttackAttackerCleanup(activePlayer, attackerID) {
+        let player = this.scene.activePlayerScene;
+        if(!activePlayer) player = this.scene.passivePlayerScene;
+
+        let card = player.getCard(attackerID);
+        card.setHasAttackedThisTurn(true);
+    }
+
+    /** Function to start the attack cleanup action 
+     * @param {boolean} activePlayer - If it is the active player
+     * @param {Array<Object>} cleanupResults - The cleanup results
+    */
     startAttackCleanup(activePlayer, cleanupResults) {
         let player = this.scene.activePlayerScene;
         if(!activePlayer) player = this.scene.passivePlayerScene;
@@ -1269,7 +1284,8 @@ class GameStateManager {
         const finalAction = new Action();
         finalAction.start = () => {
             for(let card of affectedCards) card.fanInCounterCards(0, true);
-            this.scene.game.gameClient.requestEndAttack();
+
+            this.scene.game.gameClient.requestOnAttackEnd();
         }
         finalAction.waitForAnimationToComplete = false;
         this.scene.actionManager.addAction(finalAction)

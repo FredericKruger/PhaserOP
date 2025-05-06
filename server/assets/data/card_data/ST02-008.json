@@ -1,6 +1,7 @@
 {
     "id":390,
     "setid":8,
+    "banned": false,
     "art":"ST02-008",
     "set":"ST02",
     "setname":"-THE WORST GENERATION- [ST02]",
@@ -14,6 +15,7 @@
     "isleader":0,
     "rarity":"COMMON",
     "counter": 2000,
+
     "animationinfo": {
         "speeches": {
             "intro": "Apapapapapa!",
@@ -21,6 +23,7 @@
             "defeated": "My performance wasn't loud enough!"
         }
     },
+    
     "abilities": [
         {
             "id": "ST02-008-1",

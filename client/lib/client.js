@@ -249,6 +249,9 @@ class Client {
         this.socket.on('game_cleanup_trigger_phase', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cleanupTriggerPhase(activePlayer);
         });
+        this.socket.on('game_attack_attacker_cleanup', (activePlayer, attackerID) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackAttackerCleanup(activePlayer, attackerID);
+        });
         this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);
         });
@@ -395,6 +398,7 @@ class Client {
     requestStartTriggerPhase () {this.socket.emit('player_trigger_phase_ready');}
     requestDrawTriggerCard () {this.socket.emit('player_draw_trigger_card');}
     requestStartAttackCleanup () {this.socket.emit('player_start_attack_cleanup');}
+    requestOnAttackEnd () {this.socket.emit('player_on_attack_end');}
     requestEndAttack() {this.socket.emit('player_end_attack');}
     //#endregion
 
