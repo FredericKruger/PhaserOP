@@ -8,7 +8,7 @@
             "posx": 0,
             "posy": 0
         },
-        "type": "ACTIVE / AURA / TRIGGER / PASSIVE / WHEN_ATTACKING / BLOCKER / ON_PLAY / ON_END_OF_ATTACK",
+        "type": "ACTIVE / AURA / TRIGGER / PASSIVE / WHEN_ATTACKING / BLOCKER / ON_PLAY / ON_END_OF_ATTACK / ON_END_OF_YOUR_TURN",
         "phases": ["Main Phase", "Main: Trigger", "Main: Attack", "Main: Block", "Main: Counter"],
         "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_ATTACKING", "BEING_PLAYED"],
         "conditions": [

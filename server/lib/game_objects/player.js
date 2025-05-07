@@ -1,3 +1,4 @@
+const MatchPlayer = require("../match_objects/match_player");
 const ServerInstance = require("../server_instance");
 const CardCollection = require("./card_collection");
 const CardPack = require("./card_packs");
@@ -24,6 +25,7 @@ class Player {
         this.match = null;
         this.bot = false;
 
+        /** @type {MatchPlayer} */
         this.currentMatchPlayer = null;
         this.currentOpponentPlayer = null;
 

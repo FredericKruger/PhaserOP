@@ -1,0 +1,61 @@
+{
+    "id":395,
+    "setid":13,
+    "banned": false,
+    "art":"ST02-013",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Eustass'Captain'Kid",
+    "card":"CHARACTER",
+    "type":["Supernovas","Kid Pirates"],
+    "colors":["GREEN"],
+    "cost":0,
+    "power":7000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"SUPER RARE",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Step aside or be crushed!",
+            "attack": "Punk Rotten!",
+            "defeated": "You got lucky this time!"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-013-1",
+            "text": "(After your opponent declares an attack, you may rest this card to make it the new target of the attack.)",
+            "art": {
+                "art": "ST02-013-ABILITY1",
+                "posx": 300,
+                "posy": 548
+            },
+            "type": "BLOCKER",
+            "phases": ["Main: Block"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "CAN_BLOCK", "value": true}
+            ]
+        } ,
+        {
+            "id": "ST02-013-2",
+            "text": "Set this character as active.",
+            "art": {
+                "art": "ST02-013-ABILITY2",
+                "posx": 300,
+                "posy": 592
+            },
+            "type": "ON_END_OF_YOUR_TURN",
+            "phases": ["Main: End of Turn"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 1},
+                {"type": "PLAYER_TURN", "value": true}
+            ],
+            "actions": [
+                {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY"}}
+            ]
+        }
+    ]
+}

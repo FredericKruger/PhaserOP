@@ -271,9 +271,9 @@ io.on('connection', function (/** @type {object} */ socket) {
 
     socket.on('player_start_next_turn', () => {
         if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_complete_current_turn');
-        else socket.player.match.completeCurrentTurn();
+        else socket.player.match.checkEndOfTurnAbilities();
     }); //Ask the passive player to send a message when all pending action are complete
-    socket.on('player_current_turn_completed_passiveplayer', () => {socket.player.match.completeCurrentTurn();});
+    socket.on('player_current_turn_completed_passiveplayer', () => {socket.player.match.checkEndOfTurnAbilities();});
 
     socket.on('player_surrender', () => {socket.player.match.endGame(socket.player.currentOpponentPlayer, socket.player);});
 

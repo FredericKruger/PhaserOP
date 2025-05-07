@@ -1,5 +1,5 @@
 const { MatchFlags } = require('../managers/state_manager.js');
-const { MatchDonCard } = require('./match_card.js');
+const { MatchDonCard, MatchCard } = require('./match_card.js');
 const MatchDeck = require('./match_deck.js');
 const { CARD_STATES } = require('./match_card.js');
 
@@ -9,17 +9,27 @@ class MatchPlayer {
         this.id = id;
         this.matchId = matchId;
 
+        /** @type {number} */
         this.life = 0;
         this.deck = null;
 
+        /** @type {Array<MatchCard>} */
         this.inHand = [];
+        /** @type {MatchCard} */
         this.inStageLocation = null;
+        /** @type {MatchCard} */
         this.inLeaderLocation = null;
+        /** @type {Array<MatchCard>} */
         this.inCharacterArea = [];
+        /** @type {Array<MatchCard>} */
         this.inDiscard = [];
+        /** @type {Array<MatchDonCard} */
         this.inDon = [];
+        /** @type {Array<MatchDonCard} */
         this.inActiveDon = [];
+        /** @type {Array<MatchDonCard} */
         this.inExertenDon = [];
+        /** @type {Array<MatchCard>} */
         this.inLifeDeck = [];
 
         this.isFirstTurn = true;

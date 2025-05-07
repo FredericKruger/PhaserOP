@@ -866,7 +866,7 @@ class ActionLibrary {
                     //Show chat bubble
                     new ChatBubble(
                         this.scene, 
-                        this.getSpeechBubblePosition(),
+                        defenderCard.getSpeechBubblePosition(),
                         defenderCard.cardData.animationinfo.speeches.defeated
                     ).show(1500, () => {
                         this.scene.gameStateManager.discardCard(defenderCard.id, attackResults.defenderAttachedCards, activePlayer, true);

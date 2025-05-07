@@ -15,6 +15,7 @@ class AbilityFactory {
             case 'ON_PLAY':
             case 'WHEN_ATTACKING':
             case 'TRIGGER':
+            case 'ON_END_OF_YOUR_TURN':
                 return new OnEventAbility(abilityData);
             case 'AURA':
                 return new AuraAbility(abilityData);

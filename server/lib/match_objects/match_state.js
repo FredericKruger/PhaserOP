@@ -2,6 +2,7 @@ const Match = require('./match');
 const { CARD_STATES } = require('./match_card');
 const { PLAY_CARD_STATES, CARD_TYPES, ATTACH_DON_TO_CHAR_STATES, MATCH_CONSTANTS, TARGET_ACTION } = require('./match_enums');
 const MatchPlayer = require('./match_player')
+const Player = require('../game_objects/player');
 const {AttackManager} = require('../managers/attack_manager');
 const {MatchCard} = require('./match_card');
 const PlayCardManager = require('../managers/play_card_manager');
@@ -19,7 +20,8 @@ const MATCH_PHASES = Object.freeze({
     ATTACK_PHASE: 'Main: Attack',
     BLOCK_PHASE: 'Main: Block',
     COUNTER_PHASE: 'Main: Counter',
-    TRIGGER_PHASE: 'Main: Trigger'
+    TRIGGER_PHASE: 'Main: Trigger',
+    END_TURN_PHASE: 'Main: End of Turn'
 });
 //#endregion
 
@@ -35,7 +37,9 @@ class MatchState {
     constructor(match, player1Id, player2Id) {
         this.match = match;
 
+        /** @type {Player} */
         this.current_active_player = null;
+        /** @type {Player} */
         this.current_passive_player = null;
         this.current_phase = MATCH_PHASES.WAITING_TO_START;
         this.current_turn = 0;
@@ -43,7 +47,9 @@ class MatchState {
         this.resolving_pending_action = false;
         this.pending_action = null;
 
+        /** @type {MatchPlayer} */
         this.player1 = new MatchPlayer(player1Id, match.id);
+        /** @type {MatchPlayer} */
         this.player2 = new MatchPlayer(player2Id, match.id);
     }
     //#endregion
@@ -144,21 +150,22 @@ class MatchState {
         let cards = [];
         for(let i=0; i<player.inCharacterArea.length; i++) {
             let card = player.inCharacterArea[i];
-            if(card.state === CARD_STATES.IN_PLAY_RESTED || card.state === CARD_STATES.IN_PLAY_FIRST_TURN) {
-                card.setState(CARD_STATES.IN_PLAY);
-                cards.push(card.id);
+            //if(card.state === CARD_STATES.IN_PLAY_RESTED || card.state === CARD_STATES.IN_PLAY_FIRST_TURN) {
+            card.setState(CARD_STATES.IN_PLAY);
+            cards.push(card.id);
 
-                card.attachedDon = []; //Reset the attach don pointer
-            }
+            card.attachedDon = []; //Reset the attach don pointer
+            //}
         }
-        if(!player.isFirstTurn && 
-            (player.inLeaderLocation.state === CARD_STATES.IN_PLAY_RESTED || player.inLeaderLocation.state === CARD_STATES.IN_PLAY_FIRST_TURN)) {
+        if(!player.isFirstTurn //&& 
+            //(player.inLeaderLocation.state === CARD_STATES.IN_PLAY_RESTED || player.inLeaderLocation.state === CARD_STATES.IN_PLAY_FIRST_TURN)
+        ) {
             player.inLeaderLocation.setState(CARD_STATES.IN_PLAY);
             cards.push(player.inLeaderLocation.id);
 
             player.inLeaderLocation.attachedDon = []; //Reset the attach don pointer
         }
-        if(player.inStageLocation!== null && player.inStageLocation.state === CARD_STATES.IN_PLAY_RESTED) {
+        if(player.inStageLocation!== null /*&& player.inStageLocation.state === CARD_STATES.IN_PLAY_RESTED*/) {
             player.inStageLocation.setState(CARD_STATES.IN_PLAY);
             cards.push(player.inStageLocation.id);
         }

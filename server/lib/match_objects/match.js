@@ -14,6 +14,7 @@ const matchRegistry = require("../managers/match_registry");
 const MatchCardRegistry = require("../managers/match_card_registry");
 const AuraManager = require("../managers/aura_manager");
 const PlayCardManager = require("../managers/play_card_manager");
+const EndOfTurnManager = require("../managers/end_of_turn_manager");
 
 
 class Match {
@@ -41,7 +42,7 @@ class Match {
         /** @type {number} */
         this.lastAuraID = 0; //Keep track of the last aura id
 
-        /** @type {MatchState} */
+        /** @type {import('./match_state').MatchState} */
         this.state = new MatchState(this, player1.id, player2.id); //Create a new match state
         /** @type {TargetingManager} */
         this.targetingManager = new TargetingManager(this); //Create a new targeting manager
@@ -71,6 +72,9 @@ class Match {
 
         /** @type {PlayCardManager} */
         this.playCardManager = null;
+
+        /** @type {EndOfTurnManager} */
+        this.endOfTurnManager = null; //Create a new end of turn manager
 
         /** Action Start Manager */
         this.currentAction = null;
@@ -207,6 +211,76 @@ class Match {
     }
     //#endregion
 
+
+    //#region END TURN FUNCTIONS
+
+    /** Function to check the end of turn abilities and create an end of turn manager if needed */
+    checkEndOfTurnAbilities() {
+        this.state.current_phase = MATCH_PHASES.END_TURN_PHASE;
+
+        let endOfTurnAbilitiesCards = [];
+
+        /** Test for all cards in the character area */
+        for(let card of this.state.current_active_player.currentMatchPlayer.inCharacterArea){
+            let ability = card.getAbilityByType("ON_END_OF_YOUR_TURN");
+            if(ability && ability.canActivate(card, this.state.current_phase)) endOfTurnAbilitiesCards.push(card);
+        }
+
+        /** Test for the leader card */
+        let leader = this.state.current_active_player.currentMatchPlayer.inLeaderLocation;
+        let leaderAbility = leader.getAbilityByType("ON_END_OF_YOUR_TURN");
+        if(leaderAbility && leaderAbility.canActivate(leader, this.state.current_phase)) endOfTurnAbilitiesCards.push(leader);
+
+        //If there are no end of turn abilities
+        if(endOfTurnAbilitiesCards.length === 0) this.completeCurrentTurn();
+        else {
+            console.log("END OF TURN ABILITIES FOUND");
+            this.endOfTurnManager = new EndOfTurnManager(endOfTurnAbilitiesCards); //Create a new end of turn manager
+
+            //Create new action
+            let attackAction = {
+                actionId: 'END_OF_TURN',
+                type: "END_OF_TURN",
+                phase: null,
+                actionCallback: null
+            };
+            this.addActionToStack(attackAction);
+
+            this.executeEndOfTurnAbilities();
+        }
+    }
+
+    executeEndOfTurnAbilities() {
+        if(this.endOfTurnManager.hasMore()) {
+            this.endOfTurnManager.handleNext();
+            //check if there are anu events to be resolved
+            let onEndOfturnEvent = this.endOfTurnManager.currentCard.getAbilityByType("ON_END_OF_YOUR_TURN");
+            
+            this.currentAction.phase = "ON_END_TURN_EVENT_PHASE";
+            let executeAbility = false;
+
+            let actionInfos  = {actionId: 'EVENT_' + this.endOfTurnManager.currentCard.id, playedCard: this.endOfTurnManager.currentCard.id, ability: onEndOfturnEvent.id, targetData: {}, optional:onEndOfturnEvent.optional};
+            this.state.pending_action = {actionInfos: actionInfos}; //Add to make sure 
+
+            const targets = onEndOfturnEvent.getTargets();
+            if(targets.length > 0) { //If targeting is required
+                if(this.findValidTargets(targets)) executeAbility = true;
+            } else executeAbility = true;
+
+            if(executeAbility) {
+                this.activateAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability);
+            } else {
+                this.executeEndOfTurnAbilities(); //Execute the next ability
+            }
+ 
+        } else {
+            this.cleanupAction(); //Cleanup the action stack
+            this.endOfTurnManager = null; //Reset the end of turn manager
+            this.completeCurrentTurn(); //Complete the turn
+        }
+    }
+
+    //#endregion
 
     //#region TURN FUNCTIONS
     /** Function to ask wait for the passive player to complete all the pending action 
@@ -666,8 +740,8 @@ class Match {
 
             //Tell the attacker it has attacked
             this.attackManager.attack.attacker.setHasAttackThisTurn(true);
-            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_attacker_cleanup', false, this.attackManager.attack.attacker.id);
-            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_attacker_cleanup', true, this.attackManager.attack.attacker.id);
+            if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_attack_attacker_cleanup', true, this.attackManager.attack.attacker.id);
+            if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_attack_attacker_cleanup', false, this.attackManager.attack.attacker.id);
 
             const cleanupResults = this.state.attackCleanup(this.attackManager.attack.defendingPlayer);
 
@@ -855,6 +929,8 @@ class Match {
                 callBack = () => {
                     this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
                 }
+            } else if(nextAction.type === "END_OF_TURN") {
+                callBack = () => {this.executeEndOfTurnAbilities();}
             }
         }
 
@@ -1033,9 +1109,12 @@ class Match {
             } else if(ability.type === "ON_END_OF_ATTACK") {
                 action.actionResult = PLAY_CARD_STATES.ON_END_OF_ATTACK_EVENT_TARGETS_REQUIRED;
                 actionInfos.actionId = 'ON_ATTACK_END_EVENT_' + cardId;
-            }else if(ability.type === "TRIGGER") {
+            } else if(ability.type === "TRIGGER") {
                 action.actionResult = PLAY_CARD_STATES.TRIGGER_EVENT_TARGETS_REQUIRED;
                 actionInfos.actionId = 'TRIGGER_EVENT_' + cardId;
+            } else if(ability.type === "ON_END_OF_YOUR_TURN") {
+                action.actionResult = PLAY_CARD_STATES.END_OF_TURN_EVENT_TARGETS_REQUIRED;
+                actionInfos.actionId = 'END_OF_TURN_EVENT_' + cardId;
             }
 
             this.state.pending_action = action;
