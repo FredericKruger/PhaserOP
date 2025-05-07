@@ -1,0 +1,49 @@
+{
+    "id":389,
+    "setid":7,
+    "banned": false,
+    "art":"ST02-007",
+    "set":"ST02",
+    "setname":"-THE WORST GENERATION- [ST02]",
+    "name":"Jewelry Bonney",
+    "card":"CHARACTER",
+    "type":["Supernovas","Bonney Pirates"],
+    "colors":["GREEN"],
+    "cost":1,
+    "power":1000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "I'll age you out of existence!",
+            "attack": "Age Manipulation!",
+            "defeated": "I'll come back younger than ever!"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST02-007-1",
+            "text": "You may rest this Character: Look at 5 cards from the top of your deck; reveal up to 1 {Supernovas} type card and add it to your hand. Then, place the rest at the bottom of your deck in any order.",
+            "art": {
+                "art": "ST02-007-ABILITY1",
+                "posx": 300,
+                "posy": 590
+            },
+            "type": "ACTIVE",
+            "phases": ["Main Phase"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "PLAYER_TURN", "value": true},
+                {"type": "AVAILABLE_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "restDon", "params": {"amount": 1, "player": "owner"}},
+                {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}}
+            ]
+        }
+    ]
+}

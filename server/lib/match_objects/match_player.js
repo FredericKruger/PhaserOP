@@ -11,6 +11,8 @@ class MatchPlayer {
 
         /** @type {number} */
         this.life = 0;
+
+        /** @type {MatchDeck} */
         this.deck = null;
 
         /** @type {Array<MatchCard>} */

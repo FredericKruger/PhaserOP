@@ -331,6 +331,42 @@ const serverAbilityActions = {
         actionResults.auraData = params.aura;
         return actionResults;
     },
+    discardCard: (match, player, card, params, targets) => {
+        let actionResults = {};
+
+        switch(params.target) {
+            case "SELF":
+                actionResults.cardId = card.id;
+                break;
+            case "TARGET":
+                actionResults.cardId = targets[0];
+                break;
+        }
+
+        let cardToDiscard = match.matchCardRegistry.get(actionResults.cardId);
+        actionResults.discardAction = player.discardCard(cardToDiscard);
+
+        return actionResults;
+    },
+    drawCardsToPanel: (match, player, card, params, targets) => {
+        let actionResults = {};
+
+        actionResults.drawnCards = [];
+
+        let targetPlayer = player;
+        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+
+        const drawAmount = params.amount;
+        for(let i=0; i<targetPlayer.deck.cards.length; i++) {
+            let card = targetPlayer.deck.cards[i];
+
+            if(actionResults.drawCards.length < drawAmount) {
+                actionResults.drawnCards.push({cardid: card.id, carddata: card.cardData});
+            } else break;
+        }
+
+        return actionResults;
+    },
     playCard: (match, player, card, params, targets) => {
         //creating Play Card Action
         let actionResults = {};
@@ -347,23 +383,6 @@ const serverAbilityActions = {
         let cardOwner = match.getPlayer(cardToPlay.owner); //Cannot be MatchPlayer
 
         match.startPlayCard(cardOwner, cardToPlay.id, true);
-
-        return actionResults;
-    },
-    discardCard: (match, player, card, params, targets) => {
-        let actionResults = {};
-
-        switch(params.target) {
-            case "SELF":
-                actionResults.cardId = card.id;
-                break;
-            case "TARGET":
-                actionResults.cardId = targets[0];
-                break;
-        }
-
-        let cardToDiscard = match.matchCardRegistry.get(actionResults.cardId);
-        actionResults.discardAction = player.discardCard(cardToDiscard);
 
         return actionResults;
     },

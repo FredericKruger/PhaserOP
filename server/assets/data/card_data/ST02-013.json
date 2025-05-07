@@ -9,7 +9,7 @@
     "card":"CHARACTER",
     "type":["Supernovas","Kid Pirates"],
     "colors":["GREEN"],
-    "cost":0,
+    "cost":7,
     "power":7000,
     "attribute":"SPECIAL",
     "isleader":0,

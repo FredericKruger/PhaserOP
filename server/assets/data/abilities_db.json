@@ -56,6 +56,11 @@
                 }
             }},
             {"name": "discardCard", "params": {"target": "TARGET"}},
+            {"name": "drawCardsToPanel", "params": {"amount": 1, "player": "owner / opponent", "conditions": {
+
+            }}},
+            {"name": "hasAbility", "params": {"value": "BLOCKER / RUSH / DON / COUNTER / LEADER"}},
+            {"name": "hasBlocker", "params": {"value": true}},
             {"name": "hasBlocker", "params": {"value": false}},
             {"name": "hasCounter", "params": {"value": 1}},
             {"name": "hasDon", "params": {"amount": 2, "player": "owner / opponent"}},
