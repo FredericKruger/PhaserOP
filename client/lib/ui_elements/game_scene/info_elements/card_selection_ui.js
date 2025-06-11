@@ -1,0 +1,731 @@
+/**
+ * Card Selection Panel - A flexible UI component for selecting cards based on criteria
+ * Similar to mulligan panel but with support for target requirements and varying selection counts
+ */
+class SelectionPanel extends BaseComponentUI {
+    /**
+     * @param {GameScene} scene - The scene that will contain the card selection panel
+     * @param {Object} config - Configuration options
+     * @param {number} config.minSelectCount - Minimum number of cards to select
+     * @param {number} config.maxSelectCount - Maximum number of cards to select
+     * @param {string} config.selectionTitle - Title to display for the selection panel
+     * @param {string} config.selectionDescription - Description of what the player is selecting for
+     * @param {Function} config.cardMeetsRequirements - Function that returns if a card meets requirements
+     * @param {Function} config.onSelectComplete - Callback when selection is complete
+     * @param {Function} config.onCancel - Callback when selection is canceled (optional)
+     * @param {boolean} config.allowCancel - Whether selection can be canceled (default: false)
+     */
+    constructor(scene, config) {
+        super(scene);
+        
+        this.minSelectCount = config.minSelectCount || 1;
+        this.maxSelectCount = config.maxSelectCount || 1;
+        this.selectionTitle = config.selectionTitle || "Select Cards";
+        this.selectionDescription = config.selectionDescription || `Select ${this.minSelectCount} to ${this.maxSelectCount} cards`;
+        this.cardMeetsRequirements = config.cardMeetsRequirements || (() => true);
+        this.onSelectComplete = config.onSelectComplete || (() => {});
+        this.onCancel = config.onCancel || (() => {});
+        this.allowCancel = config.allowCancel !== undefined ? config.allowCancel : false;
+        
+        // Card tracking
+        this.cards = [];
+        this.selectedCards = [];
+        
+        // Create UI elements
+        this.createBackdrop();
+        /*this.createTitle();
+        this.createInfoText();
+        this.createButtons();*/
+        
+        this.setVisible(false);
+    }
+
+    /**
+     * Create the semi-transparent backdrop
+     */
+    createBackdrop() {
+        this.backdrop = this.scene.add.rectangle(
+            this.scene.screenCenterX,
+            this.scene.screenCenterY,
+            this.scene.screenWidth,
+            this.scene.screenHeight,
+            0x000000,
+            0.7
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_BACKGROUND);
+        
+        this.obj.push(this.backdrop);
+    }
+
+    /**
+     * Start the selection process with the given cards
+     * @param {Array} cards - Array of cards to choose from
+     */
+    startSelection(cards) {
+        this.cards = [];
+        this.selectedCards = [];
+        
+        // Remove any existing card displays
+        this.clearCardDisplays();
+        
+        // Check each card against requirements and adjust visual feedback
+        /*cards.forEach((card, index) => {
+            const meetsRequirements = this.cardMeetsRequirements(card);
+            
+            // Create a display version of the card
+            const cardObj = this.createCardDisplay(card, index, meetsRequirements);
+            this.cards.push({
+                card: card,
+                display: cardObj,
+                selected: false,
+                meetsRequirements: meetsRequirements
+            });
+        });
+        
+        // Reset and show the UI
+        this.updateSelectionCountText();
+        this.updateConfirmButtonState();
+        this.setVisible(true);
+        
+        // Animate panel appearance
+        this.animatePanelAppearance();*/
+    }
+
+    /**
+     * Clear all card display objects
+     */
+    clearCardDisplays() {
+        this.cards.forEach(cardItem => {
+            if (cardItem.display) {
+                cardItem.display.destroy();
+            }
+            if (cardItem.checkmark) {
+                cardItem.checkmark.destroy();
+            }
+        });
+    }
+}
+
+/*
+/**
+ * Card Selection Panel - A flexible UI component for selecting cards based on criteria
+ * Similar to mulligan panel but with support for target requirements and varying selection counts
+ */
+class SelectionPanel extends BaseComponentUI {
+    /**
+     * @param {GameScene} scene - The scene that will contain the card selection panel
+     * @param {Object} config - Configuration options
+     * @param {number} config.minSelectCount - Minimum number of cards to select
+     * @param {number} config.maxSelectCount - Maximum number of cards to select
+     * @param {string} config.selectionTitle - Title to display for the selection panel
+     * @param {string} config.selectionDescription - Description of what the player is selecting for
+     * @param {Function} config.cardMeetsRequirements - Function that returns if a card meets requirements
+     * @param {Function} config.onSelectComplete - Callback when selection is complete
+     * @param {Function} config.onCancel - Callback when selection is canceled (optional)
+     * @param {boolean} config.allowCancel - Whether selection can be canceled (default: false)
+     */
+    constructor(scene, config) {
+        super(scene);
+        
+        this.minSelectCount = config.minSelectCount || 1;
+        this.maxSelectCount = config.maxSelectCount || 1;
+        this.selectionTitle = config.selectionTitle || "Select Cards";
+        this.selectionDescription = config.selectionDescription || `Select ${this.minSelectCount} to ${this.maxSelectCount} cards`;
+        this.cardMeetsRequirements = config.cardMeetsRequirements || (() => true);
+        this.onSelectComplete = config.onSelectComplete || (() => {});
+        this.onCancel = config.onCancel || (() => {});
+        this.allowCancel = config.allowCancel !== undefined ? config.allowCancel : false;
+        
+        // Card tracking
+        this.cards = [];
+        this.selectedCards = [];
+        
+        // Create UI elements
+        this.createBackdrop();
+        this.createTitle();
+        this.createInfoText();
+        this.createButtons();
+        
+        this.setVisible(false);
+    }
+    
+    /**
+     * Create the semi-transparent backdrop
+     */
+    createBackdrop() {
+        this.backdrop = this.scene.add.rectangle(
+            this.scene.screenCenterX,
+            this.scene.screenCenterY,
+            this.scene.screenWidth,
+            this.scene.screenHeight,
+            0x000000,
+            0.7
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_BACKGROUND);
+        
+        this.panel = this.scene.add.image(
+            this.scene.screenCenterX,
+            this.scene.screenCenterY,
+            ASSET_ENUMS.CARD_SELECTION_PANEL
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_BACKGROUND + 1).setScale(1.2);
+        
+        this.obj.push(this.backdrop, this.panel);
+    }
+    
+    /**
+     * Create the title element
+     */
+    createTitle() {
+        this.titleText = this.scene.add.text(
+            this.scene.screenCenterX,
+            this.scene.screenCenterY - 220,
+            this.selectionTitle,
+            {
+                fontFamily: 'OnePieceFont',
+                fontSize: '40px',
+                color: '#D6AA44',
+                align: 'center',
+                stroke: '#000000',
+                strokeThickness: 6
+            }
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_FOREGROUND);
+        
+        this.obj.push(this.titleText);
+    }
+    
+    /**
+     * Create information text
+     */
+    createInfoText() {
+        this.descriptionText = this.scene.add.text(
+            this.scene.screenCenterX,
+            this.scene.screenCenterY - 160,
+            this.selectionDescription,
+            {
+                fontFamily: 'OnePieceFont',
+                fontSize: '24px',
+                color: '#FFFFFF',
+                align: 'center',
+                stroke: '#000000',
+                strokeThickness: 4
+            }
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_FOREGROUND);
+        
+        this.selectionCountText = this.scene.add.text(
+            this.scene.screenCenterX,
+            this.scene.screenCenterY + 160,
+            `Selected: 0/${this.maxSelectCount}`,
+            {
+                fontFamily: 'OnePieceFont',
+                fontSize: '24px',
+                color: '#FFFFFF',
+                align: 'center',
+                stroke: '#000000',
+                strokeThickness: 4
+            }
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_FOREGROUND);
+        
+        this.obj.push(this.descriptionText, this.selectionCountText);
+    }
+    
+    /**
+     * Create action buttons
+     */
+    createButtons() {
+        this.confirmButton = new Button(
+            this.scene,
+            this.scene.screenCenterX + 140,
+            this.scene.screenCenterY + 220,
+            'Confirm',
+            () => this.confirmSelection(),
+            ASSET_ENUMS.GAME_BUTTON_BG,
+            {
+                fontFamily: 'OnePieceFont',
+                fontSize: '28px',
+                color: '#FFFFFF'
+            }
+        ).setScale(0.8).setDepth(DEPTH_VALUES.UI_FOREGROUND);
+        
+        // Start with confirm button disabled
+        this.confirmButton.setEnabled(false);
+        
+        if (this.allowCancel) {
+            this.cancelButton = new Button(
+                this.scene,
+                this.scene.screenCenterX - 140,
+                this.scene.screenCenterY + 220,
+                'Cancel',
+                () => this.cancelSelection(),
+                ASSET_ENUMS.GAME_BUTTON_BG,
+                {
+                    fontFamily: 'OnePieceFont',
+                    fontSize: '28px',
+                    color: '#FFFFFF'
+                }
+            ).setScale(0.8).setDepth(DEPTH_VALUES.UI_FOREGROUND);
+            
+            this.obj.push(this.cancelButton);
+        }
+        
+        this.obj.push(this.confirmButton);
+    }
+    
+    /**
+     * Start the selection process with the given cards
+     * @param {Array} cards - Array of cards to choose from
+     */
+    startSelection(cards) {
+        this.cards = [];
+        this.selectedCards = [];
+        
+        // Remove any existing card displays
+        this.clearCardDisplays();
+        
+        // Check each card against requirements and adjust visual feedback
+        cards.forEach((card, index) => {
+            const meetsRequirements = this.cardMeetsRequirements(card);
+            
+            // Create a display version of the card
+            const cardObj = this.createCardDisplay(card, index, meetsRequirements);
+            this.cards.push({
+                card: card,
+                display: cardObj,
+                selected: false,
+                meetsRequirements: meetsRequirements
+            });
+        });
+        
+        // Reset and show the UI
+        this.updateSelectionCountText();
+        this.updateConfirmButtonState();
+        this.setVisible(true);
+        
+        // Animate panel appearance
+        this.animatePanelAppearance();
+    }
+    
+    /**
+     * Create a display version of a card for selection
+     * @param {Object} card - The card data
+     * @param {number} index - Index position
+     * @param {boolean} meetsRequirements - Whether the card meets selection requirements
+     * @return {Phaser.GameObjects.Container} The card display object
+     */
+    createCardDisplay(card, index, meetsRequirements) {
+        // Calculate position based on index and total cards
+        const totalWidth = Math.min(this.cards.length, 5) * 170; // Max 5 cards per row
+        const row = Math.floor(index / 5);
+        const col = index % 5;
+        
+        const centerOffset = (Math.min(cards.length - row * 5, 5) * 170) / 2 - 85;
+        const x = this.scene.screenCenterX - centerOffset + col * 170;
+        const y = this.scene.screenCenterY - 30 + row * 220;
+        
+        // Create a card UI object for display
+        const cardUI = new GameCardUI(this.scene, null, {
+            x: x,
+            y: y,
+            scale: 0.35,
+            artVisible: true,
+            depth: DEPTH_VALUES.UI_FOREGROUND + 1,
+            id: card.id
+        });
+        
+        cardUI.updateCardData(card.cardData || card, true);
+        cardUI.setInteractive({ useHandCursor: true });
+        
+        // Add visual feedback if card doesn't meet requirements
+        if (!meetsRequirements) {
+            cardUI.setAlpha(0.6);
+            
+            // Add a overlay to indicate card doesn't meet requirements
+            const overlay = this.scene.add.rectangle(
+                0, 0, 
+                cardUI.width, 
+                cardUI.height,
+                0x000000, 0.5
+            ).setOrigin(0.5);
+            
+            cardUI.add(overlay);
+            
+            const unavailableText = this.scene.add.text(
+                0, 0,
+                "Unavailable",
+                {
+                    fontFamily: 'OnePieceFont',
+                    fontSize: '20px',
+                    color: '#FF0000',
+                    stroke: '#000000',
+                    strokeThickness: 3
+                }
+            ).setOrigin(0.5).setAngle(-30);
+            
+            cardUI.add(unavailableText);
+        } else {
+            // Add selection events for eligible cards
+            cardUI.on('pointerdown', () => {
+                this.toggleCardSelection(index);
+            });
+            
+            // Add hover effect
+            cardUI.on('pointerover', () => {
+                this.scene.tweens.add({
+                    targets: cardUI,
+                    y: y - 15,
+                    scale: 0.38,
+                    duration: 200,
+                    ease: 'Sine.easeOut'
+                });
+            });
+            
+            cardUI.on('pointerout', () => {
+                if (!this.cards[index].selected) {
+                    this.scene.tweens.add({
+                        targets: cardUI,
+                        y: y,
+                        scale: 0.35,
+                        duration: 200,
+                        ease: 'Sine.easeOut'
+                    });
+                }
+            });
+        }
+        
+        // Add to displayable objects
+        this.obj.push(cardUI);
+        
+        return cardUI;
+    }
+    
+    /**
+     * Toggle selection state for a card
+     * @param {number} index - The index of the card in the cards array
+     */
+    toggleCardSelection(index) {
+        const cardItem = this.cards[index];
+        
+        // Skip if card doesn't meet requirements
+        if (!cardItem.meetsRequirements) return;
+        
+        // Check if we're at max selections and trying to select another
+        if (!cardItem.selected && this.selectedCards.length >= this.maxSelectCount) {
+            this.shakeCard(cardItem.display);
+            return;
+        }
+        
+        // Toggle selection state
+        cardItem.selected = !cardItem.selected;
+        
+        // Update selected cards array
+        if (cardItem.selected) {
+            this.selectedCards.push(cardItem.card);
+            
+            // Visual feedback for selection
+            this.scene.tweens.add({
+                targets: cardItem.display,
+                y: cardItem.display.y - 30,
+                scale: 0.4,
+                duration: 200,
+                ease: 'Back.easeOut'
+            });
+            
+            // Add selection indicator
+            const checkmark = this.scene.add.image(
+                cardItem.display.x + cardItem.display.width * 0.4,
+                cardItem.display.y - cardItem.display.height * 0.4,
+                ASSET_ENUMS.CHECKMARK_ICON
+            ).setScale(0).setDepth(DEPTH_VALUES.UI_FOREGROUND + 2);
+            
+            this.scene.tweens.add({
+                targets: checkmark,
+                scale: 0.8,
+                duration: 300,
+                ease: 'Back.easeOut'
+            });
+            
+            this.obj.push(checkmark);
+            cardItem.checkmark = checkmark;
+            
+            // Add glow effect
+            cardItem.display.showGlow(COLOR_ENUMS.OP_ORANGE);
+        } else {
+            // Remove from selected cards
+            const cardIndex = this.selectedCards.indexOf(cardItem.card);
+            if (cardIndex !== -1) {
+                this.selectedCards.splice(cardIndex, 1);
+            }
+            
+            // Return to normal state
+            this.scene.tweens.add({
+                targets: cardItem.display,
+                y: cardItem.display.y + 30,
+                scale: 0.35,
+                duration: 200,
+                ease: 'Sine.easeOut'
+            });
+            
+            // Remove checkmark with animation
+            if (cardItem.checkmark) {
+                this.scene.tweens.add({
+                    targets: cardItem.checkmark,
+                    scale: 0,
+                    duration: 200,
+                    ease: 'Back.easeIn',
+                    onComplete: () => {
+                        cardItem.checkmark.destroy();
+                        cardItem.checkmark = null;
+                    }
+                });
+            }
+            
+            // Remove glow
+            cardItem.display.hideGlow();
+        }
+        
+        // Update UI elements
+        this.updateSelectionCountText();
+        this.updateConfirmButtonState();
+    }
+    
+    /**
+     * Update the selection count text
+     */
+    updateSelectionCountText() {
+        this.selectionCountText.setText(`Selected: ${this.selectedCards.length}/${this.maxSelectCount}`);
+        
+        // Color based on whether we've met minimum requirements
+        if (this.selectedCards.length < this.minSelectCount) {
+            this.selectionCountText.setColor('#FF9999');
+        } else if (this.selectedCards.length === this.maxSelectCount) {
+            this.selectionCountText.setColor('#99FFAA');
+        } else {
+            this.selectionCountText.setColor('#FFFFFF');
+        }
+    }
+    
+    /**
+     * Update the state of the confirm button
+     */
+    updateConfirmButtonState() {
+        const canConfirm = this.selectedCards.length >= this.minSelectCount;
+        this.confirmButton.setEnabled(canConfirm);
+        
+        if (canConfirm) {
+            this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
+        } else {
+            this.confirmButton.setText(`Need ${this.minSelectCount - this.selectedCards.length} More`);
+        }
+    }
+    
+    /**
+     * Animate the panel appearing
+     */
+    animatePanelAppearance() {
+        // Start with elements scaled down
+        this.panel.setScale(0);
+        this.titleText.setAlpha(0);
+        this.descriptionText.setAlpha(0);
+        this.selectionCountText.setAlpha(0);
+        this.confirmButton.setAlpha(0);
+        
+        if (this.allowCancel) {
+            this.cancelButton.setAlpha(0);
+        }
+        
+        // Fade in backdrop
+        this.scene.tweens.add({
+            targets: this.backdrop,
+            alpha: { from: 0, to: 0.7 },
+            duration: 300,
+            ease: 'Sine.easeOut'
+        });
+        
+        // Animate panel appearing
+        this.scene.tweens.add({
+            targets: this.panel,
+            scale: 1.2,
+            duration: 400,
+            delay: 100,
+            ease: 'Back.easeOut',
+            onComplete: () => {
+                // Fade in text elements
+                this.scene.tweens.add({
+                    targets: [this.titleText, this.descriptionText, this.selectionCountText],
+                    alpha: 1,
+                    duration: 300,
+                    ease: 'Sine.easeOut'
+                });
+                
+                // Fade in buttons
+                const buttonTargets = [this.confirmButton];
+                if (this.allowCancel) buttonTargets.push(this.cancelButton);
+                
+                this.scene.tweens.add({
+                    targets: buttonTargets,
+                    alpha: 1,
+                    duration: 300,
+                    delay: 200,
+                    ease: 'Sine.easeOut'
+                });
+                
+                // Animate cards appearing with staggered delay
+                this.cards.forEach((cardItem, index) => {
+                    cardItem.display.setScale(0);
+                    
+                    this.scene.tweens.add({
+                        targets: cardItem.display,
+                        scale: 0.35,
+                        delay: 200 + index * 50,
+                        duration: 300,
+                        ease: 'Back.easeOut'
+                    });
+                });
+            }
+        });
+    }
+    
+    /**
+     * Clear all card display objects
+     */
+    clearCardDisplays() {
+        this.cards.forEach(cardItem => {
+            if (cardItem.display) {
+                cardItem.display.destroy();
+            }
+            if (cardItem.checkmark) {
+                cardItem.checkmark.destroy();
+            }
+        });
+    }
+    
+    /**
+     * Confirm the current selection
+     */
+    confirmSelection() {
+        if (this.selectedCards.length < this.minSelectCount) {
+            // Can't confirm yet - not enough cards selected
+            this.shakeButton(this.confirmButton);
+            return;
+        }
+        
+        // Animate panel disappearing
+        this.animatePanelDisappearance(() => {
+            // Call the callback with selected cards
+            this.onSelectComplete(this.selectedCards);
+        });
+    }
+    
+    /**
+     * Cancel the selection
+     */
+    cancelSelection() {
+        if (!this.allowCancel) return;
+        
+        // Animate panel disappearing
+        this.animatePanelDisappearance(() => {
+            // Call the cancel callback
+            this.onCancel();
+        });
+    }
+    
+    /**
+     * Animate the panel disappearing
+     * @param {Function} onComplete - Callback when animation completes
+     */
+    animatePanelDisappearance(onComplete) {
+        // Fade out cards first
+        const cardDisplays = this.cards.map(c => c.display);
+        this.scene.tweens.add({
+            targets: cardDisplays,
+            alpha: 0,
+            scale: 0.2,
+            duration: 300,
+            ease: 'Back.easeIn',
+            onComplete: () => {
+                // Then fade out UI elements
+                const uiElements = [
+                    this.titleText, this.descriptionText, 
+                    this.selectionCountText, this.confirmButton
+                ];
+                
+                if (this.allowCancel) {
+                    uiElements.push(this.cancelButton);
+                }
+                
+                this.scene.tweens.add({
+                    targets: uiElements,
+                    alpha: 0,
+                    duration: 200,
+                    ease: 'Sine.easeIn'
+                });
+                
+                // Shrink panel
+                this.scene.tweens.add({
+                    targets: this.panel,
+                    scale: 0,
+                    duration: 300,
+                    delay: 100,
+                    ease: 'Back.easeIn'
+                });
+                
+                // Fade out backdrop
+                this.scene.tweens.add({
+                    targets: this.backdrop,
+                    alpha: 0,
+                    duration: 300,
+                    delay: 200,
+                    ease: 'Sine.easeIn',
+                    onComplete: () => {
+                        this.setVisible(false);
+                        this.clearCardDisplays();
+                        
+                        if (onComplete) {
+                            onComplete();
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    /**
+     * Shake a card to indicate it can't be selected
+     * @param {Phaser.GameObjects.Container} card - The card to shake
+     */
+    shakeCard(card) {
+        const originalX = card.x;
+        
+        this.scene.tweens.add({
+            targets: card,
+            x: originalX - 10,
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                card.x = originalX;
+            }
+        });
+    }
+    
+    /**
+     * Shake a button to indicate it can't be pressed
+     * @param {Button} button - The button to shake
+     */
+    shakeButton(button) {
+        const originalX = button.x;
+        
+        this.scene.tweens.add({
+            targets: button,
+            x: originalX - 10,
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                button.x = originalX;
+            }
+        });
+    }
+}
+
+module.exports = SelectionPanel;
+*/
