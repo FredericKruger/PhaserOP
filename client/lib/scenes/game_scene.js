@@ -130,14 +130,37 @@ class GameScene extends Phaser.Scene {
             //GIVE CARD RUSH
             //this.activePlayerScene.leaderLocation.cards[0].hasRush = true;
             //this.game.gameClient.sendDebug(this.activePlayerScene.leaderLocation.cards[0].id);
-            this.activePlayerScene.characterArea.cards[0].hasRush = true;
-            this.game.gameClient.sendDebug(this.activePlayerScene.characterArea.cards[0].id);
+            //this.activePlayerScene.characterArea.cards[0].hasRush = true;
+            //this.game.gameClient.sendDebug(this.activePlayerScene.characterArea.cards[0].id);
             
             
             //this.actionLibraryPassivePlayer.drawLifeCardAction(this.passivePlayerScene, {id: this.passivePlayerScene.lifeDeck.cards[0].id});
 
             //ATTACK DON TO CHARACTER
             //this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: donCardID, receivingCharacter: cardID}, true, true);
+
+            //SHOW CARD SELECTION PANEL
+            // To use in a game scene:
+            const selectionPanel = new SelectionPanel(this, {
+                minSelectCount: 2,
+                maxSelectCount: 3,
+                selectionTitle: "Choose Targets",
+                selectionDescription: "Select characters to deal 2 damage to each",
+                cardMeetsRequirements: (card) => card.cardData.type === "CHARACTER" && card.cardData.power < 5,
+                onSelectComplete: (selectedCards) => {
+                    // Handle the selected cards
+                    selectedCards.forEach(card => {
+                        // Apply effect to each card
+                    });
+                },
+                allowCancel: true,
+                onCancel: () => {
+                    // Handle cancellation
+                }
+            });
+
+            // Show the panel with cards to select from
+            selectionPanel.startSelection(availableCards);
 
         });
 
