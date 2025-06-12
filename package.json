@@ -8,6 +8,7 @@
         "@types/socket.io": "^3.0.2",
         "express": "^4.19.2",
         "phaser": "^3.88.2",
+        "phaser-op-tcg": "file:",
         "socket.io": "^2.0.3"
     },
     "scripts": {
