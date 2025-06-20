@@ -142,8 +142,8 @@ class GameScene extends Phaser.Scene {
             //SHOW CARD SELECTION PANEL
             // To use in a game scene:
             const selectionPanel = new SelectionPanel(this, {
-                minSelectCount: 2,
-                maxSelectCount: 3,
+                minSelectCount: 1,
+                maxSelectCount: 1,
                 selectionTitle: "Choose Targets",
                 selectionDescription: "Select characters to deal 2 damage to each",
                 cardMeetsRequirements: (card) => card.cardData.type === "CHARACTER" && card.cardData.power < 5,
@@ -160,7 +160,7 @@ class GameScene extends Phaser.Scene {
             });
 
             // Show the panel with cards to select from
-            selectionPanel.startSelection(availableCards);
+            selectionPanel.startSelection(this.activePlayerScene.hand.cards);
 
         });
 

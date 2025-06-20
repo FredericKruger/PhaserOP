@@ -1,3 +1,4 @@
+
 /**
  * Card Selection Panel - A flexible UI component for selecting cards based on criteria
  * Similar to mulligan panel but with support for target requirements and varying selection counts
@@ -17,7 +18,7 @@ class SelectionPanel extends BaseComponentUI {
      */
     constructor(scene, config) {
         super(scene);
-
+        
         this.minSelectCount = config.minSelectCount || 1;
         this.maxSelectCount = config.maxSelectCount || 1;
         this.selectionTitle = config.selectionTitle || "Select Cards";
@@ -39,7 +40,7 @@ class SelectionPanel extends BaseComponentUI {
         
         this.setVisible(false);
     }
-
+    
     /**
      * Create the semi-transparent backdrop
      */
@@ -50,134 +51,116 @@ class SelectionPanel extends BaseComponentUI {
             this.scene.screenWidth,
             this.scene.screenHeight,
             0x000000,
-            0.75
-        ).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+            0.7
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_BACKGROUND);
         
-        this.obj.push(this.backdrop);
+        this.panel = this.scene.add.image(
+            this.scene.screenCenterX,
+            this.scene.screenCenterY,
+            ASSET_ENUMS.CARD_SELECTION_PANEL
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_BACKGROUND + 1).setScale(1.2);
+        
+        this.obj.push(this.backdrop, this.panel);
     }
-
+    
     /**
      * Create the title element
      */
     createTitle() {
         this.titleText = this.scene.add.text(
             this.scene.screenCenterX,
-            150,
+            this.scene.screenCenterY - 220,
             this.selectionTitle,
             {
                 fontFamily: 'OnePieceFont',
-                fontSize: '50px',
+                fontSize: '40px',
                 color: '#D6AA44',
                 align: 'center',
                 stroke: '#000000',
                 strokeThickness: 6
             }
-        ).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_FOREGROUND);
         
         this.obj.push(this.titleText);
     }
-
+    
     /**
      * Create information text
      */
     createInfoText() {
         this.descriptionText = this.scene.add.text(
             this.scene.screenCenterX,
-            210,
+            this.scene.screenCenterY - 160,
             this.selectionDescription,
             {
                 fontFamily: 'OnePieceFont',
-                fontSize: '34px',
+                fontSize: '24px',
                 color: '#FFFFFF',
                 align: 'center',
                 stroke: '#000000',
                 strokeThickness: 4
             }
-        ).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_FOREGROUND);
         
         this.selectionCountText = this.scene.add.text(
             this.scene.screenCenterX,
-            this.scene.screenHeight*0.75,
+            this.scene.screenCenterY + 160,
             `Selected: 0/${this.maxSelectCount}`,
             {
                 fontFamily: 'OnePieceFont',
-                fontSize: '34px',
+                fontSize: '24px',
                 color: '#FFFFFF',
                 align: 'center',
                 stroke: '#000000',
                 strokeThickness: 4
             }
-        ).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+        ).setOrigin(0.5).setDepth(DEPTH_VALUES.UI_FOREGROUND);
         
         this.obj.push(this.descriptionText, this.selectionCountText);
     }
-
+    
     /**
      * Create action buttons
      */
     createButtons() {
-
-        this.confirmButton = new Button({
-            scene: this.scene,
-            x: this.scene.screenCenterX + 140, 
-            y: this.scene.screenHeight*0.8,
-            width: 150,
-            height: 40,
-            radius: 5,
-            backgroundcolor: COLOR_ENUMS.OP_CREAM,
-            outlinecolor: COLOR_ENUMS.OP_CREAM_DARKER,
-            text: "Confirm",
-            fontsize: 30,
-            fontfamily: "OnePieceFont",
-            textColor: COLOR_ENUMS_CSS.OP_BLACK,
-        }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
-                
+        this.confirmButton = new Button(
+            this.scene,
+            this.scene.screenCenterX + 140,
+            this.scene.screenCenterY + 220,
+            'Confirm',
+            () => this.confirmSelection(),
+            ASSET_ENUMS.GAME_BUTTON_BG,
+            {
+                fontFamily: 'OnePieceFont',
+                fontSize: '28px',
+                color: '#FFFFFF'
+            }
+        ).setScale(0.8).setDepth(DEPTH_VALUES.UI_FOREGROUND);
+        
+        // Start with confirm button disabled
+        this.confirmButton.setEnabled(false);
+        
         if (this.allowCancel) {
-            this.cancelButton = new Button({
-                scene: this.scene,
-                x: this.scene.screenCenterX - 140, 
-                y: this.scene.screenHeight*0.8,
-                width: 150,
-                height: 40,
-                radius: 5,
-                backgroundcolor: COLOR_ENUMS.OP_CREAM,
-                outlinecolor: COLOR_ENUMS.OP_CREAM_DARKER,
-                text: "Cancel",
-                fontsize: 30,
-                fontfamily: "OnePieceFont",
-                textColor: COLOR_ENUMS_CSS.OP_BLACK,
-            }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+            this.cancelButton = new Button(
+                this.scene,
+                this.scene.screenCenterX - 140,
+                this.scene.screenCenterY + 220,
+                'Cancel',
+                () => this.cancelSelection(),
+                ASSET_ENUMS.GAME_BUTTON_BG,
+                {
+                    fontFamily: 'OnePieceFont',
+                    fontSize: '28px',
+                    color: '#FFFFFF'
+                }
+            ).setScale(0.8).setDepth(DEPTH_VALUES.UI_FOREGROUND);
             
             this.obj.push(this.cancelButton);
         }
-
-        // Add toggle button in bottom left corner
-        this.toggleButton = new Button({
-            scene: this.scene,
-            x: 150, 
-            y: this.scene.screenHeight - 100,
-            width: 150,
-            height: 40,
-            radius: 5,
-            backgroundcolor: COLOR_ENUMS.OP_CREAM,
-            outlinecolor: COLOR_ENUMS.OP_CREAM_DARKER,
-            text: "Hide",
-            fontsize: 24,
-            fontfamily: "OnePieceFont",
-            textColor: COLOR_ENUMS_CSS.OP_BLACK,
-        }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN + 10); // Higher depth to stay on top
         
-        this.toggleButton.setInteractive();
-        this.toggleButton.on('pointerover', () => this.toggleButton.postFX.addGlow(COLOR_ENUMS.OP_WHITE, 2));
-        this.toggleButton.on('pointerout', () => this.toggleButton.postFX.clear());
-        this.toggleButton.on('pointerdown', () => this.togglePanelVisibility());
-    
-
-        this.isPanelVisible = true; // Track panel visibility state
-
-        this.obj.push(this.confirmButton, this.toggleButton);
+        this.obj.push(this.confirmButton);
     }
-
+    
     /**
      * Start the selection process with the given cards
      * @param {Array} cards - Array of cards to choose from
@@ -194,7 +177,7 @@ class SelectionPanel extends BaseComponentUI {
             const meetsRequirements = this.cardMeetsRequirements(card);
             
             // Create a display version of the card
-            const cardObj = this.createCardDisplay(card, cards.length, index, meetsRequirements);
+            const cardObj = this.createCardDisplay(card, index, meetsRequirements);
             this.cards.push({
                 card: card,
                 display: cardObj,
@@ -206,53 +189,45 @@ class SelectionPanel extends BaseComponentUI {
         // Reset and show the UI
         this.updateSelectionCountText();
         this.updateConfirmButtonState();
-        
-        //Set Game State to passive
-        this.scene.gameState.exit(GAME_STATES.NO_INTERACTION);
-
         this.setVisible(true);
         
         // Animate panel appearance
         this.animatePanelAppearance();
     }
-
+    
     /**
      * Create a display version of a card for selection
      * @param {Object} card - The card data
-     * @param {number} numberCards - The total number of cards
      * @param {number} index - Index position
      * @param {boolean} meetsRequirements - Whether the card meets selection requirements
      * @return {Phaser.GameObjects.Container} The card display object
      */
-    createCardDisplay(card, numberCards, index, meetsRequirements) {
+    createCardDisplay(card, index, meetsRequirements) {
         // Calculate position based on index and total cards
-        const cardWidth = (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_MULLIGAN);
-        const cardHeight = (GAME_UI_CONSTANTS.CARD_ART_HEIGHT * CARD_SCALE.IN_MULLIGAN);
-        const totalSeparatorWidth = Math.max(numberCards - 1, 0) * 20;
+        const totalWidth = Math.min(this.cards.length, 5) * 170; // Max 5 cards per row
         const row = Math.floor(index / 5);
         const col = index % 5;
         
-        const centerOffset = (Math.min(numberCards - row * 5, 5) * cardWidth) / 2 - (cardWidth/2) + totalSeparatorWidth/2;
-        const x = this.scene.screenCenterX - centerOffset + col * cardWidth + col * 20;
-        const y = this.scene.screenCenterY - 30 + row * cardHeight;
+        const centerOffset = (Math.min(cards.length - row * 5, 5) * 170) / 2 - 85;
+        const x = this.scene.screenCenterX - centerOffset + col * 170;
+        const y = this.scene.screenCenterY - 30 + row * 220;
         
         // Create a card UI object for display
-        const cardUI = new GameCardUI(this.scene, this.scene.activePlayerScene, {
+        const cardUI = new GameCardUI(this.scene, null, {
             x: x,
             y: y,
-            scale: CARD_SCALE.IN_MULLIGAN,
+            scale: 0.35,
             artVisible: true,
-            depth: DEPTH_VALUES.CARD_IN_MULLIGAN + 1,
+            depth: DEPTH_VALUES.UI_FOREGROUND + 1,
             id: card.id
         });
-        cardUI.setScale(0);
         
-        cardUI.updateCardData(card.cardData || card);
+        cardUI.updateCardData(card.cardData || card, true);
         cardUI.setInteractive({ useHandCursor: true });
         
         // Add visual feedback if card doesn't meet requirements
         if (!meetsRequirements) {
-            cardUI.setAlpha(0.8);
+            cardUI.setAlpha(0.6);
             
             // Add a overlay to indicate card doesn't meet requirements
             const overlay = this.scene.add.rectangle(
@@ -269,7 +244,7 @@ class SelectionPanel extends BaseComponentUI {
                 "Unavailable",
                 {
                     fontFamily: 'OnePieceFont',
-                    fontSize: '75px',
+                    fontSize: '20px',
                     color: '#FF0000',
                     stroke: '#000000',
                     strokeThickness: 3
@@ -277,7 +252,7 @@ class SelectionPanel extends BaseComponentUI {
             ).setOrigin(0.5).setAngle(-30);
             
             cardUI.add(unavailableText);
-        } /*else {
+        } else {
             // Add selection events for eligible cards
             cardUI.on('pointerdown', () => {
                 this.toggleCardSelection(index);
@@ -305,14 +280,104 @@ class SelectionPanel extends BaseComponentUI {
                     });
                 }
             });
-        }*/
+        }
         
         // Add to displayable objects
         this.obj.push(cardUI);
         
         return cardUI;
     }
-
+    
+    /**
+     * Toggle selection state for a card
+     * @param {number} index - The index of the card in the cards array
+     */
+    toggleCardSelection(index) {
+        const cardItem = this.cards[index];
+        
+        // Skip if card doesn't meet requirements
+        if (!cardItem.meetsRequirements) return;
+        
+        // Check if we're at max selections and trying to select another
+        if (!cardItem.selected && this.selectedCards.length >= this.maxSelectCount) {
+            this.shakeCard(cardItem.display);
+            return;
+        }
+        
+        // Toggle selection state
+        cardItem.selected = !cardItem.selected;
+        
+        // Update selected cards array
+        if (cardItem.selected) {
+            this.selectedCards.push(cardItem.card);
+            
+            // Visual feedback for selection
+            this.scene.tweens.add({
+                targets: cardItem.display,
+                y: cardItem.display.y - 30,
+                scale: 0.4,
+                duration: 200,
+                ease: 'Back.easeOut'
+            });
+            
+            // Add selection indicator
+            const checkmark = this.scene.add.image(
+                cardItem.display.x + cardItem.display.width * 0.4,
+                cardItem.display.y - cardItem.display.height * 0.4,
+                ASSET_ENUMS.CHECKMARK_ICON
+            ).setScale(0).setDepth(DEPTH_VALUES.UI_FOREGROUND + 2);
+            
+            this.scene.tweens.add({
+                targets: checkmark,
+                scale: 0.8,
+                duration: 300,
+                ease: 'Back.easeOut'
+            });
+            
+            this.obj.push(checkmark);
+            cardItem.checkmark = checkmark;
+            
+            // Add glow effect
+            cardItem.display.showGlow(COLOR_ENUMS.OP_ORANGE);
+        } else {
+            // Remove from selected cards
+            const cardIndex = this.selectedCards.indexOf(cardItem.card);
+            if (cardIndex !== -1) {
+                this.selectedCards.splice(cardIndex, 1);
+            }
+            
+            // Return to normal state
+            this.scene.tweens.add({
+                targets: cardItem.display,
+                y: cardItem.display.y + 30,
+                scale: 0.35,
+                duration: 200,
+                ease: 'Sine.easeOut'
+            });
+            
+            // Remove checkmark with animation
+            if (cardItem.checkmark) {
+                this.scene.tweens.add({
+                    targets: cardItem.checkmark,
+                    scale: 0,
+                    duration: 200,
+                    ease: 'Back.easeIn',
+                    onComplete: () => {
+                        cardItem.checkmark.destroy();
+                        cardItem.checkmark = null;
+                    }
+                });
+            }
+            
+            // Remove glow
+            cardItem.display.hideGlow();
+        }
+        
+        // Update UI elements
+        this.updateSelectionCountText();
+        this.updateConfirmButtonState();
+    }
+    
     /**
      * Update the selection count text
      */
@@ -328,13 +393,13 @@ class SelectionPanel extends BaseComponentUI {
             this.selectionCountText.setColor('#FFFFFF');
         }
     }
-
+    
     /**
      * Update the state of the confirm button
      */
     updateConfirmButtonState() {
         const canConfirm = this.selectedCards.length >= this.minSelectCount;
-        //this.confirmButton.setEnabled(canConfirm);
+        this.confirmButton.setEnabled(canConfirm);
         
         if (canConfirm) {
             this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
@@ -342,17 +407,17 @@ class SelectionPanel extends BaseComponentUI {
             this.confirmButton.setText(`Need ${this.minSelectCount - this.selectedCards.length} More`);
         }
     }
-
+    
     /**
      * Animate the panel appearing
      */
     animatePanelAppearance() {
         // Start with elements scaled down
+        this.panel.setScale(0);
         this.titleText.setAlpha(0);
         this.descriptionText.setAlpha(0);
         this.selectionCountText.setAlpha(0);
         this.confirmButton.setAlpha(0);
-        this.toggleButton.setAlpha(0); // Also start with toggle button hidden
         
         if (this.allowCancel) {
             this.cancelButton.setAlpha(0);
@@ -363,7 +428,16 @@ class SelectionPanel extends BaseComponentUI {
             targets: this.backdrop,
             alpha: { from: 0, to: 0.7 },
             duration: 300,
-            ease: 'Sine.easeOut',
+            ease: 'Sine.easeOut'
+        });
+        
+        // Animate panel appearing
+        this.scene.tweens.add({
+            targets: this.panel,
+            scale: 1.2,
+            duration: 400,
+            delay: 100,
+            ease: 'Back.easeOut',
             onComplete: () => {
                 // Fade in text elements
                 this.scene.tweens.add({
@@ -374,7 +448,7 @@ class SelectionPanel extends BaseComponentUI {
                 });
                 
                 // Fade in buttons
-                const buttonTargets = [this.confirmButton, this.toggleButton];
+                const buttonTargets = [this.confirmButton];
                 if (this.allowCancel) buttonTargets.push(this.cancelButton);
                 
                 this.scene.tweens.add({
@@ -391,7 +465,7 @@ class SelectionPanel extends BaseComponentUI {
                     
                     this.scene.tweens.add({
                         targets: cardItem.display,
-                        scale: CARD_SCALE.IN_MULLIGAN,
+                        scale: 0.35,
                         delay: 200 + index * 50,
                         duration: 300,
                         ease: 'Back.easeOut'
@@ -400,7 +474,7 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
-
+    
     /**
      * Clear all card display objects
      */
@@ -414,91 +488,136 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
-
+    
     /**
-     * Toggle the panel visibility between shown and hidden states
+     * Confirm the current selection
      */
-    togglePanelVisibility() {
-        if (this.isPanelVisible) {
-            // Hide panel elements except toggle button
-            this.hidePanel();
-        } else {
-            // Show all panel elements
-            this.showPanel();
+    confirmSelection() {
+        if (this.selectedCards.length < this.minSelectCount) {
+            // Can't confirm yet - not enough cards selected
+            this.shakeButton(this.confirmButton);
+            return;
         }
         
-        // Toggle state
-        this.isPanelVisible = !this.isPanelVisible;
+        // Animate panel disappearing
+        this.animatePanelDisappearance(() => {
+            // Call the callback with selected cards
+            this.onSelectComplete(this.selectedCards);
+        });
     }
-
+    
     /**
-     * Hide panel elements except toggle button
+     * Cancel the selection
      */
-    hidePanel() {
-        // Update toggle button text
-        this.toggleButton.setText("Show Panel");
+    cancelSelection() {
+        if (!this.allowCancel) return;
         
-        // Fade out all elements except toggle button
-        const elementsToHide = this.obj.filter(obj => obj !== this.toggleButton);
-        
-        // Also hide card displays
-        const cardDisplays = this.cards.map(card => card.display);
-        
-        // Combine all elements to hide
-        const allElementsToHide = [...elementsToHide, ...cardDisplays];
-        
+        // Animate panel disappearing
+        this.animatePanelDisappearance(() => {
+            // Call the cancel callback
+            this.onCancel();
+        });
+    }
+    
+    /**
+     * Animate the panel disappearing
+     * @param {Function} onComplete - Callback when animation completes
+     */
+    animatePanelDisappearance(onComplete) {
+        // Fade out cards first
+        const cardDisplays = this.cards.map(c => c.display);
         this.scene.tweens.add({
-            targets: allElementsToHide,
+            targets: cardDisplays,
             alpha: 0,
+            scale: 0.2,
             duration: 300,
-            ease: 'Sine.easeOut',
+            ease: 'Back.easeIn',
             onComplete: () => {
-                // After animation, set visible false for better performance
-                let numberOfElements = allElementsToHide.length;
-                let currentElementIndex = 0;
-                allElementsToHide.forEach(obj => {
-                    if (obj) obj.setVisible(false);
-                    currentElementIndex++;
-
-                    if(currentElementIndex === numberOfElements) this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);
+                // Then fade out UI elements
+                const uiElements = [
+                    this.titleText, this.descriptionText, 
+                    this.selectionCountText, this.confirmButton
+                ];
+                
+                if (this.allowCancel) {
+                    uiElements.push(this.cancelButton);
+                }
+                
+                this.scene.tweens.add({
+                    targets: uiElements,
+                    alpha: 0,
+                    duration: 200,
+                    ease: 'Sine.easeIn'
+                });
+                
+                // Shrink panel
+                this.scene.tweens.add({
+                    targets: this.panel,
+                    scale: 0,
+                    duration: 300,
+                    delay: 100,
+                    ease: 'Back.easeIn'
+                });
+                
+                // Fade out backdrop
+                this.scene.tweens.add({
+                    targets: this.backdrop,
+                    alpha: 0,
+                    duration: 300,
+                    delay: 200,
+                    ease: 'Sine.easeIn',
+                    onComplete: () => {
+                        this.setVisible(false);
+                        this.clearCardDisplays();
+                        
+                        if (onComplete) {
+                            onComplete();
+                        }
+                    }
                 });
             }
         });
     }
-
+    
     /**
-     * Show all panel elements
+     * Shake a card to indicate it can't be selected
+     * @param {Phaser.GameObjects.Container} card - The card to shake
      */
-    showPanel() {
-        this.scene.gameState.exit(GAME_STATES.NO_INTERACTION);
-
-        // Update toggle button text
-        this.toggleButton.setText("Hide Panel");
+    shakeCard(card) {
+        const originalX = card.x;
         
-        // Get all elements except toggle button
-        const elementsToShow = this.obj.filter(obj => obj !== this.toggleButton);
-        
-        // Also show card displays
-        const cardDisplays = this.cards.map(card => card.display);
-        
-        // Combine all elements to show
-        const allElementsToShow = [...elementsToShow, ...cardDisplays];
-        
-        // First make them visible with alpha 0
-        allElementsToShow.forEach(obj => {
-            if (obj) {
-                obj.setVisible(true);
-                obj.setAlpha(0);
+        this.scene.tweens.add({
+            targets: card,
+            x: originalX - 10,
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                card.x = originalX;
             }
         });
+    }
+    
+    /**
+     * Shake a button to indicate it can't be pressed
+     * @param {Button} button - The button to shake
+     */
+    shakeButton(button) {
+        const originalX = button.x;
         
-        // Then fade them in
         this.scene.tweens.add({
-            targets: allElementsToShow,
-            alpha: 1,
-            duration: 300,
-            ease: 'Sine.easeIn'
+            targets: button,
+            x: originalX - 10,
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                button.x = originalX;
+            }
         });
     }
-
 }
+
+module.exports = SelectionPanel;
