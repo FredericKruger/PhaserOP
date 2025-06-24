@@ -10,7 +10,7 @@ class SelectionPanel extends BaseComponentUI {
      * @param {number} config.maxSelectCount - Maximum number of cards to select
      * @param {string} config.selectionTitle - Title to display for the selection panel
      * @param {string} config.selectionDescription - Description of what the player is selecting for
-     * @param {Function} config.cardMeetsRequirements - Function that returns if a card meets requirements
+     * @param {Target|Object} config.targetFilter - Target object or config to filter valid cards
      * @param {Function} config.onSelectComplete - Callback when selection is complete
      * @param {Function} config.onCancel - Callback when selection is canceled (optional)
      * @param {boolean} config.allowCancel - Whether selection can be canceled (default: false)
@@ -22,10 +22,12 @@ class SelectionPanel extends BaseComponentUI {
         this.maxSelectCount = config.maxSelectCount || 1;
         this.selectionTitle = config.selectionTitle || "Select Cards";
         this.selectionDescription = config.selectionDescription || `Select ${this.minSelectCount} to ${this.maxSelectCount} cards`;
-        this.cardMeetsRequirements = config.cardMeetsRequirements || (() => true);
         this.onSelectComplete = config.onSelectComplete || (() => {});
         this.onCancel = config.onCancel || (() => {});
         this.allowCancel = config.allowCancel !== undefined ? config.allowCancel : false;
+
+        // Setup target filter
+        this.targetFilter = config.targetFilter;
         
         // Card tracking
         this.cards = [];
@@ -38,6 +40,16 @@ class SelectionPanel extends BaseComponentUI {
         this.createButtons();
         
         this.setVisible(false);
+    }
+
+    /**
+     * Check if a card meets the selection requirements using Target.js logic
+     * @param {GameCardUI} card - The card to check
+     * @returns {boolean} - Whether the card is a valid selection target
+     */
+    cardMeetsRequirements(card) {       
+        // Use the Target class isValidTarget method to determine if card meets requirements
+        return this.targetFilter.isValidTarget(card);
     }
 
     /**
@@ -131,6 +143,9 @@ class SelectionPanel extends BaseComponentUI {
             fontfamily: "OnePieceFont",
             textColor: COLOR_ENUMS_CSS.OP_BLACK,
         }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+        this.confirmButton.on('pointerdown', () => {
+            this.confirmSelection();
+        });
                 
         if (this.allowCancel) {
             this.cancelButton = new Button({
@@ -277,7 +292,7 @@ class SelectionPanel extends BaseComponentUI {
             ).setOrigin(0.5).setAngle(-30);
             
             cardUI.add(unavailableText);
-        } /*else {
+        } else {
             // Add selection events for eligible cards
             cardUI.on('pointerdown', () => {
                 this.toggleCardSelection(index);
@@ -285,13 +300,15 @@ class SelectionPanel extends BaseComponentUI {
             
             // Add hover effect
             cardUI.on('pointerover', () => {
-                this.scene.tweens.add({
-                    targets: cardUI,
-                    y: y - 15,
-                    scale: 0.38,
-                    duration: 200,
-                    ease: 'Sine.easeOut'
-                });
+                if (!this.cards[index].selected) {
+                    this.scene.tweens.add({
+                        targets: cardUI,
+                        y: y - 15,
+                        scale: CARD_SCALE.IN_MULLIGAN * 1.1,
+                        duration: 200,
+                        ease: 'Sine.easeOut'
+                    });
+                }
             });
             
             cardUI.on('pointerout', () => {
@@ -299,13 +316,13 @@ class SelectionPanel extends BaseComponentUI {
                     this.scene.tweens.add({
                         targets: cardUI,
                         y: y,
-                        scale: 0.35,
+                        scale: CARD_SCALE.IN_MULLIGAN,
                         duration: 200,
                         ease: 'Sine.easeOut'
                     });
                 }
             });
-        }*/
+        }
         
         // Add to displayable objects
         this.obj.push(cardUI);
@@ -334,7 +351,7 @@ class SelectionPanel extends BaseComponentUI {
      */
     updateConfirmButtonState() {
         const canConfirm = this.selectedCards.length >= this.minSelectCount;
-        //this.confirmButton.setEnabled(canConfirm);
+        this.confirmButton.setInteractive(canConfirm);
         
         if (canConfirm) {
             this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
@@ -498,6 +515,197 @@ class SelectionPanel extends BaseComponentUI {
             alpha: 1,
             duration: 300,
             ease: 'Sine.easeIn'
+        });
+    }
+
+    /**
+     * Toggle selection state for a card
+     * @param {number} index - The index of the card in the cards array
+     */
+    toggleCardSelection(index) {
+        const cardItem = this.cards[index];
+        
+        // Skip if card doesn't meet requirements
+        if (!this.cardMeetsRequirements(cardItem.display)) return;
+        
+        // Check if we're at max selections and trying to select another
+        if (!cardItem.selected && this.selectedCards.length >= this.maxSelectCount) {
+            this.shakeCard(cardItem.display);
+            return;
+        }
+        
+        // Toggle selection state
+        cardItem.selected = !cardItem.selected;
+        
+        // Update selected cards array
+        if (cardItem.selected) {
+            this.selectedCards.push(cardItem.card);
+            
+            // Visual feedback for selection
+            this.scene.tweens.add({
+                targets: cardItem.display,
+                y: cardItem.display.y - 30,
+                scale: 0.4,
+                duration: 200,
+                ease: 'Back.easeOut'
+            });
+            
+            // Add selection indicator
+            /*const checkmark = this.scene.add.image(
+                cardItem.display.x + cardItem.display.width * 0.4,
+                cardItem.display.y - cardItem.display.height * 0.4,
+                ASSET_ENUMS.CHECKMARK_ICON
+            ).setScale(0).setDepth(DEPTH_VALUES.UI_FOREGROUND + 2);
+            
+            this.scene.tweens.add({
+                targets: checkmark,
+                scale: 0.8,
+                duration: 300,
+                ease: 'Back.easeOut'
+            });
+            
+            this.obj.push(checkmark);
+            cardItem.checkmark = checkmark;*/
+            
+            // Add glow effect
+            cardItem.display.showGlow(COLOR_ENUMS.OP_ORANGE);
+        } else {
+            // Remove from selected cards
+            const cardIndex = this.selectedCards.indexOf(cardItem.card);
+            if (cardIndex !== -1) {
+                this.selectedCards.splice(cardIndex, 1);
+            }
+            
+            // Return to normal state
+            this.scene.tweens.add({
+                targets: cardItem.display,
+                y: cardItem.display.y + 30,
+                scale: 0.35,
+                duration: 200,
+                ease: 'Sine.easeOut'
+            });
+            
+            // Remove checkmark with animation
+            /*if (cardItem.checkmark) {
+                this.scene.tweens.add({
+                    targets: cardItem.checkmark,
+                    scale: 0,
+                    duration: 200,
+                    ease: 'Back.easeIn',
+                    onComplete: () => {
+                        cardItem.checkmark.destroy();
+                        cardItem.checkmark = null;
+                    }
+                });
+            }*/
+            
+            // Remove glow
+            cardItem.display.hideGlow();
+        }
+        
+        // Update UI elements
+        this.updateSelectionCountText();
+        this.updateConfirmButtonState();
+    }
+
+    /**
+     * Shake a card to indicate it can't be selected
+     * @param {Phaser.GameObjects.Container} card - The card to shake
+     */
+    shakeCard(card) {
+        const originalX = card.x;
+        
+        this.scene.tweens.add({
+            targets: card,
+            x: originalX - 10,
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                card.x = originalX;
+            }
+        });
+    }
+
+    /**
+     * Shake a button to indicate it can't be pressed
+     * @param {Button} button - The button to shake
+     */
+    shakeButton(button) {
+        const originalX = button.x;
+        
+        this.scene.tweens.add({
+            targets: button,
+            x: originalX - 10,
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                button.x = originalX;
+            }
+        });
+    }
+
+    /**
+     * Confirm the current selection
+     */
+    confirmSelection() {
+        if (this.selectedCards.length < this.minSelectCount) {
+            // Can't confirm yet - not enough cards selected
+            this.shakeButton(this.confirmButton);
+            return;
+        }
+        
+        // Animate panel disappearing
+        this.animatePanelDisappearance(() => {
+            // Call the callback with selected cards
+            console.log("Coucou")
+            //this.onSelectComplete(this.selectedCards);
+        });
+    }
+
+    /**
+     * Animate the panel disappearing
+     * @param {Function} onComplete - Callback when animation completes
+     */
+    animatePanelDisappearance(onComplete) {
+        // Fade out cards first
+        const cardDisplays = this.cards.map(c => c.display);
+        this.scene.tweens.add({
+            targets: cardDisplays,
+            alpha: 0,
+            scale: 0.2,
+            duration: 300,
+            ease: 'Back.easeIn',
+            onComplete: () => {
+                // Then fade out UI elements
+                const uiElements = [
+                    this.titleText, this.descriptionText, 
+                    this.selectionCountText, this.confirmButton
+                ];
+                
+                if (this.allowCancel) {
+                    uiElements.push(this.cancelButton);
+                }
+                
+                this.scene.tweens.add({
+                    targets: uiElements,
+                    alpha: 0,
+                    duration: 200,
+                    ease: 'Sine.easeIn',
+                    onComplete: () => {
+                        this.setVisible(false);
+                        this.clearCardDisplays();
+                        
+                        if (onComplete) {
+                            onComplete();
+                            this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+                        }
+                    }
+                });
+            }
         });
     }
 

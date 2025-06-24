@@ -139,14 +139,19 @@ class GameScene extends Phaser.Scene {
             //ATTACK DON TO CHARACTER
             //this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: donCardID, receivingCharacter: cardID}, true, true);
 
+            const targetFilter = new Target({
+                cardtypes: ["CHARACTER"],
+                power: {"operator": "<=", "value": 5000},
+            }, null);
+
             //SHOW CARD SELECTION PANEL
             // To use in a game scene:
             const selectionPanel = new SelectionPanel(this, {
                 minSelectCount: 1,
-                maxSelectCount: 1,
-                selectionTitle: "Choose Targets",
+                    maxSelectCount: 1,
+                    selectionTitle: "Choose Targets",
                 selectionDescription: "Select characters to deal 2 damage to each",
-                cardMeetsRequirements: (card) => card.cardData.type === "CHARACTER" && card.cardData.power < 5,
+                targetFilter: targetFilter,
                 onSelectComplete: (selectedCards) => {
                     // Handle the selected cards
                     selectedCards.forEach(card => {
