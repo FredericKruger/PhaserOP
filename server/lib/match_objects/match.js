@@ -15,6 +15,7 @@ const MatchCardRegistry = require("../managers/match_card_registry");
 const AuraManager = require("../managers/aura_manager");
 const PlayCardManager = require("../managers/play_card_manager");
 const EndOfTurnManager = require("../managers/end_of_turn_manager");
+const SelectionManager = require("../managers/selection_manager");
 
 
 class Match {
@@ -91,6 +92,9 @@ class Match {
 
         /** @type {AuraManager} */
         this.auraManager = new AuraManager();
+
+        /** @type {SelectionManager} */
+        this.currentSelectionManager = null;
 
         // Register this match in the global registry
         matchRegistry.register(this);
@@ -1099,7 +1103,7 @@ class Match {
         actionInfos.abilityResults = abilityResults;
         if(abilityResults.status === "TARGETING") { //If the ability requires targeting
             actionInfos.targetData = abilityResults.targetData;
-            let action =  {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
+            let action = {actionResult: PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED, actionInfos: actionInfos};
 
             if(ability.type === "ON_PLAY") {
                 action.actionResult = PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED;
@@ -1121,8 +1125,18 @@ class Match {
             this.state.resolving_pending_action = true;
 
             if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
-        }
+        } else if(abilityResults.status === "SELECTING") {
+            let action = {actionResult: PLAY_CARD_STATES.ABILITY_SELECTION_REQUIRED, actionInfos: actionInfos};
 
+            if(ability.type === "ON_PLAY") {
+                action.actionResult = PLAY_CARD_STATES.ON_PLAY_EVENT_SELECTION_REQUIRED;
+            }
+
+            this.state.pending_action = action;
+            this.state.resolving_pending_action = true;
+
+            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+        }
         
         return actionInfos;
     }

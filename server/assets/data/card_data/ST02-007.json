@@ -9,7 +9,7 @@
     "card":"CHARACTER",
     "type":["Supernovas","Bonney Pirates"],
     "colors":["GREEN"],
-    "cost":1,
+    "cost":0,
     "power":1000,
     "attribute":"SPECIAL",
     "isleader":0,
@@ -42,7 +42,8 @@
             ],
             "actions": [
                 {"name": "restDon", "params": {"amount": 1, "player": "owner"}},
-                {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}}
+                {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}},
+                {"name": "createSelectionManager", "params": {"cardPool": "DECK", "amount": 5}}
             ]
         }
     ]

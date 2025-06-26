@@ -176,6 +176,7 @@ class Ability {
 }
 
 const abilityActions = {
+    //#region addCounterToCard
     /** Function to add Counter to Defender
      * @param {GameScene} scene
      * @param {GameCardUI} card
@@ -291,6 +292,8 @@ const abilityActions = {
 
         return tweens;  
     },
+    //#endregion
+    //#region activeExertedDon
     /** Function to add Counter to Defender
      * @param {GameScene} scene
      * @param {GameCardUI} card
@@ -341,6 +344,8 @@ const abilityActions = {
         });
         return tweens; 
     },
+    //#endregion
+    //#region addPowerToCard
     /** Function to add Counter to Defender
      *  @param {GameScene} scene
      * @param {GameCardUI} card
@@ -466,6 +471,8 @@ const abilityActions = {
 
         return tweens; 
     },
+    //#endregion
+    //#region attachDonCard
     /** Function to add Counter to Defender
      *  @param {GameScene} scene
      * @param {GameCardUI} card
@@ -569,6 +576,8 @@ const abilityActions = {
 
         return tweens;
     },
+    //#endregion
+    //#region changeCardState
     /** Function to add Counter to Defender
      *  @param {GameScene} scene
      * @param {GameCardUI} card
@@ -589,6 +598,8 @@ const abilityActions = {
 
         return tweens;
     },
+    //#endregion
+    //#region createAura
     /** Function to add Counter to Defender
      *  @param {GameScene} scene
      * @param {GameCardUI} card
@@ -630,6 +641,23 @@ const abilityActions = {
 
         return tweens;
     },
+    //#endregion
+    //#region createSelectionManager
+    /** Function to create a Selection Manager
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    createSelectionManager: (scene, card, info, activePlayer) => {
+        let tweens = [];
+
+        console.log("Creating Selection Manager");
+
+        return tweens;
+    },
+    //#endregion
+    //#region discardCard
         /** Function to add Counter to Defender
      *  @param {GameScene} scene
      * @param {GameCardUI} card
@@ -699,6 +727,8 @@ const abilityActions = {
 
         return tweens;
     },
+    //#endregion
+    //#region restDon
     /** Function to add Counter to Defender
      * @param {GameScene} scene
      * @param {GameCardUI} card
@@ -750,6 +780,8 @@ const abilityActions = {
         });
         return tweens; 
     },
+    //#endregion
+    //#region target
     /** Function to add Counter to Defender
      * @param {GameScene} scene
      * @param {GameCardUI} card
@@ -759,4 +791,5 @@ const abilityActions = {
     target: (scene, card, info, activePlayer) => {
         return [];
     }
+    //#endregion
 };

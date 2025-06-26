@@ -1,5 +1,7 @@
 
 const MatchAura = require('../match_objects/match_aura.js');
+const SelectionManager = require("../managers/selection_manager");
+const MatchPlayer = require('../match_objects/match_player.js');
 
 class ServerAbility {
 
@@ -121,6 +123,14 @@ class ServerAbility {
 
                 this.currentAction++;
                 if(action.name === "target") return {status: "TARGETING", targetData: results}; // Target action is not executed //Stop to start targeting
+                else if(action.name === "createSelectionManager"){
+                    actionResults = {
+                        status: "SELECTING",
+                        actionResults: this.actionResults
+                    };
+                    this.actionResults = [];
+                    return actionResults;
+                } 
             }
         }
         
@@ -169,6 +179,18 @@ class ServerAbility {
 }
 
 const serverAbilityActions = {
+    //#region activeExertedDon
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      player: 'owner' | 'opponent',
+     *      amount: number
+     * }} params
+     * @returns 
+     */
     activateExertedDon: (match, player, card, params) => {
         let actionResults = {};
         actionResults.donId = [];
@@ -191,6 +213,19 @@ const serverAbilityActions = {
         }
         return actionResults;
     },
+    //#endregion
+    //#region addCounterToCard
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      amount: number
+     * }} params
+     * @param {Array<integer>} targets 
+     * @returns 
+     */
     addCounterToCard: (match, player, card, params, targets) => {
         let actionResults = {};
         actionResults.defenderId = -1;
@@ -206,6 +241,21 @@ const serverAbilityActions = {
 
         return actionResults;
     },
+    //#endregion
+    //#region addPowerToCard
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      amount: number,
+     *      duration: 'TURN' | 'GAME',
+     *      target: 'SELF' | 'TARGET'
+     * }} params
+     * @param {Array<integer>} targets 
+     * @returns 
+     */
     addPowerToCard: (match, player, card, params, targets) => {
         let actionResults = {};
         actionResults.cardId = -1;
@@ -235,6 +285,21 @@ const serverAbilityActions = {
 
         return actionResults;
     },
+    //#endregion
+    //#region attachDonCard
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      amount: number,
+     *      target: 'SELF' | 'TARGET',
+     *      pile: 'EXERTED' | 'ACTIVE'
+     * }} params
+     * @param {Object} targets 
+     * @returns 
+     */
     attachDonCard: (match, player, card, params, targets) => {
         let actionResults = {};
         actionResults.targetId = -1;
@@ -286,6 +351,20 @@ const serverAbilityActions = {
         }
         return actionResults;
     },
+    //#endregion
+    //#region changeCardState
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *     state: 'IN_PLAY_RESTED' | 'IN_PLAY_ACTIVE', 
+     *     target: 'SELF' | 'TARGET'
+     * }} params 
+     * @param {Array<integer>} targets 
+     * @returns 
+     */
     changeCardState: (match, player, card, params, targets) => {
         let actionResults = {};
         actionResults.restedCardId = -1;
@@ -306,6 +385,20 @@ const serverAbilityActions = {
 
         return actionResults;
     },
+    //#endregion
+    //#region createAura
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      target: 'SELF' | 'TARGET',
+     *      aura: Object
+     * }} params 
+     * @param {Array<integer>} targets 
+     * @returns 
+     */
     createAura: (match, player, card, params, targets) => {
         let actionResults = {};
 
@@ -331,6 +424,66 @@ const serverAbilityActions = {
         actionResults.auraData = params.aura;
         return actionResults;
     },
+    //#endregion
+    //#region createSelectionManager
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      amount: number,
+     *      cardPool: 'DECK',
+     * 
+     * }} params 
+     * @returns 
+     */
+    createSelectionManager: (match, player, card, params) => {
+        let actionResults = {};
+
+        let selectedCards = [];
+        let amount = params.amount;
+        let cardPool = [];
+        switch(params.cardPool) {
+            case "DECK": 
+                cardPool = player.deck.cards;
+                break;
+            default:
+                cardPool = player.deck.cards;
+                break;
+        }
+        //console.log(cardPool);
+
+        //Get the cards from the card Pool
+        let currentCardIndex = 0;
+        while(selectedCards.length < amount && currentCardIndex < cardPool.length) {
+            selectedCards.push(cardPool[currentCardIndex]);
+            currentCardIndex++;
+        }
+
+        //Create a selection manager for the match
+        let currentSelectionManager = new SelectionManager(match);
+        currentSelectionManager.setCardPool(selectedCards);
+        match.currentSelectionManager = currentSelectionManager;
+
+        //Create Parameters
+        actionResults.cardPool = selectedCards;
+
+        return actionResults;
+    },
+    //#endregion
+    //#region discardCard
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      target: 'SELF' | 'TARGET'
+     * }} params 
+     * @param {Array<integer>} targets 
+     * @returns 
+     */
     discardCard: (match, player, card, params, targets) => {
         let actionResults = {};
 
@@ -348,6 +501,20 @@ const serverAbilityActions = {
 
         return actionResults;
     },
+    //#endregion
+    //#region drawCardsToPanel
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      player: 'opponent' | 'owner',
+     *      amount: number
+     * }} params 
+     * @param {Object} targets 
+     * @returns 
+     */
     drawCardsToPanel: (match, player, card, params, targets) => {
         let actionResults = {};
 
@@ -367,6 +534,19 @@ const serverAbilityActions = {
 
         return actionResults;
     },
+    //#endregion
+    //#region playCard
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      target: 'TARGET' | 'SELF'
+     * }} params 
+     * @param {Array<integer>} targets 
+     * @returns 
+     */
     playCard: (match, player, card, params, targets) => {
         //creating Play Card Action
         let actionResults = {};
@@ -386,6 +566,19 @@ const serverAbilityActions = {
 
         return actionResults;
     },
+    //#endregion
+    //#region restDon
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      player: 'owner' | 'player',
+     *      amount: number
+     * }} params 
+     * @returns 
+     */
     restDon: (match, player, card, params) => {
         let actionResults = {};
         actionResults.donId = [];
@@ -408,6 +601,17 @@ const serverAbilityActions = {
         }
         return actionResults;
     },
+    //#endregion
+    //#region target
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {Object} params 
+     * @param {Object} targets 
+     * @returns 
+     */
     target: (match, player, card, params) => {
         return params.target; // Return the target id
     }
