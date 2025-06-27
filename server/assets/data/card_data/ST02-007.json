@@ -43,7 +43,19 @@
             "actions": [
                 {"name": "restDon", "params": {"amount": 1, "player": "owner"}},
                 {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}},
-                {"name": "createSelectionManager", "params": {"cardPool": "DECK", "amount": 5}}
+                {"name": "createSelectionManager", "params": {
+                    "cardPool": "DECK", "amount": 5,
+                    "filter": [{}]
+                }},
+                {"name": "selectCards", "params": {
+                    "selectionText": "Select up to 1 {Supernovas} type card from the top 5 cards of your deck.",
+                    "amount": 1,
+                    "target": [{
+                        "cardtypes": ["CHARACTER"],
+                        "power": {"operator": ">", "value": 1000},
+                        "types": ["Supernovas"]
+                    }]
+                }}
             ]
         }
     ]

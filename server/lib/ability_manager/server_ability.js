@@ -1,6 +1,7 @@
 
 const MatchAura = require('../match_objects/match_aura.js');
 const SelectionManager = require("../managers/selection_manager");
+const TargetingManager = require("../managers/targeting_manager");
 const MatchPlayer = require('../match_objects/match_player.js');
 
 class ServerAbility {
@@ -123,7 +124,7 @@ class ServerAbility {
 
                 this.currentAction++;
                 if(action.name === "target") return {status: "TARGETING", targetData: results}; // Target action is not executed //Stop to start targeting
-                else if(action.name === "createSelectionManager"){
+                else if(action.name === "selectCards"){
                     actionResults = {
                         status: "SELECTING",
                         actionResults: this.actionResults
@@ -452,12 +453,16 @@ const serverAbilityActions = {
                 cardPool = player.deck.cards;
                 break;
         }
-        //console.log(cardPool);
 
+        let targetData = params.filter || {};
+        const targetingManager = new TargetingManager(match);
+        
         //Get the cards from the card Pool
         let currentCardIndex = 0;
         while(selectedCards.length < amount && currentCardIndex < cardPool.length) {
-            selectedCards.push(cardPool[currentCardIndex]);
+            for(let target of targetData)
+                if(targetingManager.isValidTarget(cardPool[currentCardIndex], target, true)) 
+                    selectedCards.push(cardPool[currentCardIndex]);
             currentCardIndex++;
         }
 
@@ -599,6 +604,28 @@ const serverAbilityActions = {
                 return actionResults;
             }
         }
+        return actionResults;
+    },
+    //#endregion
+    //#region selectCards
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      player: 'owner' | 'player',
+     *      amount: number
+     * }} params 
+     * @returns 
+     */
+    selectCards: (match, player, card, params, targets) => {
+        let actionResults = {};
+        
+        actionResults.selectedTarget = params.target;
+        actionResults.selectionText = params.selectionText || "Select Cards";
+        actionResults.selectionAmount = params.amount || 1;
+        
         return actionResults;
     },
     //#endregion

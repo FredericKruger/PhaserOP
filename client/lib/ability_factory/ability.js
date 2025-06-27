@@ -652,7 +652,24 @@ const abilityActions = {
     createSelectionManager: (scene, card, info, activePlayer) => {
         let tweens = [];
 
-        console.log("Creating Selection Manager");
+        const targetFilter = new Target({
+        }, null);
+
+        //SHOW CARD SELECTION PANEL
+        scene.currentSelectionManager = new SelectionPanel(scene, {
+            selectionTitle: "Choose Targets",
+            allowCancel: false
+        });
+
+        // Show the panel with cards to select from
+        tweens = tweens.concat([{
+            targets: {},
+            alpha: 1,
+            duration: 1,
+            onStart: () => {
+                scene.currentSelectionManager.prepareSelection(info.cardPool);
+            }
+        }]);
 
         return tweens;
     },
@@ -779,6 +796,30 @@ const abilityActions = {
             }
         });
         return tweens; 
+    },
+    //#endregion
+    //#region selectCards
+    /** Function to select cards
+     * @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    selectCards: (scene, card, info, activePlayer) => {
+        let tweens = [];
+
+        tweens.push({
+            onStart: () => {
+                // Start the selection process
+                console.log("Starting Selection");
+                scene.currentSelectionManager.startSelection(info);
+            },
+            targets: {},
+            alpha: 1,
+            duration: 1
+        });
+        
+        return tweens;
     },
     //#endregion
     //#region target

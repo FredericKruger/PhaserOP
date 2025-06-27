@@ -3,6 +3,7 @@
  * Similar to mulligan panel but with support for target requirements and varying selection counts
  */
 class SelectionPanel extends BaseComponentUI {
+    //#region CONSTRUCTOR
     /**
      * @param {GameScene} scene - The scene that will contain the card selection panel
      * @param {Object} config - Configuration options
@@ -21,13 +22,13 @@ class SelectionPanel extends BaseComponentUI {
         this.minSelectCount = config.minSelectCount || 1;
         this.maxSelectCount = config.maxSelectCount || 1;
         this.selectionTitle = config.selectionTitle || "Select Cards";
-        this.selectionDescription = config.selectionDescription || `Select ${this.minSelectCount} to ${this.maxSelectCount} cards`;
+        this.selectionDescription = config.selectionDescription || ``;
         this.onSelectComplete = config.onSelectComplete || (() => {});
         this.onCancel = config.onCancel || (() => {});
         this.allowCancel = config.allowCancel !== undefined ? config.allowCancel : false;
 
         // Setup target filter
-        this.targetFilter = config.targetFilter;
+        this.targetFilters = [];
         
         // Card tracking
         this.cards = [];
@@ -41,7 +42,9 @@ class SelectionPanel extends BaseComponentUI {
         
         this.setVisible(false);
     }
+    //#endregion
 
+    //#region cardMeetsRequirements
     /**
      * Check if a card meets the selection requirements using Target.js logic
      * @param {GameCardUI} card - The card to check
@@ -49,9 +52,16 @@ class SelectionPanel extends BaseComponentUI {
      */
     cardMeetsRequirements(card) {       
         // Use the Target class isValidTarget method to determine if card meets requirements
-        return this.targetFilter.isValidTarget(card);
-    }
+        if(!this.targetFilters.length === 0) return true; // No filter means all cards are valid
 
+        for(let target of this.targetFilters) {
+            if(target.isValidTarget(card)) return true;
+        }
+        return false;
+    }
+    //#endregion
+
+    //#region createBackdrop
     /**
      * Create the semi-transparent backdrop
      */
@@ -67,7 +77,9 @@ class SelectionPanel extends BaseComponentUI {
         
         this.obj.push(this.backdrop);
     }
+    //#endregion
 
+    //#region createTitle
     /**
      * Create the title element
      */
@@ -88,7 +100,9 @@ class SelectionPanel extends BaseComponentUI {
         
         this.obj.push(this.titleText);
     }
+    //#endregion
 
+    //#region createInfoText
     /**
      * Create information text
      */
@@ -123,15 +137,27 @@ class SelectionPanel extends BaseComponentUI {
         
         this.obj.push(this.descriptionText, this.selectionCountText);
     }
+    //#endregion
 
+    //#region 
+    setTargets(targets) {
+        this.targetFilters = [];
+        for(let target of targets) {
+            this.targetFilters.push(new Target(target, null));
+        }
+    }
+    //#endregion
+
+    //#region createButtons
     /**
      * Create action buttons
      */
     createButtons() {
+        const allowCancelMultiplier = this.allowCancel ? 1 : 0;
 
         this.confirmButton = new Button({
             scene: this.scene,
-            x: this.scene.screenCenterX + 140, 
+            x: this.scene.screenCenterX + 140 * allowCancelMultiplier, 
             y: this.scene.screenHeight*0.8,
             width: 150,
             height: 40,
@@ -150,7 +176,7 @@ class SelectionPanel extends BaseComponentUI {
         if (this.allowCancel) {
             this.cancelButton = new Button({
                 scene: this.scene,
-                x: this.scene.screenCenterX - 140, 
+                x: this.scene.screenCenterX - 140 * allowCancelMultiplier, 
                 y: this.scene.screenHeight*0.8,
                 width: 150,
                 height: 40,
@@ -192,12 +218,14 @@ class SelectionPanel extends BaseComponentUI {
 
         this.obj.push(this.confirmButton, this.toggleButton);
     }
+    //#endregion
 
+    //#region prepareSelection
     /**
      * Start the selection process with the given cards
      * @param {Array} cards - Array of cards to choose from
      */
-    startSelection(cards) {
+    prepareSelection(cards) {
         this.cards = [];
         this.selectedCards = [];
         
@@ -230,6 +258,24 @@ class SelectionPanel extends BaseComponentUI {
         // Animate panel appearance
         this.animatePanelAppearance();
     }
+    //#endregion
+
+    //#region startSelection
+    startSelection(params) {
+        this.minSelectCount = params.amount || 1;
+        this.selectionDescription = params.selectionText || ``;
+       
+        console.log("Starting selection with params:", params);
+        this.setTargets(params.selectedTarget || []);
+
+        //actionResults.selectedTarget = params.target;
+        this.updateSelectionCountText();
+        this.descriptionText.setText(this.selectionDescription);
+
+        // Reset selected cards
+        this.updateCardDisplays();
+    }
+    //#endregion
 
     /**
      * Create a display version of a card for selection
@@ -263,71 +309,82 @@ class SelectionPanel extends BaseComponentUI {
         cardUI.setScale(0);
         
         cardUI.updateCardData(card.cardData || card);
-        cardUI.setInteractive({ useHandCursor: true });
-        
-        // Add visual feedback if card doesn't meet requirements
-        if (!meetsRequirements) {
-            cardUI.setAlpha(0.8);
-            
-            // Add a overlay to indicate card doesn't meet requirements
-            const overlay = this.scene.add.rectangle(
-                0, 0, 
-                cardUI.width, 
-                cardUI.height,
-                0x000000, 0.5
-            ).setOrigin(0.5);
-            
-            cardUI.add(overlay);
-            
-            const unavailableText = this.scene.add.text(
-                0, 0,
-                "Unavailable",
-                {
-                    fontFamily: 'OnePieceFont',
-                    fontSize: '75px',
-                    color: '#FF0000',
-                    stroke: '#000000',
-                    strokeThickness: 3
-                }
-            ).setOrigin(0.5).setAngle(-30);
-            
-            cardUI.add(unavailableText);
-        } else {
-            // Add selection events for eligible cards
-            cardUI.on('pointerdown', () => {
-                this.toggleCardSelection(index);
-            });
-            
-            // Add hover effect
-            cardUI.on('pointerover', () => {
-                if (!this.cards[index].selected) {
-                    this.scene.tweens.add({
-                        targets: cardUI,
-                        y: y - 15,
-                        scale: CARD_SCALE.IN_MULLIGAN * 1.1,
-                        duration: 200,
-                        ease: 'Sine.easeOut'
-                    });
-                }
-            });
-            
-            cardUI.on('pointerout', () => {
-                if (!this.cards[index].selected) {
-                    this.scene.tweens.add({
-                        targets: cardUI,
-                        y: y,
-                        scale: CARD_SCALE.IN_MULLIGAN,
-                        duration: 200,
-                        ease: 'Sine.easeOut'
-                    });
-                }
-            });
-        }
         
         // Add to displayable objects
         this.obj.push(cardUI);
         
         return cardUI;
+    }
+
+    updateCardDisplays() {
+        this.cards.forEach((card, index) => {
+            const meetsRequirements = this.cardMeetsRequirements(card.display);
+
+            card.meetsRequirements = meetsRequirements; // Update the card's meetsRequirements state
+
+            card.display.setInteractive({ useHandCursor: true });
+
+            const y = card.display.y;
+        
+            // Add visual feedback if card doesn't meet requirements
+            if (!meetsRequirements) {
+                card.display.setAlpha(0.8);
+                
+                // Add a overlay to indicate card doesn't meet requirements
+                const overlay = this.scene.add.rectangle(
+                    0, 0, 
+                    card.display.width, 
+                    card.display.height,
+                    0x000000, 0.5
+                ).setOrigin(0.5);
+                
+                card.display.add(overlay);
+                
+                const unavailableText = this.scene.add.text(
+                    0, 0,
+                    "Unavailable",
+                    {
+                        fontFamily: 'OnePieceFont',
+                        fontSize: '75px',
+                        color: '#FF0000',
+                        stroke: '#000000',
+                        strokeThickness: 3
+                    }
+                ).setOrigin(0.5).setAngle(-30);
+                
+                card.display.add(unavailableText);
+            } else {
+                // Add selection events for eligible cards
+                card.display.on('pointerdown', () => {
+                    this.toggleCardSelection(index);
+                });
+                
+                // Add hover effect
+                card.display.on('pointerover', () => {
+                    if (!card.selected) {
+                        this.scene.tweens.add({
+                            targets: card.display,
+                            y: y - 15,
+                            scale: CARD_SCALE.IN_MULLIGAN * 1.1,
+                            duration: 200,
+                            ease: 'Sine.easeOut'
+                        });
+                    }
+                });
+                
+                card.display.on('pointerout', () => {
+                    if (!card.selected) {
+                        this.scene.tweens.add({
+                            targets: card.display,
+                            y: y,
+                            scale: CARD_SCALE.IN_MULLIGAN,
+                            duration: 200,
+                            ease: 'Sine.easeOut'
+                        });
+                    }
+                });
+            }
+        });
     }
 
     /**

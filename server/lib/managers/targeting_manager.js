@@ -83,7 +83,6 @@ class TargetingManager {
     isValidTarget(card, target, playerCard) {
         this.target = new Target(target);
 
-
         let isValid = true;
 
         // Check if the card belongs to a specific player

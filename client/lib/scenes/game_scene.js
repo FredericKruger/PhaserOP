@@ -41,7 +41,8 @@ class GameScene extends Phaser.Scene {
         //Game Manager
         this.gameStateUI = new GameStateUI(this);
         this.gameStateManager = new GameStateManager(this, this.gameStateUI);
-        this.targetManagers= []; ///new TargetManager(this);
+        this.targetManagers = []; ///new TargetManager(this);
+        this.currentSelectionManager = null;
 
         //Set Auras
         this.auraManager = new AuraManager(this);
@@ -166,7 +167,6 @@ class GameScene extends Phaser.Scene {
 
             // Show the panel with cards to select from
             selectionPanel.startSelection(this.activePlayerScene.hand.cards);
-
         });
 
         /** LISTENERS */
