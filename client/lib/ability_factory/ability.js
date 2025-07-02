@@ -121,8 +121,8 @@ class Ability {
     */
     executeActions(card, abilityInfo, activePlayer) {
         let abilityTweens = [];
-        for (let i = 0; i < this.actions.length; i++) {
-            const action = this.actions[i];
+        for (let i = 0; i < abilityInfo.length; i++) {
+            const action = this.actions[abilityInfo[i].actionIndex];
             const func = abilityActions[action.name];
             if (func) abilityTweens = abilityTweens.concat(func(this.card.scene, card, abilityInfo[i], activePlayer));
         }
@@ -675,7 +675,7 @@ const abilityActions = {
     },
     //#endregion
     //#region discardCard
-        /** Function to add Counter to Defender
+    /** Function to add Counter to Defender
      *  @param {GameScene} scene
      * @param {GameCardUI} card
      * @param {Object} info
@@ -743,6 +743,87 @@ const abilityActions = {
         }
 
         return tweens;
+    },
+    //#endregion
+    //#region drawCards
+    /** Function to add Counter to Defender
+     * @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    drawCards: (scene, card, info, activePlayer) => {
+        let tweens = [];
+
+        let playerScene = card.playerScene;
+        let delay = 200;
+
+        for(let serverCard of info.drawnCards) {
+            let deckVisual = null;
+
+            if(info.cardPool === "DECK") deckVisual = playerScene.deck.getTopCardVisual();
+
+            //Create a new Duel Card
+            let drawnCard = new GameCardUI(scene, playerScene, {
+                x: deckVisual.x,
+                y: deckVisual.y,
+                state: CARD_STATES.IN_DECK,
+                scale: CARD_SCALE.IN_DECK,
+                artVisible: false,
+                id: serverCard.id,
+                depth: DEPTH_VALUES.CARD_IN_DECK
+            });
+            if(serverCard.cardData) {
+                drawnCard.updateCardData(serverCard.cardData, false); //in some case we only pass the id
+            };
+
+            tweens.push({
+                targets: {},
+                scale: 1,
+                duration: 1,
+                delay : delay,
+                onStart: () => {
+                    drawnCard.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+                    scene.children.bringToTop(drawnCard);
+                    drawnCard.setState(CARD_STATES.TRAVELLING_TO_HAND);
+                }
+            });
+            if(info.cardPool === "DECK") tweens = tweens.concat(scene.animationLibrary.animation_move_card_deck2hand(drawnCard, 0));
+            tweens.push({
+                targets: {},
+                scale: 1,
+                duration: 1,
+                onStart: () => {
+                    playerScene.hand.addCards([drawnCard], {setCardState: true, setCardDepth: true, updateUI: true});
+                    if(info.cardPool === "DECK") { 
+                        playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
+                        if(info.cardPool === "DECK") deckVisual.destroy();
+                    }
+                }
+            });
+        }
+
+        return tweens;
+    },
+    //#endregion
+    //#region hideSelectionManager
+    /** Function to hide the selection Manager
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    hideSelectionManager : (scene, card, info, activePlayer) => {
+        let tweens = [];
+        tweens.push({
+            targets: {},
+            scale: 1,
+            duration: 1,
+            onComplete: () => {
+                scene.currentSelectionManager.animatePanelDisappearance();
+            }
+        });
+        return tweens; 
     },
     //#endregion
     //#region restDon

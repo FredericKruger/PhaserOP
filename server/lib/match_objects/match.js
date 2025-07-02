@@ -1184,6 +1184,33 @@ class Match {
         }
     }
 
+    /**
+     * 
+     * @param {Player} player 
+     * @param {Array<integer>} selectedCardIds 
+     */
+    resolvePendingSelection(player, selectedCardIds) {
+        //Check if the selectedCards match the conditions
+        let selectedCardsValid = this.currentSelectionManager.checkSelectedCards(selectedCardIds);
+
+        if(!selectedCardsValid) {
+            console.log("Selected cards are not valid");
+            if(!player.bot) player.socket.emit('game_reset_selection');
+        } else {
+            //Add cards to selection Manager
+            this.currentSelectionManager.addSelectedCards(selectedCardIds);
+
+            let actionInfos = this.state.pending_action.actionInfos;
+            let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, []);
+            
+            if(abilityResults.abilityResults.status === "DONE") {
+                if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
+
+                this.cleanupAction(player);
+            }
+        }
+    }
+
     //#region UTILS
 
     /** Function to return the player from it;s id

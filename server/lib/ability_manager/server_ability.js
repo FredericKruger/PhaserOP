@@ -1,8 +1,8 @@
 
-const MatchAura = require('../match_objects/match_aura.js');
+const MatchAura = require('../match_objects/match_aura');
 const SelectionManager = require("../managers/selection_manager");
 const TargetingManager = require("../managers/targeting_manager");
-const MatchPlayer = require('../match_objects/match_player.js');
+const MatchPlayer = require('../match_objects/match_player');
 
 class ServerAbility {
 
@@ -120,6 +120,7 @@ class ServerAbility {
             const func = serverAbilityActions[action.name];
             if (func) {
                 let results = func(match, player, card, action.params, targets);
+                results.actionIndex = i;
                 this.actionResults.push(results);
 
                 this.currentAction++;
@@ -134,7 +135,7 @@ class ServerAbility {
                 } 
             }
         }
-        
+    
         //If arrived at this stage it means it didnt leave for targeting anymore
         this.currentAction = 0;
         actionResults = {
@@ -466,6 +467,14 @@ const serverAbilityActions = {
             currentCardIndex++;
         }
 
+        //Remove from cardPool the selected Cards
+        for(let i = 0; i < selectedCards.length; i++) {
+            const cardIndex = cardPool.indexOf(selectedCards[i]);
+            if(cardIndex > -1) {
+                cardPool.splice(cardIndex, 1); 
+            }
+        }
+
         //Create a selection manager for the match
         let currentSelectionManager = new SelectionManager(match);
         currentSelectionManager.setCardPool(selectedCards);
@@ -473,6 +482,23 @@ const serverAbilityActions = {
 
         //Create Parameters
         actionResults.cardPool = selectedCards;
+
+        return actionResults;
+    },
+    //#endregion
+    //#region destroySelectionManager
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @returns 
+     */
+    destroySelectionManager: (match, player, card) => {
+        let actionResults = {};
+
+        console.log("Destroying selection manager");
+        match.currentSelectionManager = null; //Remove the current selection manager from the match
 
         return actionResults;
     },
@@ -503,6 +529,60 @@ const serverAbilityActions = {
 
         let cardToDiscard = match.matchCardRegistry.get(actionResults.cardId);
         actionResults.discardAction = player.discardCard(cardToDiscard);
+
+        return actionResults;
+    },
+    //#endregion
+    //#region drawCards
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      cardPool: 'SELECTION' | 'DECK' | 'DISCARD',
+     *      amount: number,
+     *      reveal: boolean
+     * }} params 
+     * @returns 
+     */
+    drawCards: (match, player, card, params, targets) => {
+        let actionResults = {};
+
+        let cards = [];
+        let amount = params.amount || 1;
+        let cardPool = "";
+        switch(params.cardPool) {
+            case "SELECTION":
+                for(let i = 0; i < match.currentSelectionManager.selectedCards[0].length; i++) {
+                    //get Card from selection manager
+                    let cardId = match.currentSelectionManager.selectedCards[0][i]; //Get the first card from the selected cards
+                    let cardToDraw = match.currentSelectionManager.cardPool.find(c => c.id === cardId); //Find the card in the card pool
+                                        
+                    cards.push(cardToDraw); //Add to hand and return list
+                    player.inHand.push(cardToDraw);
+                    cardToDraw.setState("IN_HAND");
+                }
+                //remove the first array of selected cards in currentSelectionManager
+                match.currentSelectionManager.selectedCards.shift(); //Remove the first array of selected cards
+
+                cardPool = "DECK";
+                break;
+            case "DECK":
+                cardToDraw = player.deck.draw(); //Remove from player deck
+                cards.push(cardToDraw); //Add to hand and return list
+                player.inHand.push(cardToDraw);
+                cardToDraw.setState("IN_HAND");
+
+                cardPool = "DECK";
+                break;
+            default:
+                break;
+        }
+
+        actionResults.cardPool = cardPool;
+        actionResults.reveal = params.reveal || false;
+        actionResults.drawnCards = cards;
 
         return actionResults;
     },
@@ -538,6 +618,18 @@ const serverAbilityActions = {
         }
 
         return actionResults;
+    },
+    //#endregion
+    //#region hideSelectionManager
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @returns 
+     */
+    hideSelectionManager: (match, player, card) => {
+        return {};
     },
     //#endregion
     //#region playCard
@@ -622,6 +714,13 @@ const serverAbilityActions = {
     selectCards: (match, player, card, params, targets) => {
         let actionResults = {};
         
+        //Set the params to the server selection manager
+        match.currentSelectionManager.setSelectionParams({
+            target: params.target,
+            amount: params.amount
+        });
+
+        //Prepare object to send to client
         actionResults.selectedTarget = params.target;
         actionResults.selectionText = params.selectionText || "Select Cards";
         actionResults.selectionAmount = params.amount || 1;

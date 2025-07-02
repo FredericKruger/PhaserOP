@@ -238,45 +238,48 @@ class AnimationLibrary {
     }
 
     /** Animation that brings a card from the deck to 
-     * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
+     * @param {GameCardUI} movingCard - card to be moved form the mulligan ui to the deck
      * @param {number} delay - delay with which to start the tweens 
      */
-    animation_move_card_deck2hand(card, delay) {
+    animation_move_card_deck2hand(movingCard, delay) {
         let animation = [
             { // Phase 1: Quick pull from deck with slight arc
+                targets: movingCard,
                 scaleX: 0,
                 scaleY: 0.18,
-                x: card.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.2,
-                y: card.y - 10, // Slight upward movement
+                x: movingCard.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.2,
+                y: movingCard.y - 10, // Slight upward movement
                 duration: 180, // Faster initial movement
                 delay: delay,
                 ease: 'Power2.easeOut',
                 onComplete: () => {
-                    card.flipCard();
-                    card.state = CARD_STATES.TRAVELLING_DECK_HAND; // Changed state name to match others
+                    movingCard.flipCard();
+                    movingCard.state = CARD_STATES.TRAVELLING_DECK_HAND; // Changed state name to match others
                 }
             }, 
             { // Phase 2: Arc upward and reveal with bounce
+                targets: movingCard,
                 scaleX: 0.32, // Slightly larger for emphasis
                 scaleY: 0.32,
-                x: card.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.35,
-                y: card.y - 140, // Higher arc for more dramatic reveal
+                x: movingCard.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.35,
+                y: movingCard.y - 140, // Higher arc for more dramatic reveal
                 rotation: -0.05, // Slight rotation for style
                 ease: 'Back.easeOut', // More dynamic easing
                 duration: 400,
-                onComplete: () => {card.artFullyVisible = true;} // Ensure the card is fully visible
+                onComplete: () => {movingCard.artFullyVisible = true;} // Ensure the card is fully visible
             }, 
             { // Phase 3: Quick move toward hand position
+                targets: movingCard,
                 scaleX: 0.28,
                 scaleY: 0.28,
-                x: card.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.5,
-                y: card.y - 100,
+                x: movingCard.x - GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.5,
+                y: movingCard.y - 100,
                 rotation: 0, // Return to normal rotation
                 ease: 'Quad.easeInOut',
                 duration: 300,
                 onComplete: () => {
                     // Signal that the card is ready for hand positioning
-                    card.setState(CARD_STATES.TRAVELLING_TO_HAND);
+                    movingCard.setState(CARD_STATES.TRAVELLING_TO_HAND);
                 }
             }
         ];
@@ -824,6 +827,5 @@ class AnimationLibrary {
             }
         }];
     }
-
     //#endregion
 }

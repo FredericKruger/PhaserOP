@@ -23,9 +23,11 @@ class SelectionPanel extends BaseComponentUI {
         this.maxSelectCount = config.maxSelectCount || 1;
         this.selectionTitle = config.selectionTitle || "Select Cards";
         this.selectionDescription = config.selectionDescription || ``;
-        this.onSelectComplete = config.onSelectComplete || (() => {});
         this.onCancel = config.onCancel || (() => {});
         this.allowCancel = config.allowCancel !== undefined ? config.allowCancel : false;
+
+        this.selectionSent = false; // Track if selection has been sent to server
+        this.numberOfValidCards = 0; // Track number of valid cards
 
         // Setup target filter
         this.targetFilters = [];
@@ -264,8 +266,8 @@ class SelectionPanel extends BaseComponentUI {
     startSelection(params) {
         this.minSelectCount = params.amount || 1;
         this.selectionDescription = params.selectionText || ``;
+        this.selectionSent = false;
        
-        console.log("Starting selection with params:", params);
         this.setTargets(params.selectedTarget || []);
 
         //actionResults.selectedTarget = params.target;
@@ -274,9 +276,30 @@ class SelectionPanel extends BaseComponentUI {
 
         // Reset selected cards
         this.updateCardDisplays();
+        
+        //Calculate the number of valid targets
+        for(let card of this.cards) {
+            if(this.cardMeetsRequirements(card.display)) {
+                this.numberOfValidCards++;
+            }
+        }
+
+        if(this.numberOfValidCards === 0) {
+            this.confirmButton.setText("No Valid Cards");
+            this.selectionCountText.setText("No Valid Cards");
+        } else {
+            this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
+        }
     }
     //#endregion
 
+    //#region resetSelection
+    resetSelection() {
+        this.selectionSent = false;
+    }
+    //#endregion
+
+    //#region createCardDisplay
     /**
      * Create a display version of a card for selection
      * @param {Object} card - The card data
@@ -315,7 +338,9 @@ class SelectionPanel extends BaseComponentUI {
         
         return cardUI;
     }
+    //#endregion
 
+    //#region updateCardDisplays
     updateCardDisplays() {
         this.cards.forEach((card, index) => {
             const meetsRequirements = this.cardMeetsRequirements(card.display);
@@ -386,6 +411,7 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
+    //#endregion
 
     /**
      * Update the selection count text
@@ -709,18 +735,17 @@ class SelectionPanel extends BaseComponentUI {
      * Confirm the current selection
      */
     confirmSelection() {
-        if (this.selectedCards.length < this.minSelectCount) {
+        if (this.selectionSent 
+            || (this.numberOfValidCards > 0 && this.selectedCards.length < this.minSelectCount)
+        ) {
             // Can't confirm yet - not enough cards selected
             this.shakeButton(this.confirmButton);
             return;
         }
-        
-        // Animate panel disappearing
-        this.animatePanelDisappearance(() => {
-            // Call the callback with selected cards
-            console.log("Coucou")
-            //this.onSelectComplete(this.selectedCards);
-        });
+
+        let selectedCardIds = this.selectedCards.map(card => card.id);
+        this.selectionSent = true;
+        this.scene.game.gameClient.requestSendSelection(selectedCardIds);
     }
 
     /**
@@ -758,8 +783,8 @@ class SelectionPanel extends BaseComponentUI {
                         
                         if (onComplete) {
                             onComplete();
-                            this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
                         }
+                        this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
                     }
                 });
             }

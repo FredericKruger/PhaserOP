@@ -52,10 +52,13 @@
                     "amount": 1,
                     "target": [{
                         "cardtypes": ["CHARACTER"],
-                        "power": {"operator": ">", "value": 1000},
+                        "power": {"operator": ">", "value": 3000},
                         "types": ["Supernovas"]
                     }]
-                }}
+                }},
+                {"name": "hideSelectionManager", "params": {}},
+                {"name": "drawCards", "params": {"cardPool": "SELECTION", "amount": "1", "reveal": true}},
+                {"name": "destroySelectionManager", "params": {}}
             ]
         }
     ]

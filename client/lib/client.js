@@ -268,6 +268,12 @@ class Client {
         });
         //#endregion
 
+        //#region SOCKET.ON SELECTION
+        this.socket.on('game_reset_selection', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.currentSelectionManager.resetSelection();
+        });
+        //#endregion
+
         //#region SOCKET.ON ABILITY FUNCTIONS
         this.socket.on('game_ability_success', (cardId, abilityId) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.handleAbilityStatus(cardId, abilityId, true);
@@ -399,6 +405,10 @@ class Client {
     requestStartAttackCleanup () {this.socket.emit('player_start_attack_cleanup');}
     requestOnAttackEnd () {this.socket.emit('player_on_attack_end');}
     requestEndAttack() {this.socket.emit('player_end_attack');}
+    //#endregion
+
+    //#region REQUEST SELECTION
+    requestSendSelection (selectedCardIds) {this.socket.emit('player_send_selection', selectedCardIds);}
     //#endregion
 
     //#region REQUEST ABILITY
