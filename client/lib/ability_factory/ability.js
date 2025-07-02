@@ -122,8 +122,9 @@ class Ability {
     executeActions(card, abilityInfo, activePlayer) {
         let abilityTweens = [];
         for (let i = 0; i < abilityInfo.length; i++) {
-            const action = this.actions[abilityInfo[i].actionIndex];
-            const func = abilityActions[action.name];
+            //const action = this.actions[abilityInfo[i].actionIndex];
+            //const func = abilityActions[action.name];
+            const func = abilityActions[abilityInfo[i].name];
             if (func) abilityTweens = abilityTweens.concat(func(this.card.scene, card, abilityInfo[i], activePlayer));
         }
 

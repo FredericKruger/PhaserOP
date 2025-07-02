@@ -22,6 +22,7 @@ class ServerAbility {
         this.target = config.target || null; // Target of the ability
 
         this.actions = config.actions || []; // Array of actions to execute
+        this.currentActions = this.actions; // Dynamic array of actions to execute
 
         // Tracking
         this.usedThisTurn = false;
@@ -114,14 +115,20 @@ class ServerAbility {
     */
     executeActions(match, player, card, targets) {
         let actionResults = {}
-        for (let i = this.currentAction; i<this.actions.length; i++) {
+        for (let i = this.currentAction; i<this.currentActions.length; i++) {
 
-            const action = this.actions[i];
+            const action = this.currentActions[i];
             const func = serverAbilityActions[action.name];
             if (func) {
                 let results = func(match, player, card, action.params, targets);
                 results.actionIndex = i;
-                this.actionResults.push(results);
+
+                if(action.name === "IF_THEN_ELSE") {
+                    //insert results.actions behind this action in this.actions
+                    this.currentActions.splice(i + 1, 0, ...results.actionList);
+                } else {
+                    this.actionResults.push(results);
+                }
 
                 this.currentAction++;
                 if(action.name === "target") return {status: "TARGETING", targetData: results}; // Target action is not executed //Stop to start targeting
@@ -138,6 +145,7 @@ class ServerAbility {
     
         //If arrived at this stage it means it didnt leave for targeting anymore
         this.currentAction = 0;
+        this.currentActions = this.actions;
         actionResults = {
             status: "DONE",
             actionResults: this.actionResults
@@ -194,7 +202,7 @@ const serverAbilityActions = {
      * @returns 
      */
     activateExertedDon: (match, player, card, params) => {
-        let actionResults = {};
+        let actionResults = {name: "activateExertedDon"};
         actionResults.donId = [];
         actionResults.player = params.player;
 
@@ -229,7 +237,7 @@ const serverAbilityActions = {
      * @returns 
      */
     addCounterToCard: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "addCounterToCard"};
         actionResults.defenderId = -1;
         actionResults.counterAmount = 0;
 
@@ -259,7 +267,7 @@ const serverAbilityActions = {
      * @returns 
      */
     addPowerToCard: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "addPowerToCard"};
         actionResults.cardId = -1;
         actionResults.addedPower = params.amount;
         actionResults.duration = params.duration;
@@ -303,7 +311,7 @@ const serverAbilityActions = {
      * @returns 
      */
     attachDonCard: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "attachDonCard"};
         actionResults.targetId = -1;
         actionResults.donId = [];
         actionResults.pile = params.pile;
@@ -368,7 +376,7 @@ const serverAbilityActions = {
      * @returns 
      */
     changeCardState: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "changeCardState"};
         actionResults.restedCardId = -1;
         actionResults.cardState = params.state;
 
@@ -402,7 +410,7 @@ const serverAbilityActions = {
      * @returns 
      */
     createAura: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "createAura"};
 
         let targetCard = null;
         switch(params.target) {
@@ -441,7 +449,7 @@ const serverAbilityActions = {
      * @returns 
      */
     createSelectionManager: (match, player, card, params) => {
-        let actionResults = {};
+        let actionResults = {name: "createSelectionManager"};
 
         let selectedCards = [];
         let amount = params.amount;
@@ -495,7 +503,7 @@ const serverAbilityActions = {
      * @returns 
      */
     destroySelectionManager: (match, player, card) => {
-        let actionResults = {};
+        let actionResults = {name: "destroySelectionManager"};
 
         console.log("Destroying selection manager");
         match.currentSelectionManager = null; //Remove the current selection manager from the match
@@ -516,7 +524,7 @@ const serverAbilityActions = {
      * @returns 
      */
     discardCard: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "discardCard"};
 
         switch(params.target) {
             case "SELF":
@@ -547,7 +555,7 @@ const serverAbilityActions = {
      * @returns 
      */
     drawCards: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "drawCards"};
 
         let cards = [];
         let amount = params.amount || 1;
@@ -601,7 +609,7 @@ const serverAbilityActions = {
      * @returns 
      */
     drawCardsToPanel: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "drawCardsToPanel"};
 
         actionResults.drawnCards = [];
 
@@ -629,7 +637,72 @@ const serverAbilityActions = {
      * @returns 
      */
     hideSelectionManager: (match, player, card) => {
-        return {};
+        return {name: "hideSelectionManager"};
+    },
+    //#endregion
+    //#region IF_THEN_ELSE
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @returns 
+     */
+    IF_THEN_ELSE: (match, player, card, params) => {
+        let actionResults = {name: "IF_THEN_ELSE"};
+
+        //Check conditions
+        let conditionResults = true;
+        
+        if(params.conditions) {
+            for(let condition of params.conditions) {
+                let conditionResult = false; //Reset condition result for each condition
+                
+                switch (condition.type) {
+                    case "SELECTION_COUNT": {
+                        const count = match.currentSelectionManager.selectedCards[condition.selectionIndex].length; //Get the first array of selected cards
+                        
+                        switch (condition.operator) {
+                            case ">": 
+                                conditionResult = count > condition.value;
+                                break;
+                            case ">=": 
+                                conditionResult = count >= condition.value;
+                                break;
+                            case "=": 
+                            case "==": 
+                                conditionResult = count === condition.value;
+                                break;
+                            case "<=": 
+                                conditionResult = count <= condition.value;
+                                break;
+                            case "<": 
+                                conditionResult = count < condition.value;
+                                break;
+                            case "!=": 
+                                conditionResult = count !== condition.value;
+                                break;
+                        }
+                    }
+                }
+
+                if(!conditionResult) {
+                    conditionResults = false;
+                    break;
+                }
+            }
+        }
+
+        if(conditionResults) {
+            //insert then actions behind this action
+            console.log("IF_THEN_ELSE: Conditions met, executing then actions");
+            actionResults.actionList = params.then;
+        } else {
+            //insert else actions behind this action
+            console.log("IF_THEN_ELSE: Conditions not met, executing else actions");
+            actionResults.actionList = params.else;
+        }
+
+        return actionResults;
     },
     //#endregion
     //#region playCard
@@ -646,7 +719,7 @@ const serverAbilityActions = {
      */
     playCard: (match, player, card, params, targets) => {
         //creating Play Card Action
-        let actionResults = {};
+        let actionResults = {name: "playCard"};
 
         let cardToPlay = card;
         if(params.target === "TARGET") {
@@ -677,7 +750,7 @@ const serverAbilityActions = {
      * @returns 
      */
     restDon: (match, player, card, params) => {
-        let actionResults = {};
+        let actionResults = {name: "restDon"};
         actionResults.donId = [];
         actionResults.player = params.player;
 
@@ -712,7 +785,7 @@ const serverAbilityActions = {
      * @returns 
      */
     selectCards: (match, player, card, params, targets) => {
-        let actionResults = {};
+        let actionResults = {name: "selectCards"};
         
         //Set the params to the server selection manager
         match.currentSelectionManager.setSelectionParams({
@@ -739,7 +812,10 @@ const serverAbilityActions = {
      * @returns 
      */
     target: (match, player, card, params) => {
-        return params.target; // Return the target id
+        return {
+            name: "target",
+            target: params.target
+        }; // Return the target id
     }
 };
 

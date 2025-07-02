@@ -52,13 +52,21 @@
                     "amount": 1,
                     "target": [{
                         "cardtypes": ["CHARACTER"],
-                        "power": {"operator": ">", "value": 3000},
+                        "power": {"operator": ">", "value": 1000},
                         "types": ["Supernovas"]
                     }]
                 }},
                 {"name": "hideSelectionManager", "params": {}},
-                {"name": "drawCards", "params": {"cardPool": "SELECTION", "amount": "1", "reveal": true}},
-                {"name": "destroySelectionManager", "params": {}}
+                {"name": "IF_THEN_ELSE", "params": {
+                    "conditions": [
+                        {"type": "SELECTION_COUNT", "selectionIndex": 0, "operator": "=", "value": 1}
+                    ],
+                    "then": [
+                        {"name": "drawCards", "params": {"cardPool": "SELECTION", "amount": "1", "reveal": true}},
+                        {"name": "destroySelectionManager", "params": {}}
+                    ],
+                    "else": []
+                }}
             ]
         }
     ]
