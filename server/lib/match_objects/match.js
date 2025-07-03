@@ -1188,8 +1188,9 @@ class Match {
      * 
      * @param {Player} player 
      * @param {Array<integer>} selectedCardIds 
+     * @param {string} destination - The destination where the cards will be moved
      */
-    resolvePendingSelection(player, selectedCardIds) {
+    resolvePendingSelection(player, selectedCardIds, destination) {
         //Check if the selectedCards match the conditions
         let selectedCardsValid = this.currentSelectionManager.checkSelectedCards(selectedCardIds);
 
@@ -1198,7 +1199,7 @@ class Match {
             if(!player.bot) player.socket.emit('game_reset_selection');
         } else {
             //Add cards to selection Manager
-            this.currentSelectionManager.addSelectedCards(selectedCardIds);
+            this.currentSelectionManager.addSelectedCards(selectedCardIds, destination);
 
             let actionInfos = this.state.pending_action.actionInfos;
             let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, []);

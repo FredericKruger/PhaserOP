@@ -408,7 +408,7 @@ class Client {
     //#endregion
 
     //#region REQUEST SELECTION
-    requestSendSelection (selectedCardIds) {this.socket.emit('player_send_selection', selectedCardIds);}
+    requestSendSelection (selectedCardIds, destination) {this.socket.emit('player_send_selection', selectedCardIds, destination);}
     //#endregion
 
     //#region REQUEST ABILITY

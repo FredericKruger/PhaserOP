@@ -562,9 +562,10 @@ const serverAbilityActions = {
         let cardPool = "";
         switch(params.cardPool) {
             case "SELECTION":
-                for(let i = 0; i < match.currentSelectionManager.selectedCards[0].length; i++) {
+                let selectionIndex = params.selectionIndex;
+                for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
                     //get Card from selection manager
-                    let cardId = match.currentSelectionManager.selectedCards[0][i]; //Get the first card from the selected cards
+                    let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
                     let cardToDraw = match.currentSelectionManager.cardPool.find(c => c.id === cardId); //Find the card in the card pool
                                         
                     cards.push(cardToDraw); //Add to hand and return list
@@ -797,6 +798,9 @@ const serverAbilityActions = {
         actionResults.selectedTarget = params.target;
         actionResults.selectionText = params.selectionText || "Select Cards";
         actionResults.selectionAmount = params.amount || 1;
+        actionResults.keepPreviousSelection = params.keepPreviousSelection !== undefined ? params.keepPreviousSelection : true;
+        actionResults.orderCards = params.orderCards !== undefined ? params.orderCards : false;
+        actionResults.confirmButtons = params.confirmButtons !== undefined ? params.confirmButtons : ["OK"];
         
         return actionResults;
     },

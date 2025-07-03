@@ -35,6 +35,12 @@ class SelectionPanel extends BaseComponentUI {
         // Card tracking
         this.cards = [];
         this.selectedCards = [];
+        this.previouslySelectedCards = []; // Track cards selected in previous steps
+        this.selectionStep = 0; // Track which selection step we're on
+        this.keepPreviousSelection = true; // Whether to keep previously selected cards
+        this.orderCards = false; // Whether to order cards in the selection UI
+
+        this.confirmButtons = []; // Store confirm buttons created dynamically
         
         // Create UI elements
         this.createBackdrop();
@@ -54,7 +60,7 @@ class SelectionPanel extends BaseComponentUI {
      */
     cardMeetsRequirements(card) {       
         // Use the Target class isValidTarget method to determine if card meets requirements
-        if(!this.targetFilters.length === 0) return true; // No filter means all cards are valid
+        if(this.targetFilters.length === 0) return true; // No filter means all cards are valid
 
         for(let target of this.targetFilters) {
             if(target.isValidTarget(card)) return true;
@@ -157,7 +163,7 @@ class SelectionPanel extends BaseComponentUI {
     createButtons() {
         const allowCancelMultiplier = this.allowCancel ? 1 : 0;
 
-        this.confirmButton = new Button({
+        /*this.confirmButton = new Button({
             scene: this.scene,
             x: this.scene.screenCenterX + 140 * allowCancelMultiplier, 
             y: this.scene.screenHeight*0.8,
@@ -173,7 +179,7 @@ class SelectionPanel extends BaseComponentUI {
         }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
         this.confirmButton.on('pointerdown', () => {
             this.confirmSelection();
-        });
+        });*/
                 
         if (this.allowCancel) {
             this.cancelButton = new Button({
@@ -218,7 +224,106 @@ class SelectionPanel extends BaseComponentUI {
 
         this.isPanelVisible = true; // Track panel visibility state
 
-        this.obj.push(this.confirmButton, this.toggleButton);
+        this.obj.push(this.toggleButton);
+    }
+    //#endregion
+
+    //#region updateConfirmButtons
+    /**
+     * Update or create confirm buttons based on confirmButtonsList
+     * @param {Array} confirmButtonsList - List of button types: ["TOP", "BOTTOM", "OK"]
+     */
+    updateConfirmButtons(confirmButtonsList) {
+        // Clean up existing confirm buttons
+        this.confirmButtons.forEach(button => {
+            button.destroy();
+        });
+        this.confirmButtons = [];
+        
+        // If no confirmButtonsList provided, restore default button
+        if (!confirmButtonsList || confirmButtonsList.length === 0) {
+            const allowCancelMultiplier = this.allowCancel ? 1 : 0;
+            
+            this.confirmButton = new Button({
+                scene: this.scene,
+                x: this.scene.screenCenterX + 140 * allowCancelMultiplier, 
+                y: this.scene.screenHeight * 0.8,
+                width: 150,
+                height: 40,
+                radius: 5,
+                backgroundcolor: COLOR_ENUMS.OP_CREAM,
+                outlinecolor: COLOR_ENUMS.OP_CREAM_DARKER,
+                text: "Confirm",
+                fontsize: 30,
+                fontfamily: "OnePieceFont",
+                textColor: COLOR_ENUMS_CSS.OP_BLACK,
+            }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+            
+            this.confirmButton.on('pointerdown', () => {
+                this.confirmSelection("OK");
+            });
+            
+            this.obj.push(this.confirmButton);
+            this.confirmButtons.push(this.confirmButton);
+            return;
+        }
+        
+        // Calculate positions based on number of buttons
+        const totalButtons = confirmButtonsList.length;
+        const totalWidth = totalButtons * 170; // 150px width + 20px margin
+        const startX = this.scene.screenCenterX - (totalWidth / 2) + 85; // Center the buttons
+        
+        // Create a button for each type in confirmButtonsList
+        confirmButtonsList.forEach((buttonType, index) => {
+            let buttonText = "Confirm";
+            let buttonColor = COLOR_ENUMS.OP_CREAM;
+            let buttonBorderColor = COLOR_ENUMS.OP_CREAM_DARKER;
+            let textColor = COLOR_ENUMS_CSS.OP_BLACK;
+            
+            // Set button properties based on type
+            switch (buttonType) {
+                case "TOP":
+                    buttonText = "Send to Top";
+                    buttonColor = COLOR_ENUMS.OP_BLUE;
+                    buttonBorderColor = COLOR_ENUMS.OP_BLUE_DARKER;
+                    textColor = COLOR_ENUMS_CSS.OP_WHITE;
+                    break;
+                case "BOTTOM":
+                    buttonText = "Send to Bottom";
+                    buttonColor = COLOR_ENUMS.OP_RED;
+                    buttonBorderColor = COLOR_ENUMS.OP_RED_DARKER;
+                    textColor = COLOR_ENUMS_CSS.OP_WHITE;
+                    break;
+                case "OK":
+                default:
+                    buttonText = "Confirm";
+                    break;
+            }
+            
+            // Create the button
+            const button = new Button({
+                scene: this.scene,
+                x: startX + (index * 170), 
+                y: this.scene.screenHeight * 0.8,
+                width: 150,
+                height: 40,
+                radius: 5,
+                backgroundcolor: buttonColor,
+                outlinecolor: buttonBorderColor,
+                text: buttonText,
+                fontsize: 22,
+                fontfamily: "OnePieceFont",
+                textColor: textColor,
+            }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
+            
+            // Add click handler with the specific button type
+            button.on('pointerdown', () => {
+                this.confirmSelection(buttonType);
+            });
+            
+            this.obj.push(button);
+            this.confirmButtons.push(button);
+        });
     }
     //#endregion
 
@@ -243,34 +348,50 @@ class SelectionPanel extends BaseComponentUI {
             this.cards.push({
                 card: card,
                 display: cardObj,
+                originalY: cardObj.y, // Store original Y position
                 selected: false,
-                meetsRequirements: meetsRequirements
+                meetsRequirements: meetsRequirements,
+                wasPreviouslySelected: false
             });
         });
         
         // Reset and show the UI
         this.updateSelectionCountText();
-        this.updateConfirmButtonState();
         
         //Set Game State to passive
         this.scene.gameState.exit(GAME_STATES.NO_INTERACTION);
 
-        this.setVisible(true);
-        
-        // Animate panel appearance
-        this.animatePanelAppearance();
+        // If this is the first step, animate the panel in
+        if (this.selectionStep === 0) {
+            this.setVisible(true);
+            this.animatePanelAppearance();
+        }
     }
     //#endregion
 
     //#region startSelection
     startSelection(params) {
-        this.minSelectCount = params.amount || 1;
+        this.minSelectCount = params.selectionAmount;
         this.selectionDescription = params.selectionText || ``;
         this.selectionSent = false;
+        this.keepPreviousSelection = params.keepPreviousSelection;
+        this.orderCards = params.orderCards;
+        this.confirmButtonsList = params.confirmButtons;
        
         this.setTargets(params.selectedTarget || []);
 
-        //actionResults.selectedTarget = params.target;
+        // Increment selection step
+        this.selectionStep++;
+
+        // Clear previous selection if not keeping it
+        if (!this.keepPreviousSelection) {
+            // Remember previously selected cards
+            this.previouslySelectedCards = this.previouslySelectedCards.concat(this.selectedCards);
+        }
+        // Clear current selection
+        this.selectedCards = [];
+
+        this.updateConfirmButtons(this.confirmButtonsList);
         this.updateSelectionCountText();
         this.descriptionText.setText(this.selectionDescription);
 
@@ -285,10 +406,10 @@ class SelectionPanel extends BaseComponentUI {
         }
 
         if(this.numberOfValidCards === 0) {
-            this.confirmButton.setText("No Valid Cards");
+            //this.confirmButton.setText("No Valid Cards");
             this.selectionCountText.setText("No Valid Cards");
         } else {
-            this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
+            //this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
         }
     }
     //#endregion
@@ -327,7 +448,7 @@ class SelectionPanel extends BaseComponentUI {
             scale: CARD_SCALE.IN_MULLIGAN,
             artVisible: true,
             depth: DEPTH_VALUES.CARD_IN_MULLIGAN + 1,
-            id: card.id
+            id: card.id,
         });
         cardUI.setScale(0);
         
@@ -343,16 +464,46 @@ class SelectionPanel extends BaseComponentUI {
     //#region updateCardDisplays
     updateCardDisplays() {
         this.cards.forEach((card, index) => {
+           // Check if card was previously selected (and we're not keeping those selections)
+            const wasPreviouslySelected = !this.keepPreviousSelection && 
+                this.previouslySelectedCards.some(prevCard => prevCard.id === card.card.id);
+              
             const meetsRequirements = this.cardMeetsRequirements(card.display);
 
             card.meetsRequirements = meetsRequirements; // Update the card's meetsRequirements state
+            card.wasPreviouslySelected = wasPreviouslySelected; // Update the card's previously selected state
 
             card.display.setInteractive({ useHandCursor: true });
 
-            const y = card.display.y;
+            //Untoggle if any is already selected
+            if(card.selected) {
+                this.toggleCardSelection(index, true); //remove selection
+                // Reset to initial position and scale
+                this.scene.tweens.killTweensOf(card.display);
+                card.display.y = card.originalY; // Adjust Y position (undo the -30 from selection)
+                card.display.setScale(CARD_SCALE.IN_MULLIGAN); // Reset to original scale
+            }
         
+            console.log(index + ": " + card.display.id + " meets requirements: " + meetsRequirements + " was previously selected: " + wasPreviouslySelected);
+
+            // Remove any previous "Unavailable" text and overlay if they exist
+            if (card.unavailableText) {
+                card.unavailableText.destroy();
+                card.unavailableText = null;
+            }
+            
+            if (card.overlay) {
+                card.overlay.destroy();
+                card.overlay = null;
+            }
+
+            // Remove any previous event listeners to prevent duplicates
+            card.display.removeAllListeners('pointerdown');
+            card.display.removeAllListeners('pointerover');
+            card.display.removeAllListeners('pointerout');
+
             // Add visual feedback if card doesn't meet requirements
-            if (!meetsRequirements) {
+            if (!meetsRequirements || wasPreviouslySelected) {
                 card.display.setAlpha(0.8);
                 
                 // Add a overlay to indicate card doesn't meet requirements
@@ -364,6 +515,7 @@ class SelectionPanel extends BaseComponentUI {
                 ).setOrigin(0.5);
                 
                 card.display.add(overlay);
+                card.overlay = overlay; // Store reference for later cleanup
                 
                 const unavailableText = this.scene.add.text(
                     0, 0,
@@ -378,7 +530,11 @@ class SelectionPanel extends BaseComponentUI {
                 ).setOrigin(0.5).setAngle(-30);
                 
                 card.display.add(unavailableText);
+                card.unavailableText = unavailableText; // Store reference for later removal
+
             } else {
+                card.display.setAlpha(1);
+
                 // Add selection events for eligible cards
                 card.display.on('pointerdown', () => {
                     this.toggleCardSelection(index);
@@ -389,7 +545,7 @@ class SelectionPanel extends BaseComponentUI {
                     if (!card.selected) {
                         this.scene.tweens.add({
                             targets: card.display,
-                            y: y - 15,
+                            y: card.originalY - 15,
                             scale: CARD_SCALE.IN_MULLIGAN * 1.1,
                             duration: 200,
                             ease: 'Sine.easeOut'
@@ -401,7 +557,7 @@ class SelectionPanel extends BaseComponentUI {
                     if (!card.selected) {
                         this.scene.tweens.add({
                             targets: card.display,
-                            y: y,
+                            y: card.originalY,
                             scale: CARD_SCALE.IN_MULLIGAN,
                             duration: 200,
                             ease: 'Sine.easeOut'
@@ -413,36 +569,66 @@ class SelectionPanel extends BaseComponentUI {
     }
     //#endregion
 
+    //#region animateCardRefresh
+    /**
+     * Animate refreshing the cards for a new selection step
+     */
+    animateCardRefresh() {
+        // Fade out all existing cards
+        const cardDisplays = this.cards.map(c => c.display);
+        
+        // Update description text with new info
+        this.scene.tweens.add({
+            targets: this.descriptionText,
+            alpha: 0,
+            duration: 150,
+            yoyo: true,
+            ease: 'Sine.easeInOut'
+        });
+        
+        // Scale down cards, then bring new ones in
+        this.scene.tweens.add({
+            targets: cardDisplays,
+            scale: 0.1,
+            alpha: 0.5,
+            duration: 300,
+            ease: 'Back.easeIn',
+            onComplete: () => {
+                // Bring new cards in with staggered timing
+                this.cards.forEach((cardItem, index) => {
+                    this.scene.tweens.add({
+                        targets: cardItem.display,
+                        scale: 0.35,
+                        alpha: 1,
+                        delay: index * 30,
+                        duration: 300,
+                        ease: 'Back.easeOut'
+                    });
+                });
+            }
+        });
+    }
+    //#endregion
+
+    //#region updateSelectionCountText
     /**
      * Update the selection count text
      */
     updateSelectionCountText() {
-        this.selectionCountText.setText(`Selected: ${this.selectedCards.length}/${this.maxSelectCount}`);
+        this.selectionCountText.setText(`Selected: ${this.selectedCards.length}/${this.minSelectCount}`);
         
         // Color based on whether we've met minimum requirements
         if (this.selectedCards.length < this.minSelectCount) {
             this.selectionCountText.setColor('#FF9999');
-        } else if (this.selectedCards.length === this.maxSelectCount) {
+        } else if (this.selectedCards.length === this.minSelectCount) {
             this.selectionCountText.setColor('#99FFAA');
         } else {
             this.selectionCountText.setColor('#FFFFFF');
         }
     }
+    //#endregion
 
-    /**
-     * Update the state of the confirm button
-     */
-    updateConfirmButtonState() {
-        const canConfirm = this.selectedCards.length >= this.minSelectCount;
-        this.confirmButton.setInteractive(canConfirm);
-        
-        if (canConfirm) {
-            this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
-        } else {
-            this.confirmButton.setText(`Need ${this.minSelectCount - this.selectedCards.length} More`);
-        }
-    }
-
+    //#region animatePanelAppearance
     /**
      * Animate the panel appearing
      */
@@ -451,7 +637,6 @@ class SelectionPanel extends BaseComponentUI {
         this.titleText.setAlpha(0);
         this.descriptionText.setAlpha(0);
         this.selectionCountText.setAlpha(0);
-        this.confirmButton.setAlpha(0);
         this.toggleButton.setAlpha(0); // Also start with toggle button hidden
         
         if (this.allowCancel) {
@@ -474,7 +659,7 @@ class SelectionPanel extends BaseComponentUI {
                 });
                 
                 // Fade in buttons
-                const buttonTargets = [this.confirmButton, this.toggleButton];
+                const buttonTargets = [this.toggleButton];
                 if (this.allowCancel) buttonTargets.push(this.cancelButton);
                 
                 this.scene.tweens.add({
@@ -500,7 +685,9 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
+    //#endregion
 
+    //#region clearCardDisplays
     /**
      * Clear all card display objects
      */
@@ -514,7 +701,9 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
+    //#endregion
 
+    //#region togglePanelVisibility
     /**
      * Toggle the panel visibility between shown and hidden states
      */
@@ -530,7 +719,9 @@ class SelectionPanel extends BaseComponentUI {
         // Toggle state
         this.isPanelVisible = !this.isPanelVisible;
     }
+    //#endregion
 
+    //#region hidePanel
     /**
      * Hide panel elements except toggle button
      */
@@ -565,7 +756,9 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
+    //#endregion
 
+    //#region showPanel
     /**
      * Show all panel elements
      */
@@ -600,19 +793,21 @@ class SelectionPanel extends BaseComponentUI {
             ease: 'Sine.easeIn'
         });
     }
+    //#endregion
 
+    //#region toggleCardSelection
     /**
      * Toggle selection state for a card
      * @param {number} index - The index of the card in the cards array
      */
-    toggleCardSelection(index) {
+    toggleCardSelection(index, forceToggle = false) {
         const cardItem = this.cards[index];
         
         // Skip if card doesn't meet requirements
-        if (!this.cardMeetsRequirements(cardItem.display)) return;
+        if (!forceToggle && !this.cardMeetsRequirements(cardItem.display)) return;
         
         // Check if we're at max selections and trying to select another
-        if (!cardItem.selected && this.selectedCards.length >= this.maxSelectCount) {
+        if (!forceToggle && !cardItem.selected && this.selectedCards.length >= this.minSelectCount) {
             this.shakeCard(cardItem.display);
             return;
         }
@@ -632,23 +827,39 @@ class SelectionPanel extends BaseComponentUI {
                 duration: 200,
                 ease: 'Back.easeOut'
             });
-            
-            // Add selection indicator
-            /*const checkmark = this.scene.add.image(
-                cardItem.display.x + cardItem.display.width * 0.4,
-                cardItem.display.y - cardItem.display.height * 0.4,
-                ASSET_ENUMS.CHECKMARK_ICON
-            ).setScale(0).setDepth(DEPTH_VALUES.UI_FOREGROUND + 2);
-            
-            this.scene.tweens.add({
-                targets: checkmark,
-                scale: 0.8,
-                duration: 300,
-                ease: 'Back.easeOut'
-            });
-            
-            this.obj.push(checkmark);
-            cardItem.checkmark = checkmark;*/
+
+            // Add selection number indicator
+            if (this.orderCards) {
+                // Create number text
+                const selectionNumber = this.scene.add.text(
+                    cardItem.display.x,
+                    cardItem.display.y - 30,
+                    this.selectedCards.length.toString(),
+                    {
+                        fontFamily: 'OnePieceTCGFont',
+                        fontSize: '80px',
+                        color: '#FFFFFF',
+                        stroke: '#000000',
+                        strokeThickness: 5
+                    }
+                ).setOrigin(0.5).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN + 3);
+
+                // Store references for later removal
+                cardItem.selectionNumber = selectionNumber;
+
+                // Add to objects array for management
+                this.obj.push(selectionNumber);
+
+                // Animate number appearing
+                selectionNumber.setScale(0);
+                
+                this.scene.tweens.add({
+                    targets: [selectionNumber],
+                    scale: 1,
+                    duration: 300,
+                    ease: 'Back.easeOut'
+                });
+            }
             
             // Add glow effect
             cardItem.display.showGlow(COLOR_ENUMS.OP_ORANGE);
@@ -667,20 +878,21 @@ class SelectionPanel extends BaseComponentUI {
                 duration: 200,
                 ease: 'Sine.easeOut'
             });
-            
-            // Remove checkmark with animation
-            /*if (cardItem.checkmark) {
+
+            // Remove number indicator if it exists
+            if(cardItem.selectionNumber && this.orderCards) {
                 this.scene.tweens.add({
-                    targets: cardItem.checkmark,
+                    targets: [cardItem.selectionNumber],
                     scale: 0,
                     duration: 200,
                     ease: 'Back.easeIn',
                     onComplete: () => {
-                        cardItem.checkmark.destroy();
-                        cardItem.checkmark = null;
+                        cardItem.selectionNumber.destroy();
+                        cardItem.selectionNumber = null;
+                        this.updateSelectionNumbers();
                     }
                 });
-            }*/
+            }
             
             // Remove glow
             cardItem.display.hideGlow();
@@ -688,9 +900,43 @@ class SelectionPanel extends BaseComponentUI {
         
         // Update UI elements
         this.updateSelectionCountText();
-        this.updateConfirmButtonState();
     }
+    //#endregion
 
+    //#region updateSelectionNumbers
+    /**
+     * Update the selection numbers on all selected cards
+     * to reflect their current order in the selectedCards array
+     */
+    updateSelectionNumbers(currentNumber) {
+        if (!this.orderCards) return;
+        
+        // Update numbers on all selected cards
+        this.cards.forEach(cardItem => {
+            if (cardItem.selected && cardItem.selectionNumber) {
+                // Find the card's index in the selectedCards array
+                const cardIndex = this.selectedCards.findIndex(c => c.id === cardItem.card.id);
+                
+                if (cardIndex !== -1) {
+                    // Update the number text
+                    cardItem.selectionNumber.setText((cardIndex + 1).toString());
+                    
+                    // Briefly highlight the number to show it's been updated
+                    this.scene.tweens.add({
+                        targets: [cardItem.selectionNumber],
+                        scaleX: 1.2,
+                        scaleY: 1.2,
+                        duration: 150,
+                        yoyo: true,
+                        ease: 'Sine.easeInOut'
+                    });
+                }
+            }
+        });
+    }
+    //#endregion
+
+    //#region shakeCard
     /**
      * Shake a card to indicate it can't be selected
      * @param {Phaser.GameObjects.Container} card - The card to shake
@@ -710,7 +956,9 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
+    //#endregion
 
+    //#region shakeButton
     /**
      * Shake a button to indicate it can't be pressed
      * @param {Button} button - The button to shake
@@ -730,11 +978,13 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
+    //#endregion
 
+    //#region confirmSelection
     /**
      * Confirm the current selection
      */
-    confirmSelection() {
+    confirmSelection(destinationButton) {
         if (this.selectionSent 
             || (this.numberOfValidCards > 0 && this.selectedCards.length < this.minSelectCount)
         ) {
@@ -743,11 +993,19 @@ class SelectionPanel extends BaseComponentUI {
             return;
         }
 
+        let destination = "";
+        if( destinationButton === "TOP") 
+            destination = "TOP";
+        else if( destinationButton === "BOTTOM") 
+            destination = "BOTTOM";
+
         let selectedCardIds = this.selectedCards.map(card => card.id);
         this.selectionSent = true;
-        this.scene.game.gameClient.requestSendSelection(selectedCardIds);
+        this.scene.game.gameClient.requestSendSelection(selectedCardIds, destination);
     }
+    //#endregion
 
+    //#region animatePanelDisappearance
     /**
      * Animate the panel disappearing
      * @param {Function} onComplete - Callback when animation completes
@@ -765,7 +1023,7 @@ class SelectionPanel extends BaseComponentUI {
                 // Then fade out UI elements
                 const uiElements = [
                     this.titleText, this.descriptionText, 
-                    this.selectionCountText, this.confirmButton
+                    this.selectionCountText, ...this.confirmButtons, this.toggleButton
                 ];
                 
                 if (this.allowCancel) {
@@ -790,5 +1048,6 @@ class SelectionPanel extends BaseComponentUI {
             }
         });
     }
+    //#endregion
 
 }

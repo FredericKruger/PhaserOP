@@ -893,7 +893,6 @@ const abilityActions = {
         tweens.push({
             onStart: () => {
                 // Start the selection process
-                console.log("Starting Selection");
                 scene.currentSelectionManager.startSelection(info);
             },
             targets: {},

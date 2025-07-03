@@ -7,7 +7,7 @@ class Target {
         // Check if serverTarget exists
         if (!serverTarget) {
             // Set default empty values if serverTarget is null/undefined
-            this.players = [];
+            this.player = [];
             this.cardtypes = [];
             this.cost = {};
             this.states = [];

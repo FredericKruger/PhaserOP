@@ -16,6 +16,8 @@ class SelectionManager {
         this.cardPool = [];
         /**@type {Array<Array<integer>>} */
         this.selectedCards = [];
+        /** @type {Array<string>} */
+        this.selectedCardsDestinations = [];
         /**@type {Array<integer>} */
         this.remainingCards = [];
     }
@@ -32,7 +34,7 @@ class SelectionManager {
      * Adds the selected card ids to the selection manager.
      * @param {Array<integer>} selectedCardIds - The ids of the selected cards.
     */
-    addSelectedCards(selectedCardIds) {
+    addSelectedCards(selectedCardIds, destination = "") {
         //remove selected cards from remaining cards
         for (let i = 0; i < selectedCardIds.length; i++) {
             const cardIndex = this.remainingCards.indexOf(selectedCardIds[i]);
@@ -43,6 +45,7 @@ class SelectionManager {
 
         // Add Cards 
         this.selectedCards.push(selectedCardIds);
+        this.selectedCardsDestinations.push(destination);
     }
 
     /** 
@@ -74,6 +77,8 @@ class SelectionManager {
 
     setSelectionParams(selectionParams) {
         this.currentSelectionParams = selectionParams;
+
+        let target = selectionParams.target || null;
 
         // Get number of valid targets
         this.currentNumberOfValidTargets = 0;
