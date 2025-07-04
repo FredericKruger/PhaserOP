@@ -71,13 +71,13 @@
                         }},
                         {"name": "hideSelectionManager", "params": {}},
                         {"name": "drawCards", "params": {"cardPool": "SELECTION", "selectionIndex": 0, "amount": "1", "reveal": true}},
-                        {"name": "destroySelectionManager", "params": {}}
+                        {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION", "selectionIndex": 1, "from": "TOP", "to": "BOTTOM"}}
                     ],
                     "else": [
-                        {"name": "hideSelectionManager", "params": {}},
-                        {"name": "destroySelectionManager", "params": {}}
+                        {"name": "hideSelectionManager", "params": {}}
                     ]
-                }}
+                }},
+                {"name": "destroySelectionManager", "params": {}}
             ]
         }
     ]

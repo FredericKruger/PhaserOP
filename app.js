@@ -275,7 +275,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     }); //Ask the passive player to send a message when all pending action are complete
     socket.on('player_current_turn_completed_passiveplayer', () => {socket.player.match.checkEndOfTurnAbilities();});
 
-    socket.on('player_send_selection', (selectedCardIds) => {socket.player.match.resolvePendingSelection(socket.player, selectedCardIds, destination);});
+    socket.on('player_send_selection', (selectedCardIds, destination) => {socket.player.match.resolvePendingSelection(socket.player, selectedCardIds, destination);});
 
     socket.on('player_surrender', () => {socket.player.match.endGame(socket.player.currentOpponentPlayer, socket.player);});
 

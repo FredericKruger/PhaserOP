@@ -22,7 +22,7 @@ class ServerAbility {
         this.target = config.target || null; // Target of the ability
 
         this.actions = config.actions || []; // Array of actions to execute
-        this.currentActions = this.actions; // Dynamic array of actions to execute
+        this.currentActions = [...this.actions]; // Dynamic array of actions to execute
 
         // Tracking
         this.usedThisTurn = false;
@@ -114,7 +114,7 @@ class ServerAbility {
      * @param {Match} match
     */
     executeActions(match, player, card, targets) {
-        let actionResults = {}
+        let actionResults = {};
         for (let i = this.currentAction; i<this.currentActions.length; i++) {
 
             const action = this.currentActions[i];
@@ -123,29 +123,41 @@ class ServerAbility {
                 let results = func(match, player, card, action.params, targets);
                 results.actionIndex = i;
 
-                if(action.name === "IF_THEN_ELSE") {
-                    //insert results.actions behind this action in this.actions
-                    this.currentActions.splice(i + 1, 0, ...results.actionList);
-                } else {
-                    this.actionResults.push(results);
-                }
-
                 this.currentAction++;
-                if(action.name === "target") return {status: "TARGETING", targetData: results}; // Target action is not executed //Stop to start targeting
-                else if(action.name === "selectCards"){
-                    actionResults = {
-                        status: "SELECTING",
-                        actionResults: this.actionResults
-                    };
-                    this.actionResults = [];
-                    return actionResults;
-                } 
+
+                if(action.name === "IF_THEN_ELSE") {
+                    //console.log("IF_THEN_ELSE: Conditions met, executing then actions ",);
+                    //insert results.actions behind this action in this.actions
+                    //console.log("PREVIOUS ACTIONS")
+                    //console.log(this.currentActions);
+                    //console.log("ADDING NEW ACTIONS")
+                    //console.log(results.actionList);
+                    this.currentActions.splice(i + 1, 0, ...results.actionList);
+                    //this.currentActions.splice.apply(this.currentActions, [i + 1, 0].concat(results.actionList));
+                    //console.log("NEW ACTION LIST")
+                    //console.log(this.currentActions);
+
+                    //this.currentAction++;
+                } else {
+                    //this.currentAction++;
+                    this.actionResults.push(results);
+
+                    if(action.name === "target") return {status: "TARGETING", targetData: results}; // Target action is not executed //Stop to start targeting
+                    else if(action.name === "selectCards"){
+                        actionResults = {
+                            status: "SELECTING",
+                            actionResults: this.actionResults
+                        };
+                        this.actionResults = [];
+                        return actionResults;
+                    } 
+                }
             }
         }
     
         //If arrived at this stage it means it didnt leave for targeting anymore
         this.currentAction = 0;
-        this.currentActions = this.actions;
+        this.currentActions = [...this.actions];
         actionResults = {
             status: "DONE",
             actionResults: this.actionResults
@@ -572,9 +584,6 @@ const serverAbilityActions = {
                     player.inHand.push(cardToDraw);
                     cardToDraw.setState("IN_HAND");
                 }
-                //remove the first array of selected cards in currentSelectionManager
-                match.currentSelectionManager.selectedCards.shift(); //Remove the first array of selected cards
-
                 cardPool = "DECK";
                 break;
             case "DECK":
@@ -702,6 +711,58 @@ const serverAbilityActions = {
             console.log("IF_THEN_ELSE: Conditions not met, executing else actions");
             actionResults.actionList = params.else;
         }
+
+        return actionResults;
+    },
+    //#endregion
+    //#region moveCardsToDeck
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      cardPool: 'SELECTION'
+     *      selectionIndex: number,
+    *       from: 'TOP' | 'BOTTOM',
+    *       to: 'TOP' | 'BOTTOM'
+     * }} params  
+     * @returns 
+     */
+    moveCardsToDeck: (match, player, card, params) => {
+        let actionResults = {name: "moveCardsToDeck"};
+
+        let cardPool = [];
+        switch(params.cardPool) {
+            case "SELECTION":
+                for(let i = 0; i < match.currentSelectionManager.selectedCards[params.selectionIndex].length; i++) {
+                    //get Card from selection manager
+                    let cardId = match.currentSelectionManager.selectedCards[params.selectionIndex][i]; //Get the first card from the selected cards
+                    cardPool.push(match.currentSelectionManager.cardPool.find(c => c.id === cardId)); //Find the card in the card pool
+                }
+                break;
+            default:
+                break;
+        }
+
+        switch(params.to) {
+            case "TOP":
+                for(let i = cardPool.length-1; i < 0; i--) {
+                    player.deck.cards.unshift(cardPool[i]); //Add to the top of the deck
+                }
+                break;
+            case "BOTTOM":
+            default:
+                for(let i = 0; i < cardPool.length; i++) {
+                    player.deck.cards.push(cardPool[i]); //Add to the bottom of the deck
+                }
+                break;
+        }
+
+
+        actionResults.from = params.from;
+        actionResults.to = params.to;
+        actionResults.numberOfCards = cardPool.length;
 
         return actionResults;
     },

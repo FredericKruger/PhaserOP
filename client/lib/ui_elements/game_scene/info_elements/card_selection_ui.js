@@ -260,7 +260,7 @@ class SelectionPanel extends BaseComponentUI {
             }).setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
             
             this.confirmButton.on('pointerdown', () => {
-                this.confirmSelection("OK");
+                this.confirmSelection(this.confirmButton, "OK");
             });
             
             this.obj.push(this.confirmButton);
@@ -318,7 +318,7 @@ class SelectionPanel extends BaseComponentUI {
             
             // Add click handler with the specific button type
             button.on('pointerdown', () => {
-                this.confirmSelection(buttonType);
+                this.confirmSelection(button, buttonType);
             });
             
             this.obj.push(button);
@@ -483,8 +483,6 @@ class SelectionPanel extends BaseComponentUI {
                 card.display.y = card.originalY; // Adjust Y position (undo the -30 from selection)
                 card.display.setScale(CARD_SCALE.IN_MULLIGAN); // Reset to original scale
             }
-        
-            console.log(index + ": " + card.display.id + " meets requirements: " + meetsRequirements + " was previously selected: " + wasPreviouslySelected);
 
             // Remove any previous "Unavailable" text and overlay if they exist
             if (card.unavailableText) {
@@ -984,12 +982,12 @@ class SelectionPanel extends BaseComponentUI {
     /**
      * Confirm the current selection
      */
-    confirmSelection(destinationButton) {
+    confirmSelection(button, destinationButton) {
         if (this.selectionSent 
             || (this.numberOfValidCards > 0 && this.selectedCards.length < this.minSelectCount)
         ) {
             // Can't confirm yet - not enough cards selected
-            this.shakeButton(this.confirmButton);
+            this.shakeButton(button);
             return;
         }
 
@@ -1013,8 +1011,20 @@ class SelectionPanel extends BaseComponentUI {
     animatePanelDisappearance(onComplete) {
         // Fade out cards first
         const cardDisplays = this.cards.map(c => c.display);
+
+        // Only include card numbers that actually exist
+        const cardNumbers = this.cards
+            .filter(c => c.selectionNumber)
+            .map(c => c.selectionNumber);
+        
+        // Combine all elements to animate together
+        const elementsToFade = [...cardDisplays];
+        if (cardNumbers.length > 0) {
+            elementsToFade.push(...cardNumbers);
+        }
+
         this.scene.tweens.add({
-            targets: cardDisplays,
+            targets: elementsToFade,
             alpha: 0,
             scale: 0.2,
             duration: 300,

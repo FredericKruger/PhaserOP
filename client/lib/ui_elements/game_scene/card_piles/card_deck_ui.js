@@ -87,6 +87,11 @@ class CardDeckUI extends CardPileUI {
     */
     getTopCardVisual() {return this.cardVisuals[this.cardVisuals.length-1];}
 
+    /** Get the bottom deck visual from the deck (back of the card)  
+     * @return {Phaser.GameObjects.Image} image of the bottom cardback
+    */
+    getBottomCardVisual() {return this.cardVisuals[0];}
+
     /** Pop the top card visual from the deck */
     popTopCardVisual() {
         this.cardVisuals[this.cardVisuals.length-1].destroy();
@@ -95,4 +100,19 @@ class CardDeckUI extends CardPileUI {
         this.updateCardAmountText();
     }
 
+    /** Pop the bottom card visual from the deck */
+    unhingeTopCardVisual() {
+        let topCardVisual = this.getTopCardVisual();
+        this.cardVisuals.splice(this.cardVisuals.length-1, 1);
+        return topCardVisual;
+    }
+
+    realignDeckVisuals() {
+        //Realign the deck visuals to the correct position
+        let step = -0.25;
+        if(this.playerScene.playerPosition === PLAYER_POSITIONS.TOP) step *=-1;
+        for(let i = 0; i<this.cardVisuals.length; i++) {
+            this.cardVisuals[i].setPosition(this.posX-i*step, this.posY+i*step/2);
+        }
+    }
 }
