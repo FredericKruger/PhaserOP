@@ -23,6 +23,7 @@ class BaseCardUI extends Phaser.GameObjects.Container {
         this.obj = [];
 
         this.hasGlow = false;
+        this.previousScale = 0;
 
         //Create card
         this.create();

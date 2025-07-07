@@ -257,10 +257,10 @@ class AnimationLibraryPassivePlayer {
      * @param {number} delay - delay with which to start the tweens
      * @returns {Array} - Array of tween configurations
      */
-    animation_move_card_deck2hand(card, delay) {
+    animation_move_card_deck2hand(movingCard, delay, reveal = false) {
         // Calculate initial and intermediate positions
-        const startX = card.x;
-        const startY = card.y;
+        const startX = movingCard.x;
+        const startY = movingCard.y;
         const intermediateX = startX + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.15;
         const intermediateY = startY - 15;
         
@@ -269,6 +269,7 @@ class AnimationLibraryPassivePlayer {
         
         let animation = [
             { // Phase 1: Draw card from deck with slight upward movement
+                targets: movingCard,
                 scale: CARD_SCALE.IN_DECK * 0.95,
                 x: intermediateX,
                 y: intermediateY,
@@ -277,10 +278,14 @@ class AnimationLibraryPassivePlayer {
                 ease: 'Power2.easeOut',
                 onStart: () => {
                     // Set proper depth for animation
-                    card.setDepth(DEPTH_VALUES.CARD_IN_ANIMATION);
+                    movingCard.setDepth(DEPTH_VALUES.CARD_IN_MULLIGAN);
                 }
-            },
+            }
+        ];
+
+        animation = animation.concat(
             { // Phase 3: Move toward hand position
+                targets: movingCard,
                 scaleX: finalScale,
                 scaleY: finalScale,
                 x: startX + GAME_UI_CONSTANTS.CARD_ART_WIDTH * 0.5,
@@ -289,11 +294,25 @@ class AnimationLibraryPassivePlayer {
                 ease: 'Quad.easeInOut',
                 duration: 210,
                 onComplete: () => {
-                    // Signal that the card is ready for hand positioning
-                    card.setState(CARD_STATES.TRAVELLING_TO_HAND);
+                    movingCard.previousScale = finalScale; // Ensure final scale is set
                 }
             }
-        ];
+        );
+
+        if(reveal) {
+           animation = animation.concat(this.animation_flip_card(movingCard, 210, finalScale));
+           animation = animation.concat(this.animation_flip_card(movingCard, 1500, finalScale));
+        }
+
+        animation = animation.concat({
+            targets: {},
+            scale: 1,
+            duration: 1,
+            onComplete: () => {
+                // Signal that the card is ready for hand positioning
+                movingCard.setState(CARD_STATES.TRAVELLING_TO_HAND);
+            }
+        });
 
         return animation;
     }
@@ -467,14 +486,17 @@ class AnimationLibraryPassivePlayer {
     }
 
     /** Animation to flip the card
-     * @param {DonCardUI} card - card to be moved from the don deck to the active don area
+     * @param {GameCardUI} card - card to be moved from the don deck to the active don area
      * @param {number} delay - delay with which to start the tweens
+     * @param {number} targetScale - scale to which the card should be flipped
      */
-    animation_flip_card(card, delay) {
-        const previousScale = card.scale;
+    animation_flip_card(card, delay, targetScale = null) {
+        const previousScale = targetScale ? targetScale : card.scale;
         let tweens = [{ // Phase 2: Begin arc movement & card flip simultaneously 
+            targets: card,
             scaleX: 0, // Card edge-on during flip (Y-axis)
             duration: 115, // 150 * 0.5 = 75
+            delay: delay,
             ease: 'Quad.easeOut',
             onComplete: () => {
                 // Flip card to show face
@@ -482,6 +504,7 @@ class AnimationLibraryPassivePlayer {
             }
         },
         { // Phase 3: Continue upward arc with card face showing
+            targets: card,
             scaleX: previousScale, // Card unfolds while continuing to move
             duration: 135, // 180 * 0.5 = 90
             ease: 'Sine.easeInOut'

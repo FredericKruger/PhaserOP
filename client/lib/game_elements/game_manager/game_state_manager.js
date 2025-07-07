@@ -1334,6 +1334,103 @@ class GameStateManager {
         this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults.actionResults, isPlayerTurn);
     }
 
+    /** Function to resolve ability 
+     * @param {number} cardID - The card ID
+     * @param {number} abilityID - The ability ID
+     */
+    handleAbilityAnimation(cardId, abilityId) {
+        const card = this.scene.getCard(cardId);
+        const abilityButton = card.getAbilityButton(abilityId);
+        
+        let action = new Action();
+        action.start = () => {
+            // Add a bright glow to the entire card
+            card.showGlow(COLOR_ENUMS.OP_ORANGE, 5, 0.8);
+
+            // Create "Ability!" text that appears and fades
+            const abilityText = this.scene.add.text(
+                card.x, 
+                card.y - card.displayHeight * 0.6,
+                "Yosh!",
+                {
+                    fontFamily: 'OnePieceFont',
+                    fontSize: '50px',
+                    color: '#FFDD00',
+                    stroke: '#000000',
+                    strokeThickness: 4,
+                    shadow: { blur: 5, color: '#FF6600', fill: true }
+                }
+            ).setOrigin(0.5).setAlpha(0).setDepth(DEPTH_VALUES.CARD_DRAGGED + 15);
+
+            // Create a small dust explosion at the ability button
+            const dustExplosion = this.scene.add.sprite(
+                card.x, 
+                card.y,
+                ASSET_ENUMS.DUST_EXPLOSION_SPRITESHEET
+            ).setScale(1.5).setOrigin(0.5).setAlpha(0.9);
+            // Set the depth to be just below the card
+            dustExplosion.setDepth(card.depth - 1);
+                
+            dustExplosion.play(ANIMATION_ENUMS.DUST_EXPLOSION_ANIMATION);
+            
+            // 4. Add a camera shake effect
+            this.scene.cameras.main.shake(100, 0.003);
+        
+            // Remove the explosion sprite once the animation completes
+            dustExplosion.once('animationcomplete', () => {
+                dustExplosion.destroy();
+            });
+
+            // 3. Animate the ability text
+            this.scene.tweens.add({
+                targets: abilityText,
+                y: abilityText.y - 50,
+                alpha: { from: 0, to: 1 },
+                duration: 300,
+                ease: 'Back.easeOut',
+                onComplete: () => {
+                    this.scene.tweens.add({
+                        targets: abilityText,
+                        y: abilityText.y - 30,
+                        alpha: 0,
+                        duration: 600,
+                        delay: 400,
+                        ease: 'Sine.easeIn',
+                        onComplete: () => {
+                            abilityText.destroy();
+                        }
+                    });
+                }
+            });
+        
+            // 5. Highlight the ability button
+            this.scene.tweens.add({
+                targets: abilityButton,
+                scaleX: 1.3,
+                scaleY: 1.3,
+                duration: 200,
+                yoyo: true,
+                repeat: 1,
+                ease: 'Sine.easeInOut'
+            });
+
+            // 6. Clean up effects after animation completes
+            this.scene.time.delayedCall(1000, () => {
+                // Fade out the glow
+                this.scene.tweens.add({
+                    targets: card.glowFX,
+                    alpha: 0,
+                    duration: 300,
+                    onComplete: () => {
+                        card.hideGlow();
+                    }
+                });
+            });
+        };
+        action.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(action);
+    }
+
     //#endregion
 
     //#region END TURN FUNCTIONS

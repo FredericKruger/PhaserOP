@@ -15,8 +15,9 @@ class SelectionPanel extends BaseComponentUI {
      * @param {Function} config.onSelectComplete - Callback when selection is complete
      * @param {Function} config.onCancel - Callback when selection is canceled (optional)
      * @param {boolean} config.allowCancel - Whether selection can be canceled (default: false)
+     * @param {boolean} activePlayer - The player who is making the selection
      */
-    constructor(scene, config) {
+    constructor(scene, config, activePlayer) {
         super(scene);
 
         this.minSelectCount = config.minSelectCount || 1;
@@ -25,6 +26,7 @@ class SelectionPanel extends BaseComponentUI {
         this.selectionDescription = config.selectionDescription || ``;
         this.onCancel = config.onCancel || (() => {});
         this.allowCancel = config.allowCancel !== undefined ? config.allowCancel : false;
+        this.activePlayer = activePlayer;
 
         this.selectionSent = false; // Track if selection has been sent to server
         this.numberOfValidCards = 0; // Track number of valid cards
@@ -43,10 +45,12 @@ class SelectionPanel extends BaseComponentUI {
         this.confirmButtons = []; // Store confirm buttons created dynamically
         
         // Create UI elements
-        this.createBackdrop();
-        this.createTitle();
-        this.createInfoText();
-        this.createButtons();
+        if(this.activePlayer) {
+            this.createBackdrop();
+            this.createTitle();
+            this.createInfoText();
+            this.createButtons();
+        }
         
         this.setVisible(false);
     }
@@ -338,78 +342,97 @@ class SelectionPanel extends BaseComponentUI {
         
         // Remove any existing card displays
         this.clearCardDisplays();
-        
-        // Check each card against requirements and adjust visual feedback
-        cards.forEach((card, index) => {
-            const meetsRequirements = this.cardMeetsRequirements(card);
-            
-            // Create a display version of the card
-            const cardObj = this.createCardDisplay(card, cards.length, index, meetsRequirements);
-            this.cards.push({
-                card: card,
-                display: cardObj,
-                originalY: cardObj.y, // Store original Y position
-                selected: false,
-                meetsRequirements: meetsRequirements,
-                wasPreviouslySelected: false
+                
+        if(this.activePlayer){
+            // Check each card against requirements and adjust visual feedback
+            cards.forEach((card, index) => {
+                const meetsRequirements = this.cardMeetsRequirements(card);
+                
+                // Create a display version of the card
+                const cardObj = this.createCardDisplay(card, cards.length, index, meetsRequirements);
+                this.cards.push({
+                    card: card,
+                    display: cardObj,
+                    originalY: cardObj.y, // Store original Y position
+                    selected: false,
+                    meetsRequirements: meetsRequirements,
+                    wasPreviouslySelected: false
+                });
             });
-        });
-        
-        // Reset and show the UI
-        this.updateSelectionCountText();
-        
-        //Set Game State to passive
-        this.scene.gameState.exit(GAME_STATES.NO_INTERACTION);
+            // Reset and show the UI
+            this.updateSelectionCountText();
+            
+            //Set Game State to passive
+            this.scene.gameState.exit(GAME_STATES.NO_INTERACTION);
 
-        // If this is the first step, animate the panel in
-        if (this.selectionStep === 0) {
-            this.setVisible(true);
-            this.animatePanelAppearance();
+            // If this is the first step, animate the panel in
+            if (this.selectionStep === 0) {
+                this.setVisible(true);
+                this.animatePanelAppearance();
+            }
+        } else {
+            // Check each card against requirements and adjust visual feedback
+            cards.forEach((card, index) => {
+                // Create a display version of the card
+                const cardObj = this.createOpponentCardDisplay(cards.length, index);
+                this.cards.push({
+                    card: null,
+                    display: cardObj,
+                    originalY: cardObj.y // Store original Y position
+                });
+            });
+
+            if (this.selectionStep === 0) {
+                this.setVisible(true);
+                this.animateOpponentPanelAppearance();
+            }
         }
     }
     //#endregion
 
     //#region startSelection
     startSelection(params) {
-        this.minSelectCount = params.selectionAmount;
-        this.selectionDescription = params.selectionText || ``;
-        this.selectionSent = false;
-        this.keepPreviousSelection = params.keepPreviousSelection;
-        this.orderCards = params.orderCards;
-        this.confirmButtonsList = params.confirmButtons;
-       
-        this.setTargets(params.selectedTarget || []);
-
-        // Increment selection step
-        this.selectionStep++;
-
-        // Clear previous selection if not keeping it
-        if (!this.keepPreviousSelection) {
-            // Remember previously selected cards
-            this.previouslySelectedCards = this.previouslySelectedCards.concat(this.selectedCards);
-        }
-        // Clear current selection
-        this.selectedCards = [];
-
-        this.updateConfirmButtons(this.confirmButtonsList);
-        this.updateSelectionCountText();
-        this.descriptionText.setText(this.selectionDescription);
-
-        // Reset selected cards
-        this.updateCardDisplays();
+        if(this.activePlayer){
+            this.minSelectCount = params.selectionAmount;
+            this.selectionDescription = params.selectionText || ``;
+            this.selectionSent = false;
+            this.keepPreviousSelection = params.keepPreviousSelection;
+            this.orderCards = params.orderCards;
+            this.confirmButtonsList = params.confirmButtons;
         
-        //Calculate the number of valid targets
-        for(let card of this.cards) {
-            if(this.cardMeetsRequirements(card.display)) {
-                this.numberOfValidCards++;
-            }
-        }
+            this.setTargets(params.selectedTarget || []);
 
-        if(this.numberOfValidCards === 0) {
-            //this.confirmButton.setText("No Valid Cards");
-            this.selectionCountText.setText("No Valid Cards");
-        } else {
-            //this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
+            // Increment selection step
+            this.selectionStep++;
+
+            // Clear previous selection if not keeping it
+            if (!this.keepPreviousSelection) {
+                // Remember previously selected cards
+                this.previouslySelectedCards = this.previouslySelectedCards.concat(this.selectedCards);
+            }
+            // Clear current selection
+            this.selectedCards = [];
+
+            this.updateConfirmButtons(this.confirmButtonsList);
+            this.updateSelectionCountText();
+            this.descriptionText.setText(this.selectionDescription);
+
+            // Reset selected cards
+            this.updateCardDisplays();
+            
+            //Calculate the number of valid targets
+            for(let card of this.cards) {
+                if(this.cardMeetsRequirements(card.display)) {
+                    this.numberOfValidCards++;
+                }
+            }
+
+            if(this.numberOfValidCards === 0) {
+                //this.confirmButton.setText("No Valid Cards");
+                this.selectionCountText.setText("No Valid Cards");
+            } else {
+                //this.confirmButton.setText(`Confirm (${this.selectedCards.length})`);
+            }
         }
     }
     //#endregion
@@ -453,6 +476,43 @@ class SelectionPanel extends BaseComponentUI {
         cardUI.setScale(0);
         
         cardUI.updateCardData(card.cardData || card);
+        
+        // Add to displayable objects
+        this.obj.push(cardUI);
+        
+        return cardUI;
+    }
+    //#endregion
+
+    //#region createOpponentCardDisplay
+    /**
+     * Create a display version of a card for selection
+     * @param {number} numberCards - The total number of cards
+     * @param {number} index - Index position
+     * @return {Phaser.GameObjects.Container} The card display object
+     */
+    createOpponentCardDisplay(numberCards, index) {
+        // Calculate position based on index and total cards
+        const cardWidth = (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_SELECTION_PASSIVE_PLAYER);
+        const cardHeight = (GAME_UI_CONSTANTS.CARD_ART_HEIGHT * CARD_SCALE.IN_SELECTION_PASSIVE_PLAYER);
+        const totalSeparatorWidth = Math.max(numberCards - 1, 0) * 20;
+        const row = Math.floor(index / 5);
+        const col = index % 5;
+        
+        const centerOffset = (Math.min(numberCards - row * 5, 5) * cardWidth) / 2 - (cardWidth/2) + totalSeparatorWidth/2;
+        const x = this.scene.screenCenterX - centerOffset + col * cardWidth + col * 20;
+        const y = this.scene.screenHeight * 0.3 - 30 + row * cardHeight;
+        
+        // Create a card UI object for display
+        const cardUI = new GameCardUI(this.scene, this.scene.activePlayerScene, {
+            x: x,
+            y: y,
+            scale: CARD_SCALE.IN_SELECTION_PASSIVE_PLAYER,
+            artVisible: false,
+            depth: DEPTH_VALUES.CARD_IN_MULLIGAN + 1,
+            id: index,
+        });
+        cardUI.setScale(0);
         
         // Add to displayable objects
         this.obj.push(cardUI);
@@ -681,6 +741,26 @@ class SelectionPanel extends BaseComponentUI {
                     });
                 });
             }
+        });
+    }
+    //#endregion
+
+    //#region animateOpponentPanelAppearance
+    /**
+     * Animate the panel appearing
+     */
+    animateOpponentPanelAppearance() {
+        // Animate cards appearing with staggered delay
+        this.cards.forEach((cardItem, index) => {
+            cardItem.display.setScale(0);
+            
+            this.scene.tweens.add({
+                targets: cardItem.display,
+                scale: CARD_SCALE.IN_SELECTION_PASSIVE_PLAYER,
+                delay: 200 + index * 50,
+                duration: 300,
+                ease: 'Back.easeOut'
+            });
         });
     }
     //#endregion
@@ -1031,13 +1111,17 @@ class SelectionPanel extends BaseComponentUI {
             ease: 'Back.easeIn',
             onComplete: () => {
                 // Then fade out UI elements
-                const uiElements = [
-                    this.titleText, this.descriptionText, 
-                    this.selectionCountText, ...this.confirmButtons, this.toggleButton
-                ];
+                let uiElements = [{}];
                 
-                if (this.allowCancel) {
-                    uiElements.push(this.cancelButton);
+                if(this.activePlayer) {
+                    uiElements = [
+                        this.titleText, this.descriptionText, 
+                        this.selectionCountText, ...this.confirmButtons, this.toggleButton
+                    ];
+                    
+                    if (this.allowCancel) {
+                        uiElements.push(this.cancelButton);
+                    }
                 }
                 
                 this.scene.tweens.add({
@@ -1052,7 +1136,7 @@ class SelectionPanel extends BaseComponentUI {
                         if (onComplete) {
                             onComplete();
                         }
-                        this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+                        if(this.activePlayer) this.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
                     }
                 });
             }

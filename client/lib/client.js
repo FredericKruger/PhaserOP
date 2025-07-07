@@ -295,6 +295,9 @@ class Client {
                 this.gameScene.gameStateManager.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, activePlayer);
             }
         });
+        this.socket.on('game_card_ability_executed_animation', (cardId, abilityId) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.handleAbilityAnimation(cardId, abilityId);
+        });
         //#endregion
 
         //#region SOCKET.ON STATE CHANGE

@@ -1136,6 +1136,7 @@ class Match {
             this.state.resolving_pending_action = true;
 
             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
         }
         
         return actionInfos;
@@ -1167,6 +1168,9 @@ class Match {
             }
         }
 
+        //Send the ability activation to the opposing player
+        if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed_animation', cardId, abilityId);
+
         //Create new action
         let abilityAction = {
             actionId: 'ABILITY_' + cardId + '_' + abilityId,
@@ -1179,6 +1183,7 @@ class Match {
         const actionInfos = this.executeAbility(player, cardId, abilityId, []);
         if(actionInfos.abilityResults.status === "DONE") {
             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
 
             this.cleanupAction(player);
         }
@@ -1206,6 +1211,7 @@ class Match {
             
             if(abilityResults.abilityResults.status === "DONE") {
                 if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
+                if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
 
                 this.cleanupAction(player);
             }

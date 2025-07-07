@@ -581,6 +581,7 @@ class GameCardUI extends BaseCardUI{
     getAbilityButton(buttonID) {
         for(let button of this.abilityButtons) {
             if(button.name === buttonID) return button;
+            if(button.id === buttonID) return button; // For backward compatibility with old IDs
         }
         return null;
     }

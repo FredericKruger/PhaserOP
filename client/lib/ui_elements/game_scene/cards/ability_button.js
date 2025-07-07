@@ -11,6 +11,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
         this.type = ability.type;
         this.canActivate = false;
         this.name = ability.art.art;
+        this.id = ability.id;
 
         this.defaultScale = 1.1; // Default scale for the button
 
@@ -49,6 +50,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
         // Bring to top within its depth level instead of absolute top
         const currentDepth = this.card.depth;
         this.card.setDepth(currentDepth + 0.1);
+        this.setDepth(this.depth + 0.1);
 
         // Create smooth scaling tween
         this.scene.tweens.add({
@@ -72,6 +74,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
 
         // Restore original depth
         this.card.setDepth(Math.floor(this.card.depth));
+        this.depth = Math.floor(this.depth);
 
         // Create smooth scaling down tween
         this.scene.tweens.add({
@@ -112,7 +115,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
 
     startPusaltingAnimation() {
         // Start pulsing animation
-        if (!this.isPulsating) {
+        /*if (!this.isPulsating) {
             this.isPulsating = true;
             this.pulseTween = this.scene.tweens.add({
                 targets: this,
@@ -122,17 +125,17 @@ class AbilityButton extends Phaser.GameObjects.Container {
                 duration: 1000, // 1 second for a full pulse
                 ease: 'Sine.easeInOut'
             });
-        }
+        }*/
     }
 
     stopPulsatingAnimation() {
         // Stop pulsing animation and reset scale
-        if (this.isPulsating) {
+        /*if (this.isPulsating) {
             this.pulseTween.stop();
             this.pulseTween = null;
             this.isPulsating = false;
             this.setScale(this.defaultScale); // Reset to original scale
-        }
+        }*/
     }
 
 }

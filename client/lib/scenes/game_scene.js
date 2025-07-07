@@ -149,24 +149,10 @@ class GameScene extends Phaser.Scene {
             // To use in a game scene:
             const selectionPanel = new SelectionPanel(this, {
                 minSelectCount: 1,
-                    maxSelectCount: 1,
-                    selectionTitle: "Choose Targets",
-                selectionDescription: "Select characters to deal 2 damage to each",
-                targetFilter: targetFilter,
-                onSelectComplete: (selectedCards) => {
-                    // Handle the selected cards
-                    selectedCards.forEach(card => {
-                        // Apply effect to each card
-                    });
-                },
-                allowCancel: true,
-                onCancel: () => {
-                    // Handle cancellation
-                }
-            });
+            }, false);
 
             // Show the panel with cards to select from
-            selectionPanel.startSelection(this.activePlayerScene.hand.cards);
+            selectionPanel.prepareSelection(this.activePlayerScene.hand.cards);
         });
 
         /** LISTENERS */

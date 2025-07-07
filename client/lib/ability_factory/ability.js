@@ -659,7 +659,7 @@ const abilityActions = {
         scene.currentSelectionManager = new SelectionPanel(scene, {
             selectionTitle: "Choose Targets",
             allowCancel: false
-        });
+        }, activePlayer);
 
         // Show the panel with cards to select from
         tweens = tweens.concat([{
@@ -757,6 +757,7 @@ const abilityActions = {
 
         let playerScene = card.playerScene;
         let delay = 200;
+        let reveal = info.reveal;
 
         for(let serverCard of info.drawnCards) {
             let deckVisual = null;
@@ -788,7 +789,10 @@ const abilityActions = {
                     drawnCard.setState(CARD_STATES.TRAVELLING_TO_HAND);
                 }
             });
-            if(info.cardPool === "DECK") tweens = tweens.concat(scene.animationLibrary.animation_move_card_deck2hand(drawnCard, 0));
+            if(info.cardPool === "DECK") {
+                if(activePlayer) tweens = tweens.concat(scene.animationLibrary.animation_move_card_deck2hand(drawnCard, 0));
+                else tweens = tweens.concat(scene.animationLibraryPassivePlayer.animation_move_card_deck2hand(drawnCard, 0, reveal));
+            }
             tweens.push({
                 targets: {},
                 scale: 1,
@@ -885,7 +889,8 @@ const abilityActions = {
                             break; 
                     }
 
-                    const posXOut = deckVisual.x - ((deckVisual.displayWidth + 20));
+                    let posXOut = deckVisual.x - ((deckVisual.displayWidth + 20));
+                    if(!activePlayer) posXOut = deckVisual.x + ((deckVisual.displayWidth + 20));
                     const postXIn = deckVisual.x; // Adjust Y position based on direction
 
                     scene.tweens.add({
