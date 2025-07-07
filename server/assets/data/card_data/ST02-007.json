@@ -9,7 +9,7 @@
     "card":"CHARACTER",
     "type":["Supernovas","Bonney Pirates"],
     "colors":["GREEN"],
-    "cost":0,
+    "cost":1,
     "power":1000,
     "attribute":"SPECIAL",
     "isleader":0,
@@ -52,7 +52,6 @@
                     "amount": 1,
                     "target": [{
                         "cardtypes": ["CHARACTER"],
-                        "power": {"operator": ">", "value": 1000},
                         "types": ["Supernovas"]
                     }]
                 }},
