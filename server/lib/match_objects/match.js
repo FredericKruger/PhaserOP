@@ -850,8 +850,8 @@ class Match {
         this.attackManager.attack.defendingPlayer.inHand.push(triggerCard);
 
         //Send messages to client
-        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_draw_trigger_card', true, this.attackManager.attackResults.lifeCardData, ai_action);
-        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_draw_trigger_card', false, this.attackManager.attackResults.lifeCardData, ai_action);
+        if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_draw_trigger_card', true, this.attackManager.attackResults.lifeCardData);
+        if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_draw_trigger_card', false, this.attackManager.attackResults.lifeCardData);
 
         this.flagManager.handleFlag(this.state.current_active_player, 'ATTACK_CLEANUP_READY');
         this.flagManager.handleFlag(this.state.current_passive_player, 'ATTACK_CLEANUP_READY');
@@ -1038,6 +1038,7 @@ class Match {
                             //actionInfos.abilityResults = abilityResults.actionResults;
 
                             if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
+                            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
 
                             this.cleanupAction(player);
                         }
