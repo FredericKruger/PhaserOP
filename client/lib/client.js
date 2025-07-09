@@ -286,7 +286,9 @@ class Client {
                 let targetManager = new TargetManager(this.gameScene, 'EVENT', actionInfos.actionId, actionInfos.playedCard);
                 this.gameScene.targetManagers.push(targetManager);
 
-                if(activePlayer) targetManager.loadFromTargetData(actionInfos.targetData);
+                console.log("Targets for ability: ", actionInfos);
+
+                if(activePlayer) targetManager.loadFromTargetData(actionInfos.targets);
                 this.gameScene.gameStateManager.startAbilityTargeting(actionInfos.playedCard, activePlayer);
             }
         });

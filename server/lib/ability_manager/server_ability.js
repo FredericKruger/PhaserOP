@@ -126,23 +126,20 @@ class ServerAbility {
                 this.currentAction++;
 
                 if(action.name === "IF_THEN_ELSE") {
-                    //console.log("IF_THEN_ELSE: Conditions met, executing then actions ",);
-                    //insert results.actions behind this action in this.actions
-                    //console.log("PREVIOUS ACTIONS")
-                    //console.log(this.currentActions);
-                    //console.log("ADDING NEW ACTIONS")
-                    //console.log(results.actionList);
                     this.currentActions.splice(i + 1, 0, ...results.actionList);
-                    //this.currentActions.splice.apply(this.currentActions, [i + 1, 0].concat(results.actionList));
-                    //console.log("NEW ACTION LIST")
-                    //console.log(this.currentActions);
-
-                    //this.currentAction++;
                 } else {
                     //this.currentAction++;
                     this.actionResults.push(results);
 
-                    if(action.name === "target") return {status: "TARGETING", targetData: results}; // Target action is not executed //Stop to start targeting
+                    if(action.name === "target") {
+                        actionResults = {
+                            status: "TARGETING",
+                            actionResults: this.actionResults,
+                            targetData: results.targets
+                        };
+                        this.actionResults = [];
+                        return actionResults;
+                    } // Target action is not executed //Stop to start targeting
                     else if(action.name === "selectCards"){
                         actionResults = {
                             status: "SELECTING",
@@ -879,7 +876,9 @@ const serverAbilityActions = {
     target: (match, player, card, params) => {
         return {
             name: "target",
-            target: params.target
+            targets: params.target,
+            playedCard: card.id,
+            actionId: card.id
         }; // Return the target id
     }
 };

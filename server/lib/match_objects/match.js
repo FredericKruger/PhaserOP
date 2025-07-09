@@ -475,7 +475,8 @@ class Match {
             actionInfos.replacedCard = this.playCardManager.replacedCard;
             actionInfos.abilityId = this.playCardManager.abilityId;
             actionInfos.eventAction = this.playCardManager.onPlayEventActions;
-            actionInfos.eventTriggered = this.playCardManager.eventTriggered;
+            actionInfos.eventActionOpponentPlayer = this.playCardManager.onPlayEventActionsOpponentPlayer;
+            actionInfos.eventTriggered = this.playCardManager.onPlayEventActionsOpponentPlayer;
 
             if(!player.bot) player.socket.emit('game_play_card_played', actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', actionInfos, false);
@@ -982,7 +983,8 @@ class Match {
 
                         if(abilityResults.abilityResults.status === "DONE") {
                             this.playCardManager.abilityId = this.state.pending_action.actionInfos.ability;
-                            this.playCardManager.onPlayEventActions = abilityResults.abilityResults.actionResults;                         
+                            this.playCardManager.onPlayEventActions.push(...abilityResults.abilityResults.actionResults);                         
+                            this.playCardManager.onPlayEventActionsOpponentPlayer.push(...abilityResults.abilityResults.actionResults);
 
                             //NO NEED TO SEND THE RESULTS TO THE CLIENTS, THEY ARE SENT IN THE PLAY CARD ACTION
                             //if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
@@ -1125,7 +1127,15 @@ class Match {
             this.state.pending_action = action;
             this.state.resolving_pending_action = true;
 
-            if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
+            //if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
+            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
+            if(!player.currentOpponentPlayer.bot) {
+                if(ability.type === "ON_PLAY") {
+                    this.playCardManager.onPlayEventActionsOpponentPlayer.push(...abilityResults.actionResults);
+                } else {
+                    player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
+                }   
+            }
         } else if(abilityResults.status === "SELECTING") {
             let action = {actionResult: PLAY_CARD_STATES.ABILITY_SELECTION_REQUIRED, actionInfos: actionInfos};
 
@@ -1170,7 +1180,9 @@ class Match {
         }
 
         //Send the ability activation to the opposing player
-        if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed_animation', cardId, abilityId);
+        if(ability.type !== "ON_PLAY") {
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed_animation', cardId, abilityId);
+        }
 
         //Create new action
         let abilityAction = {

@@ -15,6 +15,7 @@ class PlayCardManager {
         this.replacementResults = null;
         this.abilityId = null;
         this.onPlayEventActions = [];
+        this.onPlayEventActionsOpponentPlayer = [];
         this.eventTriggered = eventTriggered;
 
         this.currentPhase = null;

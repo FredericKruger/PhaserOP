@@ -1026,7 +1026,22 @@ const abilityActions = {
      * @returns {Object}
      */
     target: (scene, card, info, activePlayer) => {
-        return [];
+        let tweens = [];
+        if(!activePlayer) return tweens; //No need to target if not active player
+        tweens.push({
+            onStart: () => {
+                // Start the selection process
+                let targetManager = new TargetManager(scene, 'EVENT', info.actionId, info.playedCard);
+                scene.targetManagers.push(targetManager);
+
+                if(activePlayer) targetManager.loadFromTargetData(info.targets);
+                scene.gameStateManager.startAbilityTargeting(info.playedCard, activePlayer);
+            },
+            targets: {},
+            alpha: 1,
+            duration: 1
+        });
+        return tweens;
     }
     //#endregion
 };

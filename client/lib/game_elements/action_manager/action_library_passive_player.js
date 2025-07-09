@@ -319,6 +319,17 @@ class ActionLibraryPassivePlayer {
             onComplete: () => {this.scene.actionManager.completeAction();}
         });
 
+        //Flip the cards
+        /*tweens = tweens.concat(
+            this.scene.animationLibraryPassivePlayer.animation_flip_card(card, 0, CARD_SCALE.IN_PLAY_ANIMATION)
+        );
+
+        tweens.push({
+            scale: CARD_SCALE.IN_PLAY_ANIMATION,
+            duration: 1,
+            onComplete: () => {this.scene.actionManager.completeAction();}
+        })*/
+
         //Create tween chain
         let start_animation = this.scene.tweens.chain({
             targets: card,
@@ -431,7 +442,7 @@ class ActionLibraryPassivePlayer {
 
         /** Create action to play on play event results */
         if(actionInfos.abilityId && actionInfos.eventAction) {
-            this.scene.actionLibrary.resolveAbilityAction(card, actionInfos.abilityId, actionInfos.eventAction, false);
+            this.scene.actionLibrary.resolveAbilityAction(card, actionInfos.abilityId, actionInfos.eventActionOpponentPlayer, false);
         }
 
         let action = new Action();
