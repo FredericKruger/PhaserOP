@@ -25,8 +25,7 @@
             "type": "ON_PLAY",
             "phases": ["Main: Counter"],
             "actions": [
-                {"name": "target", "params": {
-                    "target": {
+                {"name": "target", "params": {"target": {
                         "targetAction": "EVENT_CARD_ACTION",
                         "requiredTargets": 1,
                         "targets": [

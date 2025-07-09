@@ -38,18 +38,19 @@
             "phases": ["Main Phase"],
             "actions": [
                 {"name": "target", "params": {"target": {
-                    "targetAction": "ABILITY_ACTION",
-                    "requiredTargets": 1,
-                    "targets": [
-                        {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER", "LEADER"],
-                            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
-                            "exclude": ["SELF"]
-                        }
-                    ]
-                }}},
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                                "exclude": ["SELF"]
+                            }
+                        ]
+                    }   
+                }},
                 {"name": "attachDonCard", "params": {"amount": 2, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
             ]
         }

@@ -458,7 +458,7 @@ class Match {
 
                 if(executeAbility) {
                     skipOnPlayEventPhase = false;
-                    this.activateAbility(this.state.current_active_player, actionInfos.playedCard, actionInfos.ability);
+                    this.activateAbility(player, actionInfos.playedCard, actionInfos.ability);
                 }
             }
 
@@ -1128,6 +1128,7 @@ class Match {
             this.state.resolving_pending_action = true;
 
             //if(!player.bot) player.socket.emit('game_card_ability_activated', actionInfos, true);
+
             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
             if(!player.currentOpponentPlayer.bot) {
                 if(ability.type === "ON_PLAY") {
@@ -1179,8 +1180,15 @@ class Match {
             }
         }
 
+        //If the ability is TRIGGER send a message to flip the card
+        if(ability.type === "TRIGGER"){
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_trigger_flip_card', false, cardId, card.cardData);
+        } 
+
         //Send the ability activation to the opposing player
-        if(ability.type !== "ON_PLAY") {
+        if(ability.type !== "ON_PLAY" 
+            && ability.type !== "TRIGGER"
+        ) {
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed_animation', cardId, abilityId);
         }
 
@@ -1195,6 +1203,10 @@ class Match {
 
         const actionInfos = this.executeAbility(player, cardId, abilityId, []);
         if(actionInfos.abilityResults.status === "DONE") {
+            if(ability.type === "TRIGGER") { 
+                if(!player.bot) player.socket.emit('game_card_trigger_close_interaction_state');
+            }
+
             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
 

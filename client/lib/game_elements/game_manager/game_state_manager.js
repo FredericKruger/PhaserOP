@@ -1220,6 +1220,32 @@ class GameStateManager {
         }
     }
 
+    /** Function to play the trigger Card 
+     * @param {Object} cardData - The action infos
+     * @param {number} cardId - If the card should be discarded
+     * @param {boolean} activePlayer - If it is the player's turn
+    */
+    flipTriggerCard(activePlayer, cardId, cardData) {
+        let player = this.scene.activePlayerScene;
+        if(!activePlayer) player = this.scene.passivePlayerScene;
+
+        let action = new Action();
+        action.start = () => {
+            let card = this.scene.getCard(cardId);
+            card.updateCardData(cardData); //Update the card data
+        }
+        action.waitForAnimationToComplete = false;
+        this.scene.actionManager.addAction(action);
+    }
+
+    /**
+     * Funtion to close the Trigger Interaction state
+     */
+    closeTriggerInteractionState() {
+        this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION); 
+        this.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.OPPONENT_TURN);
+    }
+
     /** Function to play the trigger Card
       * @param {boolean} isPlayerTurn - If it is the player's turn
       */
@@ -1331,7 +1357,6 @@ class GameStateManager {
      */
     resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn) {
         const card = this.scene.getCard(cardID);
-        console.log(actionInfos);
         this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults.actionResults, isPlayerTurn);
     }
 
@@ -1517,7 +1542,7 @@ class GameStateManager {
      */
     passivePlayerCardDragStart(cardID, cardType) {
         if(cardType === 'GameCardUI') {
-            let card = this.scene.passivePlayerScene.getCard(cardID);
+            let card = this.scene.getCard(cardID);
             card.setState(CARD_STATES.TRAVELLING_FROM_HAND);
             card.setAngle(0);
             this.scene.passivePlayerScene.hand.update();
@@ -1558,7 +1583,7 @@ class GameStateManager {
      */
     passivePlayerCardDragEnd(cardID, cardType) {
         if(cardType === 'GameCardUI') {
-            let card = this.scene.passivePlayerScene.getCard(cardID);
+            let card = this.scene.getCard(cardID);
             if(card !== null) {
                 card.setState(CARD_STATES.IN_HAND);
                 card.hideGlow();
@@ -1580,7 +1605,7 @@ class GameStateManager {
      */
     passivePlayerCardPointerOver(cardID, state, activePlayer) {
         if(state === CARD_STATES.IN_HAND) {
-            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            let card = this.scene.getCard(cardID);
             card.setState(CARD_STATES.IN_HAND_HOVERED_PASSIVEPLAYER);
             card.showGlow(COLOR_ENUMS.OP_WHITE);
             this.scene.passivePlayerScene.hand.update();
@@ -1607,7 +1632,7 @@ class GameStateManager {
      */
     passivePlayerCardPointerOut(cardID, state, activePlayer) {
         if(state === CARD_STATES.IN_HAND) {
-            let card = this.scene.passivePlayerScene.hand.getCard(cardID);
+            let card = this.scene.getCard(cardID);
             card.setState(CARD_STATES.IN_HAND);
             card.hideGlow();
             this.scene.passivePlayerScene.hand.update();

@@ -131,8 +131,8 @@ class GameScene extends Phaser.Scene {
             //GIVE CARD RUSH
             //this.activePlayerScene.leaderLocation.cards[0].hasRush = true;
             //this.game.gameClient.sendDebug(this.activePlayerScene.leaderLocation.cards[0].id);
-            //this.activePlayerScene.characterArea.cards[0].hasRush = true;
-            //this.game.gameClient.sendDebug(this.activePlayerScene.characterArea.cards[0].id);
+            this.activePlayerScene.characterArea.cards[0].hasRush = true;
+            this.game.gameClient.sendDebug(this.activePlayerScene.characterArea.cards[0].id);
             
             
             //this.actionLibraryPassivePlayer.drawLifeCardAction(this.passivePlayerScene, {id: this.passivePlayerScene.lifeDeck.cards[0].id});
@@ -140,7 +140,7 @@ class GameScene extends Phaser.Scene {
             //ATTACK DON TO CHARACTER
             //this.gameStateManager.attachDonToCharacterSuccess({attachedDonCard: donCardID, receivingCharacter: cardID}, true, true);
 
-            const targetFilter = new Target({
+            /*const targetFilter = new Target({
                 cardtypes: ["CHARACTER"],
                 power: {"operator": "<=", "value": 5000},
             }, null);
@@ -152,7 +152,7 @@ class GameScene extends Phaser.Scene {
             }, false);
 
             // Show the panel with cards to select from
-            selectionPanel.prepareSelection(this.activePlayerScene.hand.cards);
+            selectionPanel.prepareSelection(this.activePlayerScene.hand.cards);*/
         });
 
         /** LISTENERS */

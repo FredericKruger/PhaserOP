@@ -83,7 +83,7 @@ class CardLifePileUI extends CardPileUI {
     hideLifeCardFan() {
         for(let i = 0; i < this.cards.length; i++) {
             let card = this.cards[i];
-            console.log(card.state);
+
             if(card.state === CARD_STATES.IN_LIFEDECK) {
                 this.scene.tweens.add({
                     targets: card,

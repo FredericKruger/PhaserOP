@@ -249,12 +249,19 @@ class Client {
         this.socket.on('game_cleanup_trigger_phase', (activePlayer) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cleanupTriggerPhase(activePlayer);
         });
+        this.socket.on('game_card_trigger_close_interaction_state', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.closeTriggerInteractionState();
+        });
+        this.socket.on('game_card_trigger_flip_card', (activePlayer, cardId, cardData) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.flipTriggerCard(activePlayer, cardId, cardData);
+        });
         this.socket.on('game_attack_attacker_cleanup', (activePlayer, attackerID) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackAttackerCleanup(activePlayer, attackerID);
         });
         this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);
         });
+        //#endregion
 
         //#region SOCKET.ON TARGETTING
         this.socket.on('game_cancel_targetting', () => {
