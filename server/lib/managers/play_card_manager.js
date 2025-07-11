@@ -18,6 +18,8 @@ class PlayCardManager {
         this.onPlayEventActionsOpponentPlayer = [];
         this.eventTriggered = eventTriggered;
 
+        this.actionCanceled = false;
+
         this.currentPhase = null;
     }
 

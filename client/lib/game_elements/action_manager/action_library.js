@@ -641,8 +641,7 @@ class ActionLibrary {
             onStart: () => {
                 //Reset the eventCounter value
                 card.eventCounterPower = 0;
-                //Set State
-                card.setState(CARD_STATES.IN_DISCARD);
+                card.previousState = card.state; //Store the previous state
             }
         });
         tweens = tweens.concat(this.scene.animationLibrary.desintegrationAnimation(card, 0));
@@ -650,7 +649,7 @@ class ActionLibrary {
             targets: {},
             alpha: 1,
             onStart: () => {
-                playerScene.removeCard(card); //Remove this card from whaterever pile it is in
+                const removed = playerScene.removeCard(card); //Remove this card from whaterever pile it is in
                 card.setPosition(playerScene.discard.posX, playerScene.discard.posY); //Move card to discard pile
                 card.angle = 0;
                 playerScene.discard.addCard(card, {setCardState: true, setCardDepth: true, updateUI: true}); //Add card to dispacrd pile

@@ -194,11 +194,37 @@ class PlayerScene {
      * @param {GameCardUI} card
      */
     removeCard(card) {
-        let cardRemoved = this.hand.removeCard(card);
-        if(!cardRemoved) cardRemoved = this.characterArea.removeCard(card);
-        if(!cardRemoved) cardRemoved = this.leaderLocation.removeCard(card);
-        if(!cardRemoved) cardRemoved = this.stageLocation.removeCard(card);
-        if(!cardRemoved) cardRemoved = this.discard.removeCard(card);
+        //Check the character area first
+        if (this.hand.cards.includes(card)) {
+            this.hand.removeCard(card);
+            return true;
+        }
+
+        //Check the character area
+        if (this.characterArea.cards.includes(card)) {
+            this.characterArea.removeCard(card);
+            return true;
+        }
+
+        //Check the leader location
+        if (this.leaderLocation.cards.includes(card)) {
+            this.leaderLocation.removeCard(card);
+            return true;
+        }
+
+        //Check the stage location
+        if (this.stageLocation.cards.includes(card)) {
+            this.stageLocation.removeCard(card);
+            return true;
+        }
+
+        //Check the discard pile
+        if (this.discard.cards.includes(card)) {
+            this.discard.removeCard(card);
+            return true;
+        }
+        
+        return false;
     }
 
     /** Function to set visibility 

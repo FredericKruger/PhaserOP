@@ -425,7 +425,9 @@ class Match {
                 if(player.bot) this.flagManager.handleFlag(player, 'PLAY_PHASE_READY');
             }
         } else if(!this.gameOver 
-            && this.playCardManager.currentPhase === 'PLAY_PHASE_READY') {
+            && this.playCardManager.currentPhase === 'PLAY_PHASE_READY'
+            && !this.playCardManager.actionCanceled
+        ) {
             //console.log("CHECKING IF CARD NEEDS TO BE REPLACED");
             let result = this.state.startPlayReplaceCard(player.currentMatchPlayer, this.playCardManager.playedCard);
 
@@ -439,7 +441,9 @@ class Match {
                 if(!player.bot) player.socket.emit('game_play_select_replacement', result.actionInfos, true);
             }
         } else if(!this.gameOver
-            && this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY') {
+            && this.playCardManager.currentPhase === 'PLAY_REPLACEMENT_PHASE_READY'
+            && !this.playCardManager.actionCanceled
+        ) {
             let skipOnPlayEventPhase = true;
 
             //check if there are anu events to be resolved
@@ -465,7 +469,9 @@ class Match {
             if(skipOnPlayEventPhase) this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
 
         } else if(!this.gameOver
-            && this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY') {
+            && this.playCardManager.currentPhase === 'PLAY_ON_PLAY_EVENT_PHASE_READY'
+            && !this.playCardManager.actionCanceled
+        ) {
             this.state.playCard(player.currentMatchPlayer, this.playCardManager.playedCard);
 
             let actionInfos = {};
@@ -476,11 +482,17 @@ class Match {
             actionInfos.abilityId = this.playCardManager.abilityId;
             actionInfos.eventAction = this.playCardManager.onPlayEventActions;
             actionInfos.eventActionOpponentPlayer = this.playCardManager.onPlayEventActionsOpponentPlayer;
-            actionInfos.eventTriggered = this.playCardManager.onPlayEventActionsOpponentPlayer;
+            actionInfos.eventTriggered = this.playCardManager.eventTriggered;
 
             if(!player.bot) player.socket.emit('game_play_card_played', actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_played', actionInfos, false);
 
+            this.playCardManager = null; //Reset the play card manager
+                
+            this.cleanupAction(player);
+        } else if(!this.gameOver
+            && this.playCardManager.actionCanceled
+        ) {
             this.playCardManager = null; //Reset the play card manager
                 
             this.cleanupAction(player);
@@ -495,13 +507,12 @@ class Match {
      * @param {Array<number>} spendDonIds - The ids of the don cards that are being cancelled
     */
     cancelPlayCard(resetPlayManager, player, cardId, replacedCardId, spendDonIds = []) {
-        console.log(this.playCardManager);
         player.currentMatchPlayer.cancelPlayCard(cardId, replacedCardId, spendDonIds);
 
         if(!player.bot) player.socket.emit('game_play_card_cancel', cardId, spendDonIds, true);
         if(resetPlayManager && !player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_play_card_cancel', cardId, false);
 
-        if(resetPlayManager) this.playCardManager = null; //Reset the play card manager
+        if(resetPlayManager) this.playCardManager.actionCanceled = true; //Reset the play card manager
     }
 
     /** Function that handles playing a card and replacing an old one
@@ -972,6 +983,11 @@ class Match {
                     if(actionInfos.optional) {
                         if(!player.bot) player.socket.emit('game_play_card_event_triggered', actionInfos, true);
                     } else this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.replacedCard, this.playCardManager.payedDon);
+                    
+                    let card = this.matchCardRegistry.get(actionInfos.playedCard);
+                    let ability = card.getAbility(actionInfos.ability);
+                    ability.resetAction();
+                    
                     this.cleanupAction(player);
                 } else {
                     let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
@@ -1055,6 +1071,10 @@ class Match {
                         this.state.current_phase = MATCH_PHASES.MAIN_PHASE;
                         this.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
                         
+                        let card = this.matchCardRegistry.get(actionInfos.playedCard);
+                        let ability = card.getAbility(actionInfos.ability);
+                        ability.resetAction();
+
                         this.cleanupAction(player);
                     
                         //Send cancel signals

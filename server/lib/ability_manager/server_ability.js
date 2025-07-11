@@ -171,6 +171,11 @@ class ServerAbility {
         return actionResults;
     }
 
+    resetAction() {
+        this.currentAction = 0;
+        this.actionResults = []; // Reset action results
+    }
+
     /** Function that returns a list of all targets
      * @returns {Array} targets
      */

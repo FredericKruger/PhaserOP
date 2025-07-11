@@ -121,6 +121,7 @@ class Ability {
     */
     executeActions(card, abilityInfo, activePlayer) {
         let abilityTweens = [];
+        
         for (let i = 0; i < abilityInfo.length; i++) {
             //console.log("Executing action: ", abilityInfo[i].name);
             const func = abilityActions[abilityInfo[i].name];

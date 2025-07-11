@@ -679,7 +679,12 @@ class AnimationLibrary {
     
         // Animate the burnAmount uniform to gradually increase the burn effect
         let tweens = [{
-            onStart: () => {card.frontArt.setPipeline(PIPELINE_ENUMS.BURNING_PIPELINE);},
+            onStart: () => {
+                card.frontArt.setPipeline(PIPELINE_ENUMS.BURNING_PIPELINE);
+                for(let abilityButton of card.abilityButtons) {
+                    abilityButton.setAlpha(0); // Hide ability buttons
+                }
+            },
             delay: delay || 0,
             targets: tempObj,  // Use the temporary object as the target    
             burnAmount: 1,
@@ -718,6 +723,9 @@ class AnimationLibrary {
             ease: 'Power2',
             onUpdate: (tween) => {
                 card.frontArt.pipeline.set1f('burnAmount', tempObj.burnAmount);
+                for(let abilityButton of card.abilityButtons) {
+                    abilityButton.setAlpha(1); // Hide ability buttons
+                }
             },
             onComplete: () => {card.frontArt.resetPipeline();}
         }];
