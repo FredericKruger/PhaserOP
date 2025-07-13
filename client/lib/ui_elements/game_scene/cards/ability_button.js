@@ -52,9 +52,46 @@ class AbilityButton extends Phaser.GameObjects.Container {
         this.card.setDepth(currentDepth + 0.1);
         this.setDepth(this.depth + 0.1);
 
+        // Calculate the scaled size and position constraints
+        const targetScale = 3;
+        const scaledWidth = this.abilityButton.width * targetScale * this.card.scale;
+        const scaledHeight = this.abilityButton.height * targetScale * this.card.scale;
+
+        // Get the button's world position
+        const worldPos = this.getWorldTransformMatrix();
+        const currentWorldX = worldPos.tx;
+        const currentWorldY = worldPos.ty;
+    
+        // Calculate screen boundaries with padding
+        const padding = 0;
+        const minX = padding + (scaledWidth / 2);
+        const maxX = this.scene.screenWidth - padding - (scaledWidth / 2);
+        const minY = padding + (scaledHeight / 2);
+
+        // Get the player hand position to ensure button stays above it
+        const handTopY = this.scene.screenCenterY + this.scene.screenHeight / 2 - 50 - GAME_UI_CONSTANTS.CARD_ART_HEIGHT * CARD_SCALE.IN_HAND * 0.5 - 20;
+        const maxY = Math.min(handTopY - (scaledHeight / 2), this.scene.screenHeight - padding - (scaledHeight / 2));
+        
+        // Calculate constrained position
+        let constrainedX = Math.max(minX, Math.min(maxX, currentWorldX));
+        let constrainedY = Math.max(minY, Math.min(maxY, currentWorldY));
+    
+        // Convert world coordinates back to local coordinates relative to the card
+        const cardWorldPos = this.card.getWorldTransformMatrix();
+        const localX = constrainedX - cardWorldPos.tx;
+        const localY = constrainedY - cardWorldPos.ty;
+
+        // Store original position for restoration
+        //if (!this.originalX) {
+            this.originalX = this.x;
+            this.originalY = this.y;
+        //}
+
         // Create smooth scaling tween
         this.scene.tweens.add({
             targets: this,
+            x: localX,
+            y: localY,
             scale: 3, // Target scale
             duration: 200, // Duration in ms
             ease: 'Cubic.easeOut', // Smooth easing function
@@ -79,6 +116,8 @@ class AbilityButton extends Phaser.GameObjects.Container {
         // Create smooth scaling down tween
         this.scene.tweens.add({
             targets: this,
+            x: this.originalX || this.x,
+            y: this.originalY || this.y,
             scale: this.defaultScale, // Original scale
             duration: 150, // Slightly faster for better UX
             ease: 'Cubic.easeOut', // Smooth easing function

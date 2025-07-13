@@ -8,7 +8,7 @@
     "card":"EVENT",
     "type":["Supernovas","Straw Hat Crew"],
     "colors":["RED"],
-    "cost":0,
+    "cost":4,
     "attribute":"",
     "isleader":0,
     "rarity":"COMMON",
