@@ -3,6 +3,10 @@ class AbilityButton extends Phaser.GameObjects.Container {
     constructor(scene, card, ability) {
         super(scene, ability.art.posx - card.frontArt.width/2, ability.art.posy - card.frontArt.height/2);
 
+        // Store original position for restoration
+        this.originalX = this.x;
+        this.originalY = this.y;
+
         this.scene = scene;
         /** @type {GameCardUI} */
         this.card = card;
@@ -18,6 +22,10 @@ class AbilityButton extends Phaser.GameObjects.Container {
         this.isPulsating = false;
         this.canPulsate = true;
         this.pulseTween = null;
+
+        //Trackers for animation
+        this.isAnimatingPointerOver = false;
+        this.isAnimationPointerOut = false;
 
         //Prepare blocker button
         this.abilityButton = this.scene.add.image(
@@ -42,6 +50,8 @@ class AbilityButton extends Phaser.GameObjects.Container {
     }
 
     onPointerOver() {
+        if(this.isAnimatingPointerOver || this.isAnimationPointerOut) return;
+            this.isAnimatingPointerOver = true;
         // Kill any existing tweens on the button to prevent conflicts
         this.canPulsate = false; // Prevent multiple pulsating animations
         this.stopPulsatingAnimation(); // Stop any existing pulsating animation
@@ -81,12 +91,6 @@ class AbilityButton extends Phaser.GameObjects.Container {
         const localX = constrainedX - cardWorldPos.tx;
         const localY = constrainedY - cardWorldPos.ty;
 
-        // Store original position for restoration
-        //if (!this.originalX) {
-            this.originalX = this.x;
-            this.originalY = this.y;
-        //}
-
         // Create smooth scaling tween
         this.scene.tweens.add({
             targets: this,
@@ -101,11 +105,16 @@ class AbilityButton extends Phaser.GameObjects.Container {
                 this.abilityButton.preFX.clear();
                 if(this.canActivate) this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_ORANGE, glowIntensity);
                 else this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
+            },
+            onComplete: () => {
+                this.isAnimatingPointerOver = false;
             }
         });
     }
 
     onPointerOut() {
+        if(this.isAnimatingPointerOver || this.isAnimationPointerOut) return;
+            this.isAnimationPointerOut = true;
         // Kill any existing tweens on the button to prevent conflicts
         this.scene.tweens.killTweensOf(this);
 
@@ -116,8 +125,8 @@ class AbilityButton extends Phaser.GameObjects.Container {
         // Create smooth scaling down tween
         this.scene.tweens.add({
             targets: this,
-            x: this.originalX || this.x,
-            y: this.originalY || this.y,
+            x: this.originalX,
+            y: this.originalY,
             scale: this.defaultScale, // Original scale
             duration: 150, // Slightly faster for better UX
             ease: 'Cubic.easeOut', // Smooth easing function
@@ -129,7 +138,9 @@ class AbilityButton extends Phaser.GameObjects.Container {
                 else this.abilityButton.preFX.addGlow(COLOR_ENUMS.OP_WHITE, glowIntensity);
             },
             onComplete: () => {
-                this.canPulsate = true; // Allow pulsating again after scaling down
+                this.isAnimationPointerOut = false;
+
+                this.canPulsate = true; // Allow pulsating again after scaling down   
             }
         });
     }
