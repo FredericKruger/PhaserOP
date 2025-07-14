@@ -87,6 +87,9 @@ class AttackManager {
         this.attackCleanup_Complete = false;
         this.onEndOfAttack_Complete = false;
         this.resumeTurn_Complete = false;
+        this.cancelAttack_Complete = false;
+
+        this.debugTest = true;
     }
 
     /** Function to resolve the attack
@@ -111,6 +114,25 @@ class AttackManager {
         }
 
         return attackResult;
+    }
+
+    /** Function that verifies if the attack is still going ahead
+     * Condition is that attacker and defender still have to be in the their respective character areas and in the right state
+     * @returns {boolean}
+     */
+    verifyAttackStillValid() {       
+        //Check is the card are still in the right locations
+        if(!this.debugTest) return this.debugTest;
+
+        if(!this.attack.attackingPlayer.characterAreaContains(this.attack.attacker) 
+            && !this.attack.attackingPlayer.leaderLocationContains(this.attack.attacker)) 
+            return false;
+
+        if(!this.attack.defendingPlayer.characterAreaContains(this.attack.defender) 
+            && !this.attack.defendingPlayer.leaderLocationContains(this.attack.defender)) 
+            return false;
+
+        return true;
     }
 
 }

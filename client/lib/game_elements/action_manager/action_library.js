@@ -822,7 +822,6 @@ class ActionLibrary {
             //Hide targeting arrow
             this.scene.attackManager.targetingManager.targetArrow.stopTargeting();
 
-
             // Get the attacker and defender cards from the attack manager
             const attacker = this.scene.attackManager.attack.attacker;
             const defender = this.scene.attackManager.attack.defender;

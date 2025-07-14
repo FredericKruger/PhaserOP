@@ -1022,7 +1022,7 @@ class GameStateManager {
     /** Function to cancel an attack
      * @param {boolean} isPlayerTurn - If it is the player's turn
      */
-    cancelAttack(isPlayerTurn) {
+    cancelAttack(isPlayerTurn, attackDeclared = false) {
         let player = this.scene.activePlayerScene;
         if(!isPlayerTurn) player = this.scene.passivePlayerScene;
 
@@ -1033,7 +1033,10 @@ class GameStateManager {
             this.scene.attackManager.targetingManager.targetArrow.stopTargeting();
             
             //remove targeting manager
-            this.scene.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
+            if(!attackDeclared) this.scene.attackManager.attack.attacker.setState(CARD_STATES.IN_PLAY);
+
+            //reseting attackManager
+            this.scene.attackManager = null;
 
             //Change Phase
             this.setPhase(GAME_PHASES.MAIN_PHASE);
@@ -1316,7 +1319,6 @@ class GameStateManager {
         finalAction.waitForAnimationToComplete = false;
         this.scene.actionManager.addAction(finalAction)
     }
-
     //#endregion
 
     //#region ABILITY FUNTIONS

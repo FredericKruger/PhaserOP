@@ -27,6 +27,11 @@ class AbilityButton extends Phaser.GameObjects.Container {
         this.isAnimatingPointerOver = false;
         this.isAnimationPointerOut = false;
 
+        // Add hover delay tracking
+        this.hoverDelayTimer = null;
+        this.isHoverDelayActive = false;
+        this.hasTriggeredHover = false;
+
         //Prepare blocker button
         this.abilityButton = this.scene.add.image(
             0, 0, 
@@ -50,6 +55,43 @@ class AbilityButton extends Phaser.GameObjects.Container {
     }
 
     onPointerOver() {
+        // Cancel any existing timer
+        this.onPointerOut();
+        
+        // Set flag to indicate delay is active
+        this.isHoverDelayActive = true;
+        this.hasTriggeredHover = false;
+        
+        // Start the 1-second delay timer
+        this.hoverDelayTimer = this.scene.time.delayedCall(1000, () => {
+            // Only trigger if we're still hovering
+            if (this.isHoverDelayActive) {
+                this.hasTriggeredHover = true;
+                this.increaseButtonSize();
+            }
+        });
+    }
+
+    onPointerOut() {
+        // Cancel the timer if it exists
+        if (this.hoverDelayTimer) {
+            this.hoverDelayTimer.destroy();
+            this.hoverDelayTimer = null;
+        }
+        
+        // If we had triggered the hover effect, now trigger pointer out
+        if (this.hasTriggeredHover) {
+            this.decreaseButtonSize();
+        }
+        
+        // Reset flags
+        this.isHoverDelayActive = false;
+        this.hasTriggeredHover = false;
+    }
+
+    increaseButtonSize() {
+        if(this.card.scene.gameState.name === GAME_STATES.TARGETING) return;
+
         if(this.isAnimatingPointerOver || this.isAnimationPointerOut) return;
             this.isAnimatingPointerOver = true;
         // Kill any existing tweens on the button to prevent conflicts
@@ -84,12 +126,13 @@ class AbilityButton extends Phaser.GameObjects.Container {
         
         // Calculate constrained position
         let constrainedX = Math.max(minX, Math.min(maxX, currentWorldX));
-        let constrainedY = Math.max(minY, Math.min(maxY, currentWorldY));
+        //let constrainedY = Math.max(minY, Math.min(maxY, currentWorldY));
     
         // Convert world coordinates back to local coordinates relative to the card
         const cardWorldPos = this.card.getWorldTransformMatrix();
         const localX = constrainedX - cardWorldPos.tx;
-        const localY = constrainedY - cardWorldPos.ty;
+        //const localY = constrainedY - cardWorldPos.ty;
+        const localY = this.originY;
 
         // Create smooth scaling tween
         this.scene.tweens.add({
@@ -112,7 +155,9 @@ class AbilityButton extends Phaser.GameObjects.Container {
         });
     }
 
-    onPointerOut() {
+    decreaseButtonSize() {
+        if(this.card.scene.gameState.name === GAME_STATES.TARGETING) return;
+
         if(this.isAnimatingPointerOver || this.isAnimationPointerOut) return;
             this.isAnimationPointerOut = true;
         // Kill any existing tweens on the button to prevent conflicts

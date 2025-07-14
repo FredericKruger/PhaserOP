@@ -199,10 +199,10 @@ class FlagManager {
             case 'RESUME_TURN_READY':
                 this.match.startAttack(player);
                 break;
-            case 'RESUME_TURN_READY':
+            /*case 'RESUME_TURN_READY':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('RESUME_TURN_READY_PASSIVE_PLAYER', true);
                 this.match.startAttack(player);
-                break;
+                break;*/
             case'RESUME_TURN_READY_PASSIVE_PLAYER':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('RESUME_TURN_READY', true);
                 this.match.startAttack(player);

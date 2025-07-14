@@ -261,6 +261,9 @@ class Client {
         this.socket.on('game_attack_cleanup', (activePlayer, cleanupResults) => {
             if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.startAttackCleanup(activePlayer, cleanupResults);
         });
+        this.socket.on('game_cancel_attack_already_declared', (activePlayer) => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.cancelAttack(activePlayer, true);
+        });
         //#endregion
 
         //#region SOCKET.ON TARGETTING

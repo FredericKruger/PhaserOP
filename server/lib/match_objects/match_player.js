@@ -290,6 +290,29 @@ class MatchPlayer {
         return cardsToBeReturned;
     }
     //#endregion
+
+    //#region UTILS
+
+    /** Function to find a card in the player's character area
+     * @param {MatchCard} cardToFind 
+     * @returns {boolean}
+     */
+    characterAreaContains(cardToFind) {
+        for(let card of this.inCharacterArea) {
+            if(card.id === cardToFind.id) return true;
+        }
+        return false;
+    }
+
+    /** Function to find a card in the player's leader area
+     * @param {MatchCard} cardToFind 
+     * @returns {boolean}
+     */
+    leaderLocationContains(cardToFind) {
+        return cardToFind.id === this.inLeaderLocation.id;
+    }
+
+    //#endregion
 }
 
 module.exports = MatchPlayer;
