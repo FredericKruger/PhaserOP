@@ -104,6 +104,9 @@ class Ability {
                 if(this.card.turnPlayed === this.card.scene.gameStateManager.currentTurn && condition.value) return true;
                 if(this.card.turnPlayed !== this.card.scene.gameStateManager.currentTurn && !condition.value) return true;
                 return false;
+            case 'TOTAL_AVAILABLE_DON':
+                if((this.card.playerScene.activeDonDeck.getNumberOfActiveCards() + this.card.playerScene.activeDonDeck.getNumberOfRestingCards()) >= condition.value) return true;
+                return false;
             default:
                 return true;
         }
@@ -994,6 +997,30 @@ const abilityActions = {
             }
         });
         return tweens; 
+    },
+    //#endregion
+    //#region returnDonToDeck
+    /** Function to return the don cards to the deck
+     * @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    returnDonToDeck: (scene, card, info, activePlayer) => {
+        let tweens = [];
+        return tweens;
+    },
+    //#endregion
+    //#region returnCardToHand
+    /** Function to return a card to hand
+     * @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    returnCardToHand: (scene, card, info, activePlayer) => {
+        let tweens = [];
+        return tweens;
     },
     //#endregion
     //#region selectCards

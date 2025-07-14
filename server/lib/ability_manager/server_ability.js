@@ -103,6 +103,9 @@ class ServerAbility {
                 if(card.turnPlayed === match.state.current_turn && condition.value) return true;
                 if(card.turnPlayed !== match.state.current_turn && !condition.value) return true;
                 return false;
+            case 'TOTAL_AVAILABLE_DON':
+                if((cardPlayer.currentMatchPlayer.inActiveDon.length + cardPlayer.currentMatchPlayer.inExertenDon.length) >= condition.value) return true;
+                return false;
             default:
                 return true;
         }
@@ -833,6 +836,38 @@ const serverAbilityActions = {
                 return actionResults;
             }
         }
+        return actionResults;
+    },
+    //#endregion
+    //#region returnDonToDeck
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      amount: number
+     * }} params 
+     * @returns 
+     */
+    returnDonToDeck: (match, player, card, params) => {
+        let actionResults = {name: "returnDonToDeck"};
+        return actionResults;
+    },
+    //#endregion
+    //#region returnCardToHand
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      target: 'TARGET' | 'SELF'
+     * }} params 
+     * @returns 
+     */
+    returnCardToHand: (match, player, card, params, targets) => {
+        let actionResults = {name: "returnCardToHand"};
         return actionResults;
     },
     //#endregion

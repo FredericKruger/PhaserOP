@@ -1,0 +1,66 @@
+{
+        "id": 400,
+        "setid": 1,
+        "banned": false,
+        "art":"ST03-001",
+        "set":"ST03",
+        "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+        "name":"Crocodile",
+        "card":"LEADER",
+        "type":["The Seven Warlords of the Sea", "Baroque Works"],
+        "colors":["BLUE"],
+        "life":5,
+        "cost":0,
+        "power":5000,
+        "attribute":"SPECIAL",
+        "isleader":1,
+        "rarity":"LEADER",
+
+        "animationinfo": {
+            "speeches": {
+                "intro": "You're about to face the wrath of the desert!",
+                "attack": "Desert Spada!",
+                "damages": "You dare strike me?",
+                "won": "Did you really think you could defeat me?",
+                "defeated": "This isn't the end! I'll rise again and crush you next time!",
+                "myturn": "Now, feel the fury of the desert! I'll bury you in sand!"
+            }
+        },
+
+        "abilities": [
+            {
+                "id": "ST03-001-1",
+                "text": "Don!! -4 (You may return the specified number of DON!! cards from your field to your DON!! deck.): Return up to 1 Character with a cost of 5 or less to the owner's hand.",
+                "art": {
+                    "art": "ST03-001-ABILITY1",
+                    "posx": 300,
+                    "posy": 577
+                },
+                "type": "ACTIVE",
+                "phases": ["Main Phase"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                "conditions": [
+                    {"type": "PLAYER_TURN", "value": true},
+                    {"type": "ONCE", "value": "TURN"},
+                    {"type": "TOTAL_AVAILABLE_DON", "value": 4}
+                ],
+                "actions": [
+                    {"name": "returnDonToDeck", "params": {"amount": 4}},
+                    {"name": "target", "params": {
+                        "target": {
+                            "targetAction": "ABILITY_ACTION",
+                            "requiredTargets": 1,
+                            "targets": [
+                                {
+                                    "minrequiredtargets": 0,
+                                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED", "IN_PLAY_ATTACKING", "IN_PLAY_DEFENDING"],
+                                    "power": {"operator": "<=", "value": 5000}
+                                }
+                            ]
+                        }
+                    }},
+                    {"name": "returnCardToHand", "params": {"target": "TARGET"}}
+                ]
+            }
+        ]
+    }

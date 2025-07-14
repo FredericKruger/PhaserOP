@@ -287,6 +287,117 @@ class AnimationLibrary {
         return animation;
     }
 
+    /** Animation that moves a don card from the active don area back to the don deck
+    * @param {DonCardUI} card - card to be moved from the active don area to the don deck
+    * @param {number} delay - delay with which to start the tweens
+    */
+    animation_move_don_activearea2deck(card, delay) {
+        // Get final positions
+        let deckPosX = card.playerScene.donDeck.x;
+        let deckPosY = card.playerScene.donDeck.y;
+        
+        // Calculate a dynamic arc path in reverse
+        const arcHeight = 120 + Math.random() * 20; // Random arc height
+        const controlX = (card.x + deckPosX) / 2; // Midpoint for horizontal movement
+        const midArcY = Math.min(card.y, deckPosY) - arcHeight; // Arc goes up from current position
+        
+        // Store original position for reference
+        const startX = card.x;
+        const startY = card.y;
+        const startAngle = card.rotation;
+        
+        let tweens = [
+            { // Phase 1: Initial lift with slight scaling and rotation
+                scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1, // Slightly larger for emphasis
+                y: card.y - 15, // Small lift to show it's being picked up
+                rotation: Phaser.Math.DegToRad(startAngle * Phaser.Math.RAD_TO_DEG + 10), // Slight rotation
+                duration: 150,
+                delay: delay,
+                ease: 'Power2.easeOut',
+                onStart: () => {
+                    // Bring card to front during animation
+                    card.setDepth(card.playerScene.donDeck.depth + 1);
+                    
+                    // Create a pulse effect on the DON counter (decreasing)
+                    const donText = card.playerScene.playerInfo.activeDonCardAmountText;
+                    if (donText) {
+                        card.scene.tweens.add({
+                            targets: donText,
+                            scale: 0.8,
+                            duration: 150,
+                            yoyo: true,
+                            ease: 'Sine.easeInOut'
+                        });
+                    }
+                }
+            },
+            { // Phase 2: Arc movement with rotation toward horizontal
+                scale: CARD_SCALE.IN_DON_DECK,
+                x: controlX, // Move to midpoint
+                y: midArcY, // High arc
+                rotation: Phaser.Math.DegToRad(45), // Rotate toward horizontal
+                duration: 250,
+                ease: 'Sine.easeOut'
+            },
+            { // Phase 3: Approach deck with final rotation
+                scale: CARD_SCALE.IN_DON_DECK * 0.9, // Slightly smaller as it approaches deck
+                x: deckPosX,
+                y: deckPosY - 10, // Slightly above deck
+                rotation: Phaser.Math.DegToRad(0), // Face down like deck cards
+                duration: 200,
+                ease: 'Power2.easeIn'
+            },
+            { // Phase 4: Final insertion into deck with flip
+                scaleX: 0, // Flip the card horizontally
+                scaleY: CARD_SCALE.IN_DON_DECK * 1.1, // Slightly taller during flip
+                x: deckPosX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_DON_DECK * 0.3),
+                y: deckPosY,
+                duration: 120,
+                ease: 'Power2.easeIn',
+                onComplete: () => {
+                    card.flipCard(); // Flip to back side
+                }
+            },
+            { // Phase 5: Complete insertion and settle
+                scaleX: CARD_SCALE.IN_DON_DECK,
+                scaleY: CARD_SCALE.IN_DON_DECK,
+                x: deckPosX,
+                y: deckPosY,
+                duration: 100,
+                ease: 'Sine.easeOut',
+                onComplete: () => {
+                    // Set proper depth below deck
+                    card.setDepth(card.playerScene.donDeck.depth - 1);
+                    
+                    // Create deck ripple effect
+                    const donDeck = card.playerScene.donDeck;
+                    if (donDeck) {
+                        card.scene.tweens.add({
+                            targets: donDeck,
+                            scaleX: 1.05,
+                            scaleY: 1.05,
+                            duration: 100,
+                            yoyo: true,
+                            ease: 'Sine.easeInOut'
+                        });
+                    }
+                }
+            },
+            { // Phase 6: Final fade/hide
+                alpha: 0,
+                scale: CARD_SCALE.IN_DON_DECK * 0.95, // Slightly shrink while fading
+                duration: 80,
+                ease: 'Power1.easeIn',
+                onComplete: () => {
+                    card.setVisible(false);
+                    // Update any relevant game state or counters here
+                }
+            }
+        ];
+        
+        return tweens;
+    }
+
     /** Animation that brings a card from the deck to 
      * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
      * @param {number} delay - delay with which to start the tweens 
