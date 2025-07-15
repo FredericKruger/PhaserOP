@@ -852,6 +852,51 @@ const serverAbilityActions = {
      */
     returnDonToDeck: (match, player, card, params) => {
         let actionResults = {name: "returnDonToDeck"};
+        actionResults.donId = [];
+        actionResults.player = params.player;
+
+        //Check if player is owner or opponent
+        let targetPlayer = player;
+        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+
+        let donAmount = params.amount;
+        while(donAmount > 0) {
+            let currentDonId = null;
+
+            //Start with exerted Dons
+            for(let donCard of targetPlayer.inExertenDon) {
+                console.log(donCard.state);
+                if(donCard.state === "DON_RESTED") {
+                    currentDonId = {id: donCard.id, location: "EXERTED"};
+                    targetPlayer.inExertenDon.splice(targetPlayer.inExertenDon.indexOf(donCard), 1);
+                    donCard.setState("DON_DECK");
+                    targetPlayer.inDon.push(donCard);
+                    break;
+                }
+            }
+
+            //Continue with active Dons
+            if(currentDonId === null) {
+                for(let donCard of targetPlayer.inActiveDon) {
+                    console.log(donCard.state);
+                    if(donCard.state === "DON_ACTIVE") {
+                        currentDonId = {id: donCard.id, location: "ACTIVE"};
+                        targetPlayer.inActiveDon.splice(targetPlayer.inActiveDon.indexOf(donCard), 1);
+                        donCard.setState("DON_DECK");
+                        targetPlayer.inDon.push(donCard);
+                        break;
+                    }
+                }
+            }
+
+            if(currentDonId !== null) {
+                actionResults.donId.push(currentDonId);
+                donAmount--;
+            }
+        }
+
+        console.log(actionResults);
+
         return actionResults;
     },
     //#endregion

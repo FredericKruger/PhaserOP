@@ -1008,6 +1008,43 @@ const abilityActions = {
      */
     returnDonToDeck: (scene, card, info, activePlayer) => {
         let tweens = [];
+
+        let playerScene = card.playerScene;
+        if(info.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
+
+        let delay = 0;
+
+        //Get the don cards to return
+        for(let i=0; i<info.donId.length; i++) {
+            let donId = info.donId[i].id;
+            let donLocation = info.donId[i].location;
+
+            let donCard = scene.getDonCard(donId);
+            
+            tweens.push({
+                targets: donCard,
+                alpha: 1,
+                duration: 1,
+                onStart: () => {
+                    donCard.setState(CARD_STATES.DON_IN_DECK);
+                }
+            });
+            if(!activePlayer) tweens = tweens.concat(scene.animationLibraryPassivePlayer.animation_move_don_activearea2deck(donCard, delay, {updateCounter: true, location: donLocation}));
+            else tweens = tweens.concat(scene.animationLibrary.animation_move_don_activearea2deck(donCard, delay, {updateCounter: true, location: donLocation}));
+            tweens.push({
+                targets: {},
+                alpha: 1,
+                duration: 1,
+                onStart: () => {
+                    donCard = null; // Clear the reference to the don card
+                    playerScene.donDeck.addDeckVisual(); // Add a new deck visual to the don deck
+                    playerScene.donDeck.updateCardAmountText(); // Update the don deck card amount text
+                }
+            });
+
+            delay += 200; // Increase animation delay tracker
+        }
+
         return tweens;
     },
     //#endregion

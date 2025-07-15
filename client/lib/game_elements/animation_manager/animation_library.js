@@ -290,11 +290,13 @@ class AnimationLibrary {
     /** Animation that moves a don card from the active don area back to the don deck
     * @param {DonCardUI} card - card to be moved from the active don area to the don deck
     * @param {number} delay - delay with which to start the tweens
+    * @param {boolean} updateUI.updateCounter - wether to update the ui
+    * @param {string} updateUI.location - which counter to update
     */
-    animation_move_don_activearea2deck(card, delay) {
+    animation_move_don_activearea2deck(card, delay, updateUI = null) {
         // Get final positions
-        let deckPosX = card.playerScene.donDeck.x;
-        let deckPosY = card.playerScene.donDeck.y;
+        let deckPosX = card.playerScene.donDeck.posX;
+        let deckPosY = card.playerScene.donDeck.posY;
         
         // Calculate a dynamic arc path in reverse
         const arcHeight = 120 + Math.random() * 20; // Random arc height
@@ -308,6 +310,7 @@ class AnimationLibrary {
         
         let tweens = [
             { // Phase 1: Initial lift with slight scaling and rotation
+                targets: card,
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1, // Slightly larger for emphasis
                 y: card.y - 15, // Small lift to show it's being picked up
                 rotation: Phaser.Math.DegToRad(startAngle * Phaser.Math.RAD_TO_DEG + 10), // Slight rotation
@@ -317,10 +320,21 @@ class AnimationLibrary {
                 onStart: () => {
                     // Bring card to front during animation
                     card.setDepth(card.playerScene.donDeck.depth + 1);
-                    
-                    // Create a pulse effect on the DON counter (decreasing)
-                    const donText = card.playerScene.playerInfo.activeDonCardAmountText;
-                    if (donText) {
+
+                    let donText = null;
+                    if(updateUI && updateUI.updateCounter) {
+                        switch(updateUI.location) {
+                            case "EXERTED":
+                                donText = card.playerScene.playerInfo.restingDonCardAmountText;
+                                card.playerScene.playerInfo.updateRestingCardAmountText();
+                                break;
+                            case "ACTIVE":
+                                donText = card.playerScene.playerInfo.activeDonCardAmountText;
+                                card.playerScene.playerInfo.updateActiveCardAmountText();
+                                break;
+                        }
+
+                        // Create a pulse effect on the DON counter (decreasing)
                         card.scene.tweens.add({
                             targets: donText,
                             scale: 0.8,
@@ -328,10 +342,12 @@ class AnimationLibrary {
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
+
                     }
                 }
             },
             { // Phase 2: Arc movement with rotation toward horizontal
+                targets: card,
                 scale: CARD_SCALE.IN_DON_DECK,
                 x: controlX, // Move to midpoint
                 y: midArcY, // High arc
@@ -340,6 +356,7 @@ class AnimationLibrary {
                 ease: 'Sine.easeOut'
             },
             { // Phase 3: Approach deck with final rotation
+                targets: card,
                 scale: CARD_SCALE.IN_DON_DECK * 0.9, // Slightly smaller as it approaches deck
                 x: deckPosX,
                 y: deckPosY - 10, // Slightly above deck
@@ -348,6 +365,7 @@ class AnimationLibrary {
                 ease: 'Power2.easeIn'
             },
             { // Phase 4: Final insertion into deck with flip
+                targets: card,
                 scaleX: 0, // Flip the card horizontally
                 scaleY: CARD_SCALE.IN_DON_DECK * 1.1, // Slightly taller during flip
                 x: deckPosX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_DON_DECK * 0.3),
@@ -359,6 +377,7 @@ class AnimationLibrary {
                 }
             },
             { // Phase 5: Complete insertion and settle
+                targets: card,
                 scaleX: CARD_SCALE.IN_DON_DECK,
                 scaleY: CARD_SCALE.IN_DON_DECK,
                 x: deckPosX,
@@ -384,6 +403,7 @@ class AnimationLibrary {
                 }
             },
             { // Phase 6: Final fade/hide
+                targets: card,
                 alpha: 0,
                 scale: CARD_SCALE.IN_DON_DECK * 0.95, // Slightly shrink while fading
                 duration: 80,
