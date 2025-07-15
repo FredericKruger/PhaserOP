@@ -86,6 +86,33 @@ class ServerAbility {
                 return false;
             case 'CHARACTER_COUNT':
                 return cardPlayer.currentMatchPlayer.inCharacterArea.length >= condition.value;
+            case 'CHECK_TARGETS':
+                if(condition.value) {
+                    // Get all target actions from the ability
+                    const targetActions = this.actions.filter(action => action.name === "target");
+        
+                    if(targetActions.length === 0) return true; // If no target actions, condition passes
+
+                    // Check each target action to ensure at least one valid target exists
+                    for(const targetAction of targetActions) {
+                        const targetParams = targetAction.params.target;
+                        
+                        // Create a temporary targeting manager to check valid targets
+                        const TargetingManager = require("../managers/targeting_manager");
+                        const targetingManager = new TargetingManager(match);
+                        
+                        let hasValidTargets = false;
+                        
+                        // Check all possible targets based on the target parameters
+                        hasValidTargets = match.findValidTargets(targetParams.targets);
+                        
+                        // If any target action has no valid targets, condition fails
+                        if(!hasValidTargets) return false;
+                    }
+                    // All target actions have at least one valid target
+                    return true;
+
+                } else return true;
             case 'HAS_ATTACKED_THIS_TURN':
                 if(card.hasAttackedThisTurn && condition.value) return true;
                 if(!card.hasAttackedThisTurn && !condition.value) return true;
@@ -865,7 +892,6 @@ const serverAbilityActions = {
 
             //Start with exerted Dons
             for(let donCard of targetPlayer.inExertenDon) {
-                console.log(donCard.state);
                 if(donCard.state === "DON_RESTED") {
                     currentDonId = {id: donCard.id, location: "EXERTED"};
                     targetPlayer.inExertenDon.splice(targetPlayer.inExertenDon.indexOf(donCard), 1);
@@ -878,7 +904,7 @@ const serverAbilityActions = {
             //Continue with active Dons
             if(currentDonId === null) {
                 for(let donCard of targetPlayer.inActiveDon) {
-                    console.log(donCard.state);
+
                     if(donCard.state === "DON_ACTIVE") {
                         currentDonId = {id: donCard.id, location: "ACTIVE"};
                         targetPlayer.inActiveDon.splice(targetPlayer.inActiveDon.indexOf(donCard), 1);
@@ -894,8 +920,6 @@ const serverAbilityActions = {
                 donAmount--;
             }
         }
-
-        console.log(actionResults);
 
         return actionResults;
     },

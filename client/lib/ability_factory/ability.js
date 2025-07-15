@@ -1036,7 +1036,7 @@ const abilityActions = {
                 alpha: 1,
                 duration: 1,
                 onStart: () => {
-                    donCard = null; // Clear the reference to the don card
+                    donCard.destroy(); // Destroy the don card
                     playerScene.donDeck.addDeckVisual(); // Add a new deck visual to the don deck
                     playerScene.donDeck.updateCardAmountText(); // Update the don deck card amount text
                 }

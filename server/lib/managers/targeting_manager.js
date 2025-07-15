@@ -50,7 +50,8 @@ class TargetingManager {
      * @param {Object} target - target object
      */
     areValidTargets(player, cardIDs, targetObject) {
-        if(cardIDs.length !== targetObject.requiredTargets) return false;
+       // if(cardIDs.length !== targetObject.requiredTargets) return false;
+        if(cardIDs.length < targetObject.requiredTargets) return false;
 
         let targetsValid = true;
         for(let cardID of cardIDs) {
@@ -63,10 +64,16 @@ class TargetingManager {
             };
 
             let isValid = false;
-            for (let target of targetObject.targets) {
-                isValid = isValid || this.isValidTarget(card, target, playerCard);
+            if(targetObject instanceof Array) {
+                for (let target of targetObject.targets) {
+                    isValid = isValid || this.isValidTarget(card, target, playerCard);
+                    if(isValid) break;
+                }
+            } else {
+                isValid = isValid || this.isValidTarget(card, targetObject, playerCard);
                 if(isValid) break;
             }
+
 
             targetsValid = targetsValid && isValid;
             if(!targetsValid) return false;
@@ -106,11 +113,14 @@ class TargetingManager {
         //console.log("isAttributeValid", isValid);
 
         if (this.target.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card.id)
+        //console.log("isExcludeValid", isValid);
 
         if (this.target.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card.abilities);
+        //console.log("hasAbilityValid", isValid);
 
+        //console.log(card);
         // Check card cost
-        let cost = card.currentCost || card.getPower(this.match.isPlayerActivePlayer(card.owner));
+        let cost = card.currentCost || card.getCost(this.match.isPlayerActivePlayer(card.owner));
         if (Object.keys(this.target.cost).length > 0 && isValid) isValid = isValid && this.compareValue(cost, this.target.cost);
         //console.log("compareCost", isValid);
 

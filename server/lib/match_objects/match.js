@@ -1064,8 +1064,9 @@ class Match {
                         player.socket.emit('game_reset_targets');
                     }
                 } else {
-                    console.log("Canceling ability targeting");
-                    this.cleanupAction(player);
+                    player.socket.emit('game_reset_targets');
+                    //console.log("Canceling ability targeting");
+                    //this.cleanupAction(player);
                 }
                 break;
             case PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED:

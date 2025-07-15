@@ -42,10 +42,25 @@
                 "conditions": [
                     {"type": "PLAYER_TURN", "value": true},
                     {"type": "ONCE", "value": "TURN"},
-                    {"type": "TOTAL_AVAILABLE_DON", "value": 1}
+                    {"type": "TOTAL_AVAILABLE_DON", "value": 1},
+                    {"type": "CHECK_TARGETS", "value": true}
                 ],
                 "actions": [
-                    {"name": "returnDonToDeck", "params": {"amount": 1, "player": "owner"}}
+                    {"name": "returnDonToDeck", "params": {"amount": 1, "player": "owner"}},
+                    {"name": "target", "params": {
+                        "target": {
+                            "targetAction": "ABILITY_ACTION",
+                            "requiredTargets": 1,
+                            "targets": [
+                                {
+                                    "minrequiredtargets": 0,
+                                    "cardtypes": ["CHARACTER"],
+                                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED", "IN_PLAY_ATTACKING", "IN_PLAY_DEFENDING"],
+                                    "cost": {"operator": "<=", "value": 5}
+                                }
+                            ]
+                        }
+                    }}
                 ]
             }
         ]
