@@ -1097,6 +1097,7 @@ const abilityActions = {
             onStart: () => {
                 // Start the selection process
                 let targetManager = new TargetManager(scene, 'EVENT', info.actionId, info.playedCard);
+                targetManager.canCancel = false; // Disable cancel for this action
                 scene.targetManagers.push(targetManager);
 
                 if(activePlayer) targetManager.loadFromTargetData(info.targets);

@@ -77,7 +77,7 @@
                         "minrequiredtargets": 0,
                         "player": ["owner"],
                         "cardtypes": ["CHARACTER", "LEADER"],
-                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED", "ALL_IN_PLAY_STATES"],
                         "power": {"operator": ">=", "value": 5000},
                         "types": ["Straw Hat Crew"],
                         "exclude": ["SELF"],

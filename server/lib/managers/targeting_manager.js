@@ -29,6 +29,11 @@ class Target {
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
         this.hasability = serverTarget.hasability?.slice() || [];
+
+        //Prepare states if a group state efind
+        if (this.states.includes("ALL_IN_PLAY_STATES")) {
+            this.states = ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED", "IN_PLAY_ATTACKING", "IN_PLAY_DEFENDING", "IN_PLAY_BLOCKING"];
+        }
     }
 }
 

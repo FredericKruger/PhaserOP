@@ -972,7 +972,7 @@ class ActionLibrary {
     /** Function to stop the targeting */
     cancelTargetingAction(serverRequest = false) {
         let activeTargetManager = this.scene.getActiveTargetManager();
-        if (!activeTargetManager.waitingForServer) {
+        if (!activeTargetManager.waitingForServer && activeTargetManager.canCancel) {
             activeTargetManager.waitingForServer = true;
 
             let action = new Action();

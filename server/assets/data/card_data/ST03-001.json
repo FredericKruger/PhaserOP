@@ -55,12 +55,13 @@
                                 {
                                     "minrequiredtargets": 0,
                                     "cardtypes": ["CHARACTER"],
-                                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED", "IN_PLAY_ATTACKING", "IN_PLAY_DEFENDING"],
+                                    "states": ["ALL_IN_PLAY_STATES"],
                                     "cost": {"operator": "<=", "value": 5}
                                 }
                             ]
                         }
-                    }}
+                    }},
+                    {"name": "returnCardToHand", "params": {"target": "TARGET"}}
                 ]
             }
         ]

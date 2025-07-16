@@ -12,6 +12,7 @@ class TargetManager {
 
         this.active = active; //Is the target active
         this.waitingForServer = false;
+        this.canCancel = true; //Can the target be cancelled
 
         this.originatorCard = originatorCard; //Store the reference to the card triggered the targeting
         this.targetData = {};
