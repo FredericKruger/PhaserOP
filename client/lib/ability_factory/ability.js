@@ -1057,6 +1057,33 @@ const abilityActions = {
      */
     returnCardToHand: (scene, card, info, activePlayer) => {
         let tweens = [];
+
+        let cardToReturn = scene.getCard(info.cardId);
+
+        tweens.push({
+            targets: {},
+            alpha: 1,
+            duration: 1,
+            onStart: () => {
+                cardToReturn.playerScene.characterArea.removeCard(cardToReturn);
+            }
+        });
+        tweens = tweens.concat(scene.animationLibrary.animation_lift_card_from_characterarea(cardToReturn));
+        if(cardToReturn.playerScene !== scene.activePlayerScene) {
+            tweens = tweens.concat(scene.animationLibraryPassivePlayer.animation_flip_card(cardToReturn, 0));
+        }
+        tweens.push({
+            targets: {},
+            alpha: 1,
+            duration: 1,
+            onStart: () => {
+                cardToReturn.setState(CARD_STATES.IN_HAND);
+                cardToReturn.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+                cardToReturn.playerScene.hand.addCards([cardToReturn], {setCardState: true, setCardDepth: true, updateUI: true});
+                cardToReturn.playerScene.characterArea.update();
+            }
+        });
+
         return tweens;
     },
     //#endregion

@@ -23,6 +23,9 @@
             },
             "type": "ON_PLAY",
             "phases": ["Main Phase"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
             "actions": [
                 {"name": "target", "params": {
                     "target": {
@@ -78,6 +81,9 @@
             "type": "TRIGGER",
             "phases": ["Main: Trigger"],
             "states": ["BEING_PLAYED"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
             "actions": [
                 {"name": "target", "params": {
                     "target": {

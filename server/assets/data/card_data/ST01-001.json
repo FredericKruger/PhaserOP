@@ -41,7 +41,8 @@
             "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
                 {"type": "PLAYER_TURN", "value": true},
-                {"type": "ONCE", "value": "TURN"}
+                {"type": "ONCE", "value": "TURN"},
+                {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
                 {"name": "target", "params": {"target": {

@@ -25,17 +25,9 @@
             },
             "type": "ON_PLAY",
             "phases": ["Main: Counter"],
-            "target": {
-                "targetAction": "EVENT_CARD_ACTION",
-                "requiredTargets": 1,
-                "targets": [
-                    {
-                        "minrequiredtargets": 0,
-                        "player": ["owner"],
-                        "cardtypes": ["CHARACTER", "LEADER"]
-                    }
-                ]
-            },
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
             "actions": [
                 {"name": "target", "params": {
                     "target": {

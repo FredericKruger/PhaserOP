@@ -24,6 +24,9 @@
             },
             "type": "ON_PLAY",
             "phases": ["Main: Counter"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
             "actions": [
                 {"name": "target", "params": {"target": {
                         "targetAction": "EVENT_CARD_ACTION",
@@ -51,6 +54,9 @@
             "type": "TRIGGER",
             "phases": ["Main: Trigger"],
             "states": ["BEING_PLAYED"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
             "actions": [
                 {"name": "target", "params": {
                     "target": {

@@ -43,7 +43,8 @@
                 {"type": "PLAYER_TURN", "value": true},
                 {"type": "ONCE", "value": "TURN"},
                 {"type": "AVAILABLE_DON", "value": 3},
-                {"type": "MIN_CARDS_IN_HAND", "value": 1}
+                {"type": "MIN_CARDS_IN_HAND", "value": 1},
+                {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
                 {"name": "target", "params": {

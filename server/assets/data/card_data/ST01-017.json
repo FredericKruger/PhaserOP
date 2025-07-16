@@ -27,7 +27,8 @@
             "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
                 {"type": "CARD_RESTED", "value": false},
-                {"type": "PLAYER_TURN", "value": true}
+                {"type": "PLAYER_TURN", "value": true},
+                {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
                 {"name": "target", "params": {

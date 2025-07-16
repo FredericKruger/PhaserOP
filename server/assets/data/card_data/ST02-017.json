@@ -26,6 +26,9 @@
             "type": "ON_PLAY",
             "states": ["BEING_PLAYED", "IN_HAND"],
             "phases": ["Main Phase"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
             "actions": [
                 {"name": "target", "params": {
                     "target": {

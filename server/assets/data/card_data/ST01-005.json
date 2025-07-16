@@ -35,7 +35,8 @@
             "type": "WHEN_ATTACKING",
             "phases": ["Main: Attack"],
             "conditions": [
-                {"type": "ATTACHED_DON", "value": 1}
+                {"type": "ATTACHED_DON", "value": 1},
+                {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
                 {"name": "target", "params": {

@@ -937,6 +937,25 @@ const serverAbilityActions = {
      */
     returnCardToHand: (match, player, card, params, targets) => {
         let actionResults = {name: "returnCardToHand"};
+
+        let cardToReturn = card;
+        if(params.target === "TARGET") 
+            cardToReturn = match.matchCardRegistry.get(targets[0]);
+
+        actionResults.cardId = cardToReturn.id;
+
+        //Get the card owner
+        let cardOwner = match.getPlayer(cardToReturn.owner).currentMatchPlayer; //Cannot be MatchPlayer
+
+        //Remove the card from the card pool it currently is in
+        if(cardOwner.characterAreaContains(cardToReturn)) {
+            cardOwner.inCharacterArea.splice(cardOwner.inCharacterArea.indexOf(cardToReturn), 1);
+        } else if(cardOwner.stageLocationContains(cardToReturn)) {
+            cardOwner.inStageLocation = null;
+        }
+        cardToReturn.setState("IN_HAND");
+        cardOwner.inHand.push(cardToReturn);
+
         return actionResults;
     },
     //#endregion

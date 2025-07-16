@@ -299,7 +299,7 @@ class AnimationLibrary {
         let deckPosY = card.playerScene.donDeck.posY;
         
         // Calculate a dynamic arc path in reverse
-        const arcHeight = 120 + Math.random() * 20; // Random arc height
+        const arcHeight = 80 + Math.random() * 15; // Reduced arc height for faster movement
         const controlX = (card.x + deckPosX) / 2; // Midpoint for horizontal movement
         const midArcY = Math.min(card.y, deckPosY) - arcHeight; // Arc goes up from current position
         
@@ -309,13 +309,13 @@ class AnimationLibrary {
         const startAngle = card.rotation;
         
         let tweens = [
-            { // Phase 1: Initial lift with slight scaling and rotation
+            { // Phase 1: Initial lift with slight scaling and rotation - FASTER
                 targets: card,
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1, // Slightly larger for emphasis
                 y: card.y - 15, // Small lift to show it's being picked up
                 rotation: Phaser.Math.DegToRad(startAngle * Phaser.Math.RAD_TO_DEG + 10), // Slight rotation
-                duration: 150,
-                delay: delay,
+                duration: 100, // Reduced from 150
+                delay: delay * 0.3, // Reduced delay multiplier
                 ease: 'Power2.easeOut',
                 onStart: () => {
                     // Bring card to front during animation
@@ -334,79 +334,78 @@ class AnimationLibrary {
                                 break;
                         }
 
-                        // Create a pulse effect on the DON counter (decreasing)
+                        // Create a pulse effect on the DON counter (decreasing) - FASTER
                         card.scene.tweens.add({
                             targets: donText,
                             scale: 0.8,
-                            duration: 150,
+                            duration: 100, // Reduced from 150
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
-
                     }
                 }
             },
-            { // Phase 2: Arc movement with rotation toward horizontal
+            { // Phase 2: Arc movement with rotation toward horizontal - FASTER
                 targets: card,
                 scale: CARD_SCALE.IN_DON_DECK,
                 x: controlX, // Move to midpoint
                 y: midArcY, // High arc
                 rotation: Phaser.Math.DegToRad(45), // Rotate toward horizontal
-                duration: 250,
+                duration: 180, // Reduced from 250
                 ease: 'Sine.easeOut'
             },
-            { // Phase 3: Approach deck with final rotation
+            { // Phase 3: Approach deck with final rotation - FASTER
                 targets: card,
                 scale: CARD_SCALE.IN_DON_DECK * 0.9, // Slightly smaller as it approaches deck
                 x: deckPosX,
                 y: deckPosY - 10, // Slightly above deck
                 rotation: Phaser.Math.DegToRad(0), // Face down like deck cards
-                duration: 200,
+                duration: 140, // Reduced from 200
                 ease: 'Power2.easeIn'
             },
-            { // Phase 4: Final insertion into deck with flip
+            { // Phase 4: Final insertion into deck with flip - FASTER
                 targets: card,
                 scaleX: 0, // Flip the card horizontally
                 scaleY: CARD_SCALE.IN_DON_DECK * 1.1, // Slightly taller during flip
                 x: deckPosX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH * CARD_SCALE.IN_DON_DECK * 0.3),
                 y: deckPosY,
-                duration: 120,
+                duration: 80, // Reduced from 120
                 ease: 'Power2.easeIn',
                 onComplete: () => {
                     card.flipCard(); // Flip to back side
                 }
             },
-            { // Phase 5: Complete insertion and settle
+            { // Phase 5: Complete insertion and settle - FASTER
                 targets: card,
                 scaleX: CARD_SCALE.IN_DON_DECK,
                 scaleY: CARD_SCALE.IN_DON_DECK,
                 x: deckPosX,
                 y: deckPosY,
-                duration: 100,
+                duration: 70, // Reduced from 100
                 ease: 'Sine.easeOut',
                 onComplete: () => {
                     // Set proper depth below deck
                     card.setDepth(card.playerScene.donDeck.depth - 1);
                     
-                    // Create deck ripple effect
+                    // Create deck ripple effect - FASTER
                     const donDeck = card.playerScene.donDeck;
                     if (donDeck) {
                         card.scene.tweens.add({
                             targets: donDeck,
                             scaleX: 1.05,
                             scaleY: 1.05,
-                            duration: 100,
+                            duration: 70, // Reduced from 100
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
                     }
                 }
             },
-            { // Phase 6: Final fade/hide
+            { // Phase 6: Final fade/hide - FASTER
                 targets: card,
                 alpha: 0,
                 scale: CARD_SCALE.IN_DON_DECK * 0.95, // Slightly shrink while fading
-                duration: 80,
+                duration: 50, // Reduced from 80
                 ease: 'Power1.easeIn',
                 onComplete: () => {
                     card.setVisible(false);
@@ -711,7 +710,112 @@ class AnimationLibrary {
 
         return tweens;
     }
+    //#endregion
 
+    //#region LIFT CARD FROM CHARACTER AREA
+    /** Animation that simulates a card being lifted by hand from the character area
+     * @param {GameCardUI} card - card to be lifted from the character area
+     * @param {number} delay - delay with which to start the tweens
+     * @param {Function} callback - optional callback when animation completes
+     * @returns {Array} - Array of tween configurations
+     */
+    animation_lift_card_from_characterarea(card, delay = 0, callback = null) {
+        // Store original properties
+        const originalX = card.x;
+        const originalY = card.y;
+        const originalScale = card.scale;
+        const originalRotation = card.rotation;
+        const originalDepth = card.depth;
+        
+        // Calculate lift parameters
+        const liftHeight = 80 + Math.random() * 20; // Random lift between 80-100px
+        const sidewaysShift = (Math.random() * 20) - 10; // Random horizontal movement ±10px
+        const handTilt = (Math.random() * 0.15) - 0.075; // Random tilt ±0.075 radians (~4.3 degrees)
+        
+        let tweens = [
+            { // Phase 1: Initial contact - slight compression and tilt
+                targets: card,
+                scaleX: card.scaleX * 0.98, // Slight horizontal compression
+                scaleY: card.scaleY * 1.02, // Slight vertical expansion
+                rotation: originalRotation + (handTilt * 0.3), // Beginning of hand tilt
+                duration: 60,
+                delay: delay,
+                ease: 'Power2.easeOut',
+                onStart: () => {
+                    // Bring card to front during lift
+                    card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+                    
+                    // Add subtle shadow effect
+                    /*if (card.postFX) {
+                        card.postFX.addShadow(2, 2, 0.1, 0.8, 0x000000, 4);
+                    }*/
+                }
+            },
+            { // Phase 2: Initial lift with hand movement simulation
+                targets: card,
+                x: originalX + (sidewaysShift * 0.4), // Slight horizontal movement
+                y: originalY - (liftHeight * 0.2), // Begin lifting
+                scaleX: originalScale * 1.02, // Card expands as it's lifted
+                scaleY: originalScale * 1.02,
+                rotation: originalRotation + (handTilt * 0.6), // More tilt as hand grips
+                duration: 100,
+                ease: 'Power1.easeOut'
+            },
+            { // Phase 3: Main lift with realistic hand arc movement
+                targets: card,
+                x: originalX + sidewaysShift, // Full horizontal shift
+                y: originalY - (liftHeight * 0.6), // Majority of lift
+                scale: originalScale * 1.05, // Slightly larger as it comes toward viewer
+                rotation: originalRotation + handTilt, // Full hand tilt
+                duration: 150,
+                ease: 'Sine.easeOut'/*,
+                onUpdate: (tween) => {
+                    // Add subtle wobble during lift to simulate hand tremor
+                    const progress = tween.progress;
+                    const wobble = Math.sin(progress * Math.PI * 6) * 2; // 6 wobbles during lift
+                    card.y += wobble * (1 - progress); // Decrease wobble as lift progresses
+                }*/
+            } ,
+            { // Phase 4: Peak lift with slight pause and hand adjustment
+                targets: card,
+                x: originalX + sidewaysShift + ((Math.random() * 6) - 3), // Micro adjustment
+                y: originalY - liftHeight, // Full lift height
+                scale: originalScale * 1.08, // Closer to viewer
+                rotation: originalRotation + handTilt + ((Math.random() * 0.05) - 0.025), // Hand readjustment
+                duration: 120,
+                ease: 'Power1.easeInOut'
+            },
+            { // Phase 5: Gentle hover with breathing motion
+                targets: card,
+                y: originalY - liftHeight + 5, // Slight downward drift
+                scale: originalScale * 1.06, // Slight scale decrease
+                duration: 100,
+                ease: 'Sine.easeInOut',
+                yoyo: true, // Creates breathing motion
+                repeat: 1, // One breath cycle
+                onUpdate: (tween) => {
+                    // Add gentle floating motion
+                    const progress = tween.progress;
+                    const float = Math.sin(progress * Math.PI * 2) * 3;
+                    card.y += float;
+                }
+            }/*,
+            { // Phase 6: Hold position with subtle movements
+                targets: card,
+                x: originalX + sidewaysShift + Math.sin(Date.now() * 0.001) * 2, // Gentle sway
+                duration: 500,
+                ease: 'Sine.easeInOut',
+                onComplete: () => {
+                    // Animation complete - card is now "in hand"
+                    if (callback) {
+                        callback();
+                    }
+                }
+            }*/
+        ];
+        
+        return tweens;
+    }
     //#endregion
 
     //#region PAYING ANIMATIONS

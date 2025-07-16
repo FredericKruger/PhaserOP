@@ -312,6 +312,14 @@ class MatchPlayer {
         return cardToFind.id === this.inLeaderLocation.id;
     }
 
+    /** Function to find a card in the player's stage area
+     * @param {MatchCard} cardToFind 
+     * @returns {boolean}
+     */
+    stageLocationContains(cardToFind) {
+        return cardToFind.id === this.inStageLocation.id;
+    }
+
     //#endregion
 }
 

@@ -443,7 +443,7 @@ class AnimationLibraryPassivePlayer {
         // Calculate arc path - make sure it's below the active area (downward movement)
         const startX = card.x;
         const startY = card.y;
-        const arcHeight = 40 + Math.random() * 20; // Random arc depth between 40-60
+        const arcHeight = 30 + Math.random() * 15; // Reduced arc depth from 40-60 to 30-45
         const midX = startX + (posX - startX) * 0.5;
         const midY = startY + arcHeight; // Ensure arc peak is BELOW the starting point
         
@@ -451,13 +451,13 @@ class AnimationLibraryPassivePlayer {
         const randomRotation = (Math.random() * 0.15) - 0.075; // Between -0.075 and 0.075 radians
 
         let tweens = [
-            { // Phase 1: Initial "drop" from active don area
+            { // Phase 1: Initial "drop" from active don area - FASTER
                 targets: card,
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1,
                 y: card.y + 10, // Initial downward movement
                 rotation: randomRotation * 0.3,
-                duration: 100, 
-                delay: delay * 0.5,
+                duration: 70, // Reduced from 100
+                delay: delay * 0.3, // Reduced delay multiplier from 0.5 to 0.3
                 ease: 'Power2.easeOut', // Smooth downward start
                 onStart: () => {
                     // Set proper depth for animation
@@ -476,89 +476,89 @@ class AnimationLibraryPassivePlayer {
                                 break;
                         }
 
-                        // Create a pulse effect on the DON counter (decreasing)
+                        // Create a pulse effect on the DON counter (decreasing) - FASTER
                         card.scene.tweens.add({
                             targets: donText,
                             scale: 0.8,
-                            duration: 150,
+                            duration: 100, // Reduced from 150
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
                     }
                 }
             },
-            { // Phase 2: Begin downward arc movement with card flip preparation
+            { // Phase 2: Begin downward arc movement with card flip preparation - FASTER
                 targets: card,
                 scaleX: CARD_SCALE.DON_IN_ACTIVE_DON * 0.9,
                 scaleY: CARD_SCALE.DON_IN_ACTIVE_DON * 1.1,
                 x: card.x + (midX - card.x) * 0.4, // Begin movement along X axis
                 y: card.y + 25, // Continue moving downward
                 rotation: randomRotation * 0.5,
-                duration: 120,
+                duration: 85, // Reduced from 120
                 ease: 'Sine.easeOut'
             },
-            { // Phase 3: Peak of downward arc with card flip to hide face
+            { // Phase 3: Peak of downward arc with card flip to hide face - FASTER
                 targets: card,
                 scaleX: 0, // Card edge-on during flip (X-axis)
                 scaleY: CARD_SCALE.DON_IN_ACTIVE_DON * 0.9,
                 x: midX,
                 y: midY, // Peak of the downward arc
                 rotation: randomRotation,
-                duration: 130,
+                duration: 90, // Reduced from 130
                 ease: 'Sine.easeInOut',
                 onComplete: () => {
                     // Flip card to hide face (back to deck state)
                     card.flipCard();
                 }
             },
-            { // Phase 4: Card unfolds while continuing toward deck
+            { // Phase 4: Card unfolds while continuing toward deck - FASTER
                 targets: card,
                 scaleX: CARD_SCALE.IN_DON_DECK * 0.9, // Card unfolds
                 scaleY: CARD_SCALE.IN_DON_DECK * 0.9,
                 x: posX + 15, // Approach deck from the side
                 y: posY - 10, // Approach from slightly above final position
                 rotation: randomRotation * 0.3, // Reduce rotation
-                duration: 140,
+                duration: 100, // Reduced from 140
                 ease: 'Power2.easeIn'
             },
-            { // Phase 5: Final approach to deck with gentle landing
+            { // Phase 5: Final approach to deck with gentle landing - FASTER
                 targets: card,
                 scale: CARD_SCALE.IN_DON_DECK * 1.05, // Slightly larger for emphasis
                 x: posX,
                 y: posY, // Final deck position
                 rotation: 0, // Straighten out
-                duration: 110,
+                duration: 80, // Reduced from 110
                 ease: 'Back.easeOut', // Gentle bounce effect when arriving
                 onComplete: () => {                           
-                    // Create a ripple effect on the don deck
+                    // Create a ripple effect on the don deck - FASTER
                     const donDeck = card.playerScene.donDeck;
                     if (donDeck) {
                         card.scene.tweens.add({
                             targets: donDeck,
                             scaleX: 1.04,
                             scaleY: 1.04,
-                            duration: 70,
+                            duration: 50, // Reduced from 70
                             yoyo: true,
                             ease: 'Sine.easeInOut'
                         });
                     }
                 }
             },
-            { // Phase 6: Settle to exact deck position and size
+            { // Phase 6: Settle to exact deck position and size - FASTER
                 targets: card,
                 scale: CARD_SCALE.IN_DON_DECK,
-                duration: 80,
+                duration: 60, // Reduced from 80
                 ease: 'Sine.easeOut',
                 onComplete: () => {
                     // Set proper depth in don deck
                     card.setDepth(DEPTH_VALUES.DON_IN_PILE);
                 }
             },
-            { // Phase 7: Final shrink into deck (optional disappear effect)
+            { // Phase 7: Final shrink into deck (optional disappear effect) - FASTER
                 targets: card,
                 scale: CARD_SCALE.IN_DON_DECK * 0.95,
                 alpha: 0.9, // Slight fade to show it's merging with deck
-                duration: 60,
+                duration: 40, // Reduced from 60
                 ease: 'Sine.easeOut',
                 onComplete: () => {
                     card.setVisible(false);
