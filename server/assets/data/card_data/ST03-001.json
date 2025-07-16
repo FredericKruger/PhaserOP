@@ -42,11 +42,11 @@
                 "conditions": [
                     {"type": "PLAYER_TURN", "value": true},
                     {"type": "ONCE", "value": "TURN"},
-                    {"type": "TOTAL_AVAILABLE_DON", "value": 1},
+                    {"type": "TOTAL_AVAILABLE_DON", "value": 4},
                     {"type": "CHECK_TARGETS", "value": true}
                 ],
                 "actions": [
-                    {"name": "returnDonToDeck", "params": {"amount": 1, "player": "owner"}},
+                    {"name": "returnDonToDeck", "params": {"amount": 4, "player": "owner"}},
                     {"name": "target", "params": {
                         "target": {
                             "targetAction": "ABILITY_ACTION",

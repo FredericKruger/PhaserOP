@@ -1,0 +1,26 @@
+{
+        "id":401,
+        "setid":2,
+        "banned": false,
+        "art":"ST03-002",
+        "set":"ST03",
+        "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+        "name":"Edward Weevil",
+        "card":"CHARACTER",
+        "type":["The Seven Warlords of the Sea"],
+        "colors":["BLUE"],
+        "cost":3,
+        "power":5000,
+        "attribute":"SLASH",
+        "isleader":0,
+        "rarity":"COMMON",
+        "counter":1000,
+
+        "animationinfo": {
+            "speeches": {
+                "intro": "I'm Whitebeard's son! You hurt Daddy I smash you to bits!",
+                "attack": "Mama said smash! So I smash!",
+                "defeated": "Mama ... I tried ..."
+            }
+        }
+    }

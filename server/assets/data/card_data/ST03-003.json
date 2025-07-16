@@ -1,0 +1,76 @@
+{
+        "id":402,
+        "setid":3,
+        "banned": false,
+        "art":"ST03-003",
+        "set":"ST03",
+        "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+        "name":"Crocodile",
+        "card":"CHARACTER",
+        "type":["The Seven Warlords of the Sea", "Baroque Works"],
+        "colors":["BLUE"],
+        "cost":5,
+        "power":6000,
+        "attribute":"SPECIAL",
+        "isleader":0,
+        "rarity":"SUPER RARE",
+
+        "animationinfo": {
+            "speeches": {
+                "intro": "You're standing in a desert... and I control every grain of it.",
+                "attack": "You're already dust!",
+                "defeated": "Tch... This isn't over. Not by a long shot."
+            }
+        },
+        
+        "abilities": [
+            {
+                "id": "ST03-003-1",
+                "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+                "art": {
+                    "art": "ST03-003-BLOCKER",
+                    "posx": 300,
+                    "posy": 548
+                },
+                "type": "BLOCKER",
+                "phases": ["Main: Block"],
+                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                "conditions": [
+                    {"type": "CAN_BLOCK", "value": true}
+                ]
+            },
+            {
+                "id": "ST03-003-2",
+                "text": "Place up to 1 Character with a cost of 2 or less at the bottom of the owner's deck.",
+                "art": {
+                    "art": "ST03-003-ABILITY2",
+                    "posx": 300,
+                    "posy": 608
+                },
+                "type": "ON_BLOCK",
+                "phases": ["Main: Block"],
+                "states": ["IN_PLAY_BLOCKING"],
+                "conditions": [
+                    {"type": "ATTACHED_DON", "value": 1},
+                    {"type": "CHECK_TARGETS", "value": true}
+                ],
+                "actions": [
+                    {"name": "target", "params": {
+                        "target": {
+                            "targetAction": "ABILITY_ACTION",
+                            "requiredTargets": 1,
+                            "targets": [
+                                {
+                                    "minrequiredtargets": 0,
+                                    "cardtypes": ["CHARACTER"],
+                                    "states": ["ALL_IN_PLAY_STATES"],
+                                    "cost": {"operator": "<=", "value": 2}
+                                }
+                            ]
+                        }
+                    }},
+                    {"name": "returnCardToDeck", "params": {"target": "TARGET", "to": "BOTTOM"}}
+                ]
+            }
+        ]
+}
