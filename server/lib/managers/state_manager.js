@@ -58,6 +58,8 @@ class MatchFlags {
             BLOCKER_PHASE_READY: new WaitFlag("BLOCKER_PHASE_READY", true, false),
             BLOCKER_PHASE_READY_PASSIVE_PLAYER: new WaitFlag("BLOCKER_PHASE_READY_PASSIVE_PLAYER", true, false),
             COUNTER_PHASE_READY: new WaitFlag("COUNTER_PHASE_READY", true, true),
+            BLOCKER_EVENT_PHASE_READY: new WaitFlag("BLOCKER_EVENT_PHASE_READY", true, true),
+            BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER: new WaitFlag("BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER", true, true),
             RESOLVE_ATTACK_READY: new WaitFlag("RESOLVE_ATTACK_READY", true, true),
             TRIGGER_PHASE_READY: new WaitFlag("TRIGGER_PHASE_READY", true, true),
             TRIGGER_CLEANUP_READY: new WaitFlag("TRIGGER_CLEANUP_READY", true, true),
@@ -188,6 +190,14 @@ class FlagManager {
                 break;
             case 'BLOCKER_PHASE_READY_PASSIVE_PLAYER':
                 if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_PHASE_READY', true);
+                this.match.startAttack(player);
+                break;
+            case 'BLOCKER_EVENT_PHASE_READY':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER', true);
+                this.match.startAttack(player);
+                break;
+            case 'BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER':
+                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_EVENT_PHASE_READY', true);
                 this.match.startAttack(player);
                 break;
             case 'COUNTER_PHASE_READY':

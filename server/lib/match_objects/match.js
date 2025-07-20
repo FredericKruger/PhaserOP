@@ -683,7 +683,47 @@ class Match {
                 if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
                 else this.ai.startBlockPhase();
             } else { //If no blockers skip the counter
-                if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');
+                if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_EVENT_PHASE_READY');
+                if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER');
+            }
+
+        } else if(!this.gameOver
+            && attackIsValid
+            && this.attackManager.blocked
+            && !this.attackManager.onblockEventPhase_Complete
+            && this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY', this.state.current_active_player)
+            && this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER', this.state.current_passive_player)) { /** EVENT ON_ATTACK PHASE */
+            //test if there are any blockers in the passive players area which are not rested
+            this.attackManager.onAttackEventPhase_Complete = true;
+
+            let skipOnBlockEventPhase = true;
+            this.attackManager.debugTest = false;
+
+            //Check if there are any events to be reoslved
+            let onBlockEvent = this.attackManager.attack.defender.getAbilityByType("ON_BLOCK");
+            if(onBlockEvent && onBlockEvent.canActivate()) {
+                this.currentAction.phase = "ON_BLOCK_EVENT_PHASE";
+                let executeAbility = false;
+
+                let actionInfos  = {actionId: 'ON_BLOCK_EVENT_' + this.attackManager.attack.defender.id, playedCard: this.attackManager.attack.defender.id, playedCardData: this.attackManager.attack.defender.cardData, ability: onBlockEvent.id};
+                this.state.pending_action = {actionInfos: actionInfos}; //Add to make sure
+
+                const targets = onBlockEvent.getTargets();
+                if(targets.length > 0) { //If targeting is required
+                    if(this.findValidTargets(targets)) executeAbility = true;
+                } else executeAbility = true; 
+
+                if(executeAbility) {
+                    skipOnBlockEventPhase = false;
+                    this.activateAbility(this.state.current_passive_player, actionInfos.playedCard, actionInfos.ability);
+                }
+
+                /*if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_on_attack_event_phase', false);
+                else this.ai.startOnAttackEventPhase();*/
+            } 
+
+            if(skipOnBlockEventPhase) {
+                if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');   
                 if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
             }
 

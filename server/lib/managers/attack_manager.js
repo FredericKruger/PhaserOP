@@ -81,6 +81,7 @@ class AttackManager {
         this.onAttackEventPhase_Complete = false;
         this.blockPhase_Complete = false;
         this.counterPhase_Complete = false;
+        this.onblockEventPhase_Complete = false;
         this.resolveAttack_Complete = false;
         this.trigger_Complete = false;
         this.triggerCleanup_Complete = false;
