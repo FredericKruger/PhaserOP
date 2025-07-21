@@ -406,6 +406,16 @@ const serverAbilityActions = {
         return actionResults;
     },
     //#endregion
+    //#region block
+    block: (match, player, card, params, targets) => {
+        let actionResults = {name: "block"};
+        actionResults.blockerID = card.id;
+        // Blocker ability action
+        match.attackManager.attack.switchDefender(card);
+        //match.startBlockAttack(card.id);
+        return actionResults;
+    },
+    //#endregion
     //#region changeCardState
     /**
      * 
@@ -1008,6 +1018,14 @@ const serverAbilityActions = {
             playedCard: card.id,
             actionId: card.id
         }; // Return the target id
+    },
+    //#endregion
+    //#region debug
+    debug: (match, player, card, params) => {
+        console.log("debug");
+        return {
+            name: "debug"
+        };
     }
 };
 

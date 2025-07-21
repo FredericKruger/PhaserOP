@@ -9,7 +9,7 @@
         "card":"CHARACTER",
         "type":["The Seven Warlords of the Sea", "Baroque Works"],
         "colors":["BLUE"],
-        "cost":5,
+        "cost":0,
         "power":6000,
         "attribute":"SPECIAL",
         "isleader":0,
@@ -37,6 +37,9 @@
                 "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
                 "conditions": [
                     {"type": "CAN_BLOCK", "value": true}
+                ],
+                "actions": [
+                    {"name": "block", "params": {}}
                 ]
             },
             {
@@ -55,7 +58,10 @@
                     {"type": "CHECK_TARGETS", "value": true}
                 ],
                 "actions": [
-                    {"name": "target", "params": {
+                    {"name": "debug", "params": {}}
+                ],
+                "comment": [
+                        {"name": "target", "params": {
                         "target": {
                             "targetAction": "ABILITY_ACTION",
                             "requiredTargets": 1,
@@ -70,7 +76,7 @@
                         }
                     }},
                     {"name": "returnCardToDeck", "params": {"target": "TARGET", "to": "BOTTOM"}}
-                ]
+                    ]
             }
         ]
 }

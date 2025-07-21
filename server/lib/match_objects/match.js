@@ -597,10 +597,20 @@ class Match {
     startAttack(player, attackerID = null, defenderID = null) {
         let attackIsValid = true;
         if(this.attackManager !== null) attackIsValid = this.attackManager.verifyAttackStillValid();
+
+        /*console.log("TEST")
+        if(this.attackManager !== null)
+            console.log(attackIsValid, 
+                this.attackManager.attack.blocked, 
+                !this.attackManager.onblockEventPhase_Complete, 
+                this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY', this.state.current_active_player),
+                this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER', this.state.current_passive_player))
+*/
         /** ATTACK DECLATION PHASE */
-        if(!this.gameOver && this.attackManager === null) {
+        if(!this.gameOver && this.attackManager === null && attackerID !== null && defenderID !== null) {
             //First send signal to stop targetting to the current active player
             if(!player.bot) player.socket.emit('game_stop_targetting', false);
+            console.log("ATTACK DECLARATION PHASE");
 
             //Create new action
             let attackAction = {
@@ -634,9 +644,9 @@ class Match {
         } else if(!this.gameOver && !this.attackManager.onAttackEventPhase_Complete) { /** EVENT ON_ATTACK PHASE */
             //test if there are any blockers in the passive players area which are not rested
             this.attackManager.onAttackEventPhase_Complete = true;
+            console.log("ON ATTACK PHASE");
 
             let skipOnAttackEventPhase = true;
-            this.attackManager.debugTest = false;
 
             //Check if there are any events to be reoslved
             let onAttackEvent = this.attackManager.attack.attacker.getAbilityByType("WHEN_ATTACKING");
@@ -675,30 +685,34 @@ class Match {
             //test if there are any blockers in the passive players area which are not rested
             this.attackManager.blockPhase_Complete = true;
             this.state.current_phase = MATCH_PHASES.BLOCK_PHASE;
+            console.log("BLOCK PHASE");
 
             //Check if the player has available blockers
             if(this.state.current_passive_player.currentMatchPlayer.hasAvailableBlockers(this.state.current_phase)) {
+                this.currentAction.phase = "BLOCKER_PHASE";
+
                 if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_blocker_phase', true);
 
                 if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_blocker_phase', false);
                 else this.ai.startBlockPhase();
             } else { //If no blockers skip the counter
                 if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_EVENT_PHASE_READY');
-                if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER');
+                if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_EVENT_PHASE_READY');
             }
 
         } else if(!this.gameOver
             && attackIsValid
-            && this.attackManager.blocked
+            && this.attackManager.attack.blocked
             && !this.attackManager.onblockEventPhase_Complete
             && this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY', this.state.current_active_player)
-            && this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER', this.state.current_passive_player)) { /** EVENT ON_ATTACK PHASE */
+            && this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY', this.state.current_passive_player)) { /** EVENT ON_ATTACK PHASE */
             //test if there are any blockers in the passive players area which are not rested
-            this.attackManager.onAttackEventPhase_Complete = true;
+            this.attackManager.onblockEventPhase_Complete = true;
+            this.state.current_phase = MATCH_PHASES.BLOCK_PHASE;
+            console.log("ON BLOCK PHASE");
 
             let skipOnBlockEventPhase = true;
-            this.attackManager.debugTest = false;
-
+            
             //Check if there are any events to be reoslved
             let onBlockEvent = this.attackManager.attack.defender.getAbilityByType("ON_BLOCK");
             if(onBlockEvent && onBlockEvent.canActivate()) {
@@ -723,6 +737,7 @@ class Match {
             } 
 
             if(skipOnBlockEventPhase) {
+                console.log("SKIPPING");
                 if(!this.state.current_active_player.bot) this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');   
                 if(!this.state.current_passive_player.bot) this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
             }
@@ -737,6 +752,7 @@ class Match {
                 
             this.attackManager.counterPhase_Complete = true;
             this.state.current_phase = MATCH_PHASES.COUNTER_PHASE;
+            console.log("COUNTER PHASE");
 
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_start_counter_phase', true);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_start_counter_phase', false);
@@ -749,6 +765,7 @@ class Match {
             && this.flagManager.checkFlag('RESOLVE_ATTACK_READY', this.state.current_passive_player)) { /** RESOLVE ATTACK */
 
             this.attackManager.resolveAttack_Complete = true;
+            console.log("RESOLVE ATTACK");
         
             //Resolve the attack
             let attackResults = this.attackManager.resolveAttack(); 
@@ -767,6 +784,8 @@ class Match {
 
             this.attackManager.trigger_Complete = true;
             this.state.current_phase = MATCH_PHASES.TRIGGER_PHASE;
+
+            console.log("TRIGGER START");
 
             if(this.attackManager.attackResults.lostLeaderLife) {
                 this.currentAction.phase = "TRIGGER_PHASE";
@@ -787,7 +806,9 @@ class Match {
             && attackIsValid
             && this.flagManager.checkFlag('TRIGGER_CLEANUP_READY', this.state.current_active_player)
             && this.flagManager.checkFlag('TRIGGER_CLEANUP_READY', this.state.current_passive_player)) {
+
             this.attackManager.triggerCleanup_Complete = true;
+            console.log("TRIGGER CLEANUP");
             
             if(!this.state.current_active_player.bot) this.state.current_active_player.socket.emit('game_cleanup_trigger_phase', false);
             if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_cleanup_trigger_phase', true);
@@ -999,12 +1020,24 @@ class Match {
                     this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
                 }
             }
+            else if(nextAction.type === "ATTACK" && nextAction.phase === "BLOCKER_PHASE") {
+                callBack = () => {
+                    this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_EVENT_PHASE_READY');   
+                    this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_EVENT_PHASE_READY');
+                }
+            }
             else if(nextAction.type === "ATTACK" && nextAction.phase === "ON_ATTACK_END_EVENT_PHASE") {
                 callBack = () => {
                     this.flagManager.handleFlag(this.state.current_active_player, 'RESUME_TURN_READY');
                     this.flagManager.handleFlag(this.state.current_passive_player, 'RESUME_TURN_READY_PASSIVE_PLAYER');
                 }
-            }           
+            }  
+            else if(nextAction.type === "ATTACK" && nextAction.phase === "ON_BLOCK_EVENT_PHASE") {
+                callBack = () => {
+                    this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');
+                    this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
+                }
+            }          
             else if(nextAction.type === "PLAY_CARD" && nextAction.phase === "PLAY_ON_PLAY_EVENT_PHASE") {
                 callBack = () => {
                     this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
@@ -1256,9 +1289,14 @@ class Match {
                 this.flagManager.handleFlag(this.state.current_active_player, 'BLOCKER_PHASE_READY');   
                 this.flagManager.handleFlag(this.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
                 return;
+            } else if(ability.type === "ON_BLOCK" && this.attackManager) {
+                this.flagManager.handleFlag(this.state.current_active_player, 'COUNTER_PHASE_READY');
+                this.flagManager.handleFlag(this.state.current_passive_player, 'COUNTER_PHASE_READY');
+                return;
             } else if(ability.type === "ON_END_OF_ATTACK" && this.attackManager) {
                 this.flagManager.handleFlag(this.state.current_active_player, 'RESUME_TURN_READY');
                 this.flagManager.handleFlag(this.state.current_passive_player, 'RESUME_TURN_READY');
+                return;
             } else {
                 player.socket.emit('game_activate_ability_failure', cardId, abilityId);
                 return;

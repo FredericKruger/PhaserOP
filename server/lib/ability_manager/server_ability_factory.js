@@ -16,8 +16,8 @@ class ServerAbilityFactory {
      */
     createAbility(abilityData, cardId, matchId) {
         switch (abilityData.type) {
-            case 'BLOCKER':
-                return new ServerBlockerAbility(abilityData, cardId, matchId);
+            //ase 'BLOCKER':
+            //    return new ServerBlockerAbility(abilityData, cardId, matchId);
             case 'PASSIVE':
                 return new ServerPassiveAbility(abilityData, cardId, matchId);
             case 'AURA':

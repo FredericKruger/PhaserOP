@@ -35,7 +35,7 @@ class Attack {
         this.defender.setState(this.defender.previousState); //FIXME: This should be EXERTED or else not attackable
         this.defender = defender;
         this.defender.previousState = this.defender.state;
-        this.defender.setState(CARD_STATES.IN_PLAY_DEFENDING);
+        this.defender.setState(CARD_STATES.IN_PLAY_BLOCKING);
         this.defender.angleTo(-90, true, false, false); //Play exert
     }
 }

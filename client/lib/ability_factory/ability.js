@@ -579,6 +579,35 @@ const abilityActions = {
         }
 
         return tweens;
+    },   
+    //#endregion
+    //#region block
+    /** Function to block
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    block: (scene, card, info, activePlayer) => {
+        let tweens = [];
+        tweens.push({
+            targets: {},
+            alpha: 1,
+            duration: 1,
+            onStart: () => {
+                scene.attackManager.attack.switchDefender(card); //Switch the defender
+            }
+        });
+        tweens = tweens.concat(scene.attackManager.targetingManager.targetArrow.animateToPosition(card.x, card.y, 200));
+        tweens.push({
+            target: {},
+            alpha: 1,
+            duration: 1,
+            onStart: () => {
+                scene.gameStateManager.passToNextPhase(GAME_STATES.BLOCKER_INTERACTION, false);
+            }
+        });
+        return tweens;
     },
     //#endregion
     //#region changeCardState
@@ -1135,6 +1164,12 @@ const abilityActions = {
             duration: 1
         });
         return tweens;
+    },
+    //#endregion
+    //#region 
+    debug: (scene, card, info, activePlayer) => {
+        console.log("DEBUG");
+        return [];
     }
     //#endregion
 };

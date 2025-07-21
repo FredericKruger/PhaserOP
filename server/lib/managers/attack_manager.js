@@ -52,7 +52,7 @@ class Attack {
         this.defender = defender;
         
         this.defender.previousState = CARD_STATES.IN_PLAY_RESTED; //If card blocked it will go back to rested
-        this.defender.state = CARD_STATES.IN_PLAY_DEFENDING;
+        this.defender.state = CARD_STATES.IN_PLAY_BLOCKING;
         this.blocked = true;
     }
 
@@ -124,7 +124,7 @@ class AttackManager {
     verifyAttackStillValid() {       
         //Check is the card are still in the right locations
         if(!this.debugTest) return this.debugTest;
-
+        
         if(!this.attack.attackingPlayer.characterAreaContains(this.attack.attacker) 
             && !this.attack.attackingPlayer.leaderLocationContains(this.attack.attacker)) 
             return false;

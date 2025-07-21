@@ -6,11 +6,12 @@ class AbilityFactory {
      */
     static createAbility(abilityData) {
         switch (abilityData.type) {
-            case 'BLOCKER':
-                return new BlockerAbility(abilityData);
+            //case 'BLOCKER':
+            //    return new BlockerAbility(abilityData);
             case 'PASSIVE':
                 return new PassiveAbility(abilityData);
             case 'ACTIVE':
+            case 'BLOCKER':
                 return new ActiveAbility(abilityData);
             case 'ON_PLAY':
             case 'WHEN_ATTACKING':

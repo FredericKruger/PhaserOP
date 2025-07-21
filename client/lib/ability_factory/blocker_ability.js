@@ -26,8 +26,6 @@ class BlockerAbility extends Ability {
     }
     
     trigger() {
-        //this.card.scene.game.gameClient.requestPerformAbility(this.card.id, this.id);
-        //this.card.scene.game.gameClient.requestActiveAbility(this.card.id, this.id);
         super.trigger();
     }
 
