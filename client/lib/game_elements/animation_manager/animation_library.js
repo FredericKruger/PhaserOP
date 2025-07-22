@@ -10,6 +10,7 @@ class AnimationLibrary {
     //#endregion
 
     //#region MOVING CARD FUNCTIONS
+    //#region deck2mulligan
     /** Animation that brings a card from the deck to the mulligan
      * Get future card position in the mulligan ui
      * tween1: move slightly to the left of the deck pile and reduce x scale to 0. At the end flip the card. Change state of the card for hand update function
@@ -69,7 +70,9 @@ class AnimationLibrary {
         
         return tweens;
     }
+    //#endregion
 
+    //#region mulligan2deck
     /** 
      * Ultra-fast animation that brings a card from the mulligan UI to the deck
      * @param {GameCardUI} card - card to be moved from the mulligan UI to the deck
@@ -156,7 +159,9 @@ class AnimationLibrary {
 
         return animation;
     }
+    //#endregion
 
+    //#region deck2lifedeck
     /** Animation that brings a card from the deck to the life deck
      * @param {GameCardUI} card - card to be moved from deck to life pile
      * @param {number} delay - delay before starting the animation
@@ -236,7 +241,9 @@ class AnimationLibrary {
         
         return tweens;
     }
+    //#endregion
 
+    //#region deck2hand
     /** Animation that brings a card from the deck to 
      * @param {GameCardUI} movingCard - card to be moved form the mulligan ui to the deck
      * @param {number} delay - delay with which to start the tweens 
@@ -286,7 +293,9 @@ class AnimationLibrary {
     
         return animation;
     }
+    //#endregion
 
+    //#region DON activearea2deck
     /** Animation that moves a don card from the active don area back to the don deck
     * @param {DonCardUI} card - card to be moved from the active don area to the don deck
     * @param {number} delay - delay with which to start the tweens
@@ -416,7 +425,9 @@ class AnimationLibrary {
         
         return tweens;
     }
+    //#endregion
 
+    //#region lifedeck2display
     /** Animation that brings a card from the deck to 
      * @param {GameCardUI} card - card to be moved form the mulligan ui to the deck
      * @param {number} delay - delay with which to start the tweens 
@@ -471,7 +482,110 @@ class AnimationLibrary {
     
         return animation;
     }
+    //#endregion
 
+    //#region card2deck
+    /** 
+     * Ultra-fast animation that brings a card from the mulligan UI to the deck
+     * @param {GameCardUI} card - card to be moved from the mulligan UI to the deck
+     * @param {number} delay - delay with which to start the tweens 
+     * @returns {Array} - Array of tween configurations
+     */
+    animation_move_card2deck(card, delay) {
+        let posX = card.playerScene.deck.posX;
+        let posY = card.playerScene.deck.posY;
+
+        // Calculate a more direct arc path
+        const arcHeight = 60 + Math.random() * 40; // Lower arc height for faster movement
+        const midX = (card.x + posX) / 2;
+        const controlY = posY - arcHeight;
+
+        let animation = [
+            { // Phase 1: Quick lift and shrink - ultra fast
+                targets: card,
+                x: card.x, 
+                y: card.y - 30, // Slightly less lift for faster movement
+                rotation: (Math.random() * 0.15) - 0.075, // Smaller rotation for quicker movement
+                scale: 0.25,
+                duration: 70, // Ultra fast initial movement
+                delay: delay,
+                ease: 'Power2.easeOut', // Changed to Power2 for faster acceleration
+            },
+            { // Phase 2: Arc movement - ultra fast
+                targets: card,
+                x: midX,
+                y: controlY, 
+                scaleX: 0.22, 
+                scaleY: 0.22,
+                rotation: (Math.random() * 0.3) - 0.15, // Less rotation
+                duration: 100, // Ultra fast arc
+                ease: 'Quad.easeInOut', // Changed to Quad for faster curve
+            },  
+            { // Phase 3: Quick approach to deck - ultra fast
+                targets: card,
+                x: posX - 20, // Closer approach point
+                y: posY - 15, // Less vertical distance
+                scale: 0.2,
+                rotation: 0,
+                duration: 70, // Ultra fast approach
+                ease: 'Power3.easeIn', // More aggressive acceleration
+            }, 
+            { // Phase 4: Flip and insert into deck - critical moment kept tight
+                targets: card,
+                scaleX: 0,
+                scaleY: 0.18,
+                x: posX - (GAME_UI_CONSTANTS.CARD_ART_WIDTH*CARD_SCALE.IN_DECK - 20),
+                y: posY,
+                duration: 60, // Even faster flip
+                ease: 'Power2.easeIn',
+                onComplete: () => {
+                    card.flipCard();
+                    card.setState(CARD_STATES.IN_DECK);
+                    
+                    // Quick deck ripple
+                    const deckPile = card.playerScene.deck;
+                    if (deckPile) {
+                        card.scene.tweens.add({
+                            targets: deckPile,
+                            scaleX: 1.03, // Smaller ripple
+                            scaleY: 1.03, // Smaller ripple
+                            duration: 70, // Faster ripple
+                            yoyo: true,
+                            ease: 'Quad.easeInOut'
+                        });
+                    }
+                }
+            },
+            { // Phase 5: Quick settle - ultra fast
+                targets: card,
+                scaleX: CARD_SCALE.IN_DECK,
+                scaleY: CARD_SCALE.IN_DECK,
+                x: posX,
+                y: posY,
+                duration: 40, // Ultra fast settle
+                ease: 'Sine.easeOut', // Changed to Sine for faster movement
+            },
+            { // Phase 6: Disappear - ultra fast
+                targets: card,
+                scaleX: 0,
+                scaleY: 0,
+                duration: 25, // Ultra fast disappear
+                ease: 'Power1.easeIn',
+                onComplete: () => {
+                    //create new placeholder in deck
+                    const deckPile = card.playerScene.deck;
+                    deckPile.addDeckVisual();
+                    card.destroy();
+                    deckPile.realignDeckVisuals();
+                }
+            }
+        ];
+
+        return animation;
+    }
+    //#endregion
+
+    //#region DON deck2activearea
     /** Animation that moves a don card from the don deck to the active don area
      * @param {DonCardUI} card - card to be moved from the don deck to the active don area
      * @param {number} delay - delay with which to start the tweens
@@ -556,7 +670,11 @@ class AnimationLibrary {
         
         return tweens;
     }
+    //#endregion
 
+
+    //#region MOVING DON CARD FUNCTIONS
+    //#region DON characterarea2activearea
     /** Animation that moves a don card from the character area to the active don area
      * @param {DonCardUI} card - card to be moved from a character back to the active don area
      * @param {number} delay - delay with which to start the tweens
@@ -649,9 +767,6 @@ class AnimationLibrary {
     }
     //#endregion
 
-    //#region MOVING DON CARD FUNCTIONS
-
-
     /** Animation that moves a don card from the active don area to the character area
      * @param {DonCardUI} donCard - card to be moved from the active don area to a character
      * @param {CharacterCardUI} characterCard - character card to which the don card will be moved
@@ -724,7 +839,7 @@ class AnimationLibrary {
         const originalX = card.x;
         const originalY = card.y;
         const originalScale = card.scale;
-        const originalRotation = card.rotation;
+        const originalRotation = 0; //card.rotation;
         const originalDepth = card.depth;
         
         // Calculate lift parameters
@@ -744,11 +859,6 @@ class AnimationLibrary {
                 onStart: () => {
                     // Bring card to front during lift
                     card.setDepth(DEPTH_VALUES.CARD_IN_HAND);
-                    
-                    // Add subtle shadow effect
-                    /*if (card.postFX) {
-                        card.postFX.addShadow(2, 2, 0.1, 0.8, 0x000000, 4);
-                    }*/
                 }
             },
             { // Phase 2: Initial lift with hand movement simulation
@@ -799,19 +909,7 @@ class AnimationLibrary {
                     const float = Math.sin(progress * Math.PI * 2) * 3;
                     card.y += float;
                 }
-            }/*,
-            { // Phase 6: Hold position with subtle movements
-                targets: card,
-                x: originalX + sidewaysShift + Math.sin(Date.now() * 0.001) * 2, // Gentle sway
-                duration: 500,
-                ease: 'Sine.easeInOut',
-                onComplete: () => {
-                    // Animation complete - card is now "in hand"
-                    if (callback) {
-                        callback();
-                    }
-                }
-            }*/
+            }
         ];
         
         return tweens;

@@ -872,105 +872,175 @@ const abilityActions = {
      */
     moveCardsToDeck: (scene, card, info, activePlayer) => {
         let tweens = [];
-
-        //actionResults.from = params.from;
-        //actionResults.to = params.to;
-        //actionResults.numberOfCards = cardPool.length;
-        // Get player scene
-        const playerScene = info.player === "opponent" ? card.playerScene.opponentPlayerScene : card.playerScene;
-    
-        // Get target deck
-        const deck = playerScene.deck;
+        
         const animationDuration = 200;
         const delay = 150;
     
         // If no cards to move, return empty tweens
         if (info.numberOfCards === 0) { return tweens; }
 
-        tweens.push({
-            targets: {},
-            scale: 1,
-            duration: 1,
-            onStart: () => {
-                // Process each card
-                let directionMultiplier = 1;
-                for(let i = 0; i<info.numberOfCards; i++) {
-                    let deckVisual = null;
+        switch(info.from) {
+            case "TOP":
+            case "BOTTOM":
+                // Get player scene
+                const playerScene = info.player === "opponent" ? card.playerScene.opponentPlayerScene : card.playerScene;
+            
+                // Get target deck
+                const deck = playerScene.deck;
+                tweens.push({
+                    targets: {},
+                    scale: 1,
+                    duration: 1,
+                    onStart: () => {
+                        // Process each card
+                        let directionMultiplier = 1;
+                        for(let i = 0; i<info.numberOfCards; i++) {
+                            let deckVisual = null;
 
-                    let scaleOut = 0;
-                    let scaleIn = 0;
+                            let scaleOut = 0;
+                            let scaleIn = 0;
 
-                    switch(info.from) {
-                        case "TOP":
-                            //deckVisual = deck.getTopCardVisual();
-                            deckVisual = deck.unhingeTopCardVisual();
-                            break;
-                        case "BOTTOM":
-                            deckVisual = deck.getBottomCardVisual();
-                            break;
-                    }
-                    
-                    switch(info.to) {
-                        case "TOP":
-                            //deckVisual = deck.getTopCardVisual();
-                            scaleOut = CARD_SCALE.IN_DECK*1.2;
-                            scaleIn = CARD_SCALE.IN_DECK*1;
-                            break;
-                        case "BOTTOM":
-                            scaleOut = CARD_SCALE.IN_DECK*0.8;
-                            scaleIn = CARD_SCALE.IN_DECK*0.9;
-                            break; 
-                    }
-
-                    let posXOut = deckVisual.x - ((deckVisual.displayWidth + 20));
-                    if(!activePlayer) posXOut = deckVisual.x + ((deckVisual.displayWidth + 20));
-                    const postXIn = deckVisual.x; // Adjust Y position based on direction
-
-                    scene.tweens.add({
-                        targets: deckVisual,
-                        x: posXOut,
-                        scale: scaleOut,
-                        duration: animationDuration,
-                        delay: delay*1.75*i,
-                        ease: 'Back.easeOut',
-                        onComplete: () => {
                             switch(info.from) {
                                 case "TOP":
-                                    scene.children.moveBelow(deckVisual, deck.getBottomCardVisual()); // Move the card visual below the deck
+                                    //deckVisual = deck.getTopCardVisual();
+                                    deckVisual = deck.unhingeTopCardVisual();
                                     break;
                                 case "BOTTOM":
-                                    scene.children.moveAbove(deckVisual, deck.getTopCardVisual()); // Move the card visual below the deck
+                                    deckVisual = deck.getBottomCardVisual();
                                     break;
                             }
                             
+                            switch(info.to) {
+                                case "TOP":
+                                    //deckVisual = deck.getTopCardVisual();
+                                    scaleOut = CARD_SCALE.IN_DECK*1.2;
+                                    scaleIn = CARD_SCALE.IN_DECK*1;
+                                    break;
+                                case "BOTTOM":
+                                    scaleOut = CARD_SCALE.IN_DECK*0.8;
+                                    scaleIn = CARD_SCALE.IN_DECK*0.9;
+                                    break; 
+                            }
+
+                            let posXOut = deckVisual.x - ((deckVisual.displayWidth + 20));
+                            if(!activePlayer) posXOut = deckVisual.x + ((deckVisual.displayWidth + 20));
+                            const postXIn = deckVisual.x; // Adjust Y position based on direction
+
                             scene.tweens.add({
                                 targets: deckVisual,
-                                x: postXIn,
-                                scale: scaleIn,
+                                x: posXOut,
+                                scale: scaleOut,
                                 duration: animationDuration,
-                                ease: 'Sine.easeIn',
+                                delay: delay*1.75*i,
+                                ease: 'Back.easeOut',
                                 onComplete: () => {
-                                    deckVisual.scale = CARD_SCALE.IN_DECK;
+                                    switch(info.from) {
+                                        case "TOP":
+                                            scene.children.moveBelow(deckVisual, deck.getBottomCardVisual()); // Move the card visual below the deck
+                                            break;
+                                        case "BOTTOM":
+                                            scene.children.moveAbove(deckVisual, deck.getTopCardVisual()); // Move the card visual below the deck
+                                            break;
+                                    }
+                                    
+                                    scene.tweens.add({
+                                        targets: deckVisual,
+                                        x: postXIn,
+                                        scale: scaleIn,
+                                        duration: animationDuration,
+                                        ease: 'Sine.easeIn',
+                                        onComplete: () => {
+                                            deckVisual.scale = CARD_SCALE.IN_DECK;
+                                        }
+                                    });
                                 }
-                            });
+                            }); 
+
+                            directionMultiplier *= -1; // Reverse direction for each card
+                        }   
+                    }
+                });
+
+                tweens.push({
+                    targets: {},
+                    scale: 1,
+                    duration: 1,
+                    delay:info.numberOfCards * delay + animationDuration * 2 + animationDuration,
+                    onStart: () => {
+                        //realign deck visuals
+                        deck.realignDeckVisuals();
+                    }
+                });   
+                break;
+            case "CHARACTER_AREA":  
+            case "HAND":
+                for(let i=0; i<info.numberOfCards; i++) {
+                    let cardId = info.cardIds[i];
+                    let cardToReturn = scene.getCard(cardId); 
+
+                    let targetingManager = null;
+                    if(!activePlayer) {
+                        targetingManager = new TargetManager(scene, 'EVENT', 'ATTACH_DON', card.id);
+                        targetingManager.targetArrow.originatorObject = card;
+                        let arrowTweens = targetingManager.targetArrow.animateToPosition(cardToReturn.x, cardToReturn.y, 600);
+                        tweens.push({
+                                onStart: () => { //Add Tween for target arrow
+                                    targetingManager.targetArrow.startManualTargetingXY(card, card.x, card.y);
+                                },
+                                delay: 100,
+                        });
+                        tweens = tweens.concat(arrowTweens);
+                        tweens.push({
+                            targets: {},
+                            scale: 1,
+                            duration: 10,
+                            delay: 500,
+                            onStart: () => {
+                                targetingManager.targetArrow.stopTargeting();
+                                targetingManager = null;
+                            }
+                        });
+                    }
+
+                    if(info.from === "CHARACTER_AREA") {
+                        tweens.push({
+                            targets: {},
+                            alpha: 1,
+                            duration: 1,
+                            onStart: () => {
+                                if(cardToReturn.cardData.card === "CHARACTER") 
+                                    cardToReturn.playerScene.characterArea.removeCard(cardToReturn);
+                                else if(cardToReturn.cardData.card === "LOCATION") 
+                                    cardToReturn.playerScene.locationArea.removeCard(cardToReturn);
+                            }
+                        });
+                        tweens = tweens.concat(scene.animationLibrary.animation_lift_card_from_characterarea(cardToReturn));
+                    } else if(info.from === "HAND") {
+                        tweens.push({
+                            targets: {},
+                            alpha: 1,
+                            duration: 1,
+                            onStart: () => {
+                                cardToReturn.playerScene.hand.removeCard(cardToReturn);
+                            }
+                        });
+                        //tweens = tweens.concat(scene.animationLibrary.animation_lift_card_from_characterarea(cardToReturn));
+                    }
+                    tweens = tweens.concat(scene.animationLibrary.animation_move_card2deck(cardToReturn, 0));
+                    tweens.push({
+                        targets: {},
+                        alpha: 1,
+                        duration: 1,
+                        onStart: () => {
+                            if(info.from === "CHARACTER_AREA")
+                                cardToReturn.playerScene.characterArea.update();
                         }
-                    }); 
-
-                    directionMultiplier *= -1; // Reverse direction for each card
-                }   
-            }
-        });
-
-        tweens.push({
-            targets: {},
-            scale: 1,
-            duration: 1,
-            delay:info.numberOfCards * delay + animationDuration * 2 + animationDuration,
-            onStart: () => {
-                //realign deck visuals
-                deck.realignDeckVisuals();
-            }
-        });         
+                    });
+                }
+                break;
+            default:
+                break;
+        }      
 
         return tweens;
     },

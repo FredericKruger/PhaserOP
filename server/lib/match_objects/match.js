@@ -598,16 +598,11 @@ class Match {
         let attackIsValid = true;
         if(this.attackManager !== null) attackIsValid = this.attackManager.verifyAttackStillValid();
 
-        /*console.log("TEST")
-        if(this.attackManager !== null)
-            console.log(attackIsValid, 
-                this.attackManager.attack.blocked, 
-                !this.attackManager.onblockEventPhase_Complete, 
-                this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY', this.state.current_active_player),
-                this.flagManager.checkFlag('BLOCKER_EVENT_PHASE_READY_PASSIVE_PLAYER', this.state.current_passive_player))
-*/
+        if(this.attackManager === null && attackerID === null && defenderID === null) return;
+
         /** ATTACK DECLATION PHASE */
-        if(!this.gameOver && this.attackManager === null && attackerID !== null && defenderID !== null) {
+        if(!this.gameOver 
+            && this.attackManager === null ) {
             //First send signal to stop targetting to the current active player
             if(!player.bot) player.socket.emit('game_stop_targetting', false);
             console.log("ATTACK DECLARATION PHASE");
@@ -909,6 +904,8 @@ class Match {
 
             this.flagManager.handleFlag(this.state.current_active_player, 'RESUME_TURN_READY');
             this.flagManager.handleFlag(this.state.current_passive_player, 'RESUME_TURN_READY_PASSIVE_PLAYER');
+        } else {
+            //console.log("PASSING");
         }
     }
 
@@ -1142,6 +1139,27 @@ class Match {
                     //this.cleanupAction(player);
                 }
                 break;
+            case PLAY_CARD_STATES.ON_BLOCK_EVENT_TARGETS_REQUIRED:
+                actionInfos = this.state.pending_action.actionInfos;
+                if(!cancel) {
+                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
+                    if(validTarget) {
+                        if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
+                        let abilityResults = this.executeAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
+                        
+                        if(abilityResults.abilityResults.status === "DONE") {
+                            //actionInfos.abilityResults = abilityResults.actionResults;
+
+                            if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
+                            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
+
+                            this.cleanupAction(player);
+                        }
+                    } else {
+                        player.socket.emit('game_reset_targets');
+                    }
+                } 
+                break;
             case PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED:
                 actionInfos = this.state.pending_action.actionInfos;
                 if(!cancel) {
@@ -1231,6 +1249,9 @@ class Match {
             } else if(ability.type === "WHEN_ATTACKING") {
                 action.actionResult = PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED;
                 actionInfos.actionId = 'ON_ATTACK_EVENT_' + cardId;
+            } else if(ability.type === "ON_BLOCK") {
+                action.actionResult = PLAY_CARD_STATES.ON_BLOCK_EVENT_TARGETS_REQUIRED;
+                actionInfos.actionId = 'ON_BLOCK_EVENT_' + cardId;
             } else if(ability.type === "ON_END_OF_ATTACK") {
                 action.actionResult = PLAY_CARD_STATES.ON_END_OF_ATTACK_EVENT_TARGETS_REQUIRED;
                 actionInfos.actionId = 'ON_ATTACK_END_EVENT_' + cardId;

@@ -58,10 +58,7 @@
                     {"type": "CHECK_TARGETS", "value": true}
                 ],
                 "actions": [
-                    {"name": "debug", "params": {}}
-                ],
-                "comment": [
-                        {"name": "target", "params": {
+                    {"name": "target", "params": {
                         "target": {
                             "targetAction": "ABILITY_ACTION",
                             "requiredTargets": 1,
@@ -75,8 +72,8 @@
                             ]
                         }
                     }},
-                    {"name": "returnCardToDeck", "params": {"target": "TARGET", "to": "BOTTOM"}}
-                    ]
+                    {"name": "moveCardsToDeck", "params": {"cardPool": "TARGET", "from": "CHARACTER_AREA", "to": "BOTTOM"}}
+                ]
             }
         ]
 }

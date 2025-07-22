@@ -13,7 +13,7 @@ class MatchPlayer {
         this.life = 0;
 
         /** @type {MatchDeck} */
-        this.deck = null;
+        this.deck = new MatchDeck();
 
         /** @type {Array<MatchCard>} */
         this.inHand = [];
@@ -38,8 +38,6 @@ class MatchPlayer {
         this.isFirstPlayer = false;
 
         this.matchFlags = new MatchFlags();
-
-        this.deck = new MatchDeck();
     }
 
     /** Function that removes a card from the hand 

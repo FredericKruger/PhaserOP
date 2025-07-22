@@ -69,7 +69,7 @@ class TargetingManager {
             };
 
             let isValid = false;
-            if(targetObject instanceof Array) {
+            if(targetObject.targets instanceof Array) {
                 for (let target of targetObject.targets) {
                     isValid = isValid || this.isValidTarget(card, target, playerCard);
                     if(isValid) break;

@@ -3,6 +3,7 @@ const MatchAura = require('../match_objects/match_aura');
 const SelectionManager = require("../managers/selection_manager");
 const TargetingManager = require("../managers/targeting_manager");
 const MatchPlayer = require('../match_objects/match_player');
+const { CARD_STATES } = require('../match_objects/match_card');
 
 class ServerAbility {
 
@@ -764,14 +765,14 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      cardPool: 'SELECTION'
+     *      cardPool: 'SELECTION' | 'TARGET'
      *      selectionIndex: number,
-    *       from: 'TOP' | 'BOTTOM',
+    *       from: 'TOP' | 'BOTTOM' | 'CHARACTER_AREA' | 'HAND',
     *       to: 'TOP' | 'BOTTOM'
      * }} params  
      * @returns 
      */
-    moveCardsToDeck: (match, player, card, params) => {
+    moveCardsToDeck: (match, player, card, params, targets) => {
         let actionResults = {name: "moveCardsToDeck"};
 
         let cardPool = [];
@@ -783,10 +784,26 @@ const serverAbilityActions = {
                     cardPool.push(match.currentSelectionManager.cardPool.find(c => c.id === cardId)); //Find the card in the card pool
                 }
                 break;
+            case "TARGET":
+                for(let i = 0; i < targets.length; i++) {
+                    let cardToReturn = match.matchCardRegistry.get(targets[i]);
+                    let cardOwner = match.getPlayer(cardToReturn.owner).currentMatchPlayer; //Cannot be MatchPlayer
+
+                    if(cardOwner.characterAreaContains(cardToReturn)) {
+                        cardOwner.inCharacterArea.splice(cardOwner.inCharacterArea.indexOf(cardToReturn), 1);
+                    } else if(cardOwner.stageLocationContains(cardToReturn)) {
+                        cardOwner.inStageLocation = null;
+                    } else if(cardOwner.inHand.includes(cardToReturn)) {
+                        cardOwner.inHand.splice(cardOwner.inHand.indexOf(cardToReturn), 1);
+                    }
+                    cardPool.push(cardToReturn);
+                }
+                break;
             default:
                 break;
         }
 
+        //Remove the card from the card pool it currently is in
         switch(params.to) {
             case "TOP":
                 for(let i = cardPool.length-1; i < 0; i--) {
@@ -801,7 +818,8 @@ const serverAbilityActions = {
                 break;
         }
 
-
+        actionResults.cardPool = params.cardPool;
+        actionResults.cardIds = cardPool.map(card => card.id); //Return the ids of the cards moved
         actionResults.from = params.from;
         actionResults.to = params.to;
         actionResults.numberOfCards = cardPool.length;
@@ -930,6 +948,51 @@ const serverAbilityActions = {
                 donAmount--;
             }
         }
+
+        return actionResults;
+    },
+    //#endregion
+    //#region returnCardToDeck
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      target: 'TARGET' | 'SELF',
+     *      to: 'BOTTOM' | 'TOP'
+     * }} params 
+     * @returns 
+     */
+    returnCardToDeck: (match, player, card, params, targets) => {
+        let actionResults = {name: "returnCardToDeck"};
+
+        let cardToReturn = card;
+        if(params.target === "TARGET") 
+            cardToReturn = match.matchCardRegistry.get(targets[0]);
+
+        actionResults.cardId = cardToReturn.id;
+
+        //Get the card owner
+        let cardOwner = match.getPlayer(cardToReturn.owner).currentMatchPlayer; //Cannot be MatchPlayer
+
+        //Remove the card from the card pool it currently is in
+        if(cardOwner.characterAreaContains(cardToReturn)) {
+            cardOwner.inCharacterArea.splice(cardOwner.inCharacterArea.indexOf(cardToReturn), 1);
+        } else if(cardOwner.stageLocationContains(cardToReturn)) {
+            cardOwner.inStageLocation = null;
+        } else if(cardOwner.inHand.includes(cardToReturn)) {
+            cardOwner.inHand.splice(cardOwner.inHand.indexOf(cardToReturn), 1);
+        }
+
+        cardToReturn.setState("IN_DECK");
+        if(params.to){
+            if(params.to === "TOP")
+                cardOwner.deck.cards.unshift(cardToReturn);
+            else if(params.to === "BOTTOM")
+                cardOwner.deck.cards.push(cardToReturn);
+        } else 
+            cardOwner.deck.cards.push(cardToReturn);
 
         return actionResults;
     },
