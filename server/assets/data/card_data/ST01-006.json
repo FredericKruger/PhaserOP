@@ -37,6 +37,9 @@
             "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
                 {"type": "CAN_BLOCK", "value": true}
+            ],
+            "actions": [
+                {"name": "block", "params": {}}
             ]
         }
     ]

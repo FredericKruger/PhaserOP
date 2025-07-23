@@ -242,31 +242,20 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_resolve_targeting', (targetIDs) => {socket.player.match.resolvePendingAction(socket.player, false, targetIDs);});
 
     socket.on('player_start_targeting_attack', (cardID) => {socket.player.match.startTargetingAttack(socket.player, cardID);});
-    socket.on('player_on_attack_event_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY');});
-    socket.on('player_on_attack_event_phase_ready_passive_player', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER');});
-    socket.on('player_pass_on_attack_event_phase', (passed) => {
-        socket.player.match.flagManager.handleFlag(socket.player.match.state.current_active_player, 'BLOCKER_PHASE_READY');   
-        socket.player.match.flagManager.handleFlag(socket.player.match.state.current_passive_player, 'BLOCKER_PHASE_READY_PASSIVE_PLAYER');
-    });
+    socket.on('player_on_attack_event_phase_ready', () => {socket.player.match.startAttack(socket.player);});
+    socket.on('player_on_attack_event_phase_ready_passive_player', () => {});
+    socket.on('player_pass_on_attack_event_phase', (passed) => {socket.player.match.startAttack(socket.player);});
     socket.on('player_attach_counter_to_character', (counterID, characterID) => {socket.player.match.startAttachCounterToCharacter(counterID, characterID);});
-
-    socket.on('player_pass_blocker_phase', (passed) => {
-        if(passed) socket.player.match.flagManager.handleFlag(socket.player, 'BLOCKER_EVENT_PHASE_READY');
-        if(passed && !socket.player.currentOpponentPlayer.bot) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'BLOCKER_EVENT_PHASE_READY'); //Pass the opponent as no animations required
-    });
-
-    socket.on('player_pass_counter_phase', (passed) => {
-        socket.player.match.flagManager.handleFlag(socket.player, 'RESOLVE_ATTACK_READY');
-        if(passed && !socket.player.currentOpponentPlayer.bot) socket.player.match.flagManager.handleFlag(socket.player.currentOpponentPlayer, 'RESOLVE_ATTACK_READY'); //Pass the opponent as no animations required
-    });
-    socket.on('player_trigger_phase_ready', () => {socket.player.match.flagManager.handleFlag(socket.player, 'TRIGGER_PHASE_READY');});
+    socket.on('player_pass_blocker_phase', (passed) => {if(passed) socket.player.match.startAttack(socket.player);});
+    socket.on('player_pass_counter_phase', (passed) => {if(passed) socket.player.match.startAttack(socket.player);}); //&attacking player should be the active player});
+    socket.on('player_trigger_phase_ready', () => {if(socket.player.id === socket.player.match.state.current_active_player.id) socket.player.match.startAttack(socket.player);});
     socket.on('player_draw_trigger_card', () => {socket.player.match.drawTriggerCard(false);});
-    socket.on('player_start_attack_cleanup', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ATTACK_CLEANUP_READY');});
-    socket.on('player_end_attack', () => {socket.player.match.flagManager.handleFlag(socket.player, 'RESUME_TURN_READY');})
+    socket.on('player_start_attack_cleanup', () => {if(socket.player.id === socket.player.match.state.current_active_player.id) socket.player.match.startAttack(socket.player);});
+    socket.on('player_end_attack', () => {if(socket.player.id === socket.player.match.state.current_active_player.id) socket.player.match.startAttack(socket.player);});
+    socket.on('player_on_attack_end', () => {if(socket.player.id === socket.player.match.state.current_active_player.id) socket.player.match.startAttack(socket.player);});
 
     socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(socket.player, cardID, abilityID);});
     socket.on('player_activate_ability', (cardID, abilityID) => {socket.player.match.activateAbility(socket.player, cardID, abilityID);});
-    socket.on('player_on_attack_end', () => {socket.player.match.flagManager.handleFlag(socket.player, 'ON_END_OF_ATTACK_READY');})
     socket.on('player_cleanup_action', () => {socket.player.match.cleanupAction(socket.player);})
 
     socket.on('player_start_next_turn', () => {

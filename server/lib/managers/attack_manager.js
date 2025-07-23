@@ -90,6 +90,8 @@ class AttackManager {
         this.resumeTurn_Complete = false;
         this.cancelAttack_Complete = false;
 
+        this.attackCancelled = false;
+
         this.debugTest = true;
     }
 

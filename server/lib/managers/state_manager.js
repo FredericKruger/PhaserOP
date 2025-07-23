@@ -51,21 +51,6 @@ class MatchFlags {
             PLAY_REPLACEMENT_PHASE_READY: new WaitFlag("PLAY_REPLACEMENT_PHASE_READY", true, false),
             PLAY_ON_PLAY_EVENT_PHASE_READY: new WaitFlag("PLAY_ON_PLAY_EVENT_PHASE_READY", true, false),
             PLAY_CLEANUP_PHASE_READY: new WaitFlag("PLAY_CLEANUP_PHASE_READY", true, false),
-
-            //ATTACK PHASES
-            ON_ATTACK_EVENT_PHASE_READY: new WaitFlag("ON_ATTACK_EVENT_PHASE_READY", true, false),
-            ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER: new WaitFlag("ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER", true, false),
-            BLOCKER_PHASE_READY: new WaitFlag("BLOCKER_PHASE_READY", true, false),
-            BLOCKER_PHASE_READY_PASSIVE_PLAYER: new WaitFlag("BLOCKER_PHASE_READY_PASSIVE_PLAYER", true, false),
-            COUNTER_PHASE_READY: new WaitFlag("COUNTER_PHASE_READY", true, true),
-            BLOCKER_EVENT_PHASE_READY: new WaitFlag("BLOCKER_EVENT_PHASE_READY", true, true),
-            RESOLVE_ATTACK_READY: new WaitFlag("RESOLVE_ATTACK_READY", true, true),
-            TRIGGER_PHASE_READY: new WaitFlag("TRIGGER_PHASE_READY", true, true),
-            TRIGGER_CLEANUP_READY: new WaitFlag("TRIGGER_CLEANUP_READY", true, true),
-            ATTACK_CLEANUP_READY: new WaitFlag("ATTACK_CLEANUP_READY", true, true),
-            ON_END_OF_ATTACK_READY: new WaitFlag("ON_END_OF_ATTACK_READY", true, true),
-            RESUME_TURN_READY: new WaitFlag("RESUME_TURN_READY", true, true),
-            RESUME_TURN_READY_PASSIVE_PLAYER: new WaitFlag("RESUME_TURN_READY_PASSIVE_PLAYER", true, true)
         }   
     }
 
@@ -174,39 +159,6 @@ class FlagManager {
             case 'PLAY_ON_PLAY_EVENT_PHASE_READY':
                 this.match.playCardManager.currentPhase = 'PLAY_ON_PLAY_EVENT_PHASE_READY';
                 this.match.startPlayCard(player, this.match.playCardManager.playedCard.id);
-                break;
-            case 'ON_ATTACK_EVENT_PHASE_READY':
-                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER', true);
-                this.match.startAttack(player);
-                break;
-            case 'ON_ATTACK_EVENT_PHASE_READY_PASSIVE_PLAYER':
-                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('ON_ATTACK_EVENT_PHASE_READY', true);
-                this.match.startAttack(player);
-                break;
-            case 'BLOCKER_PHASE_READY':
-                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_PHASE_READY_PASSIVE_PLAYER', true);
-                this.match.startAttack(player);
-                break;
-            case 'BLOCKER_EVENT_PHASE_READY':
-                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('BLOCKER_EVENT_PHASE_READY', true);
-                this.match.startAttack(player);
-                break;
-            case 'COUNTER_PHASE_READY':
-            case 'RESOLVE_ATTACK_READY':
-            case 'TRIGGER_PHASE_READY':
-            case 'TRIGGER_CLEANUP_READY':
-            case 'ATTACK_CLEANUP_READY':
-            case 'ON_END_OF_ATTACK_READY':
-            case 'RESUME_TURN_READY':
-                this.match.startAttack(player);
-                break;
-            /*case 'RESUME_TURN_READY':
-                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('RESUME_TURN_READY_PASSIVE_PLAYER', true);
-                this.match.startAttack(player);
-                break;*/
-            case'RESUME_TURN_READY_PASSIVE_PLAYER':
-                if(player.currentOpponentPlayer.bot) player.currentOpponentPlayer.currentMatchPlayer.matchFlags.setFlag('RESUME_TURN_READY', true);
-                this.match.startAttack(player);
                 break;
         }
     }

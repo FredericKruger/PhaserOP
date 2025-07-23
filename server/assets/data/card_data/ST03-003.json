@@ -9,7 +9,7 @@
         "card":"CHARACTER",
         "type":["The Seven Warlords of the Sea", "Baroque Works"],
         "colors":["BLUE"],
-        "cost":0,
+        "cost":4,
         "power":6000,
         "attribute":"SPECIAL",
         "isleader":0,

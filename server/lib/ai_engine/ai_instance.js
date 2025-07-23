@@ -727,8 +727,7 @@ class AI_Instance {
                 blockDecision.arg.ability.action(blockDecision.arg.blocker, this.match);
                 break;
             case 'noBlock':
-                this.match.flagManager.handleFlag(this.match.state.current_active_player, 'COUNTER_PHASE_READY');
-                this.match.flagManager.handleFlag(this.match.state.current_passive_player, 'COUNTER_PHASE_READY');
+                this.match.startAttack(this.match.state.current_active_player);
                 break;
         }
     }
@@ -755,8 +754,7 @@ class AI_Instance {
                 //blockDecision.arg.ability.action(counterDecision.arg.blocker, this.match);
                 break;
             case 'noCounter':
-                this.match.flagManager.handleFlag(this.match.state.current_active_player, 'RESOLVE_ATTACK_READY');
-                this.match.flagManager.handleFlag(this.match.state.current_passive_player, 'RESOLVE_ATTACK_READY');
+                this.match.startAttack(this.match.state.current_active_player);
                 break;
         }
     }
