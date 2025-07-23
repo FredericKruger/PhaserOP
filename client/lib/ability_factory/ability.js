@@ -731,6 +731,18 @@ const abilityActions = {
             });
             tweens = tweens.concat(arrowTweens);
         }
+        if(!activePlayer) {
+            tweens.push({
+                targets: {},
+                scale: 1,
+                delay: 500,
+                duration: 10,
+                onStart: () => {
+                    targetingManager.targetArrow.stopTargeting();
+                    targetingManager = null;
+                }
+            });
+        }
         if(target.state.startsWith("IN_PLAY") && target.cardData.animationinfo) {
             tweens = tweens.concat([{
                 targets: {},
@@ -756,24 +768,12 @@ const abilityActions = {
                 onStart: () => {
                     target.isInPlayAnimation = true;
                 },
-                y: target.y - 200,
-                duration: 200
+                //y: target.y - 200,
+                duration: 1
             }]);
         }
 
         tweens = tweens.concat(scene.gameStateManager.discardCard(target.id, info.discardAction, activePlayer, false));
-
-        if(!activePlayer) {
-            tweens.push({
-                targets: {},
-                scale: 1,
-                duration: 10,
-                onStart: () => {
-                    targetingManager.targetArrow.stopTargeting();
-                    targetingManager = null;
-                }
-            });
-        }
 
         return tweens;
     },
@@ -829,7 +829,7 @@ const abilityActions = {
             tweens.push({
                 targets: {},
                 scale: 1,
-                duration: 1,
+                duration: 100,
                 onStart: () => {
                     playerScene.hand.addCards([drawnCard], {setCardState: true, setCardDepth: true, updateUI: true});
                     if(info.cardPool === "DECK") { 

@@ -1,0 +1,79 @@
+{
+    "id":404,
+    "setid":5,
+    "banned": false,
+    "art":"ST03-005",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Dracule Mihawk",
+    "card":"CHARACTER",
+    "type":["The Seven Warlords of the Sea"],
+    "colors":["BLUE"],
+    "cost":4,
+    "power":5000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":2000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Draw your blade...or be cut down without honor!",
+            "attack": "One strike is all I need!",
+            "defeated": "Hmph... Perhaps I underestimated you."
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST03-005-1",
+            "text": "Draw 2 cards and trash 2 cards from your hand.",
+            "art": {
+                "art": "ST03-005-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "WHEN_ATTACKING",
+            "phases": ["Main: Attack"],
+            "conditions": [
+                {"type": "ATTACHED_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "drawCards", "params": {"amount": 2, "cardPool": "DECK"}},
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "ignoreTesting": true,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "states": ["IN_HAND"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "discardCard", "params": {"target": "TARGET"}},
+                                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "ignoreTesting": true,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "states": ["IN_HAND"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "discardCard", "params": {"target": "TARGET"}}
+            ]
+        }
+    ],
+    "comment": [
+        {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
+    ]
+}

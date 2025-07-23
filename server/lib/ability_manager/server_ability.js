@@ -215,7 +215,7 @@ class ServerAbility {
         for(let i = 0; i < this.actions.length; i++) {
             const action = this.actions[i];
             if(action.name === "target") {
-                targets.push(action.params.target);
+                if(!action.params.target.ignoreTesting) targets.push(action.params.target);
             }
         }
         return targets;
@@ -630,11 +630,12 @@ const serverAbilityActions = {
                 cardPool = "DECK";
                 break;
             case "DECK":
-                cardToDraw = player.deck.draw(); //Remove from player deck
-                cards.push(cardToDraw); //Add to hand and return list
-                player.inHand.push(cardToDraw);
-                cardToDraw.setState("IN_HAND");
-
+                for(let i = 0; i < amount; i++) {
+                    let cardToDraw = player.deck.draw(); //Remove from player deck
+                    cards.push(cardToDraw); //Add to hand and return list
+                    player.inHand.push(cardToDraw);
+                    cardToDraw.setState("IN_HAND");
+                }
                 cardPool = "DECK";
                 break;
             default:

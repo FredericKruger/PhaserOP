@@ -16,6 +16,8 @@ class Target {
             this.power = {};
             this.exclude = [];
             this.hasability = [];
+
+            this.ignoreTesting = false;
             return;
         }
 
@@ -29,6 +31,8 @@ class Target {
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
         this.hasability = serverTarget.hasability?.slice() || [];
+
+        this.ignoreTesting = serverTarget.ignoreTesting || false;
 
         //Prepare states if a group state efind
         if (this.states.includes("ALL_IN_PLAY_STATES")) {
@@ -69,7 +73,7 @@ class TargetingManager {
             };
 
             let isValid = false;
-            if(targetObject.targets instanceof Array) {
+            if(targetObject.targets && targetObject.targets.length>0) {
                 for (let target of targetObject.targets) {
                     isValid = isValid || this.isValidTarget(card, target, playerCard);
                     if(isValid) break;

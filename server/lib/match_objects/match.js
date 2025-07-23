@@ -657,6 +657,7 @@ class Match {
 
                 const targets = onAttackEvent.getTargets();
                 if(targets.length > 0) { //If targeting is required
+                    console.log("Looking for targets ", this.findValidTargets(targets));
                     if(this.findValidTargets(targets)) executeAbility = true;
                 } else executeAbility = true; 
 
@@ -1390,6 +1391,7 @@ class Match {
                 validTarget = targetingManager.areValidTargets(player, [player.currentMatchPlayer.inStageLocation.id], abilityTarget);
                 if(validTarget) return true;
             }
+            //Test cards in hand
             for(let card of player.currentMatchPlayer.inHand) {
                 validTarget = targetingManager.areValidTargets(player, [card.id], abilityTarget);
                 if(validTarget) return true;
