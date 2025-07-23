@@ -1,0 +1,58 @@
+{
+    "id":408,
+    "setid":9,
+    "banned": false,
+    "art":"ST03-009",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Donquixote Doflamingo",
+    "card":"CHARACTER",
+    "type":["The Seven Warlords of the Sea", "Donquixote Pirates"],
+    "colors":["BLUE"],
+    "cost":7,
+    "power":7000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"SUPER RARE",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "The world's just a puppet show... and I'm pulling the strings.",
+            "attack": "Dance for me little puppet.",
+            "defeated": "Heh... You think this changes anything?"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST03-009-1",
+            "text": "Return up to 1 Character with a cost of 7 or less to the owner's hand.",
+            "art": {
+                "art": "ST03-009-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED"],
+            "phases": ["Main Phase"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
+            "actions": [
+                {"name": "target", "params": {"target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "cardtypes": ["CHARACTER"],
+                            "states": ["ALL_IN_PLAY_STATES"],
+                            "cost": {"operator": "<=", "value": 5}
+                        }
+                    ]
+                }}},
+                {"name": "returnCardToHand", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}

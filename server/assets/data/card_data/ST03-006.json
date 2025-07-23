@@ -1,0 +1,26 @@
+{
+    "id":405,
+    "setid":6,
+    "banned": false,
+    "art":"ST03-006",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Jinbe",
+    "card":"CHARACTER",
+    "type":["Fish-Man","The Seven Warlords of the Sea","The Sun Pirates"],
+    "colors":["BLUE"],
+    "cost":2,
+    "power":4000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "As a Shichibukai, I uphold the balance.",
+            "attack": "Fish-Man Karate... don't take it lightly",
+            "defeated": "Even the strongest tides must ebb..."
+        }
+    }
+}
