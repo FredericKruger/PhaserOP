@@ -48,7 +48,7 @@
                                 "minrequiredtargets": 0,
                                 "player": ["owner"],
                                 "cardtypes": ["CHARACTER", "LEADER"],
-                                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+                                "states": ["ALL_IN_PLAY_STATES"],
                                 "exclude": ["SELF"]
                             }
                         ]

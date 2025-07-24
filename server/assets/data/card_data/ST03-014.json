@@ -1,0 +1,58 @@
+{
+    "id":413,
+    "setid":14,
+    "banned": false,
+    "art":"ST03-014",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Marshall.D.Teach",
+    "card":"CHARACTER",
+    "type":["The Seven Warlords of the Sea", "Blackbeard Pirates"],
+    "colors":["BLUE"],
+    "cost":4,
+    "power":4000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Zehehehe!.",
+            "attack": "Darkness... will swallow you whole!",
+            "defeated": "Tch... This ain't the end. My era's just beginning!"        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST03-014-1",
+            "text": "Return up to 1 Character with a cost of 3 or less to the owner's hand.",
+            "art": {
+                "art": "ST03-014-ABILITY1",
+                "posx": 300,
+                "posy": 548
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED"],
+            "phases": ["Main Phase"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
+            "actions": [
+                {"name": "target", "params": {"target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "cardtypes": ["CHARACTER"],
+                            "states": ["ALL_IN_PLAY_STATES"],
+                            "cost": {"operator": "<=", "value": 3}
+                        }
+                    ]
+                }}},
+                {"name": "returnCardToHand", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}

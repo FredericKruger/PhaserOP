@@ -1,23 +1,24 @@
 {
-    "id":380,
+    "id":414,
     "setid":15,
-    "art":"ST01-015",
-    "set":"ST01",
-    "setname":"-STRAW HAT CREW- [ST01]",
-    "name":"Gum-Gum Jet Pistol",
+    "banned": false,
+    "art":"ST03-015",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Sables",
     "card":"EVENT",
-    "type":["Supernovas","Straw Hat Crew"],
-    "colors":["RED"],
+    "type":["The Seven Warlords of the Sea", "Baroque Works"],
+    "colors":["BLUE"],
     "cost":4,
     "attribute":"",
     "isleader":0,
     "rarity":"COMMON",
     "abilities": [
         {
-            "id": "ST01-015-1",
-            "text": "K.O. up to 1 of your oppoent's Characters with 6000 power or less.",
+            "id": "ST03-015-1",
+            "text": "Return up to 1 Character with a cost of 7 or less to the owner's hand.",
             "art": {
-                "art": "ST01-015-ABILITY1",
+                "art": "ST03-015-ABILITY1",
                 "posx": 300,
                 "posy": 532
             },
@@ -35,22 +36,21 @@
                         "targets": [
                             {
                                 "minrequiredtargets": 0,
-                                "player": ["opponent"],
                                 "cardtypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
-                                "power": {"operator": "<=", "value": 6000}
+                                "cost": {"operator": "<=", "value": 3}
                             }
                         ]
                     }
                 }},
-                {"name": "discardCard", "params": {"target": "TARGET"}}
+                {"name": "returnCardToHand", "params": {"target": "TARGET"}}
             ]
         },
         {
-            "id": "ST01-015-TRIGGER",
-            "text": "Play this card.",
+            "id": "ST03-015-TRIGGER",
+            "text": "Activate this card's Main Effect.",
             "art": {
-                "art": "ST01-015-TRIGGER",
+                "art": "ST03-015-TRIGGER",
                 "posx": 300,
                 "posy": 675
             },
@@ -68,15 +68,14 @@
                         "targets": [
                             {
                                 "minrequiredtargets": 0,
-                                "player": ["opponent"],
                                 "cardtypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
-                                "power": {"operator": "<=", "value": 6000}
+                                "cost": {"operator": "<=", "value": 3}
                             }
                         ]
                     }
                 }},
-                {"name": "discardCard", "params": {"target": "TARGET"}}
+                {"name": "returnCardToHand", "params": {"target": "TARGET"}}
             ]
         }
     ]

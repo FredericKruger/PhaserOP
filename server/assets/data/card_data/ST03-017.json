@@ -1,0 +1,59 @@
+{
+    "id":416,
+    "setid":17,
+    "banned": false,
+    "art":"ST03-017",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Love-Love Mellow",
+    "card":"EVENT",
+    "type":["The Seven Warlords of the Sea", "Kuja Pirates"],
+    "colors":["BLUE"],
+    "cost":2,
+    "attribute":"",
+    "isleader":0,
+    "rarity":"COMMON",
+
+    "abilities": [
+        {
+            "id": "ST03-017-1",
+            "text": "Up to 1 of your Leader or Character cards gains +4000 power during this battle. Then, draw 1 card if you have 3 or less cards in your hand.",
+            "art": {
+                "art": "ST03-017-ABILITY1",
+                "posx": 300,
+                "posy": 545
+            },
+            "type": "ON_PLAY",
+            "phases": ["Main: Counter"],
+            "conditions": [
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
+            "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "minrequiredtargets": 0,
+                                "player": ["owner"],
+                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "states": ["ALL_IN_PLAY_STATES"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "addPowerToCard", "params": {"amount": 4000, "target": "TARGET", "duration": "TURN"}},
+                {"name": "IF_THEN_ELSE", "params": {
+                    "conditions": [
+                        {"type": "NUMBER_CARDS_IN_HAND", "operator": "<=", "value": 3}
+                    ],
+                    "then": [
+                        {"name": "drawCards", "params": {"amount": 1, "player": "owner"}}
+                    ],
+                    "else": []
+                }}
+            ]
+        }
+    ]
+}

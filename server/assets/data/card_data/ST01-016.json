@@ -15,7 +15,7 @@
     "abilities": [
         {
             "id": "ST01-016-1",
-            "text": "Select up to 1 of your {Straw Hat Crew} type Leader of Character cards. Your opponent cannot active Blocker if that Leader of Character attacks during this turn.",
+            "text": "Select up to 1 of your {Straw Hat Crew} type Leader or Character cards. Your opponent cannot active Blocker if that Leader of Character attacks during this turn.",
             "art": {
                 "art": "ST01-016-ABILITY1",
                 "posx": 300,
@@ -36,7 +36,7 @@
                                 "minrequiredtargets": 0,
                                 "player": ["owner"],
                                 "cardtypes": ["CHARACTER", "LEADER"],
-                                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                                "states": ["ALL_IN_PLAY_STATES"],
                                 "types": ["Straw Hat Crew"]
                             }
                         ]
@@ -59,7 +59,7 @@
                                 {
                                     "minrequiredtargets": 0,
                                     "exclude": ["SELF"],
-                                    "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                                    "states": ["ALL_IN_PLAY_STATES"]
                                 }
                             ]
                         },
@@ -94,7 +94,7 @@
                                 "minrequiredtargets": 0,
                                 "player": ["opponent"],
                                 "cardtypes": ["CHARACTER"],
-                                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"],
+                                "states": ["ALL_IN_PLAY_STATES"],
                                 "hasability": ["BLOCKER"],
                                 "cost": {"operator": "<=", "value": 3}
                             }

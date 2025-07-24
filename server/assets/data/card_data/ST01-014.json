@@ -13,6 +13,7 @@
     "attribute":"",
     "isleader":0,
     "rarity":"COMMON",
+    
     "abilities": [
         {
             "id": "ST01-014-1",
@@ -35,7 +36,8 @@
                             {
                                 "minrequiredtargets": 0,
                                 "player": ["owner"],
-                                "cardtypes": ["CHARACTER", "LEADER"]
+                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "states": ["ALL_IN_PLAY_STATES"]
                             }
                         ]
                     }
@@ -66,7 +68,8 @@
                             {
                                 "minrequiredtargets": 0,
                                 "player": ["owner"],
-                                "cardtypes": ["CHARACTER", "LEADER"]
+                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "states": ["ALL_IN_PLAY_STATES"]
                             }
                         ]
                     }

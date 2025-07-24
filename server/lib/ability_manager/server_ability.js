@@ -737,6 +737,31 @@ const serverAbilityActions = {
                                 break;
                         }
                     }
+                    case "NUMBER_CARDS_IN_HAND": {
+                        const count = player.inHand.length;
+
+                        switch (condition.operator) {
+                            case ">": 
+                                conditionResult = count > condition.value;
+                                break;
+                            case ">=": 
+                                conditionResult = count >= condition.value;
+                                break;
+                            case "=": 
+                            case "==": 
+                                conditionResult = count === condition.value;
+                                break;
+                            case "<=": 
+                                conditionResult = count <= condition.value;
+                                break;
+                            case "<": 
+                                conditionResult = count < condition.value;
+                                break;
+                            case "!=": 
+                                conditionResult = count !== condition.value;
+                                break;
+                        }
+                    }
                 }
 
                 if(!conditionResult) {

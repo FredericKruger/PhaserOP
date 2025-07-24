@@ -65,7 +65,7 @@
                     {
                         "minrequiredtargets": 0,
                         "exclude": ["SELF"],
-                        "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]
+                        "states": ["ALL_IN_PLAY_STATES"]
                     }
                 ]
             },

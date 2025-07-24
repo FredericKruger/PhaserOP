@@ -1,0 +1,26 @@
+{
+    "id":411,
+    "setid":12,
+    "banned": false,
+    "art":"ST03-012",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Pacifista",
+    "card":"CHARACTER",
+    "type":["Biological Weapon", "Navy"],
+    "colors":["BLUE"],
+    "cost":4,
+    "power":6000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "PX-0 online. Mission: neutralize threat.",
+            "attack": "Firing laser.",
+            "defeated": "System failure... Shutting down..."
+        }
+    }
+}

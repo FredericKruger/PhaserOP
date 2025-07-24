@@ -1,0 +1,26 @@
+{
+    "id":410,
+    "setid":11,
+    "banned": false,
+    "art":"ST03-011",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Buggy",
+    "card":"CHARACTER",
+    "type":["The Seven Warlords of the Sea", "Buggy's Delivery"],
+    "colors":["BLUE"],
+    "cost":1,
+    "power":3000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Warlord? Pfft - I'm destined for Pirate King!",
+            "attack": "Chop-Chop Cannonball!",
+            "defeated": "This is a fluke! I demand a rematch!"
+        }
+    }
+}

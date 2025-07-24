@@ -40,6 +40,7 @@
                                 "minrequiredtargets": 0,
                                 "player": ["owner"],
                                 "cardtypes": ["CHARACTER", "LEADER"],
+                                "states": ["ALL_IN_PLAY_STATES"],
                                 "types": ["Straw Hat Crew"]
                             }
                         ]

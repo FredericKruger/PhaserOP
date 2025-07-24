@@ -1,0 +1,62 @@
+{
+    "id":412,
+    "setid":13,
+    "banned": false,
+    "art":"ST03-013",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Boa Hancock",
+    "card":"CHARACTER",
+    "type":["The Seven Warlords of the Sea", "Kuja Pirates"],
+    "colors":["BLUE"],
+    "cost":3,
+    "power":1000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "You may kneel now... most do when they see me.",
+            "attack": "Mero Mero... Mellow!",
+            "defeated": "How... dare you... look down on me..."
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST03-013-1",
+            "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+            "art": {
+                "art": "ST03-013-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "BLOCKER",
+            "phases": ["Main: Block"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "CAN_BLOCK", "value": true}
+            ],
+            "actions": [
+                {"name": "block", "params": {}}
+            ]
+        },
+        {
+            "id": "ST03-013-TRIGGER",
+            "text": "Play this card.",
+            "art": {
+                "art": "ST03-013-TRIGGER",
+                "posx": 300,
+                "posy": 675
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "actions": [
+                {"name": "playCard", "params": {"target": "SELF"}}
+            ]
+        }
+    ]
+}
