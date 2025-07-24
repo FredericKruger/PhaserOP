@@ -63,7 +63,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
         this.hasTriggeredHover = false;
         
         // Start the 1-second delay timer
-        this.hoverDelayTimer = this.scene.time.delayedCall(1000, () => {
+        this.hoverDelayTimer = this.scene.time.delayedCall(500, () => {
             // Only trigger if we're still hovering
             if (this.isHoverDelayActive) {
                 this.hasTriggeredHover = true;
@@ -72,7 +72,7 @@ class AbilityButton extends Phaser.GameObjects.Container {
         });
     }
 
-    onPointerOut() {
+    onPointerOut(triggeredByCard = false) {
         // Cancel the timer if it exists
         if (this.hoverDelayTimer) {
             this.hoverDelayTimer.destroy();
@@ -87,6 +87,9 @@ class AbilityButton extends Phaser.GameObjects.Container {
         // Reset flags
         this.isHoverDelayActive = false;
         this.hasTriggeredHover = false;
+
+        //trigger a card out pointer out
+        if(!triggeredByCard) this.card.fsmState.onPointerOut(this.scene.input.activePointer, this.card);
     }
 
     increaseButtonSize() {
