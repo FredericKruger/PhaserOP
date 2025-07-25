@@ -6,7 +6,7 @@ class CardDeckUI extends CardPileUI {
      * @param {PlayerScene} playerScene 
      * @param {Array<GameCardUI>} cards 
      */
-    constructor(scene, playerScene, cards) {
+    constructor(scene, playerScene, cards = []) {
         super(scene, playerScene);
 
         //Create the array of cards Visuals

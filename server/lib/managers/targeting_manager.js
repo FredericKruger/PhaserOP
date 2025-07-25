@@ -16,6 +16,7 @@ class Target {
             this.power = {};
             this.exclude = [];
             this.hasability = [];
+            this.names = [];
 
             this.ignoreTesting = false;
             return;
@@ -31,6 +32,7 @@ class Target {
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
         this.hasability = serverTarget.hasability?.slice() || [];
+        this.names = serverTarget.names?.slice() || [];
 
         this.ignoreTesting = serverTarget.ignoreTesting || false;
 
@@ -127,6 +129,9 @@ class TargetingManager {
         if (this.target.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card.abilities);
         //console.log("hasAbilityValid", isValid);
 
+        if (this.target.names.length > 0 && isValid) isValid = isValid && this.isNameValid(card.cardData.name);
+        //console.log("hasNameValid", isValid);
+
         //console.log(card);
         // Check card cost
         let cost = card.currentCost || card.getCost(this.match.isPlayerActivePlayer(card.owner));
@@ -208,12 +213,31 @@ class TargetingManager {
         return this.target.attributes.some(type => attributes.includes(type));
     }
 
+    /**
+     * Check if the card name is valid
+     * @param {string} name 
+     * @return {boolean}
+     */
+    isNameValid(name) {
+        return this.target.names.includes(name);
+    }
+
+    /**
+     * Check if the card doesnt have the current id
+     * @param {number} id 
+     * @returns {boolean}
+     */
     isExcludeValid(id) {
         const originatorCard = this.match.matchCardRegistry.get(this.match.state.pending_action.actionInfos.playedCard);
         if(this.target.exclude.includes("SELF") && id === originatorCard.id) return false;
         return true;
     }
 
+    /**
+     * Check if the card has the given ability types
+     * @param {Array<string>} abilities 
+     * @returns {boolean}
+     */
     hasAbilityValid(abilities) {
         for(let ability of abilities) if(this.target.hasability.includes(ability.type)) return true;
         return false;

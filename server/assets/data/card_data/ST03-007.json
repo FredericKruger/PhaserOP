@@ -1,0 +1,78 @@
+{
+    "id":406,
+    "setid":7,
+    "banned": false,
+    "art":"ST03-007",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Sentomaru",
+    "card":"CHARACTER",
+    "type":["Navy"],
+    "colors":["BLUE"],
+    "cost":3,
+    "power":4000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "You picked the wrong day to mess with science!",
+            "attack": "Axe meets face!",
+            "defeated": "Tch… Should’ve brought more Pacifistas…"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST03-007-1",
+            "text": "Play up to 1 [Pacifista] with a cost of 4 or less from your deck, then shuffle your deck.",
+            "art": {
+                "art": "ST03-007-ABILITY1",
+                "posx": 300,
+                "posy": 577
+            },
+            "type": "ACTIVE",
+            "phases": ["Main Phase"],
+            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
+            "conditions": [
+                {"type": "PLAYER_TURN", "value": true},
+                {"type": "ONCE", "value": "TURN"},
+                {"type": "ATTACHED_DON", "value": 1},
+                {"type": "AVAILABLE_DON", "value": 2}
+            ],
+            "actions": [
+                {"name": "restDon", "params": {"amount": 2, "player": "owner"}},
+                {"name": "createSelectionManager", "params": {
+                    "cardPool": "DECK",
+                    "filter": [{
+                        "cardtypes": ["CHARACTER"],
+                        "names": ["Pacifista"],
+                        "cost": {"operator": "<=", "value": 4}
+                    }],
+                    "uniquesOnly": true
+                }},
+                {"name": "IF_THEN_ELSE", "params": {
+                    "conditions": [
+                        {"type": "SELECTION_CARD_POOL_LENGTH", "operator": ">", "value": 0}
+                    ],
+                    "then": [
+                        {"name": "selectCards", "params": {
+                            "selectionText": "Play up to 1 [Pacifista] with a cost of 4 or less from your deck.",
+                            "amount": 1
+                        }},
+                        {"name": "hideSelectionManager", "params": {"returnCardsToDeck": ["REMAINING_CARDS"]}},
+                        {"name": "drawCardAnimation", "params": {"cardPool": "SELECTION", "selectionIndex": 0}},
+                        {"name": "playCard", "params": {"target": "SELECTION", "selectionIndex": 0}}
+                    ],
+                    "else": [
+                        {"name": "hideSelectionManager", "params": {"returnCardsToDeck": ["CARD_POOL"]}}
+                    ]
+                }},
+                {"name": "destroySelectionManager", "params": {}},
+                {"name": "shuffleDeck", "params": {}} 
+            ]
+        }
+    ]
+}

@@ -178,6 +178,9 @@ class PlayerScene {
         if(card !== undefined && card !== null) return card;
 
         card = this.discard.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
+        card = this.deck.getCard(cardId);
         return card;
     }
 

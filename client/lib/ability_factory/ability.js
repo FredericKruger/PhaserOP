@@ -843,6 +843,70 @@ const abilityActions = {
         return tweens;
     },
     //#endregion
+    //#region drawCardAnimation
+    /** Function to hide the selection Manager
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    drawCardAnimation: (scene, card, info, activePlayer) => {
+        let tweens = [];
+
+        let playerScene = card.playerScene;
+        let delay = 200;
+
+        for(let serverCard of info.drawnCards) {
+            let deckVisual = null;
+
+            if(info.cardPool === "DECK") deckVisual = playerScene.deck.getTopCardVisual();
+
+            //Create a new Duel Card
+            let drawnCard = new GameCardUI(scene, playerScene, {
+                x: deckVisual.x,
+                y: deckVisual.y,
+                state: CARD_STATES.IN_DECK,
+                scale: CARD_SCALE.IN_DECK,
+                artVisible: false,
+                id: serverCard.id,
+                depth: DEPTH_VALUES.CARD_IN_DECK
+            });
+            if(serverCard.cardData) {
+                drawnCard.updateCardData(serverCard.cardData, false); //in some case we only pass the id
+            };
+
+            tweens.push({
+                targets: {},
+                scale: 1,
+                duration: 1,
+                delay : delay,
+                onStart: () => {
+                    drawnCard.setDepth(DEPTH_VALUES.CARD_IN_HAND);
+                    scene.children.bringToTop(drawnCard);
+                    drawnCard.setState(CARD_STATES.TRAVELLING_TO_HAND);
+                }
+            });
+            if(info.cardPool === "DECK") {
+                if(activePlayer) tweens = tweens.concat(scene.animationLibrary.animation_move_card_deck2hand(drawnCard, 0));
+                else tweens = tweens.concat(scene.animationLibraryPassivePlayer.animation_move_card_deck2hand(drawnCard, 0));
+            }
+            tweens.push({
+                targets: {},
+                scale: 1,
+                duration: 100,
+                onStart: () => {
+                    if(info.cardPool === "DECK") { 
+                        playerScene.deck.popTopCardVisual(); //Remove the top Card Visual
+                        if(info.cardPool === "DECK") deckVisual.destroy();
+                        playerScene.deck.cards.push(drawnCard);
+                    }
+                }
+            });
+        }
+
+        return tweens;
+    },
+    //#endregion
     //#region hideSelectionManager
     /** Function to hide the selection Manager
      *  @param {GameScene} scene
@@ -850,7 +914,7 @@ const abilityActions = {
      * @param {Object} info
      * @returns {Object}
      */
-    hideSelectionManager : (scene, card, info, activePlayer) => {
+    hideSelectionManager: (scene, card, info, activePlayer) => {
         let tweens = [];
         tweens.push({
             targets: {},
@@ -1206,6 +1270,81 @@ const abilityActions = {
             duration: 1
         });
         
+        return tweens;
+    },
+    //#endregion
+    //#region shuffleDeck
+    /** Function to add Counter to Defender
+     * @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    shuffleDeck: (scene, card, info, activePlayer) => {
+        let tweens = [];
+            
+        // Get the player scene based on who's shuffling
+        let playerScene = card.playerScene;
+        if(info.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
+            
+        // Get the deck and its card visuals
+        const deck = playerScene.deck;
+        const cardVisuals = deck.cardVisuals;
+            
+        if (!cardVisuals || cardVisuals.length === 0) return tweens;
+            
+        // Determine direction based on player position
+        const isOpponent = info.player === "opponent";
+        const moveDirection = isOpponent ? 1 : -1; // Right for opponent, left for active player
+        const shuffleDistance = 80;
+        const shuffleDuration = 100;
+        const shuffleCount = 3;
+            
+        // Perform shuffle animation multiple times
+        for(let shuffleIndex = 0; shuffleIndex < shuffleCount; shuffleIndex++) {  
+            tweens = tweens.concat([
+                {
+                    // Move bottom card out to the side
+                    targets: cardVisuals[0], // Bottom card (first in array)
+                    x: cardVisuals[0].x + (shuffleDistance * moveDirection),
+                    y: cardVisuals[0].y - 20,
+                    rotation: 0.1 * moveDirection,
+                    scale: cardVisuals[0].scale * 1.1,
+                    duration: shuffleDuration,
+                    ease: 'Back.easeOut'
+                },
+                {
+                    // Move card back and place on top
+                    targets: cardVisuals[0],
+                    x: cardVisuals[cardVisuals.length - 1].x, // Position of top card
+                    y: cardVisuals[cardVisuals.length - 1].y,
+                    rotation: 0,
+                    scale: cardVisuals[0].scale,
+                    duration: shuffleDuration,
+                    ease: 'Sine.easeIn',
+                    onStart: () => {
+                        // Move the bottom card to the top of the visual array
+                        const bottomCard = cardVisuals.shift(); // Remove from bottom
+                        cardVisuals.push(bottomCard); // Add to top
+                        
+                        // Update visual layering
+                        scene.children.moveAbove(bottomCard, cardVisuals[cardVisuals.length - 2]);
+                    }
+                }
+            ]);
+        }
+            
+        // Final tween to realign all cards back to their proper positions
+        tweens.push({
+            targets: {},
+            alpha: 1,
+            duration: 1,
+            onStart: () => {
+                // Use the existing realignDeckVisuals method to put cards back in place
+                deck.realignDeckVisuals();
+            }
+        });
+            
         return tweens;
     },
     //#endregion

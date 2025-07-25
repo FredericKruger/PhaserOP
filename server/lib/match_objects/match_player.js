@@ -5,8 +5,9 @@ const { CARD_STATES } = require('./match_card.js');
 
 class MatchPlayer {
 
-    constructor(id, matchId) {
+    constructor(id, referenceId, matchId) {
         this.id = id;
+        this.referenceId = referenceId;
         this.matchId = matchId;
 
         /** @type {number} */

@@ -12,6 +12,9 @@ class SelectionManager {
         this.currentSelectionParams = null;
         this.currentNumberOfValidTargets = 0;
 
+        /** @type {string} */
+        this.cardPoolOrigin = null;
+
         /**@type {Array<MatchCard>} */
         this.cardPool = [];
         /**@type {Array<Array<integer>>} */
@@ -22,9 +25,13 @@ class SelectionManager {
         this.remainingCards = [];
     }
 
-    /** @param {Array<MatchCard>} cardPool  */
-    setCardPool(cardPool) {
+    /** 
+     * @param {Array<MatchCard>} cardPool  
+     * @param {string} cardPoolOrigin
+    */
+    setCardPool(cardPool, cardPoolOrigin) {
         this.cardPool = cardPool;
+        this.cardPoolOrigin = cardPoolOrigin;
 
         // Initialize remaining cards with the ids of the card pool
         this.remainingCards = cardPool.map(card => card.id);

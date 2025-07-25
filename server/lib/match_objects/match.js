@@ -44,7 +44,7 @@ class Match {
         this.lastAuraID = 0; //Keep track of the last aura id
 
         /** @type {import('./match_state').MatchState} */
-        this.state = new MatchState(this, player1.id, player2.id); //Create a new match state
+        this.state = new MatchState(this, player1.id, player1.playerReference, player2.id, player2.playerReference); //Create a new match state
         /** @type {TargetingManager} */
         this.targetingManager = new TargetingManager(this); //Create a new targeting manager
 
@@ -1014,6 +1014,8 @@ class Match {
                 }
             } else if(nextAction.type === "END_OF_TURN") {
                 callBack = () => {this.executeEndOfTurnAbilities();}
+            } else if(nextAction.type === "ABILITY") {
+                callBack = () => {this.resolvePendingAction(player);}
             }
         }
 
@@ -1225,6 +1227,14 @@ class Match {
 
             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
+        } else if(abilityResults.status === "WAIT_FOR_ANIMATION") {
+            let action = {actionResult: PLAY_CARD_STATES.WAIT_FOR_ANIMATION, actionInfos: actionInfos};
+
+            this.state.pending_action = action;
+            this.state.resolving_pending_action = true;
+
+            if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false, false);
         }
         
         return actionInfos;
@@ -1321,6 +1331,22 @@ class Match {
         }
     }
 
+    /**
+     * Function to resolve the pending action
+     * @param {Player} player 
+     */
+    resolvePendingAction(player) {
+        let actionInfos = this.state.pending_action.actionInfos;
+        let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, []);
+        
+        if(abilityResults.abilityResults.status === "DONE") {
+            if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
+            if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
+
+            this.cleanupAction(player);
+        }
+    }
+
     //#region UTILS
 
     /** Function to return the player from it;s id
@@ -1399,6 +1425,31 @@ class Match {
         }
 
         return validTarget;
+    }
+
+    /** Function to resolve an operation
+     * @param {string} operator
+     * @param {number} value1
+     * @param {number} value2
+     * @returns {boolean}  
+     */
+    resolveOperation(value1, operator, value2) {
+        switch (operator) {
+            case ">": 
+                return value1 > value2;
+            case ">=": 
+                return value1 >= value2;
+            case "=": 
+            case "==": 
+                return value1 === value2;
+            case "<=": 
+                return value1 <= value2;
+            case "<": 
+                return value1 < value2;
+            case "!=": 
+                return value1 !== value2;
+        }
+        return false;
     }
 
     //#endregion

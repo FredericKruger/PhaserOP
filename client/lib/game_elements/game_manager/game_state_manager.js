@@ -1356,10 +1356,11 @@ class GameStateManager {
      * @param {number} abilityID - The ability ID
      * @param {Object} actionInfos - The action infos
      * @param {boolean} isPlayerTurn - If it is the player's turn
+     * @param {boolean} waitForAnimation
      */
-    resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn) {
+    resolveAbility(cardID, abilityID, actionInfos, isPlayerTurn, waitForAnimation) {
         const card = this.scene.getCard(cardID);
-        this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults.actionResults, isPlayerTurn);
+        this.scene.actionLibrary.resolveAbilityAction(card, abilityID, actionInfos.abilityResults.actionResults, isPlayerTurn, waitForAnimation);
     }
 
     /** Function to resolve ability 

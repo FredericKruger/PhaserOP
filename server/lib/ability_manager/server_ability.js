@@ -151,6 +151,16 @@ class ServerAbility {
             const action = this.currentActions[i];
             const func = serverAbilityActions[action.name];
             if (func) {
+                //Certain actions will require to send animations already to the server
+                if(action.name === "playCard" && this.actionResults.length>0) {
+                    actionResults = {
+                        status: "WAIT_FOR_ANIMATION",
+                        actionResults: this.actionResults
+                    };
+                    this.actionResults = [];
+                    return actionResults;
+                }
+
                 let results = func(match, player, card, action.params, targets);
                 results.actionIndex = i;
 
@@ -174,6 +184,14 @@ class ServerAbility {
                     else if(action.name === "selectCards"){
                         actionResults = {
                             status: "SELECTING",
+                            actionResults: this.actionResults
+                        };
+                        this.actionResults = [];
+                        return actionResults;
+                    }
+                    else if(action.name === "playCard") {
+                        actionResults = {
+                            status: "WAIT_FOR_ANIMATION",
                             actionResults: this.actionResults
                         };
                         this.actionResults = [];
@@ -507,7 +525,8 @@ const serverAbilityActions = {
         let actionResults = {name: "createSelectionManager"};
 
         let selectedCards = [];
-        let amount = params.amount;
+        let amount = params.amount || -1;
+        let uniquesOnly = params.uniquesOnly || false;
         let cardPool = [];
         switch(params.cardPool) {
             case "DECK": 
@@ -523,10 +542,16 @@ const serverAbilityActions = {
         
         //Get the cards from the card Pool
         let currentCardIndex = 0;
-        while(selectedCards.length < amount && currentCardIndex < cardPool.length) {
-            for(let target of targetData)
-                if(targetingManager.isValidTarget(cardPool[currentCardIndex], target, true)) 
-                    selectedCards.push(cardPool[currentCardIndex]);
+        while((amount===-1 || selectedCards.length < amount) && currentCardIndex < cardPool.length) {
+            for(let target of targetData) {
+                if(targetingManager.isValidTarget(cardPool[currentCardIndex], target, true)) {
+                    //Keep all matching cards except if uniques are required
+                    if(
+                        !uniquesOnly
+                        || !selectedCards.some(selectedCard => selectedCard.cardData.id === cardPool[currentCardIndex].cardData.id)
+                    ) selectedCards.push(cardPool[currentCardIndex]);
+                } 
+            }
             currentCardIndex++;
         }
 
@@ -540,7 +565,7 @@ const serverAbilityActions = {
 
         //Create a selection manager for the match
         let currentSelectionManager = new SelectionManager(match);
-        currentSelectionManager.setCardPool(selectedCards);
+        currentSelectionManager.setCardPool(selectedCards, params.cardPool);
         match.currentSelectionManager = currentSelectionManager;
 
         //Create Parameters
@@ -560,7 +585,7 @@ const serverAbilityActions = {
     destroySelectionManager: (match, player, card) => {
         let actionResults = {name: "destroySelectionManager"};
 
-        console.log("Destroying selection manager");
+
         match.currentSelectionManager = null; //Remove the current selection manager from the match
 
         return actionResults;
@@ -649,6 +674,46 @@ const serverAbilityActions = {
         return actionResults;
     },
     //#endregion
+    //#region drawCardAnimation
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      cardPool: 'SELECTION',
+     *      selectionIndex: number
+     * }} params 
+     * @param {Object} targets 
+     * @returns 
+     */
+    drawCardAnimation: (match, player, scene, params, targets) => {
+        let actionResults = {name: "drawCardAnimation"};
+
+        let cards = [];
+        let cardPool = "";
+        switch(params.cardPool) {
+            case "SELECTION":
+                let selectionIndex = params.selectionIndex;
+                for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
+                    //get Card from selection manager
+                    let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
+                    let cardToDraw = match.currentSelectionManager.cardPool.find(c => c.id === cardId); //Find the card in the card pool
+                                        
+                    cards.push(cardToDraw); //Add to hand and return list
+                }
+                cardPool = "DECK";
+                break;
+            default:
+                break;
+        }
+
+        actionResults.cardPool = cardPool;
+        actionResults.drawnCards = cards;
+
+        return actionResults;
+    },
+    //#endregion
     //#region drawCardsToPanel
     /**
      * 
@@ -688,9 +753,43 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {{
+     *      returnCardsToDeck: Array<'CARD_POOL' | 'REMAINING_CARDS'>
+     * }}
      * @returns 
      */
-    hideSelectionManager: (match, player, card) => {
+    hideSelectionManager: (match, player, card, params) => {
+        if(params.returnCardsToDeck && match.currentSelectionManager) {
+            for(let cardsType of params.returnCardsToDeck){
+                let cardPool = [];
+                //Determine the card pool from which to return the cards to
+                switch(cardsType) {
+                    case "CARD_POOL":
+                        cardPool = match.currentSelectionManager.cardPool;
+                        break;
+                    case "REMAINING_CARDS":
+                        cardPool = match.currentSelectionManager.remainingCards;
+                        break;
+                }
+                //For each card in the pool
+                for(let card of cardPool){
+                    //REmove it from the selected Pool
+                    const cardIndex = cardPool.indexOf(card);
+                    if(cardIndex > -1) {
+                        cardPool.splice(cardIndex, 1); 
+                    }
+                    //Return the card to the card pool of origin
+                    switch(match.currentSelectionManager.cardPoolOrigin) {
+                        case "DECK":
+                            player.deck.cards.push(card);
+                            break;
+                        default: 
+                            player.deck.cards.push(card);   
+                            break;
+                    }
+                }
+            }
+        }
         return {name: "hideSelectionManager"};
     },
     //#endregion
@@ -714,53 +813,18 @@ const serverAbilityActions = {
                 switch (condition.type) {
                     case "SELECTION_COUNT": {
                         const count = match.currentSelectionManager.selectedCards[condition.selectionIndex].length; //Get the first array of selected cards
-                        
-                        switch (condition.operator) {
-                            case ">": 
-                                conditionResult = count > condition.value;
-                                break;
-                            case ">=": 
-                                conditionResult = count >= condition.value;
-                                break;
-                            case "=": 
-                            case "==": 
-                                conditionResult = count === condition.value;
-                                break;
-                            case "<=": 
-                                conditionResult = count <= condition.value;
-                                break;
-                            case "<": 
-                                conditionResult = count < condition.value;
-                                break;
-                            case "!=": 
-                                conditionResult = count !== condition.value;
-                                break;
-                        }
+                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
+                        break;
                     }
                     case "NUMBER_CARDS_IN_HAND": {
                         const count = player.inHand.length;
-
-                        switch (condition.operator) {
-                            case ">": 
-                                conditionResult = count > condition.value;
-                                break;
-                            case ">=": 
-                                conditionResult = count >= condition.value;
-                                break;
-                            case "=": 
-                            case "==": 
-                                conditionResult = count === condition.value;
-                                break;
-                            case "<=": 
-                                conditionResult = count <= condition.value;
-                                break;
-                            case "<": 
-                                conditionResult = count < condition.value;
-                                break;
-                            case "!=": 
-                                conditionResult = count !== condition.value;
-                                break;
-                        }
+                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
+                        break;
+                    }
+                    case "SELECTION_CARD_POOL_LENGTH": {
+                        const count = match.currentSelectionManager.cardPool.length;
+                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
+                        break;
                     }
                 }
 
@@ -860,7 +924,8 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      target: 'TARGET' | 'SELF'
+     *      target: 'TARGET' | 'SELF' | 'SELECTION',
+     *      selectionIndex: {number}
      * }} params 
      * @param {Array<integer>} targets 
      * @returns 
@@ -874,6 +939,10 @@ const serverAbilityActions = {
             cardToPlay = match.matchCardRegistry.get(targets[0]);
         } else if(params.target === "SELF") {
             cardToPlay = card;
+        } else if(params.target === "SELECTION") {
+            let selectionIndex = params.selectionIndex;
+            let cardId = match.currentSelectionManager.selectedCards[selectionIndex][0]; //Get the first card from the selected cards
+            cardToPlay = match.currentSelectionManager.cardPool.find(c => c.id === cardId);
         }
         
         actionResults.cardId = cardToPlay.id;
@@ -1087,6 +1156,23 @@ const serverAbilityActions = {
         actionResults.orderCards = params.orderCards !== undefined ? params.orderCards : false;
         actionResults.confirmButtons = params.confirmButtons !== undefined ? params.confirmButtons : ["OK"];
         
+        return actionResults;
+    },
+    //#endregion
+    //#region shuffleDeck
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {Object} params 
+     * @returns 
+     */
+    shuffleDeck: (match, player, card, params) => {
+        let actionResults = {name: "shuffleDeck"};
+
+        player.deck.shuffle();
+
         return actionResults;
     },
     //#endregion

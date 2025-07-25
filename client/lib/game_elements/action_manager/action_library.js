@@ -400,34 +400,51 @@ class ActionLibrary {
         let displayY = this.scene.screenCenterY;
 
         // Enhanced animation for playing a card - more dynamic initial display only
-        let start_animation = this.scene.tweens.chain({
-            targets: card,
-            tweens: [
-                {
-                    // Phase 2: Move to center display position with dramatic scaling
-                    scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 0.9, to: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, duration: 130},
-                    x: {from: card.x + (displayX - card.x) * 0.3, to: displayX, duration: 130},
-                    y: {from: card.y - 40, to: displayY, duration: 130},
-                    rotation: {from: 0.05, to: 0, duration: 130},
-                    ease: 'Power2.easeInOut'
-                },
-                {
-                    // Phase 3: Quick scale adjustment for emphasis with slight bounce
-                    scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, to: CARD_SCALE.IN_PLAY_ANIMATION, duration: 100},
-                    ease: 'Back.easeOut',
-                },
-                {
-                    // Phase 4: Hold the card in display position
-                    // This phase is shorter since specific card arrival animations will be handled elsewhere
-                    scale: CARD_SCALE.IN_PLAY_ANIMATION,
-                    duration: 50,
-                    onComplete: () => {                        
-                        // Complete the action
-                        this.actionManager.completeAction();
+        let start_animation = [];
+         if(card.hasAbility("ON_PLAY")){
+            start_animation = this.scene.tweens.chain({
+                targets: card,
+                tweens: [
+                    {
+                        // Phase 2: Move to center display position with dramatic scaling
+                        scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 0.9, to: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, duration: 130},
+                        x: {from: card.x + (displayX - card.x) * 0.3, to: displayX, duration: 130},
+                        y: {from: card.y - 40, to: displayY, duration: 130},
+                        rotation: {from: 0.05, to: 0, duration: 130},
+                        ease: 'Power2.easeInOut'
+                    },
+                    {
+                        // Phase 3: Quick scale adjustment for emphasis with slight bounce
+                        scale: {from: CARD_SCALE.IN_PLAY_ANIMATION * 1.05, to: CARD_SCALE.IN_PLAY_ANIMATION, duration: 100},
+                        ease: 'Back.easeOut',
+                    },
+                    {
+                        // Phase 4: Hold the card in display position
+                        // This phase is shorter since specific card arrival animations will be handled elsewhere
+                        scale: CARD_SCALE.IN_PLAY_ANIMATION,
+                        duration: 50,
+                        onComplete: () => {                        
+                            // Complete the action
+                            this.actionManager.completeAction();
+                        }
                     }
-                }
-            ]
-        }).pause();
+                ]
+            }).pause();
+        } else {
+            start_animation = this.scene.tweens.chain({
+                targets: card,
+                tweens: [
+                    {
+                        alpha: 1,
+                        duration: 1,
+                        onComplete: () => {                        
+                            // Complete the action
+                            this.actionManager.completeAction();
+                        }
+                    }
+                ]
+            }).pause();
+        } 
 
         //Create the action
         let action = new Action();
@@ -905,8 +922,9 @@ class ActionLibrary {
      * @param {string} abilityId
      * @param {Object} abilityInfo
      * @param {boolean} activePlayer - If it is the active player
+     * @param {boolean} waitForAnimation
      */
-    resolveAbilityAction(card, abilityId, abilityInfo, activePlayer = true) {
+    resolveAbilityAction(card, abilityId, abilityInfo, activePlayer = true, waitForAnimation = false) {
         let ability = card.getAbility(abilityId);
         let abilityTweens = ability.animate(card, abilityInfo, activePlayer); //Add the ability tween
 
@@ -930,7 +948,9 @@ class ActionLibrary {
             if(targetingManager) this.scene.targetManagers = this.scene.targetManagers.filter(tm => tm !== targetingManager); //Remove the target manager from the list
         };
         action.start_animation = startAnimation;
-        action.end = () => {};
+        action.end = () => {
+            if(waitForAnimation) this.scene.game.gameClient.requestActionAnimationComplete();
+        };
         action.waitForAnimationToComplete = true;
 
         //Add action to the action stack

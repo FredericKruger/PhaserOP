@@ -32,9 +32,11 @@ class MatchState {
      * Constructor on the Match State class
      * @param {Match} match 
      * @param {number} player1Id
+     * @param {string} player1ReferenceId
      * @param {number} player2Id
+     * @param {string} player2ReferenceId
      */
-    constructor(match, player1Id, player2Id) {
+    constructor(match, player1Id, player1ReferenceId, player2Id, player2ReferenceId) {
         this.match = match;
 
         /** @type {Player} */
@@ -48,9 +50,9 @@ class MatchState {
         this.pending_action = null;
 
         /** @type {MatchPlayer} */
-        this.player1 = new MatchPlayer(player1Id, match.id);
+        this.player1 = new MatchPlayer(player1Id, player1ReferenceId, match.id);
         /** @type {MatchPlayer} */
-        this.player2 = new MatchPlayer(player2Id, match.id);
+        this.player2 = new MatchPlayer(player2Id, player2ReferenceId, match.id);
     }
     //#endregion
 

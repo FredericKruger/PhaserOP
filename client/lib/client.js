@@ -302,9 +302,9 @@ class Client {
                 this.gameScene.gameStateManager.startAbilityTargeting(actionInfos.playedCard, activePlayer);
             }
         });
-        this.socket.on('game_card_ability_executed', (actionInfos, activePlayer) => {
+        this.socket.on('game_card_ability_executed', (actionInfos, activePlayer, waitForAnimation = false) => {
             if(!this.gameScene.gameStateManager.gameOver) {
-                this.gameScene.gameStateManager.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, activePlayer);
+                this.gameScene.gameStateManager.resolveAbility(actionInfos.playedCard, actionInfos.ability, actionInfos, activePlayer, waitForAnimation);
             }
         });
         this.socket.on('game_card_ability_executed_animation', (cardId, abilityId) => {
@@ -429,6 +429,7 @@ class Client {
     //#region REQUEST ABILITY
     requestPerformAbility (cardId, abilityId) {this.socket.emit('player_perform_ability', cardId, abilityId);}
     requestActivateAbility (cardId, abilityId) {this.socket.emit('player_activate_ability', cardId, abilityId);}
+    requestActionAnimationComplete () {this.socket.emit('player_action_animation_complete');}
     requestCleanupAction () {this.socket.emit('player_cleanup_action');}
     //#endregion
 

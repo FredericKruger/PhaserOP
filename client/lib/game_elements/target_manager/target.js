@@ -17,6 +17,7 @@ class Target {
             this.power = {};
             this.exclude = [];
             this.hasability = [];
+            this.names = [];
             return;
         }
 
@@ -30,6 +31,7 @@ class Target {
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
         this.hasability = serverTarget.hasability?.slice() || [];
+        this.names = serverTarget.names?.slice() || [];
 
         //Prepare states if a group state efind
         if (this.states.includes("ALL_IN_PLAY_STATES")) {
@@ -69,6 +71,8 @@ class Target {
         if (this.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card);
 
         if (this.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card);
+
+        if (this.names.length > 0 && isValid) isValid = isValid && this.isNameValid(card.cardData.name);
 
         // Check card cost
         if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.getCost(), this.cost);
@@ -145,6 +149,18 @@ class Target {
         if (!types) return false;
         return this.types.some(type => types.includes(type));
     }
+
+    /**
+     * Check if the card name is valid
+     * @param {string} name - The card attributes to check
+     * @returns {boolean} - Whether the card type is valid
+     */
+    isNameValid(name) {
+        if (!name) return false;
+        return this.names.includes(name);
+    }
+
+    
 
     /** Check is the card has exclude tag
      * * @param {GameCardUI} card - The card to check
