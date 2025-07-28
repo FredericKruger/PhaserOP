@@ -47,30 +47,40 @@
                     "cardPool": "DECK", "amount": 5,
                     "filter": [{}]
                 }},
-                {"name": "selectCards", "params": {
-                    "selectionText": "Select up to 1 {Supernovas} type card from the top 5 cards of your deck.",
-                    "amount": 1,
-                    "target": [{
-                        "cardtypes": ["CHARACTER"],
-                        "types": ["Supernovas"]
-                    }]
-                }},
                 {"name": "IF_THEN_ELSE", "params": {
                     "conditions": [
-                        {"type": "SELECTION_COUNT", "selectionIndex": 0, "operator": "=", "value": 1}
+                        {"type": "SELECTION_CARD_POOL_LENGTH", "operator": ">", "value": 0}
                     ],
                     "then": [
                         {"name": "selectCards", "params": {
-                            "selectionText": "Place the rest at the bottom of your deck in any order.",
-                            "amount": 4,
-                            "target": [],
-                            "keepPreviousSelection": false,
-                            "orderCards": true,
-                            "confirmButtons": ["BOTTOM"]
+                            "selectionText": "Select up to 1 {Supernovas} type card from the top 5 cards of your deck.",
+                            "amount": 1,
+                            "target": [{
+                                "cardtypes": ["CHARACTER"],
+                                "types": ["Supernovas"]
+                            }]
                         }},
-                        {"name": "hideSelectionManager", "params": {}},
-                        {"name": "drawCards", "params": {"cardPool": "SELECTION[0]", "amount": "1", "reveal": true}},
-                        {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION[1]", "from": "TOP", "to": "BOTTOM"}}
+                        {"name": "IF_THEN_ELSE", "params": {
+                            "conditions": [
+                                {"type": "SELECTION_COUNT", "selectionIndex": 0, "operator": "=", "value": 1}
+                            ],
+                            "then": [
+                                {"name": "selectCards", "params": {
+                                    "selectionText": "Place the rest at the bottom of your deck in any order.",
+                                    "amount": 4,
+                                    "target": [],
+                                    "keepPreviousSelection": false,
+                                    "orderCards": true,
+                                    "confirmButtons": ["BOTTOM"]
+                                }},
+                                {"name": "hideSelectionManager", "params": {}},
+                                {"name": "drawCards", "params": {"cardPool": "SELECTION[0]", "amount": "1", "reveal": true}},
+                                {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION[1]", "from": "TOP", "to": "BOTTOM"}}
+                            ],
+                            "else": [
+                                {"name": "hideSelectionManager", "params": {"returnCardsToPool": ["CARD_POOL"]}}
+                            ]
+                        }}
                     ],
                     "else": [
                         {"name": "hideSelectionManager", "params": {}}

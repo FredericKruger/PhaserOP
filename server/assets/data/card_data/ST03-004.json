@@ -1,0 +1,70 @@
+{
+    "id":403,
+    "setid":4,
+    "banned": false,
+    "art":"ST03-004",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Gecko Moria",
+    "card":"CHARACTER",
+    "type":["The Seven Warlords of the Sea", "Thriller Bark Pirates"],
+    "colors":["BLUE"],
+    "cost":4,
+    "power":5000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Kishishishi... Welcome to your nightmare!",
+            "attack": "Dance, puppet! Dance!",
+            "defeated": "My army... will rise again."
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST03-004-1",
+            "text": "Add up to 1 {The Seven Warlods of the Sea} or {Thriller Bark Pirates} type Character with a cost of 4 or less other than [Gecko Moria] from your trash to your hand.",
+            "art": {
+                "art": "ST03-004-ABILITY1",
+                "posx": 300,
+                "posy": 558
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED"],
+            "phases": ["Main Phase"],
+            "actions": [
+                {"name": "createSelectionManager", "params": {
+                    "cardPool": "DISCARD",
+                    "filter": [{
+                        "cardtypes": ["CHARACTER"],
+                        "types": ["The Seven Warlords of the Sea", "Thriller Bark Pirates"],
+                        "cost": {"operator": "<=", "value": 4},
+                        "not_names": ["Gecko Moria"]
+                    }],
+                    "uniquesOnly": true
+                }},
+                {"name": "IF_THEN_ELSE", "params": {
+                    "conditions": [
+                        {"type": "SELECTION_CARD_POOL_LENGTH", "operator": ">", "value": 0}
+                    ],
+                    "then": [
+                        {"name": "selectCards", "params": {
+                            "selectionText": "Add up to 1 card to your hand",
+                            "amount": 1
+                        }},
+                        {"name": "moveCardsToHand", "params": {"cardPool": "SELECTION[0]", "from": "DISCARD"}},
+                        {"name": "hideSelectionManager", "params": {"returnCardsToPool": ["REMAINING_CARDS"]}}
+                    ],
+                    "else": [
+                        {"name": "hideSelectionManager", "params": {"returnCardsToPool": ["CARD_POOL"]}}
+                    ]
+                }},
+                {"name": "destroySelectionManager", "params": {}}
+            ]
+        }
+    ]
+}

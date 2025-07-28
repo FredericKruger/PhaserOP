@@ -18,6 +18,7 @@ class Target {
             this.exclude = [];
             this.hasability = [];
             this.names = [];
+            this.not_names = [];
             return;
         }
 
@@ -32,6 +33,8 @@ class Target {
         this.exclude = serverTarget.exclude?.slice() || [];
         this.hasability = serverTarget.hasability?.slice() || [];
         this.names = serverTarget.names?.slice() || [];
+
+        this.not_names = serverTarget.not_names?.slice() || []; // New property for not_names
 
         //Prepare states if a group state efind
         if (this.states.includes("ALL_IN_PLAY_STATES")) {
@@ -72,7 +75,9 @@ class Target {
 
         if (this.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card);
 
-        if (this.names.length > 0 && isValid) isValid = isValid && this.isNameValid(card.cardData.name);
+        if (this.names.length > 0 && isValid) isValid = isValid && this.isNameValid(this.names, card.cardData.name);
+
+        if (this.not_names.length > 0 && isValid) isValid = isValid && !this.isNameValid(this.not_names, card.cardData.name);
 
         // Check card cost
         if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.getCost(), this.cost);
@@ -152,12 +157,13 @@ class Target {
 
     /**
      * Check if the card name is valid
+     * @param {Array<string>} values - The list of valid names
      * @param {string} name - The card attributes to check
      * @returns {boolean} - Whether the card type is valid
      */
-    isNameValid(name) {
+    isNameValid(values, name) {
         if (!name) return false;
-        return this.names.includes(name);
+        return values.includes(name);
     }
 
     

@@ -1109,6 +1109,50 @@ const abilityActions = {
         return tweens;
     },
     //#endregion
+    //#region moveCardsToHand
+    /** Function to move cards to hand
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    moveCardsToHand: (scene, card, info, activePlayer) => {
+        let tweens = [];
+
+        const animationDuration = 200;
+        const delay = 150;
+    
+        // If no cards to move, return empty tweens
+        if (info.cardPool.length === 0) { return tweens; }
+
+        for(let card of info.cardPool) {
+            let cardToMove = scene.getCard(card.id);
+
+            if(info.from === "DISCARD") {
+                tweens.push({
+                    targets: {},
+                    alpha: 1,
+                    duration: 1,
+                    onStart: () => {
+                        cardToMove.playerScene.discard.removeCard(cardToMove);
+                    }
+                });
+                tweens.concat(scene.animationLibrary.desintegrationAnimation(cardToMove));
+                tweens.push({
+                    targets: {},
+                    alpha: 1,
+                    duration: 1,
+                    onStart: () => {
+                        cardToMove.playerScene.hand.addCards([cardToMove], {setCardState: true, setCardDepth: true, updateUI: true});
+                    }
+                });
+                tweens = tweens.concat(scene.animationLibrary.integrationAnimation(cardToMove));
+            }
+        }
+
+        return tweens;
+    },
+    //#endregion
     //#region restDon
     /** Function to add Counter to Defender
      * @param {GameScene} scene

@@ -9,7 +9,7 @@
     "card":"CHARACTER",
     "type":["The Seven Warlords of the Sea", "Revolutionary Army"],
     "colors":["BLUE"],
-    "cost":0,
+    "cost":2,
     "power":3000,
     "attribute":"STRIKE",
     "isleader":0,

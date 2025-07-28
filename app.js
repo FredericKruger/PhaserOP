@@ -257,7 +257,7 @@ io.on('connection', function (/** @type {object} */ socket) {
     socket.on('player_perform_ability', (cardID, abilityID) => {socket.player.match.resolveAbility(socket.player, cardID, abilityID);});
     socket.on('player_activate_ability', (cardID, abilityID) => {socket.player.match.activateAbility(socket.player, cardID, abilityID);});
     socket.on('player_cleanup_action', () => {socket.player.match.cleanupAction(socket.player);})
-    socket.on('player_action_animation_complete', () => {socket.player.match.resolvePendingAction(socket.player);})
+    socket.on('player_action_animation_complete', () => {socket.player.match.resolvePendingActionFromAnimation(socket.player);})
 
     socket.on('player_start_next_turn', () => {
         if(!socket.player.currentOpponentPlayer.bot) socket.player.currentOpponentPlayer.socket.emit('game_complete_current_turn');

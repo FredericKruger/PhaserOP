@@ -62,12 +62,12 @@
                             "selectionText": "Play up to 1 [Pacifista] with a cost of 4 or less from your deck.",
                             "amount": 1
                         }},
-                        {"name": "hideSelectionManager", "params": {"returnCardsToDeck": ["REMAINING_CARDS"]}},
+                        {"name": "hideSelectionManager", "params": {"returnCardsToPool": ["REMAINING_CARDS"]}},
                         {"name": "drawCardAnimation", "params": {"cardPool": "SELECTION[0]"}},
                         {"name": "playCard", "params": {"target": "SELECTION[0]"}}
                     ],
                     "else": [
-                        {"name": "hideSelectionManager", "params": {"returnCardsToDeck": ["CARD_POOL"]}}
+                        {"name": "hideSelectionManager", "params": {"returnCardsToPool": ["CARD_POOL"]}}
                     ]
                 }},
                 {"name": "destroySelectionManager", "params": {}},

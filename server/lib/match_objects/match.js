@@ -1335,7 +1335,7 @@ class Match {
      * Function to resolve the pending action
      * @param {Player} player 
      */
-    resolvePendingAction(player) {
+    resolvePendingActionFromAnimation(player) {
         let actionInfos = this.state.pending_action.actionInfos;
         let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, []);
         

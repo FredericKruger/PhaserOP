@@ -18,6 +18,8 @@ class Target {
             this.hasability = [];
             this.names = [];
 
+            this.not_names = []; // New property for not_names
+
             this.ignoreTesting = false;
             return;
         }
@@ -33,6 +35,8 @@ class Target {
         this.exclude = serverTarget.exclude?.slice() || [];
         this.hasability = serverTarget.hasability?.slice() || [];
         this.names = serverTarget.names?.slice() || [];
+
+        this.not_names = serverTarget.not_names?.slice() || [];
 
         this.ignoreTesting = serverTarget.ignoreTesting || false;
 
@@ -129,8 +133,11 @@ class TargetingManager {
         if (this.target.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card.abilities);
         //console.log("hasAbilityValid", isValid);
 
-        if (this.target.names.length > 0 && isValid) isValid = isValid && this.isNameValid(card.cardData.name);
+        if (this.target.names.length > 0 && isValid) isValid = isValid && this.isNameValid(this.target.names, card.cardData.name);
         //console.log("hasNameValid", isValid);
+
+        if (this.target.not_names.length > 0 && isValid) isValid = isValid && !this.isNameValid(this.target.not_names, card.cardData.name);
+        //console.log("hasNotNameValid", isValid);
 
         //console.log(card);
         // Check card cost
@@ -215,11 +222,12 @@ class TargetingManager {
 
     /**
      * Check if the card name is valid
+     * @param {Array<string>} values - The list of valid names
      * @param {string} name 
      * @return {boolean}
      */
-    isNameValid(name) {
-        return this.target.names.includes(name);
+    isNameValid(values, name) {
+        return values.includes(name);
     }
 
     /**

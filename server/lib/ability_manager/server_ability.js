@@ -516,7 +516,7 @@ const serverAbilityActions = {
      * @param {MatchCard} card 
      * @param {{
      *      amount: number,
-     *      cardPool: 'DECK',
+     *      cardPool: 'DECK' | 'DISCARD',
      * 
      * }} params 
      * @returns 
@@ -531,6 +531,9 @@ const serverAbilityActions = {
         switch(params.cardPool) {
             case "DECK": 
                 cardPool = player.deck.cards;
+                break;
+            case "DISCARD":
+                cardPool = player.inDiscard;
                 break;
             default:
                 cardPool = player.deck.cards;
@@ -584,7 +587,6 @@ const serverAbilityActions = {
      */
     destroySelectionManager: (match, player, card) => {
         let actionResults = {name: "destroySelectionManager"};
-
 
         match.currentSelectionManager = null; //Remove the current selection manager from the match
 
@@ -745,7 +747,7 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      returnCardsToDeck: Array<'CARD_POOL' | 'REMAINING_CARDS'>
+     *      returnCardsToPool: Array<'CARD_POOL' | 'REMAINING_CARDS'>
      * }}
      * @returns 
      */
@@ -773,6 +775,9 @@ const serverAbilityActions = {
                     switch(match.currentSelectionManager.cardPoolOrigin) {
                         case "DECK":
                             player.deck.cards.push(card);
+                            break;
+                        case "DISCARD":
+                            player.inDiscard.push(card);
                             break;
                         default: 
                             player.deck.cards.push(card);   
@@ -918,6 +923,49 @@ const serverAbilityActions = {
         actionResults.to = toDestination;
         actionResults.numberOfCards = cardPool.length;
 
+        return actionResults;
+    },
+    //#endregion
+    //#region moveCardsToHand
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      cardPool: 'SELECTION' | 'TARGET',
+     *      from: 'DISCARD'
+     * }} params 
+     * @param {Array<integer>} targets 
+     * @returns 
+     */
+    moveCardsToHand: (match, player, card, params, targets) => {
+        //creating Play Card Action
+        let actionResults = {name: "moveCardsToHand"};
+
+        // Get the cards from the cardpool
+        let cardPool = [];
+        if(params.cardPool.startsWith("SELECTION")) {
+            //extract the selection index from the params.cardPool in the shape of SELECTION[index]
+            let selectionIndex = parseInt(params.cardPool.split("[")[1].split("]")[0]);
+            //Make sure selectionIndex is valid. default should take index 0
+            if(isNaN(selectionIndex) || selectionIndex < 0 || selectionIndex >= match.currentSelectionManager.selectedCards.length) {
+                selectionIndex = 0;
+            }
+
+            for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
+                //get Card from selection manager
+                let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
+                cardPool.push(match.currentSelectionManager.cardPool.find(c => c.id === cardId)); //Find the card in the card pool
+            }
+        }
+
+        for(let card of cardPool) {
+            player.inHand.push(card); //Add to hand
+        }
+
+        actionResults.cardPool = cardPool;
+        actionResults.from = params.from;
         return actionResults;
     },
     //#endregion
