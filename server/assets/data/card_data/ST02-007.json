@@ -69,8 +69,8 @@
                             "confirmButtons": ["BOTTOM"]
                         }},
                         {"name": "hideSelectionManager", "params": {}},
-                        {"name": "drawCards", "params": {"cardPool": "SELECTION", "selectionIndex": 0, "amount": "1", "reveal": true}},
-                        {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION", "selectionIndex": 1, "from": "TOP", "to": "BOTTOM"}}
+                        {"name": "drawCards", "params": {"cardPool": "SELECTION[0]", "amount": "1", "reveal": true}},
+                        {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION[1]", "from": "TOP", "to": "BOTTOM"}}
                     ],
                     "else": [
                         {"name": "hideSelectionManager", "params": {}}

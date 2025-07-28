@@ -640,31 +640,27 @@ const serverAbilityActions = {
         let cards = [];
         let amount = params.amount || 1;
         let cardPool = "";
-        switch(params.cardPool) {
-            case "SELECTION":
-                let selectionIndex = params.selectionIndex;
-                for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
-                    //get Card from selection manager
-                    let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
-                    let cardToDraw = match.currentSelectionManager.cardPool.find(c => c.id === cardId); //Find the card in the card pool
-                                        
-                    cards.push(cardToDraw); //Add to hand and return list
-                    player.inHand.push(cardToDraw);
-                    cardToDraw.setState("IN_HAND");
-                }
-                cardPool = "DECK";
-                break;
-            case "DECK":
-                for(let i = 0; i < amount; i++) {
-                    let cardToDraw = player.deck.draw(); //Remove from player deck
-                    cards.push(cardToDraw); //Add to hand and return list
-                    player.inHand.push(cardToDraw);
-                    cardToDraw.setState("IN_HAND");
-                }
-                cardPool = "DECK";
-                break;
-            default:
-                break;
+
+        if(params.cardPool === "DECK") {
+            for(let i = 0; i < amount; i++) {
+                let cardToDraw = player.deck.draw(); //Remove from player deck
+                cards.push(cardToDraw); //Add to hand and return list
+                player.inHand.push(cardToDraw);
+                cardToDraw.setState("IN_HAND");
+            }
+            cardPool = "DECK";
+        } else if(params.cardPool.startsWith("SELECTION")) {
+            let selectionIndex = parseInt(params.cardPool.split("[")[1].split("]")[0]);
+            for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
+                //get Card from selection manager
+                let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
+                let cardToDraw = match.currentSelectionManager.cardPool.find(c => c.id === cardId); //Find the card in the card pool
+                                    
+                cards.push(cardToDraw); //Add to hand and return list
+                player.inHand.push(cardToDraw);
+                cardToDraw.setState("IN_HAND");
+            }
+            cardPool = "DECK";
         }
 
         actionResults.cardPool = cardPool;
@@ -681,8 +677,7 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      cardPool: 'SELECTION',
-     *      selectionIndex: number
+     *      cardPool: 'SELECTION'
      * }} params 
      * @param {Object} targets 
      * @returns 
@@ -692,20 +687,16 @@ const serverAbilityActions = {
 
         let cards = [];
         let cardPool = "";
-        switch(params.cardPool) {
-            case "SELECTION":
-                let selectionIndex = params.selectionIndex;
-                for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
-                    //get Card from selection manager
-                    let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
-                    let cardToDraw = match.currentSelectionManager.cardPool.find(c => c.id === cardId); //Find the card in the card pool
-                                        
-                    cards.push(cardToDraw); //Add to hand and return list
-                }
-                cardPool = "DECK";
-                break;
-            default:
-                break;
+        if(params.cardPool.startsWith("SELECTION")) {
+            let selectionIndex = parseInt(params.cardPool.split("[")[1].split("]")[0]);
+            for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
+                //get Card from selection manager
+                let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
+                let cardToDraw = match.currentSelectionManager.cardPool.find(c => c.id === cardId); //Find the card in the card pool
+                                    
+                cards.push(cardToDraw); //Add to hand and return list
+            }
+            cardPool = "DECK";
         }
 
         actionResults.cardPool = cardPool;
@@ -856,7 +847,6 @@ const serverAbilityActions = {
      * @param {MatchCard} card 
      * @param {{
      *      cardPool: 'SELECTION' | 'TARGET'
-     *      selectionIndex: number,
     *       from: 'TOP' | 'BOTTOM' | 'CHARACTER_AREA' | 'HAND',
     *       to: 'TOP' | 'BOTTOM'
      * }} params  
@@ -865,36 +855,50 @@ const serverAbilityActions = {
     moveCardsToDeck: (match, player, card, params, targets) => {
         let actionResults = {name: "moveCardsToDeck"};
 
+        // Get the cards from the cardpool
         let cardPool = [];
-        switch(params.cardPool) {
-            case "SELECTION":
-                for(let i = 0; i < match.currentSelectionManager.selectedCards[params.selectionIndex].length; i++) {
-                    //get Card from selection manager
-                    let cardId = match.currentSelectionManager.selectedCards[params.selectionIndex][i]; //Get the first card from the selected cards
-                    cardPool.push(match.currentSelectionManager.cardPool.find(c => c.id === cardId)); //Find the card in the card pool
-                }
-                break;
-            case "TARGET":
-                for(let i = 0; i < targets.length; i++) {
-                    let cardToReturn = match.matchCardRegistry.get(targets[i]);
-                    let cardOwner = match.getPlayer(cardToReturn.owner).currentMatchPlayer; //Cannot be MatchPlayer
+        if(params.cardPool === "TARGET") {
+            for(let i = 0; i < targets.length; i++) {
+                let cardToReturn = match.matchCardRegistry.get(targets[i]);
+                let cardOwner = match.getPlayer(cardToReturn.owner).currentMatchPlayer; //Cannot be MatchPlayer
 
-                    if(cardOwner.characterAreaContains(cardToReturn)) {
-                        cardOwner.inCharacterArea.splice(cardOwner.inCharacterArea.indexOf(cardToReturn), 1);
-                    } else if(cardOwner.stageLocationContains(cardToReturn)) {
-                        cardOwner.inStageLocation = null;
-                    } else if(cardOwner.inHand.includes(cardToReturn)) {
-                        cardOwner.inHand.splice(cardOwner.inHand.indexOf(cardToReturn), 1);
-                    }
-                    cardPool.push(cardToReturn);
+                if(cardOwner.characterAreaContains(cardToReturn)) {
+                    cardOwner.inCharacterArea.splice(cardOwner.inCharacterArea.indexOf(cardToReturn), 1);
+                } else if(cardOwner.stageLocationContains(cardToReturn)) {
+                    cardOwner.inStageLocation = null;
+                } else if(cardOwner.inHand.includes(cardToReturn)) {
+                    cardOwner.inHand.splice(cardOwner.inHand.indexOf(cardToReturn), 1);
                 }
-                break;
-            default:
-                break;
+                cardPool.push(cardToReturn);
+            }
+        } else if(params.cardPool.startsWith("SELECTION")) {
+            //extract the selection index from the params.cardPool in the shape of SELECTION[index]
+            let selectionIndex = parseInt(params.cardPool.split("[")[1].split("]")[0]);
+            //Make sure selectionIndex is valid. default should take index 0
+            if(isNaN(selectionIndex) || selectionIndex < 0 || selectionIndex >= match.currentSelectionManager.selectedCards.length) {
+                selectionIndex = 0;
+            }
+
+            for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
+                //get Card from selection manager
+                let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
+                cardPool.push(match.currentSelectionManager.cardPool.find(c => c.id === cardId)); //Find the card in the card pool
+            }
+            params.cardPool = "SELECTION";
         }
 
         //Remove the card from the card pool it currently is in
-        switch(params.to) {
+        //Get destionation
+        let toDestination = "";
+        if(params.to.startsWith("SELECTION_DESTINATION")) {
+            let selectionIndex = parseInt(params.to.split("[")[1].split("]")[0]);
+            toDestination = match.currentSelectionManager.selectedCardsDestinations[selectionIndex];
+        } else {
+            toDestination = params.to;
+        }
+
+        //Send the cards to the right place
+        switch(toDestination) {
             case "TOP":
                 for(let i = cardPool.length-1; i < 0; i--) {
                     player.deck.cards.unshift(cardPool[i]); //Add to the top of the deck
@@ -911,7 +915,7 @@ const serverAbilityActions = {
         actionResults.cardPool = params.cardPool;
         actionResults.cardIds = cardPool.map(card => card.id); //Return the ids of the cards moved
         actionResults.from = params.from;
-        actionResults.to = params.to;
+        actionResults.to = toDestination;
         actionResults.numberOfCards = cardPool.length;
 
         return actionResults;
@@ -924,8 +928,7 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      target: 'TARGET' | 'SELF' | 'SELECTION',
-     *      selectionIndex: {number}
+     *      target: 'TARGET' | 'SELF' | 'SELECTION'
      * }} params 
      * @param {Array<integer>} targets 
      * @returns 
@@ -939,8 +942,8 @@ const serverAbilityActions = {
             cardToPlay = match.matchCardRegistry.get(targets[0]);
         } else if(params.target === "SELF") {
             cardToPlay = card;
-        } else if(params.target === "SELECTION") {
-            let selectionIndex = params.selectionIndex;
+        } else if(params.target.startsWith("SELECTION")) {
+            let selectionIndex = parseInt(params.target.split("[")[1].split("]")[0]);
             let cardId = match.currentSelectionManager.selectedCards[selectionIndex][0]; //Get the first card from the selected cards
             cardToPlay = match.currentSelectionManager.cardPool.find(c => c.id === cardId);
         }

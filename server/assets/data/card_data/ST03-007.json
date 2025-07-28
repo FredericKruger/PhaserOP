@@ -63,8 +63,8 @@
                             "amount": 1
                         }},
                         {"name": "hideSelectionManager", "params": {"returnCardsToDeck": ["REMAINING_CARDS"]}},
-                        {"name": "drawCardAnimation", "params": {"cardPool": "SELECTION", "selectionIndex": 0}},
-                        {"name": "playCard", "params": {"target": "SELECTION", "selectionIndex": 0}}
+                        {"name": "drawCardAnimation", "params": {"cardPool": "SELECTION[0]"}},
+                        {"name": "playCard", "params": {"target": "SELECTION[0]"}}
                     ],
                     "else": [
                         {"name": "hideSelectionManager", "params": {"returnCardsToDeck": ["CARD_POOL"]}}

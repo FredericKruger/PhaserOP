@@ -1,0 +1,71 @@
+{
+    "id":409,
+    "setid":10,
+    "banned": false,
+    "art":"ST03-010",
+    "set":"ST03",
+    "setname":"-THE SEVEN WARLORDS OF THE SEA- [ST03]",
+    "name":"Bartholomew Kuma",
+    "card":"CHARACTER",
+    "type":["The Seven Warlords of the Sea", "Revolutionary Army"],
+    "colors":["BLUE"],
+    "cost":0,
+    "power":3000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "If you had to leave... where would you want to go?",
+            "attack": "Ursus Shock!",
+            "defeated": "Even a weapon... can break."
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST03-010-1",
+            "text": "Look at 3 cards from the top of your deck and return them to the top or bottom of the deck in any order.",
+            "art": {
+                "art": "ST03-010-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "ON_PLAY",
+            "states": ["BEING_PLAYED"],
+            "phases": ["Main Phase"],
+            "actions": [
+                {"name": "createSelectionManager", "params": {
+                    "cardPool": "DECK", "amount": 3,
+                    "filter": [{}]
+                }},
+                {"name": "selectCards", "params": {
+                    "selectionText": "Look at 3 cards from the top of your deck and return them to the top or bottom of the deck in any order.",
+                    "amount": 3,
+                    "target": [],
+                    "orderCards": true,
+                    "confirmButtons": ["TOP", "BOTTOM"]
+                }},
+                {"name": "hideSelectionManager", "params": {}},
+                {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION[0]", "from": "TOP", "to": "SELECTION_DESTINATION[0]"}},
+                {"name": "destroySelectionManager", "params": {}}
+            ]
+        },
+        {
+            "id": "ST03-010-TRIGGER",
+            "text": "Play this card.",
+            "art": {
+                "art": "ST03-010-TRIGGER",
+                "posx": 300,
+                "posy": 675
+            },
+            "type": "TRIGGER",
+            "phases": ["Main: Trigger"],
+            "states": ["BEING_PLAYED"],
+            "actions": [
+                {"name": "playCard", "params": {"target": "SELF"}}
+            ]
+        }
+    ]
+}
