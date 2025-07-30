@@ -42,7 +42,7 @@
                     }
                 }},
                 {"name": "addCounterToCard", "params": {"amount": 2000}},
-                {"name": "activateExertedDon", "params": {"amount": 1, "player": "owner"}}
+                {"name": "activateExertedDon", "params": {"amount": 1, "owner": "PLAYER"}}
             ]
         }, 
         {
@@ -59,7 +59,7 @@
                 {"type": "STATES", "value": ["BEING_PLAYED"]}
             ],
             "actions": [
-                {"name": "activateExertedDon", "params": {"amount": 2, "player":"owner"}}
+                {"name": "activateExertedDon", "params": {"amount": 2, "owner":"PLAYER"}}
             ]
         }
     ]

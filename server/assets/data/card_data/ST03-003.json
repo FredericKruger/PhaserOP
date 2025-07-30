@@ -72,7 +72,7 @@
                             ]
                         }
                     }},
-                    {"name": "moveCardsToDeck", "params": {"cardPool": "TARGET", "from": "CHARACTER_AREA", "to": "BOTTOM"}}
+                    {"name": "moveCardsToDeck", "params": {"cardPool": "TARGET", "from": "CHARACTER_AREA", "to": "DECK_BOTTOM"}}
                 ]
             }
         ]

@@ -46,7 +46,7 @@
                     {"type": "CHECK_TARGETS", "value": true}
                 ],
                 "actions": [
-                    {"name": "returnDonToDeck", "params": {"amount": 4, "player": "owner"}},
+                    {"name": "returnDonToDeck", "params": {"amount": 4, "player": "PLAYER"}},
                     {"name": "target", "params": {
                         "target": {
                             "targetAction": "ABILITY_ACTION",

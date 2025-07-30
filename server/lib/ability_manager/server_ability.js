@@ -274,7 +274,7 @@ const serverAbilityActions = {
         actionResults.player = params.player;
 
         let targetPlayer = player;
-        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+        if(params.player === "OPPONENT") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
 
         const donAmount = params.amount;
         for(let i = 0; i < donAmount; i++) {
@@ -691,7 +691,7 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      cardPool: 'SELECTION'
+     *      target: 'SELECTION'
      * }} params 
      * @param {Object} targets 
      * @returns 
@@ -701,8 +701,8 @@ const serverAbilityActions = {
 
         let cards = [];
         let cardPool = "";
-        if(params.cardPool.startsWith("SELECTION")) {
-            let selectionIndex = parseInt(params.cardPool.split("[")[1].split("]")[0]);
+        if(params.target.startsWith("SELECTION")) {
+            let selectionIndex = parseInt(params.target.split("[")[1].split("]")[0]);
             for(let i = 0; i < match.currentSelectionManager.selectedCards[selectionIndex].length; i++) {
                 //get Card from selection manager
                 let cardId = match.currentSelectionManager.selectedCards[selectionIndex][i]; //Get the first card from the selected cards
@@ -726,7 +726,7 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      player: 'opponent' | 'owner',
+     *      player: 'OPPONENT' | 'PLAYER',
      *      amount: number
      * }} params 
      * @param {Object} targets 
@@ -738,7 +738,7 @@ const serverAbilityActions = {
         actionResults.drawnCards = [];
 
         let targetPlayer = player;
-        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+        if(params.player === "OPPONENT") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
 
         const drawAmount = params.amount;
         for(let i=0; i<targetPlayer.deck.cards.length; i++) {
@@ -1070,7 +1070,7 @@ const serverAbilityActions = {
 
         //Check if player is owner or opponent
         let targetPlayer = player;
-        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+        if(params.player === "OPPONENT") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
 
         let donAmount = params.amount;
         while(donAmount > 0) {

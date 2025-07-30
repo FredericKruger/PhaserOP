@@ -55,7 +55,7 @@
                     }
                 }},
                 {"name": "discardCard", "params": {"target": "TARGET"}},
-                                {"name": "target", "params": {
+                {"name": "target", "params": {
                     "target": {
                         "targetAction": "ABILITY_ACTION",
                         "requiredTargets": 1,

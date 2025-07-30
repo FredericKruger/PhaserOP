@@ -1073,9 +1073,9 @@ class SelectionPanel extends BaseComponentUI {
 
         let destination = "";
         if( destinationButton === "TOP") 
-            destination = "TOP";
+            destination = "DECK_TOP";
         else if( destinationButton === "BOTTOM") 
-            destination = "BOTTOM";
+            destination = "DECK_BOTTOM";
 
         let selectedCardIds = this.selectedCards.map(card => card.id);
         this.selectionSent = true;

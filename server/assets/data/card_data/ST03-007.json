@@ -43,7 +43,7 @@
                 {"type": "AVAILABLE_DON", "value": 2}
             ],
             "actions": [
-                {"name": "restDon", "params": {"amount": 2, "player": "owner"}},
+                {"name": "restDon", "params": {"amount": 2, "player": "PLAYER"}},
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DECK",
                     "filter": [{
@@ -63,7 +63,7 @@
                             "amount": 1
                         }},
                         {"name": "hideSelectionManager", "params": {"returnCardsToPool": ["REMAINING_CARDS"]}},
-                        {"name": "drawCardAnimation", "params": {"cardPool": "SELECTION[0]"}},
+                        {"name": "drawCardAnimation", "params": {"target": "SELECTION[0]"}},
                         {"name": "playCard", "params": {"target": "SELECTION[0]"}}
                     ],
                     "else": [

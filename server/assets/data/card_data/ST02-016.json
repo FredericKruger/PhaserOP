@@ -44,7 +44,7 @@
                     }
                 }},
                 {"name": "addCounterToCard", "params": {"amount": 4000}},
-                {"name": "activateExertedDon", "params": {"amount": 1, "player": "owner"}}
+                {"name": "activateExertedDon", "params": {"amount": 1, "owner": "PLAYER"}}
             ]
         }
     ]
