@@ -42,7 +42,7 @@
                         ]
                     }
                 }},
-                {"name": "addCounterToCard", "params": {"amount": 3000}}
+                {"name": "addCounterToCard", "params": {"amount": 3000, "target": "TARGET"}}
             ]
         },
         {

@@ -39,7 +39,7 @@
                 {"type": "ATTACHED_DON", "value": 1}
             ],
             "actions": [
-                {"name": "restDon", "params": {"amount": 1, "player": "opponent"}}
+                {"name": "restDon", "params": {"amount": 1, "player": "OPPONENT"}}
             ]
         }
     ]

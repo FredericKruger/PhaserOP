@@ -948,8 +948,8 @@ const abilityActions = {
         if (info.numberOfCards === 0) { return tweens; }
 
         switch(info.from) {
-            case "TOP":
-            case "BOTTOM":
+            case "DECK_TOP":
+            case "DECK_BOTTOM":
                 // Get player scene
                 const playerScene = info.player === "opponent" ? card.playerScene.opponentPlayerScene : card.playerScene;
             
@@ -969,22 +969,22 @@ const abilityActions = {
                             let scaleIn = 0;
 
                             switch(info.from) {
-                                case "TOP":
+                                case "DECK_TOP":
                                     //deckVisual = deck.getTopCardVisual();
                                     deckVisual = deck.unhingeTopCardVisual();
                                     break;
-                                case "BOTTOM":
+                                case "DECK_BOTTOM":
                                     deckVisual = deck.getBottomCardVisual();
                                     break;
                             }
                             
                             switch(info.to) {
-                                case "TOP":
+                                case "DECK_TOP":
                                     //deckVisual = deck.getTopCardVisual();
                                     scaleOut = CARD_SCALE.IN_DECK*1.2;
                                     scaleIn = CARD_SCALE.IN_DECK*1;
                                     break;
-                                case "BOTTOM":
+                                case "DECK_BOTTOM":
                                     scaleOut = CARD_SCALE.IN_DECK*0.8;
                                     scaleIn = CARD_SCALE.IN_DECK*0.9;
                                     break; 
@@ -1003,10 +1003,10 @@ const abilityActions = {
                                 ease: 'Back.easeOut',
                                 onComplete: () => {
                                     switch(info.from) {
-                                        case "TOP":
+                                        case "DECK_TOP":
                                             scene.children.moveBelow(deckVisual, deck.getBottomCardVisual()); // Move the card visual below the deck
                                             break;
-                                        case "BOTTOM":
+                                        case "DECK_BOTTOM":
                                             scene.children.moveAbove(deckVisual, deck.getTopCardVisual()); // Move the card visual below the deck
                                             break;
                                     }
@@ -1166,7 +1166,7 @@ const abilityActions = {
      */
     restDon: (scene, card, info, activePlayer) => {
         let playerScene = card.playerScene;
-        if(info.player === "opponent") playerScene = card.playerScene.opponentPlayerScene;
+        if(info.player === "OPPONENT") playerScene = card.playerScene.opponentPlayerScene;
 
         //Get Defender Card
         let donCards = [];

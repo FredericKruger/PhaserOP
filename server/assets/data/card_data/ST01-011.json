@@ -27,7 +27,7 @@
     "abilities": [
         {
             "id": "ST01-011-1",
-            "text": "Give yp to 2 rested DON!! cards to your Leader of 1 of your Characters.",
+            "text": "Give up to 2 rested DON!! cards to your Leader of 1 of your Characters.",
             "art": {
                 "art": "ST01-011-ABILITY1",
                 "posx": 300,
@@ -54,7 +54,7 @@
                         ]
                     }   
                 }},
-                {"name": "attachDonCard", "params": {"amount": 2, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
+                {"name": "attachDonCard", "params": {"amount": 2, "target": "TARGET", "pile": "EXERTED"}}
             ]
         }
     ]

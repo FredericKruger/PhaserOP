@@ -41,14 +41,14 @@
                 {"type": "AVAILABLE_DON", "value": 1}
             ],
             "actions": [
-                {"name": "restDon", "params": {"amount": 1, "player": "owner"}},
+                {"name": "restDon", "params": {"amount": 1, "player": "PLAYER"}},
                 {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}},
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DECK", "amount": 5,
                     "filter": [{}]
                 }},
                 {"name": "IF_THEN_ELSE", "params": {
-                    "conditions": [
+                    "if": [
                         {"type": "SELECTION_CARD_POOL_LENGTH", "operator": ">", "value": 0}
                     ],
                     "then": [
@@ -61,7 +61,7 @@
                             }]
                         }},
                         {"name": "IF_THEN_ELSE", "params": {
-                            "conditions": [
+                            "if": [
                                 {"type": "SELECTION_COUNT", "selectionIndex": 0, "operator": "=", "value": 1}
                             ],
                             "then": [
@@ -75,7 +75,7 @@
                                 }},
                                 {"name": "hideSelectionManager", "params": {}},
                                 {"name": "drawCards", "params": {"cardPool": "SELECTION[0]", "amount": "1", "reveal": true}},
-                                {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION[1]", "from": "TOP", "to": "BOTTOM"}}
+                                {"name": "moveCardsToDeck", "params": {"cardPool": "SELECTION[1]", "from": "DECK_TOP", "to": "DECK_BOTTOM"}}
                             ],
                             "else": [
                                 {"name": "hideSelectionManager", "params": {"returnCardsToPool": ["CARD_POOL"]}}

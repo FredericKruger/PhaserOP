@@ -60,7 +60,7 @@
                         ]
                     }
                 }},
-                {"name": "restDon", "params": {"amount": 3, "player": "owner"}},
+                {"name": "restDon", "params": {"amount": 3, "player": "PLAYER"}},
                 {"name": "discardCard", "params": {"target": "TARGET"}},
                 {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY"}}
             ]

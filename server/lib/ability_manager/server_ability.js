@@ -298,7 +298,8 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      amount: number
+     *      amount: number,
+     *      target: 'TARGET',
      * }} params
      * @param {Array<integer>} targets 
      * @returns 
@@ -310,7 +311,14 @@ const serverAbilityActions = {
 
         //find defender
         const counterAmount = params.amount;
-        const defender = match.state.getCard(targets[0]);
+        let defender = null; 
+        switch(params.target) {
+            case "TARGET":
+            default: 
+                defender = match.state.getCard(targets[0]);
+                break;
+        }
+
         defender.eventCounterAmount = counterAmount;
 
         actionResults.defenderId = defender.id;
@@ -806,8 +814,8 @@ const serverAbilityActions = {
         //Check conditions
         let conditionResults = true;
         
-        if(params.conditions) {
-            for(let condition of params.conditions) {
+        if(params.if) {
+            for(let condition of params.if) {
                 let conditionResult = false; //Reset condition result for each condition
                 
                 switch (condition.type) {
@@ -856,8 +864,8 @@ const serverAbilityActions = {
      * @param {MatchCard} card 
      * @param {{
      *      cardPool: 'SELECTION' | 'TARGET'
-    *       from: 'TOP' | 'BOTTOM' | 'CHARACTER_AREA' | 'HAND',
-    *       to: 'TOP' | 'BOTTOM'
+    *       from: 'DECK_TOP' | 'DECK_BOTTOM' | 'CHARACTER_AREA' | 'HAND',
+    *       to: 'DECK_TOP' | 'DECK_BOTTOM'
      * }} params  
      * @returns 
      */
@@ -908,12 +916,12 @@ const serverAbilityActions = {
 
         //Send the cards to the right place
         switch(toDestination) {
-            case "TOP":
+            case "DECK_TOP":
                 for(let i = cardPool.length-1; i < 0; i--) {
                     player.deck.cards.unshift(cardPool[i]); //Add to the top of the deck
                 }
                 break;
-            case "BOTTOM":
+            case "DECK_BOTTOM":
             default:
                 for(let i = 0; i < cardPool.length; i++) {
                     player.deck.cards.push(cardPool[i]); //Add to the bottom of the deck
@@ -1016,7 +1024,7 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      player: 'owner' | 'player',
+     *      player: 'PLAYER' | 'OPPONENT',
      *      amount: number
      * }} params 
      * @returns 
@@ -1027,7 +1035,7 @@ const serverAbilityActions = {
         actionResults.player = params.player;
 
         let targetPlayer = player;
-        if(params.player === "opponent") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+        if(params.player === "OPPONENT") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
 
         const donAmount = params.amount;
         for(let i = 0; i < donAmount; i++) {

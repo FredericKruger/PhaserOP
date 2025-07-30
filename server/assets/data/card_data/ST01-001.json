@@ -57,7 +57,7 @@
                         }
                     ]
                 }}},
-                {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "state": "DON_RESTED", "pile": "EXERTED"}}
+                {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "pile": "EXERTED"}}
             ]
         }
     ]

@@ -40,7 +40,7 @@
                 {"type": "CHARACTER_COUNT", "value": 3}
             ],
             "actions": [
-                {"name": "addPowerToCard", "params": {"amount": 2000, "target": "SELF", "duration": "GAME"}}
+                {"name": "addPowerToCard", "params": {"amount": 2000}}
             ]
         }
     ]
