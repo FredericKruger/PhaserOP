@@ -22,8 +22,8 @@
                 "posy": 545
             },
             "type": "ON_PLAY",
-            "phases": ["Main: Counter"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main: Counter"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
@@ -54,8 +54,10 @@
                 "posy": 660
             },
             "type": "TRIGGER",
-            "phases": ["Main: Trigger"],
-            "states": ["BEING_PLAYED"],
+            "conditions": [
+                {"type": "PHASES", "value": ["Main: Trigger"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]}
+            ],
             "actions": [
                 {"name": "activateExertedDon", "params": {"amount": 2, "player":"owner"}}
             ]

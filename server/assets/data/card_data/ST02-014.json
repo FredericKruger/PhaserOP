@@ -34,8 +34,8 @@
                 "posy": 560
             },
             "type": "AURA",
-            "states": ["IN_PLAY_RESTED"],
             "conditions": [
+                {"type": "STATES", "value": ["IN_PLAY_RESTED"]},
                 {"type": "ATTACHED_DON", "value": 1},
                 {"type": "PLAYER_TURN", "value": true}
             ],

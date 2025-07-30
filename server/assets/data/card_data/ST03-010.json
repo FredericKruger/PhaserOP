@@ -33,8 +33,10 @@
                 "posy": 532
             },
             "type": "ON_PLAY",
-            "states": ["BEING_PLAYED"],
-            "phases": ["Main Phase"],
+            "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]}
+            ],
             "actions": [
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DECK", "amount": 3,
@@ -61,8 +63,10 @@
                 "posy": 675
             },
             "type": "TRIGGER",
-            "phases": ["Main: Trigger"],
-            "states": ["BEING_PLAYED"],
+            "conditions": [
+                {"type": "PHASES", "value": ["Main: Trigger"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]}
+            ],
             "actions": [
                 {"name": "playCard", "params": {"target": "SELF"}}
             ]

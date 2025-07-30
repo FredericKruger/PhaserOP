@@ -6,9 +6,9 @@ class Ability {
         this.art = config.art;
         
         this.type = config.type;
-        this.phases = config.phases || []; // When this ability can be triggered
+        //this.phases = config.phases || []; // When this ability can be triggered
         this.conditions = config.conditions || []; // Array of conditions that must be met
-        this.states = config.states || []; // Array of states that must be met
+        //this.states = config.states || []; // Array of states that must be met
         this.actions = config.actions || []; // Array of actions to execute
 
         this.target = config.target || null; // Target of the ability
@@ -42,15 +42,15 @@ class Ability {
      */
     canActivate(gamePhase) {
         // Check if in correct phase
-        if (this.phases.length > 0 && !this.phases.includes(gamePhase)) {
+        /*if (this.phases.length > 0 && !this.phases.includes(gamePhase)) {
             //console.log(`Ability ${this.id} cannot be activated in phase ${this.phases} for phase ${gamePhase}`);
             return false;
-        }
+        }*/
 
-        if (this.states.length > 0 && !this.states.includes(this.card.state)) {
+        /*if (this.states.length > 0 && !this.states.includes(this.card.state)) {
             //console.log(`Ability ${this.id} cannot be activated in state ${this.card.state}`);
             return false;
-        }
+        }*/
 
         // Check all conditions
         for (const condition of this.conditions) {
@@ -97,6 +97,8 @@ class Ability {
                 if(this.usedThisTurn && condition.value === 'TURN') return false;
                 if(this.usedThisGame && condition.value === 'GAME') return false;
                 return true;
+            case 'PHASES':
+                return condition.value.includes(gamePhase);
             case 'PLAYER_TURN':
                 if(this.card.playerScene.isPlayerTurn && condition.value) return true;
                 return false;
@@ -104,6 +106,8 @@ class Ability {
                 if(this.card.turnPlayed === this.card.scene.gameStateManager.currentTurn && condition.value) return true;
                 if(this.card.turnPlayed !== this.card.scene.gameStateManager.currentTurn && !condition.value) return true;
                 return false;
+            case 'STATES':
+                return condition.value.includes(this.card.state);
             case 'TOTAL_AVAILABLE_DON':
                 if((this.card.playerScene.activeDonDeck.getNumberOfActiveCards() + this.card.playerScene.activeDonDeck.getNumberOfRestingCards()) >= condition.value) return true;
                 return false;

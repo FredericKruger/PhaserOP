@@ -33,8 +33,8 @@
                 "posy": 560
             },
             "type": "AURA",
-            "states": ["IN_PLAY_ATTACKING"],
             "conditions": [
+                {"type": "STATES", "value": ["IN_PLAY_ATTACKING"]},
                 {"type": "ATTACHED_DON", "value": 2}
             ],
             "aurainfo": {
@@ -66,8 +66,10 @@
                 "posy": 675
             },
             "type": "TRIGGER",
-            "phases": ["Main: Trigger"],
-            "states": ["BEING_PLAYED"],
+            "conditions": [
+                {"type": "PHASES", "value": ["Main: Trigger"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]}
+            ],
             "actions": [
                 {"name": "playCard", "params": {"target": "SELF"}}
             ]

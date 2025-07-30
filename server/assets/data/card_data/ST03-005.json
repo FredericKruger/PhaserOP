@@ -34,8 +34,8 @@
                 "posy": 532
             },
             "type": "WHEN_ATTACKING",
-            "phases": ["Main: Attack"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main: Attack"]},
                 {"type": "ATTACHED_DON", "value": 1}
             ],
             "actions": [
@@ -72,8 +72,5 @@
                 {"name": "discardCard", "params": {"target": "TARGET"}}
             ]
         }
-    ],
-    "comment": [
-        {"name": "addPowerToCard", "params": {"amount": 1000, "target": "TARGET", "duration": "TURN"}}
     ]
 }

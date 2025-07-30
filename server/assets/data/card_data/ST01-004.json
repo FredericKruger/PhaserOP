@@ -33,8 +33,8 @@
                 "posy": 548
             },
             "type": "PASSIVE",
-            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
+                {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]},
                 {"type": "PLAYED_THIS_TURN", "value": true},
                 {"type": "ATTACHED_DON", "value": 2}
             ],

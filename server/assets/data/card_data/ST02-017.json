@@ -24,9 +24,9 @@
                 "posy": 520
             },
             "type": "ON_PLAY",
-            "states": ["BEING_PLAYED", "IN_HAND"],
-            "phases": ["Main Phase"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED", "IN_HAND"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
@@ -56,8 +56,10 @@
                 "posy": 660
             },
             "type": "TRIGGER",
-            "phases": ["Main: Trigger"],
-            "states": ["BEING_PLAYED"],
+            "conditions": [
+                {"type": "PHASES", "value": ["Main: Trigger"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]}
+            ],
             "actions": [
                 {"name": "target", "params": {
                     "target": {

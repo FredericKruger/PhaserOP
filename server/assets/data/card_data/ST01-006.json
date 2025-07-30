@@ -33,9 +33,9 @@
                 "posy": 548
             },
             "type": "BLOCKER",
-            "phases": ["Main: Block"],
-            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main: Block"]}, 
+                {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]},
                 {"type": "CAN_BLOCK", "value": true}
             ],
             "actions": [

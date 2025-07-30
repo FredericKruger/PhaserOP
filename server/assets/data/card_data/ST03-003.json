@@ -33,9 +33,9 @@
                     "posy": 548
                 },
                 "type": "BLOCKER",
-                "phases": ["Main: Block"],
-                "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
                 "conditions": [
+                    {"type": "PHASES", "value": ["Main: Block"]},
+                    {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]},
                     {"type": "CAN_BLOCK", "value": true}
                 ],
                 "actions": [
@@ -51,9 +51,9 @@
                     "posy": 608
                 },
                 "type": "ON_BLOCK",
-                "phases": ["Main: Block"],
-                "states": ["IN_PLAY_BLOCKING"],
                 "conditions": [
+                    {"type": "PHASES", "value": ["Main: Block"]},
+                    {"type": "STATES", "value": ["IN_PLAY_BLOCKING"]},
                     {"type": "ATTACHED_DON", "value": 1},
                     {"type": "CHECK_TARGETS", "value": true}
                 ],

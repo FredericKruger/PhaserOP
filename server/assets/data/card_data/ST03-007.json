@@ -34,9 +34,9 @@
                 "posy": 577
             },
             "type": "ACTIVE",
-            "phases": ["Main Phase"],
-            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN", "IN_PLAY_RESTED"]},
                 {"type": "PLAYER_TURN", "value": true},
                 {"type": "ONCE", "value": "TURN"},
                 {"type": "ATTACHED_DON", "value": 1},

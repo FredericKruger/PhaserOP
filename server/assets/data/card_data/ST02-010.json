@@ -33,8 +33,8 @@
                 "posy": 532
             },
             "type": "ON_END_OF_ATTACK",
-            "states": ["IN_PLAY_RESTED"],
             "conditions": [
+                {"type": "STATES", "value": ["IN_PLAY_RESTED"]},
                 {"type": "ATTACHED_DON", "value": 1},
                 {"type": "HAS_ATTACKED_THIS_TURN", "value": true},
                 {"type": "ONCE", "value": "TURN"}

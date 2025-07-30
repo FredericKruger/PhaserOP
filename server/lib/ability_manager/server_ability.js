@@ -14,9 +14,9 @@ class ServerAbility {
 
         this.text = config.text;
         this.type = config.type;
-        this.phases = config.phases || []; // When this ability can be triggered
+        //this.phases = config.phases || []; // When this ability can be triggered
         this.conditions = config.conditions || []; // Array of conditions that must be met
-        this.states = config.states || []; // Array of states that must be met
+        //this.states = config.states || []; // Array of states that must be met
 
         this.optional = config.optional || false; // If the ability is optional or not
 
@@ -45,14 +45,14 @@ class ServerAbility {
         const gameState = match.state.current_phase
         // Check if in correct phase
         //console.log('Checking phases', this.phases, gameState);
-        if (this.phases.length > 0 && !this.phases.includes(gameState)) {
+        /*if (this.phases.length > 0 && !this.phases.includes(gameState)) {
             return false;
-        }
+        }*/
 
        //console.log('Checking states', this.states, card.state, card.id);
-        if (this.states.length > 0 && !this.states.includes(card.state)) {
+        /*if (this.states.length > 0 && !this.states.includes(card.state)) {
             return false;
-        }
+        }*/
 
         // Check all conditions
         for (const condition of this.conditions) {
@@ -124,6 +124,8 @@ class ServerAbility {
                 if(this.usedThisTurn && condition.value === 'TURN') return false;
                 if(this.usedThisGame && condition.value === 'GAME') return false;
                 return true;
+            case 'PHASES':
+                return condition.value.includes(gameState);
             case 'PLAYER_TURN':
                 if(cardPlayer.id === match.state.current_active_player.id && condition.value) return true;
                 return false;
@@ -131,6 +133,8 @@ class ServerAbility {
                 if(card.turnPlayed === match.state.current_turn && condition.value) return true;
                 if(card.turnPlayed !== match.state.current_turn && !condition.value) return true;
                 return false;
+            case 'STATES':
+                return condition.value.includes(card.state);
             case 'TOTAL_AVAILABLE_DON':
                 if((cardPlayer.currentMatchPlayer.inActiveDon.length + cardPlayer.currentMatchPlayer.inExertenDon.length) >= condition.value) return true;
                 return false;

@@ -34,9 +34,9 @@
                 "posy": 548
             },
             "type": "ACTIVE",
-            "phases": ["Main Phase"],
-            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]},
                 {"type": "PLAYER_TURN", "value": true},
                 {"type": "ONCE", "value": "TURN"},
                 {"type": "CHECK_TARGETS", "value": true}

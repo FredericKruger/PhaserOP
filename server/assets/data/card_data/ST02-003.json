@@ -34,9 +34,8 @@
                 "posy": 532
             },
             "type": "PASSIVE",
-            "phases": [],
-            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
+                {"type": "STATES", "value": ["ALL_IN_PLAY_STATES"]},
                 {"type": "ATTACHED_DON", "value": 1},
                 {"type": "CHARACTER_COUNT", "value": 3}
             ],

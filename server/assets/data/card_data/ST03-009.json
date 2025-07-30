@@ -33,9 +33,9 @@
                 "posy": 532
             },
             "type": "ON_PLAY",
-            "states": ["BEING_PLAYED"],
-            "phases": ["Main Phase"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [

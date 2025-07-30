@@ -34,9 +34,9 @@
                 "posy": 532
             },
             "type": "BLOCKER",
-            "phases": ["Main: Block"],
-            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main: Block"]},
+                {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]},
                 {"type": "CAN_BLOCK", "value": true}
             ],
             "actions": [
@@ -52,8 +52,10 @@
                 "posy": 675
             },
             "type": "TRIGGER",
-            "phases": ["Main: Trigger"],
-            "states": ["BEING_PLAYED"],
+            "conditions": [
+                {"type": "PHASES", "value": ["Main: Trigger"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]}
+            ],
             "actions": [
                 {"name": "playCard", "params": {"target": "SELF"}}
             ]

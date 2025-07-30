@@ -22,8 +22,8 @@
                 "posy": 545
             },
             "type": "ON_PLAY",
-            "phases": ["Main Phase"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
@@ -47,7 +47,9 @@
                     "aura": {
                         "id": "ST01-016-1-AURA",
                         "type": "AURA",
-                        "states": ["IN_PLAY_ATTACKING"],
+                        "conditions": [
+                            {"type": "STATES", "value": ["IN_PLAY_ATTACKING"]}
+                        ],
                         "aurainfo": {
                             "duration": "TURN",
                             "affectedPlayers": ["owner", "opponent"]
@@ -79,9 +81,9 @@
                 "posy": 660
             },
             "type": "TRIGGER",
-            "phases": ["Main: Trigger"],
-            "states": ["BEING_PLAYED"],
             "conditions": [
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
+                {"type": "PHASES", "value": ["Main: Trigger"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [

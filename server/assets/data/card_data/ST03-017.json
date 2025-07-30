@@ -24,8 +24,8 @@
                 "posy": 545
             },
             "type": "ON_PLAY",
-            "phases": ["Main: Counter"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main: Counter"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [

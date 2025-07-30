@@ -23,9 +23,9 @@
                 "posy": 545
             },
             "type": "ACTIVE",
-            "phases": ["Main Phase"],
-            "states": ["IN_PLAY", "IN_PLAY_FIRST_TURN"],
             "conditions": [
+                {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]},
+                {"type": "PHASES", "value": ["Main Phase"]},
                 {"type": "CARD_RESTED", "value": false},
                 {"type": "PLAYER_TURN", "value": true},
                 {"type": "CHECK_TARGETS", "value": true}

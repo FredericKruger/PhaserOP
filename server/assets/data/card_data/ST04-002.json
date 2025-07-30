@@ -1,0 +1,61 @@
+{
+    "id":418,
+    "setid":2,
+    "banned": false,
+    "art":"ST04-002",
+    "set":"ST04",
+    "setname":"-ANIMAL KINGDOM PIRATES- [ST04]",
+    "name":"Ulti",
+    "card":"CHARACTER",
+    "type":["Animal Kingdom Pirates"],
+    "colors":["PURPLE"],
+    "cost":4,
+    "power":5000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":2000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "You think you can beat me? Ulti-sama's gonna crush you!",
+            "attack": "Ulti-Mortar!",
+            "defeated": "Page-chan... avenge me!"        
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST04-002-1",
+            "text": "Play up to 1 [Page One] card with a cost of 4 or less from your hand.",
+            "art": {
+                "art": "ST04-002-ABILITY1",
+                "posx": 300,
+                "posy": 558
+            },
+            "type": "ON_PLAY",
+            "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
+                {"type": "CHECK_TARGETS", "value": true},
+                {"type": "TOTAL_AVAILABLE_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "target", "params": {"target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "minrequiredtargets": 0,
+                            "cardtypes": ["CHARACTER"],
+                            "states": ["IN_HAND"],
+                            "cost": {"operator": "<=", "value": 4},
+                            "names": ["Page One"]
+                        }
+                    ]
+                }}},
+                {"name": "playCard", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}

@@ -24,8 +24,8 @@
                 "posy": 532
             },
             "type": "ON_PLAY",
-            "phases": ["Main: Counter"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main: Counter"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [
@@ -54,9 +54,9 @@
                 "posy": 675
             },
             "type": "TRIGGER",
-            "phases": ["Main: Trigger"],
-            "states": ["BEING_PLAYED"],
             "conditions": [
+                {"type": "PHASES", "value": ["Main: Trigger"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
                 {"type": "CHECK_TARGETS", "value": true}
             ],
             "actions": [

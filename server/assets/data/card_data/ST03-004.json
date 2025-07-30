@@ -34,8 +34,10 @@
                 "posy": 558
             },
             "type": "ON_PLAY",
-            "states": ["BEING_PLAYED"],
-            "phases": ["Main Phase"],
+            "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]}
+            ],
             "actions": [
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DISCARD",
