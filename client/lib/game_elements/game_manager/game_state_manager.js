@@ -1464,6 +1464,10 @@ class GameStateManager {
 
     //#region END TURN FUNCTIONS
 
+    setEndOfTurnPhase() {
+        this.setPhase(GAME_PHASES.END_TURN_PHASE);
+    }
+
     /** Function to trigger a next turn. Triggered on next turn button press */
     triggerNextTurn() {
         this.scene.gameState.exit(GAME_STATES.PASSIVE_INTERACTION);

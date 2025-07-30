@@ -221,6 +221,10 @@ class Match {
     /** Function to check the end of turn abilities and create an end of turn manager if needed */
     checkEndOfTurnAbilities() {
         this.state.current_phase = MATCH_PHASES.END_TURN_PHASE;
+        
+        //Send Signal to clients
+        if(!this.player1.bot) this.player1.socket.emit('game_set_end_of_turn_phase'); //Send to client
+        if(!this.player2.bot) this.player2.socket.emit('game_set_end_of_turn_phase'); //Send to client
 
         let endOfTurnAbilitiesCards = [];
 

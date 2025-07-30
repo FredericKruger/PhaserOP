@@ -330,6 +330,12 @@ class Client {
         });
         //#endregion
 
+        //#region SOCKET.ON END OF TURN
+        this.socket.on('game_set_end_of_turn_phase', () => {
+            if(!this.gameScene.gameStateManager.gameOver) this.gameScene.gameStateManager.setEndOfTurnPhase();
+        });
+        //#endregion
+
         //#region SOCKET.ON END GAME
         this.socket.on('game_end', (isWinner, reward) => {
             this.gameScene.gameStateManager.endGame(isWinner, reward);
