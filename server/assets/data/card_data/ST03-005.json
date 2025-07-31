@@ -47,8 +47,7 @@
                         "ignoreTesting": true,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["owner"],
+                                "player": ["PLAYER"],
                                 "states": ["IN_HAND"]
                             }
                         ]
@@ -62,8 +61,7 @@
                         "ignoreTesting": true,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["owner"],
+                                "player": ["PLAYER"],
                                 "states": ["IN_HAND"]
                             }
                         ]

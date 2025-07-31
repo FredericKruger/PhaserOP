@@ -40,7 +40,7 @@
             "actions": [
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DECK", "amount": 3,
-                    "filter": [{}]
+                    "filter": []
                 }},
                 {"name": "selectCards", "params": {
                     "selectionText": "Look at 3 cards from the top of your deck and return them to the top or bottom of the deck in any order.",

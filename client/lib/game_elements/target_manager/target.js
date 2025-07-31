@@ -9,32 +9,32 @@ class Target {
         if (!serverTarget) {
             // Set default empty values if serverTarget is null/undefined
             this.players = [];
-            this.cardtypes = [];
+            this.cardTypes = [];
             this.cost = {};
             this.states = [];
             this.types = [];
             this.attributes = [];
             this.power = {};
             this.exclude = [];
-            this.hasability = [];
+            this.hasAbility = [];
             this.names = [];
-            this.not_names = [];
+            this.not_Names = [];
             return;
         }
 
         // Use optional chaining and nullish coalescing to safely access properties
         this.players = serverTarget.player?.slice() || [];
-        this.cardtypes = serverTarget.cardtypes?.slice() || [];
+        this.cardTypes = serverTarget.cardTypes?.slice() || [];
         this.cost = serverTarget.cost || {};
         this.states = serverTarget.states?.slice() || [];
         this.types = serverTarget.types?.slice() || [];
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
-        this.hasability = serverTarget.hasability?.slice() || [];
+        this.hasAbility = serverTarget.hasAbility?.slice() || [];
         this.names = serverTarget.names?.slice() || [];
 
-        this.not_names = serverTarget.not_names?.slice() || []; // New property for not_names
+        this.not_Names = serverTarget.not_Names?.slice() || []; // New property for not_names
 
         //Prepare states if a group state efind
         if (this.states.includes("ALL_IN_PLAY_STATES")) {
@@ -56,7 +56,7 @@ class Target {
         //console.log("isValidPlayer ", isValid);
   
         // Check card type
-        if (this.cardtypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
+        if (this.cardTypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
         //console.log("isValidCardType ", isValid);
 
         // Check card state
@@ -73,11 +73,11 @@ class Target {
 
         if (this.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card);
 
-        if (this.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card);
+        if (this.hasAbility.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card);
 
         if (this.names.length > 0 && isValid) isValid = isValid && this.isNameValid(this.names, card.cardData.name);
 
-        if (this.not_names.length > 0 && isValid) isValid = isValid && !this.isNameValid(this.not_names, card.cardData.name);
+        if (this.not_Names.length > 0 && isValid) isValid = isValid && !this.isNameValid(this.not_Names, card.cardData.name);
 
         // Check card cost
         if (Object.keys(this.cost).length > 0 && isValid) isValid = isValid && this.compareValue(card.getCost(), this.cost);
@@ -96,26 +96,26 @@ class Target {
      */
     isPlayerValid(card, playerScene) {
         // If players array includes "any", any player is valid
-        if (this.players.includes("any")) {
+        if (this.players.includes("ANY")) {
             return true;
         }
 
         // Check for "owner" in the players array which requires special handling
-        if (this.players.includes("owner")) {
+        if (this.players.includes("PLAYER")) {
             // If this is checking the player's own cards, it's valid
             // This assumes playerScene.isPlayer property indicates if this is the human player
             return card.playerScene === card.scene.activePlayerScene;
         }
 
-        if (this.players.includes("opponent")) {
+        if (this.players.includes("OPPONENT")) {
             // If this is checking the opponent's cards, it's valid
             return card.playerScene === card.scene.passivePlayerScene;
         }
 
         // Check if the player is active or passive based on the criteria
         const isActive = card.playerScene.isPlayerTurn;
-        return (isActive && this.players.includes("active")) || 
-                (!isActive && this.players.includes("passive"));
+        return (isActive && this.players.includes("ACTIVE")) || 
+                (!isActive && this.players.includes("PASSIVE"));
     }
 
     /**
@@ -124,7 +124,7 @@ class Target {
      * @returns {boolean} - Whether the card type is valid
      */
     isCardTypeValid(cardType) {
-        return this.cardtypes.includes(cardType) || this.cardtypes.includes("any");
+        return this.cardTypes.includes(cardType) || this.cardTypes.includes("ANY");
     }
 
     /**
@@ -133,7 +133,7 @@ class Target {
      * @returns {boolean} - Whether the card type is valid
      */
     isCardAttributeValid(cardAttribute) {
-        return this.attributes.includes(cardAttribute) || this.attributes.includes("any");
+        return this.attributes.includes(cardAttribute) || this.attributes.includes("ANY");
     }
 
     /**
@@ -182,7 +182,7 @@ class Target {
      * * @returns {boolean} - Whether the card type is valid
      */
     hasAbilityValid(card) {
-        for(let ability of card.abilities) if(this.hasability.includes(ability.type)) return true;
+        for(let ability of card.abilities) if(this.hasAbility.includes(ability.type)) return true;
         return false;
     }
 

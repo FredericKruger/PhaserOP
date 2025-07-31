@@ -39,14 +39,13 @@
             ],
             "aurainfo": {
                 "duration": "GAME",
-                "affectedPlayers": ["owner", "opponent"]
+                "affectedPlayers": ["PLAYER", "OPPONENT"]
             },
             "target": {
                 "targetAction": "AURA_ACTION",
                 "requiredTargets": 1,
                 "targets": [
                     {
-                        "minrequiredtargets": 0,
                         "exclude": ["SELF"],
                         "states": ["ALL_IN_PLAY_STATES"],
                         "power": {"operator": ">=", "value": 5000}

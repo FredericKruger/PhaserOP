@@ -8,17 +8,17 @@ class Target {
         if (!serverTarget) {
             // Set default empty values if serverTarget is null/undefined
             this.player = [];
-            this.cardtypes = [];
+            this.cardTypes = [];
             this.cost = {};
             this.states = [];
             this.types = [];
             this.attributes = [];
             this.power = {};
             this.exclude = [];
-            this.hasability = [];
+            this.hasAbility = [];
             this.names = [];
 
-            this.not_names = []; // New property for not_names
+            this.not_Names = []; // New property for not_names
 
             this.ignoreTesting = false;
             return;
@@ -26,17 +26,17 @@ class Target {
 
         // Use optional chaining and nullish coalescing to safely access properties
         this.player = serverTarget.player?.slice() || [];
-        this.cardtypes = serverTarget.cardtypes?.slice() || [];
+        this.cardTypes = serverTarget.cardTypes?.slice() || [];
         this.cost = serverTarget.cost || {};
         this.states = serverTarget.states?.slice() || [];
         this.types = serverTarget.types?.slice() || [];
         this.attributes = serverTarget.attributes?.slice() || [];
         this.power = serverTarget.power || {};
         this.exclude = serverTarget.exclude?.slice() || [];
-        this.hasability = serverTarget.hasability?.slice() || [];
+        this.hasAbility = serverTarget.hasAbility?.slice() || [];
         this.names = serverTarget.names?.slice() || [];
 
-        this.not_names = serverTarget.not_names?.slice() || [];
+        this.not_Names = serverTarget.not_Names?.slice() || [];
 
         this.ignoreTesting = serverTarget.ignoreTesting || false;
 
@@ -112,7 +112,7 @@ class TargetingManager {
         //console.log("isPlayerValid", isValid);
   
         // Check card type
-        if (this.target.cardtypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
+        if (this.target.cardTypes.length > 0 && isValid) isValid = isValid && this.isCardTypeValid(card.cardData.card);
         //console.log("isCardTypeValid", isValid);
 
         // Check card state
@@ -130,13 +130,13 @@ class TargetingManager {
         if (this.target.exclude.length > 0 && isValid) isValid = isValid && this.isExcludeValid(card.id)
         //console.log("isExcludeValid", isValid);
 
-        if (this.target.hasability.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card.abilities);
+        if (this.target.hasAbility.length > 0 && isValid) isValid = isValid && this.hasAbilityValid(card.abilities);
         //console.log("hasAbilityValid", isValid);
 
         if (this.target.names.length > 0 && isValid) isValid = isValid && this.isNameValid(this.target.names, card.cardData.name);
         //console.log("hasNameValid", isValid);
 
-        if (this.target.not_names.length > 0 && isValid) isValid = isValid && !this.isNameValid(this.target.not_names, card.cardData.name);
+        if (this.target.not_Names.length > 0 && isValid) isValid = isValid && !this.isNameValid(this.target.not_Names, card.cardData.name);
         //console.log("hasNotNameValid", isValid);
 
         //console.log(card);
@@ -161,25 +161,25 @@ class TargetingManager {
      */
     isPlayerValid(card, playerCard) {
         // If players array includes "any", any player is valid
-        if (this.target.player.includes("any")) {
+        if (this.target.player.includes("ANY")) {
             return true;
         }
 
         const originatorCard = this.match.matchCardRegistry.get(this.match.state.pending_action.actionInfos.playedCard);
         // Check for "owner" in the players array which requires special handling
-        if (this.target.player.includes("owner")) {
+        if (this.target.player.includes("OWNER")) {
             // If this is checking the player's own cards, it's valid
             return card.owner === originatorCard.owner;
         }
-        
-        if (this.target.player.includes("opponent")) {
+
+        if (this.target.player.includes("OPPONENT")) {
             // If this is checking the opponent's cards, it's valid
             return card.owner !== originatorCard.owner;
         }
 
         // Check if the player is active or passive based on the criteria
-        return (playerCard && this.target.player.includes("active")) || 
-                (!playerCard && this.target.player.includes("passive"));
+        return (playerCard && this.target.player.includes("ACTIVE")) || 
+                (!playerCard && this.target.player.includes("PASSIVE"));
     }
 
     /**
@@ -188,7 +188,7 @@ class TargetingManager {
      * @returns {boolean} - Whether the card type is valid
      */
     isCardTypeValid(cardType) {
-        return this.target.cardtypes.includes(cardType) || this.target.cardtypes.includes("any");
+        return this.target.cardTypes.includes(cardType) || this.target.cardTypes.includes("ANY");
     }
 
     /**
@@ -247,7 +247,7 @@ class TargetingManager {
      * @returns {boolean}
      */
     hasAbilityValid(abilities) {
-        for(let ability of abilities) if(this.target.hasability.includes(ability.type)) return true;
+        for(let ability of abilities) if(this.target.hasAbility.includes(ability.type)) return true;
         return false;
     }
 

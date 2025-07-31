@@ -61,12 +61,12 @@ class AuraAbility extends Ability {
         if(!this.targetManager) this.createTargetManager(); //Create the target manager if it doesn't exist 
         //find targets
         let targetCards = [];
-        if(this.aura.affectedPlayers.includes('owner')) {
+        if(this.aura.affectedPlayers.includes('PLAYER')) {
             targetCards = targetCards.concat(this.card.playerScene.leaderLocation.cards);
             targetCards = targetCards.concat(this.card.playerScene.characterArea.cards);
             targetCards = targetCards.concat(this.card.playerScene.hand.cards);
         }
-        if(this.aura.affectedPlayers.includes('opponent')) {
+        if(this.aura.affectedPlayers.includes('OPPONENT')) {
             targetCards = targetCards.concat(this.card.playerScene.opponentPlayerScene.leaderLocation.cards);
             targetCards = targetCards.concat(this.card.playerScene.opponentPlayerScene.characterArea.cards);
         }

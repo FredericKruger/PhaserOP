@@ -33,9 +33,8 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["owner"],
-                                "cardtypes": ["CHARACTER", "LEADER"],
+                                "player": ["PLAYER"],
+                                "cardTypes": ["CHARACTER", "LEADER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
                                 "types": ["Straw Hat Crew"]
                             }
@@ -59,7 +58,6 @@
                             "requiredTargets": 1,
                             "targets": [
                                 {
-                                    "minrequiredtargets": 0,
                                     "exclude": ["SELF"],
                                     "states": ["ALL_IN_PLAY_STATES"]
                                 }
@@ -93,11 +91,10 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["opponent"],
-                                "cardtypes": ["CHARACTER"],
+                                "player": ["OPPONENT"],
+                                "cardTypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
-                                "hasability": ["BLOCKER"],
+                                "hasAbility": ["BLOCKER"],
                                 "cost": {"operator": "<=", "value": 3}
                             }
                         ]

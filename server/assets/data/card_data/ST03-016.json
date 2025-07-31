@@ -34,8 +34,7 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "cardtypes": ["CHARACTER"],
+                                "cardTypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
                                 "cost": {"operator": "<=", "value": 3}
                             }
@@ -65,8 +64,7 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "cardtypes": ["CHARACTER"],
+                                "cardTypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
                                 "cost": {"operator": "<=", "value": 3}
                             }

@@ -36,9 +36,8 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["opponent"],
-                                "cardtypes": ["CHARACTER"],
+                                "player": ["OPPONENT"],
+                                "cardTypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"]
                             }
                         ]
@@ -67,9 +66,8 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["owner"],
-                                "cardtypes": ["CHARACTER"],
+                                "player": ["PLAYER"],
+                                "cardTypes": ["CHARACTER"],
                                 "states": ["IN_HAND"],
                                 "types": ["Supernovas"],
                                 "cost": {"operator": "<=", "value": 2}

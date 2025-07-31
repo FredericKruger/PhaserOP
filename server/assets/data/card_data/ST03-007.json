@@ -47,7 +47,7 @@
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DECK",
                     "filter": [{
-                        "cardtypes": ["CHARACTER"],
+                        "cardTypes": ["CHARACTER"],
                         "names": ["Pacifista"],
                         "cost": {"operator": "<=", "value": 4}
                     }],

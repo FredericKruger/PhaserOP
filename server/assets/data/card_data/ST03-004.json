@@ -42,10 +42,10 @@
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DISCARD",
                     "filter": [{
-                        "cardtypes": ["CHARACTER"],
+                        "cardTypes": ["CHARACTER"],
                         "types": ["The Seven Warlords of the Sea", "Thriller Bark Pirates"],
                         "cost": {"operator": "<=", "value": 4},
-                        "not_names": ["Gecko Moria"]
+                        "not_Names": ["Gecko Moria"]
                     }],
                     "uniquesOnly": true
                 }},

@@ -34,9 +34,8 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["opponent"],
-                                "cardtypes": ["CHARACTER"],
+                                "player": ["OPPONENT"],
+                                "cardTypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
                                 "power": {"operator": "<=", "value": 6000}
                             }
@@ -67,9 +66,8 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["opponent"],
-                                "cardtypes": ["CHARACTER"],
+                                "player": ["OPPONENT"],
+                                "cardTypes": ["CHARACTER"],
                                 "states": ["ALL_IN_PLAY_STATES"],
                                 "power": {"operator": "<=", "value": 6000}
                             }

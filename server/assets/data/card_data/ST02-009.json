@@ -45,9 +45,8 @@
                     "requiredTargets": 1,
                     "targets": [
                         {
-                            "minrequiredtargets": 0,
-                            "player": ["owner"],
-                            "cardtypes": ["CHARACTER"],
+                            "player": ["PLAYER"],
+                            "cardTypes": ["CHARACTER"],
                             "states": ["IN_PLAY_RESTED"],
                             "types": ["Supernovas","Heart Pirates"],
                             "cost": {"operator": "<=", "value": 5},

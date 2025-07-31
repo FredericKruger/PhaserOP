@@ -576,14 +576,12 @@ class Match {
                 requiredTargets: 1,
                 targets: [
                     {
-                        minrequiredtargets: 0,
-                        player: ["opponent"],
-                        cardtypes: [CARD_TYPES.CHARACTER],
+                        player: ["OPPONENT"],
+                        cardTypes: [CARD_TYPES.CHARACTER],
                         states: ["IN_PLAY_RESTED"],
                     },{
-                        minrequiredtargets: 0,
-                        player: ["opponent"],
-                        cardtypes: [CARD_TYPES.LEADER]
+                        player: ["OPPONENT"],
+                        cardTypes: [CARD_TYPES.LEADER]
                     }
                 ]
             };

@@ -258,9 +258,8 @@ class MatchState {
                 requiredTargets: 1,
                 targets: [
                     {
-                        minrequiredtargets: 0,
-                        player: ["active"],
-                        cardtypes: [CARD_TYPES.CHARACTER],
+                        player: ["ACTIVE"],
+                        cardTypes: [CARD_TYPES.CHARACTER],
                         states: ["IN_PLAY", "IN_PLAY_RESTED", "IN_PLAY_FIRST_TURN"],
                         exclude: ["SELF"]
                     }
@@ -275,9 +274,8 @@ class MatchState {
                 requiredTargets: 1,
                 targets: [
                     {
-                        minrequiredtargets: 0,
-                        player: ["active"],
-                        cardtypes: [CARD_TYPES.STAGE],
+                        player: ["ACTIVE"],
+                        cardTypes: [CARD_TYPES.STAGE],
                         states: ["IN_PLAY"],
                         exclude: ["SELF"]
                     }

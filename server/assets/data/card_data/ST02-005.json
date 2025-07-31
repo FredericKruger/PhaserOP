@@ -45,9 +45,8 @@
                     "requiredTargets": 1,
                     "targets": [
                         {
-                            "minrequiredtargets": 0,
-                            "player": ["opponent"],
-                            "cardtypes": ["CHARACTER"],
+                            "player": ["OPPONENT"],
+                            "cardTypes": ["CHARACTER"],
                             "states": ["IN_PLAY_RESTED"],
                             "cost": {"operator": "<=", "value": 3}
                         }

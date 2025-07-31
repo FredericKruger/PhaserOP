@@ -56,7 +56,7 @@
                             "selectionText": "Select up to 1 {Supernovas} type card from the top 5 cards of your deck.",
                             "amount": 1,
                             "target": [{
-                                "cardtypes": ["CHARACTER"],
+                                "cardTypes": ["CHARACTER"],
                                 "types": ["Supernovas"]
                             }]
                         }},

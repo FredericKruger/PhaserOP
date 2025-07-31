@@ -41,15 +41,14 @@
             ],
             "aurainfo": {
                 "duration": "GAME",
-                "affectedPlayers": ["owner"]
+                "affectedPlayers": ["PLAYER"]
             },
             "target": {
                 "targetAction": "AURA_ACTION",
                 "requiredTargets": 1,
                 "targets": [
                     {
-                        "minrequiredtargets": 0,
-                        "cardtypes": ["CHARACTER", "LEADER"],
+                        "cardTypes": ["CHARACTER", "LEADER"],
                         "types": ["Supernovas", "Navy"]
                     }
                 ]

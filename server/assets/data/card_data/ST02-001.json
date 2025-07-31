@@ -53,8 +53,7 @@
                         "requiredTargets": 1,
                         "targets": [
                             {
-                                "minrequiredtargets": 0,
-                                "player": ["owner"],
+                                "player": ["PLAYER"],
                                 "states": ["IN_HAND"]
                             }
                         ]

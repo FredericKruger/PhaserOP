@@ -46,8 +46,7 @@
                     "requiredTargets": 1,
                     "targets": [
                         {
-                            "minrequiredtargets": 0,
-                            "cardtypes": ["CHARACTER"],
+                            "cardTypes": ["CHARACTER"],
                             "states": ["IN_HAND"],
                             "cost": {"operator": "<=", "value": 4},
                             "names": ["Page One"]
