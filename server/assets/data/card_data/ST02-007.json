@@ -45,7 +45,7 @@
                 {"name": "changeCardState", "params": {"target": "SELF", "state": "IN_PLAY_RESTED"}},
                 {"name": "createSelectionManager", "params": {
                     "cardPool": "DECK", "amount": 5,
-                    "filter": [{}]
+                    "filter": []
                 }},
                 {"name": "IF_THEN_ELSE", "params": {
                     "if": [
