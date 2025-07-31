@@ -64,7 +64,7 @@ class Utils {
     }
 
     /** Asynchronous function that reads the different cards from the card folder */
-    async getCardListFromFolder () {
+    /*async getCardListFromFolder () {
         let cardIndex = [];
         let folderPath = this.serverPath + '/server/assets/data/card_data/'; //Get path of the card folder
 
@@ -76,6 +76,54 @@ class Utils {
                 cardIndex.push(jsonData); //Push the json data to the array
             }
         } catch (err) {console.log(err);}
+
+        return cardIndex;
+    }*/
+   /** Asynchronous function that reads the different cards from the card folder and subfolders */
+    async getCardListFromFolder () {
+        let cardIndex = [];
+        let folderPath = this.serverPath + '/server/assets/data/card_data/'; //Get path of the card folder
+
+        // Recursive function to read cards from current path
+        const readCardsRecursively = async (currentPath) => {
+            try {
+                const items = await fs.promises.readdir(currentPath, { withFileTypes: true }); //Read the folder with file type info
+                
+                for (const item of items) { //For each item in the folder
+                    const itemPath = currentPath + item.name;
+                    
+                    if (item.isDirectory()) {
+                        // If it's a directory (subfolder), recursively read it
+                        await readCardsRecursively(itemPath + '/');
+                    } else if (item.isFile() && item.name.endsWith('.json')) {
+                        // If it's a JSON file, read and parse it
+                        try {
+                            const data = await fs.promises.readFile(itemPath); //Read the file
+                            const jsonData = JSON.parse(data.toString()); //Turn file into JSON object
+                            
+                            // Optionally add the set folder name to the card data for reference
+                            const pathParts = itemPath.split('/');
+                            const setFolder = pathParts[pathParts.length - 2]; // Get parent folder name
+                            if (setFolder !== 'card_data') { // Only add if it's not the root card_data folder
+                                jsonData.setFolder = setFolder;
+                            }
+                            
+                            cardIndex.push(jsonData); //Push the json data to the array
+                        } catch (parseErr) {
+                            console.log(`Error parsing file ${itemPath}:`, parseErr);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log(`Error reading directory ${currentPath}:`, err);
+            }
+        };
+
+        try {
+            await readCardsRecursively(folderPath);
+        } catch (err) {
+            console.log(err);
+        }
 
         return cardIndex;
     }

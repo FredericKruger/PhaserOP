@@ -1,0 +1,60 @@
+{
+    "id":420,
+    "setid":4,
+    "banned": false,
+    "art":"ST04-004",
+    "set":"ST04",
+    "setname":"-ANIMAL KINGDOM PIRATES- [ST04]",
+    "name":"King",
+    "card":"CHARACTER",
+    "type":["Animal Kingdom Pirates"],
+    "colors":["PURPLE"],
+    "cost":6,
+    "power":7000,
+    "attribute":"SPECIAL",
+    "isleader":0,
+    "rarity":"SUPER RARE",
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "You stand before the Wildfire. Prepare to be reduced to ash.",
+            "attack": "Imperial Flame!",
+            "defeated": "Even in death… I serve Kaido."        
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST04-004-1",
+            "text": "K.O. up to 1 of your opponent's Characters with a cost of 4 or less.",
+            "art": {
+                "art": "ST04-004-ABILITY1",
+                "posx": 300,
+                "posy": 560
+            },
+            "type": "ON_PLAY",
+            "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
+                {"type": "CHECK_TARGETS", "value": true},
+                {"type": "TOTAL_AVAILABLE_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "returnDonToDeck", "params": {"amount": 1, "player": "PLAYER"}},
+                {"name": "target", "params": {"target": {
+                    "targetAction": "ABILITY_ACTION",
+                    "requiredTargets": 1,
+                    "targets": [
+                        {
+                            "player": ["OPPONENT"],
+                            "cardTypes": ["CHARACTER"],
+                            "states": ["ALL_IN_PLAY_STATES"],
+                            "cost": {"operator": "<=", "value": 4}
+                        }
+                    ]
+                }}},
+                {"name": "discardCard", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}

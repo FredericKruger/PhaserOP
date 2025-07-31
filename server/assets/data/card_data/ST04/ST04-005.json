@@ -1,0 +1,81 @@
+{
+    "id":421,
+    "setid":5,
+    "banned": false,
+    "art":"ST04-005",
+    "set":"ST04",
+    "setname":"-ANIMAL KINGDOM PIRATES- [ST04]",
+    "name":"Queen",
+    "card":"CHARACTER",
+    "type":["Animal Kingdom Pirates"],
+    "colors":["PURPLE"],
+    "cost":5,
+    "power":6000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "The show’s about to start, baby! And I’m your headliner—Queen the Plague!",
+            "attack": "Plague bullets loaded! Let’s make things interesting!",
+            "defeated": "Tch… This act’s not over… I’ve got encores left!"
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST04-005-1",
+            "text": "After your opponent declares an attack, you may rest this card to make it the new target of the attack.",
+            "art": {
+                "art": "ST04-005-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "BLOCKER",
+            "conditions": [
+                    {"type": "PHASES", "value": ["Main: Block"]}, 
+                    {"type": "STATES", "value": ["IN_PLAY", "IN_PLAY_FIRST_TURN"]},
+                    {"type": "CAN_BLOCK", "value": true}
+            ],
+            "actions": [
+                    {"name": "block", "params": {}}
+            ]
+        },
+        {
+            "id": "ST04-005-2",
+            "text": "Draw 2 cards and trash 1 card from your hand.",
+            "art": {
+                "art": "ST04-005-ABILITY2",
+                "posx": 300,
+                "posy": 619
+            },
+            "type": "ON_PLAY",
+            "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
+                {"type": "CHECK_TARGETS", "value": true},
+                {"type": "TOTAL_AVAILABLE_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "returnDonToDeck", "params": {"amount": 1, "player": "PLAYER"}},
+                {"name": "drawCards", "params": {"amount": 2, "cardPool": "DECK"}},
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "ignoreTesting": true,
+                        "targets": [
+                            {
+                                "player": ["PLAYER"],
+                                "states": ["IN_HAND"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "discardCard", "params": {"target": "TARGET"}}
+            ]
+        }
+    ]
+}
