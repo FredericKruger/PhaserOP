@@ -1,3 +1,3 @@
-Welcome to the One Piece Card Game
+#Welcome to the One Piece Card Game
 
 This game is written in Javascript using the NodeJS and Phaser3 library.
