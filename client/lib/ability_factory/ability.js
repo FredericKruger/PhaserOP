@@ -353,6 +353,65 @@ const abilityActions = {
         return tweens; 
     },
     //#endregion
+    //#region addActiveDonFromDeck
+    /** Function to add don card as active
+     *  @param {GameScene} scene
+     * @param {GameCardUI} card
+     * @param {Object} info
+     * @returns {Object}
+     */
+    addActiveDonFromDeck: (scene, card, info, activePlayer) => {
+        let tweens = [];
+
+        let playerScene = card.playerScene;
+        if(info.player === "OPPONENT") playerScene = card.playerScene.opponentPlayerScene;
+
+        let delay = 0;
+
+        //Get the don cards to return
+        for(let i=0; i<info.donId.length; i++) {
+            let donId = info.donId[i].id;
+
+            let deckVisual = playerScene.donDeck.getTopCardVisual();
+            let donCard = new DonCardUI(scene, playerScene, {
+                x: deckVisual.x,
+                y: deckVisual.y,
+                state: CARD_STATES.IN_DON_DECK,
+                scale: CARD_SCALE.DON_IN_DON_DECK,
+                artVisible: false,
+                id: donId,
+                depth: DEPTH_VALUES.DON_IN_PILE
+            }).setAlpha(0);
+            tweens.push({
+                targets: {},
+                alpha: 1,
+                duration: 1,
+                onStart: () => {
+                    donCard.setAlpha(1);
+                    donCard.setDepth(DEPTH_VALUES.DON_IN_PILE);
+                    donCard.setState(CARD_STATES.DON_TRAVELLING);
+                }
+            });
+            if(!activePlayer) tweens = tweens.concat(scene.animationLibraryPassivePlayer.animation_move_don_deck2activearea(donCard, delay));
+            else tweens = tweens.concat(scene.animationLibrary.animation_move_don_deck2activearea(donCard, delay));
+            tweens.push({
+                targets: {},
+                alpha: 1,
+                duration: 1,
+                onStart: () => {
+                    donCard.playerScene.activeDonDeck.addCard(donCard);
+                    donCard.playerScene.playerInfo.updateActiveCardAmountText(); //udpate the ui
+            
+                    playerScene.donDeck.popTopCardVisual(); //Remove the top Card Visual  
+                }
+            });
+
+            delay += 200; // Increase animation delay tracker
+        }
+
+        return tweens;
+    },
+    //#endregion
     //#region addPowerToCard
     /** Function to add Counter to Defender
      *  @param {GameScene} scene
@@ -1237,7 +1296,7 @@ const abilityActions = {
                 alpha: 1,
                 duration: 1,
                 onStart: () => {
-                    donCard.setState(CARD_STATES.DON_IN_DECK);
+                    donCard.setState(CARD_STATES.DON_TRAVELLING);
                 }
             });
             if(!activePlayer) tweens = tweens.concat(scene.animationLibraryPassivePlayer.animation_move_don_activearea2deck(donCard, delay, {updateCounter: true, location: donLocation}));

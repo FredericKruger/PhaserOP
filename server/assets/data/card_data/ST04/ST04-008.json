@@ -1,0 +1,63 @@
+{
+    "id":424,
+    "setid":8,
+    "banned": false,
+    "art":"ST04-008",
+    "set":"ST04",
+    "setname":"-ANIMAL KINGDOM PIRATES- [ST04]",
+    "name":"Jack",
+    "card":"CHARACTER",
+    "type":["Animal Kingdom Pirates"],
+    "colors":["PURPLE"],
+    "cost":1,
+    "power":4000,
+    "attribute":"STRIKE",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Kaido's orders are clear. You're not walking away from this.",
+            "attack": "I'll crush you like I crushed Zou!",
+            "defeated": "This isn't the end... not for someone like me."
+        }
+    },
+    
+    "abilities": [
+        {
+            "id": "ST04-008-1",
+            "text": "You may trash 1 card from your hand: Add up to 1 DON!! card from your DON!! deck and set it as active.",
+            "art": {
+                "art": "ST04-008-ABILITY1",
+                "posx": 300,
+                "posy": 532
+            },
+            "type": "ON_PLAY",
+            "optional": true,
+            "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
+                {"type": "CHECK_TARGETS", "value": true}
+            ],
+            "actions": [
+                {"name": "target", "params": {
+                    "target": {
+                        "targetAction": "ABILITY_ACTION",
+                        "requiredTargets": 1,
+                        "targets": [
+                            {
+                                "player": ["PLAYER"],
+                                "states": ["IN_HAND"]
+                            }
+                        ]
+                    }
+                }},
+                {"name": "discardCard", "params": {"target": "TARGET"}},
+                {"name": "addActiveDonFromDeck", "params": {"amount": 1, "player": "PLAYER"}}
+            ]
+        }
+    ]
+
+
+}

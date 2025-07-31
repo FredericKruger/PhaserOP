@@ -29,5 +29,11 @@ class ActiveAbility extends Ability {
         }
     }
 
-    trigger() {this.card.scene.game.gameClient.requestActivateAbility(this.card.id, this.id);}
+    trigger() {
+        if(this.card.scene.gameState.name === GAME_STATES.ON_PLAY_EVENT_INTERACTION) {
+            this.card.scene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ACTIVE);
+            this.card.scene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
+        }  
+        this.card.scene.game.gameClient.requestActivateAbility(this.card.id, this.id);
+    }
 }

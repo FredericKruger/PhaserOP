@@ -45,7 +45,8 @@
                 {"name": "addPowerToCard", "params": {"amount": 4000, "target": "TARGET", "duration": "TURN"}},
                 {"name": "IF_THEN_ELSE", "params": {
                     "conditions": [
-                        {"type": "NUMBER_CARDS_IN_HAND", "operator": "<=", "value": 3}
+                        {"type": "NUMBER_CARDS_IN_HAND", "operator": "<=", "value": 3},
+                        {"type": "NUMBER_CARDS_IN_DECK", "operator": ">", "value": 0}
                     ],
                     "then": [
                         {"name": "drawCards", "params": {"amount": 1}}

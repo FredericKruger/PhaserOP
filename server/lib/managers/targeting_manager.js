@@ -167,7 +167,7 @@ class TargetingManager {
 
         const originatorCard = this.match.matchCardRegistry.get(this.match.state.pending_action.actionInfos.playedCard);
         // Check for "owner" in the players array which requires special handling
-        if (this.target.player.includes("OWNER")) {
+        if (this.target.player.includes("PLAYER")) {
             // If this is checking the player's own cards, it's valid
             return card.owner === originatorCard.owner;
         }

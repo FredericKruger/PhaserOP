@@ -61,20 +61,28 @@
             "actions": [
                 {"name": "returnDonToDeck", "params": {"amount": 1, "player": "PLAYER"}},
                 {"name": "drawCards", "params": {"amount": 2, "cardPool": "DECK"}},
-                {"name": "target", "params": {
-                    "target": {
-                        "targetAction": "ABILITY_ACTION",
-                        "requiredTargets": 1,
-                        "ignoreTesting": true,
-                        "targets": [
-                            {
-                                "player": ["PLAYER"],
-                                "states": ["IN_HAND"]
+                {"name": "IF_THEN_ELSE", "params": {
+                    "conditions": [
+                        {"type": "NUMBER_CARDS_IN_DECK", "operator": ">", "value": 0}
+                    ],
+                    "then": [
+                        {"name": "target", "params": {
+                            "target": {
+                                "targetAction": "ABILITY_ACTION",
+                                "requiredTargets": 1,
+                                "ignoreTesting": true,
+                                "targets": [
+                                    {
+                                        "player": ["PLAYER"],
+                                        "states": ["IN_HAND"]
+                                    }
+                                ]
                             }
-                        ]
-                    }
-                }},
-                {"name": "discardCard", "params": {"target": "TARGET"}}
+                        }},
+                        {"name": "discardCard", "params": {"target": "TARGET"}}
+                    ],
+                    "else": []
+                }}
             ]
         }
     ]

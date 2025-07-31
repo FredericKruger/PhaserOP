@@ -170,6 +170,15 @@ class ServerAbility {
 
                 this.currentAction++;
 
+                //Test if the game ended, stop the animation and start game end process
+                if(results.gameEnded && results.gameEnded === true) {
+                    actionResults = {
+                        status: "GAME_OVER",
+                        actionResults: this.actionResults
+                    };
+                    this.actionResults = []; // Reset action results
+                }
+
                 if(action.name === "IF_THEN_ELSE") {
                     this.currentActions.splice(i + 1, 0, ...results.actionList);
                 } else {
@@ -288,6 +297,42 @@ const serverAbilityActions = {
                 return actionResults;
             }
         }
+        return actionResults;
+    },
+    //#endregion
+    //#region addActiveDonFromDeck
+    /**
+     * 
+     * @param {Match} match 
+     * @param {MatchPlayer} player 
+     * @param {MatchCard} card 
+     * @param {{
+     *      amount: number,
+     *      player: 'PLAYER'|'OPPONENT',
+     * }} params
+     * @returns 
+     */
+    addActiveDonFromDeck: (match, player, card, params) => {
+        let actionResults = {name: "addActiveDonFromDeck"};
+
+        actionResults.donId = [];
+        actionResults.player = params.player;
+
+        //Check if player is owner or opponent
+        let targetPlayer = player;
+        if(params.player === "OPPONENT") targetPlayer = match.getOpponentPlayer(player.id).currentMatchPlayer;
+
+        for(let i=0; i<params.amount; i++) {
+            if(targetPlayer.inDon.length > 0) {
+                let donCard = targetPlayer.inDon.pop();
+                donCard.setState("DON_ACTIVE");
+                targetPlayer.inActiveDon.push(donCard);
+                actionResults.donId.push(donCard.id);
+            } else {
+                break;
+            }
+        }
+
         return actionResults;
     },
     //#endregion
@@ -657,10 +702,16 @@ const serverAbilityActions = {
 
         if(params.cardPool === "DECK") {
             for(let i = 0; i < amount; i++) {
-                let cardToDraw = player.deck.draw(); //Remove from player deck
-                cards.push(cardToDraw); //Add to hand and return list
-                player.inHand.push(cardToDraw);
-                cardToDraw.setState("IN_HAND");
+                if(player.deck.cards.size > 0) {
+                    let cardToDraw = player.deck.draw(); //Remove from player deck
+                    cards.push(cardToDraw); //Add to hand and return list
+                    player.inHand.push(cardToDraw);
+                    cardToDraw.setState("IN_HAND");
+                } else {
+                    //If no cards left in deck, stop drawing
+                    actionResults.gameEnded = true;
+                    break;
+                }
             }
             cardPool = "DECK";
         } else if(params.cardPool.startsWith("SELECTION")) {
@@ -831,6 +882,11 @@ const serverAbilityActions = {
                     }
                     case "SELECTION_CARD_POOL_LENGTH": {
                         const count = match.currentSelectionManager.cardPool.length;
+                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
+                        break;
+                    }
+                    case "NUMBER_CARDS_IN_DECK": {
+                        const count = player.deck.cards.length;
                         conditionResult = match.resolveOperation(count, condition.operator, condition.value);
                         break;
                     }
@@ -1059,7 +1115,8 @@ const serverAbilityActions = {
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
      * @param {{
-     *      amount: number
+     *      amount: number,
+     *      player: 'PLAYER'|'OPPONENT'
      * }} params 
      * @returns 
      */

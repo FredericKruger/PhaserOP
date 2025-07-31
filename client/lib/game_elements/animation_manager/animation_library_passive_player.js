@@ -339,6 +339,7 @@ class AnimationLibraryPassivePlayer {
 
         let tweens = [
             { // Phase 1: Initial "pop" from deck
+                targets: card,
                 scale: CARD_SCALE.IN_DON_DECK * 1.1,
                 y: card.y - 20, // Initial upward lift
                 rotation: randomRotation * 0.3,
@@ -350,7 +351,8 @@ class AnimationLibraryPassivePlayer {
                     card.setDepth(DEPTH_VALUES.CARD_IN_ANIMATION);
                 }
             },
-            { // Phase 2: Begin arc movement & card flip simultaneously 
+            { // Phase 2: Begin arc movement & card flip simultaneously
+                targets: card, 
                 scaleY: 0, // Card edge-on during flip (Y-axis)
                 scaleX: CARD_SCALE.IN_DON_DECK * 1.05,
                 x: card.x + (midX - card.x) * 0.4, // More movement along X axis during flip
@@ -364,6 +366,7 @@ class AnimationLibraryPassivePlayer {
                 }
             },
             { // Phase 3: Continue upward arc with card face showing
+                targets: card,
                 scaleY: CARD_SCALE.IN_DON_DECK * 0.9, // Card unfolds while continuing to move
                 scaleX: CARD_SCALE.IN_DON_DECK * 0.9,
                 x: midX,
@@ -373,6 +376,7 @@ class AnimationLibraryPassivePlayer {
                 ease: 'Sine.easeInOut'
             },
             { // Phase 4: Begin approach to DON area
+                targets: card,
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON * 0.95,
                 x: posX - 15, // Approach from the side
                 y: posY - 10, // Approach from above
@@ -381,6 +385,7 @@ class AnimationLibraryPassivePlayer {
                 ease: 'Power2.easeIn'
             },
             { // Phase 5: Final approach with slight overshoot
+                targets: card,
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.05, // Slightly larger for emphasis
                 x: posX,
                 y: posY,
@@ -419,6 +424,7 @@ class AnimationLibraryPassivePlayer {
                 }
             },
             { // Phase 6: Settle to exact size
+                targets: card,
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON,
                 duration: 75, // 100 * 0.5 = 50
                 ease: 'Sine.easeOut'

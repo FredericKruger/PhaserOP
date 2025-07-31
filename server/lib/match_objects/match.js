@@ -449,24 +449,29 @@ class Match {
             && !this.playCardManager.actionCanceled
         ) {
             let skipOnPlayEventPhase = true;
+            let actionInfos = null;
 
             //check if there are anu events to be resolved
             let onPlayEvent = this.playCardManager.playedCard.getAbilityByType("ON_PLAY");
+            if(onPlayEvent){
+                actionInfos  = {actionId: 'EVENT_' + this.playCardManager.playedCard.id, playedCard: this.playCardManager.playedCard.id, ability: onPlayEvent.id, targetData: {}, optional:onPlayEvent.optional};
+                this.state.pending_action = {actionInfos: actionInfos}; //Add to make sure 
+            }
             if(onPlayEvent && onPlayEvent.canActivate(this.playCardManager.playedCard, this.state.current_phase)) {
                 this.currentAction.phase = "PLAY_ON_PLAY_EVENT_PHASE";
                 let executeAbility = false;
-
-                let actionInfos  = {actionId: 'EVENT_' + this.playCardManager.playedCard.id, playedCard: this.playCardManager.playedCard.id, ability: onPlayEvent.id, targetData: {}, optional:onPlayEvent.optional};
-                this.state.pending_action = {actionInfos: actionInfos}; //Add to make sure 
 
                 const targets = onPlayEvent.getTargets();
                 if(targets.length > 0) { //If targeting is required
                     if(this.findValidTargets(targets)) executeAbility = true;
                 } else executeAbility = true;
 
-                if(executeAbility) {
+                if(executeAbility && !onPlayEvent.optional) {
                     skipOnPlayEventPhase = false;
                     this.activateAbility(player, actionInfos.playedCard, actionInfos.ability);
+                } else if(executeAbility && onPlayEvent.optional) {
+                    skipOnPlayEventPhase = false;
+                    player.socket.emit('game_play_card_on_play_event', true);
                 }
             }
 
@@ -1068,14 +1073,18 @@ class Match {
                         
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
 
-                        if(abilityResults.abilityResults.status === "DONE") {
+                        if(abilityResults.abilityResults.status === "DONE" || abilityResults.abilityResults.status === "GAME_OVER") {
                             this.playCardManager.abilityId = this.state.pending_action.actionInfos.ability;
                             this.playCardManager.onPlayEventActions.push(...abilityResults.abilityResults.actionResults);                         
                             this.playCardManager.onPlayEventActionsOpponentPlayer.push(...abilityResults.abilityResults.actionResults);
 
                             //NO NEED TO SEND THE RESULTS TO THE CLIENTS, THEY ARE SENT IN THE PLAY CARD ACTION
                             //if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
-                            this.cleanupAction(player);
+                            if(abilityResults.abilityResults.status === "GAME_OVER") {
+                                this.isGameOver();
+                            } else {
+                                this.cleanupAction(player);
+                            }
                         }
                     } 
                     else {player.socket.emit('game_reset_targets');}
@@ -1099,13 +1108,15 @@ class Match {
                         actionInfos = this.state.pending_action.actionInfos;
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, targets);
                         
-                        if(abilityResults.abilityResults.status === "DONE") {
-                            //actionInfos.abilityResults = abilityResults.actionResults;
-
-                            this.cleanupAction(player);
-
+                        if(abilityResults.abilityResults.status === "DONE" || abilityResults.abilityResults.status === "GAME_OVER") {
                             if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
                             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
+
+                            if(abilityResults.abilityResults.status === "GAME_OVER") {
+                                this.isGameOver();
+                            } else {
+                                this.cleanupAction(player);
+                            }
                         }
                     } else {
                         player.socket.emit('game_reset_targets');
@@ -1124,14 +1135,18 @@ class Match {
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
-                        
-                        if(abilityResults.abilityResults.status === "DONE") {
+
+                        if(abilityResults.abilityResults.status === "DONE" || abilityResults.abilityResults.status === "GAME_OVER") {
                             //actionInfos.abilityResults = abilityResults.actionResults;
 
                             if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
                             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
 
-                            this.cleanupAction(player);
+                            if(abilityResults.abilityResults.status === "GAME_OVER") {
+                                this.isGameOver();
+                            } else {
+                                this.cleanupAction(player);
+                            }
                         }
                     } else {
                         player.socket.emit('game_reset_targets');
@@ -1292,7 +1307,7 @@ class Match {
         this.addActionToStack(abilityAction);
 
         const actionInfos = this.executeAbility(player, cardId, abilityId, []);
-        if(actionInfos.abilityResults.status === "DONE") {
+        if(actionInfos.abilityResults.status === "DONE" || actionInfos.abilityResults.status === "GAME_OVER") {
             if(ability.type === "TRIGGER") { 
                 if(!player.bot) player.socket.emit('game_card_trigger_close_interaction_state');
             }
@@ -1300,7 +1315,11 @@ class Match {
             if(!player.bot) player.socket.emit('game_card_ability_executed', actionInfos, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', actionInfos, false);
 
-            this.cleanupAction(player);
+            if(actionInfos.abilityResults.status === "GAME_OVER") {
+                this.isGameOver();
+            } else {
+                this.cleanupAction(player);
+            }
         }
     }
 
@@ -1324,11 +1343,15 @@ class Match {
             let actionInfos = this.state.pending_action.actionInfos;
             let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, []);
             
-            if(abilityResults.abilityResults.status === "DONE") {
+            if(abilityResults.abilityResults.status === "DONE" || abilityResults.abilityResults.status === "GAME_OVER") {
                 if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
                 if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
 
-                this.cleanupAction(player);
+                if(abilityResults.abilityResults.status === "GAME_OVER") {
+                    this.isGameOver();
+                } else {
+                    this.cleanupAction(player);
+                }
             }
         }
     }
@@ -1341,11 +1364,16 @@ class Match {
         let actionInfos = this.state.pending_action.actionInfos;
         let abilityResults = this.executeAbility(player, actionInfos.playedCard, actionInfos.ability, []);
         
-        if(abilityResults.abilityResults.status === "DONE") {
+        if(abilityResults.abilityResults.status === "DONE" || abilityResults.abilityResults.status === "GAME_OVER") {
             if(!player.bot) player.socket.emit('game_card_ability_executed', abilityResults, true);
             if(!player.currentOpponentPlayer.bot) player.currentOpponentPlayer.socket.emit('game_card_ability_executed', abilityResults, false);
 
-            this.cleanupAction(player);
+            if(abilityResults.abilityResults.status === "GAME_OVER") {
+                this.isGameOver();
+            } else {
+                this.cleanupAction(player);
+            }
+
         }
     }
 

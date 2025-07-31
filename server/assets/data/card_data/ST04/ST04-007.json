@@ -1,0 +1,26 @@
+{
+    "id":423,
+    "setid":7,
+    "banned": false,
+    "art":"ST04-007",
+    "set":"ST04",
+    "setname":"-ANIMAL KINGDOM PIRATES- [ST04]",
+    "name":"Sheepshead",
+    "card":"CHARACTER",
+    "type":["Animal Kingdom Pirates", "SMILE"],
+    "colors":["PURPLE"],
+    "cost":2,
+    "power":4000,
+    "attribute":"SLASH",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter": 1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Sheepshead's here to stomp out the weak!",
+            "attack": "Ram Rampage!",
+            "defeated": "Jack's not gonna like this..."
+        }
+    }
+}

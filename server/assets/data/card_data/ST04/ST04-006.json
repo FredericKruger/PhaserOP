@@ -1,0 +1,49 @@
+{
+    "id":422,
+    "setid":6,
+    "banned": false,
+    "art":"ST04-006",
+    "set":"ST04",
+    "setname":"-ANIMAL KINGDOM PIRATES- [ST04]",
+    "name":"Sasaki",
+    "card":"CHARACTER",
+    "type":["Animal Kingdom Pirates"],
+    "colors":["PURPLE"],
+    "cost":3,
+    "power":4000,
+    "attribute":"RANGED",
+    "isleader":0,
+    "rarity":"COMMON",
+    "counter":1000,
+
+    "animationinfo": {
+        "speeches": {
+            "intro": "Sasaki of the Tobi Roppo- hope you're ready to be trampled!",
+            "attack": "Triceratop Charge!",
+            "defeated": "Tch… I guess I let my guard down..."
+        }
+    },
+
+    "abilities": [
+        {
+            "id": "ST04-006-1",
+            "text": "Draw 1 card",
+            "art": {
+                "art": "ST04-006-ABILITY1",
+                "posx": 300,
+                "posy": 545
+            },
+            "type": "ON_PLAY",
+            "conditions": [
+                {"type": "PHASES", "value": ["Main Phase"]},
+                {"type": "STATES", "value": ["BEING_PLAYED"]},
+                {"type": "CHECK_TARGETS", "value": true},
+                {"type": "TOTAL_AVAILABLE_DON", "value": 1}
+            ],
+            "actions": [
+                {"name": "returnDonToDeck", "params": {"amount": 1, "player": "PLAYER"}},
+                {"name": "drawCards", "params": {"amount": 1, "cardPool": "DECK"}}
+            ]
+        }
+    ]
+}

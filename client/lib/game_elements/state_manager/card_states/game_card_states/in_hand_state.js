@@ -16,6 +16,8 @@ class InHandState extends GameCardState {
     }
 
     onPointerOver(pointer, gameObject) {
+        if(this.card.scene.gameState.name === GAME_STATES.TARGETING) return;
+
         if(gameObject.playerScene.player.isActivePlayer && gameObject.state === CARD_STATES.IN_HAND) {
             gameObject.setState(CARD_STATES.IN_HAND_HOVERED);
             gameObject.playerScene.hand.update();
@@ -25,6 +27,8 @@ class InHandState extends GameCardState {
     }
 
     onPointerOut(pointer, gameObject) {
+        if(this.card.scene.gameState.name === GAME_STATES.TARGETING) return;
+
         if(gameObject.playerScene.player.isActivePlayer && gameObject.state === CARD_STATES.IN_HAND_HOVERED) {
             gameObject.setState(CARD_STATES.IN_HAND);
             gameObject.playerScene.hand.update();

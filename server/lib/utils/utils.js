@@ -42,7 +42,7 @@ class Utils {
 
     /** Asynchronous function that creates a promise to send the card database
      */
-    async getCardList () {
+    async getCardList() {
         let cardIndex = [];
         let filepath = this.serverPath + '/server/assets/data/opcards.json'; //Get path of the card database
         let cardFolderPath = this.serverPath + '/server/assets/data/card_data/'; //Get path of the card folder
@@ -51,16 +51,46 @@ class Utils {
             const data = await fs.promises.readFile(filepath); //Read the json file
             cardIndex = JSON.parse(data.toString()); //Turn file into JSON object
 
-            const files = await fs.promises.readdir(cardFolderPath); //Read the folder
-            for (const file of files) { //For each file in the folder
-                const data = await fs.promises.readFile(cardFolderPath + file); //Read the file
-                const jsonData = JSON.parse(data.toString()); //Turn file into JSON object
-                cardIndex[jsonData.id-1] = jsonData; //Push the json data to the arrays
-            }
+            // Recursive function to read cards from current path
+            const readCardsRecursively = async (currentPath) => {
+                try {
+                    const items = await fs.promises.readdir(currentPath, { withFileTypes: true }); //Read the folder with file type info
+                    
+                    for (const item of items) { //For each item in the folder
+                        const itemPath = currentPath + item.name;
+                        
+                        if (item.isDirectory()) {
+                            // If it's a directory (subfolder), recursively read it
+                            await readCardsRecursively(itemPath + '/');
+                        } else if (item.isFile() && item.name.endsWith('.json')) {
+                            // If it's a JSON file, read and parse it
+                            try {
+                                const data = await fs.promises.readFile(itemPath); //Read the file
+                                const jsonData = JSON.parse(data.toString()); //Turn file into JSON object
+                                
+                                // Use the card's ID to place it in the correct position in the array
+                                if (jsonData.id && jsonData.id > 0) {
+                                    cardIndex[jsonData.id - 1] = jsonData; //Place the json data at the correct index
+                                } else {
+                                    console.warn(`Card file ${itemPath} missing valid ID, skipping.`);
+                                }
+                            } catch (parseErr) {
+                                console.log(`Error parsing file ${itemPath}:`, parseErr);
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log(`Error reading directory ${currentPath}:`, err);
+                }
+            };
+
+            // Start recursive reading from the card folder
+            await readCardsRecursively(cardFolderPath);
+            
         } catch (err) {
             console.log(err);
         }
-        return cardIndex; //Return nothing in case of error
+        return cardIndex; //Return the card index array
     }
 
     /** Asynchronous function that reads the different cards from the card folder */

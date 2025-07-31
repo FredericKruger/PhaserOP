@@ -190,6 +190,9 @@ class PlayerScene {
      */
     getDonCardById(cardId) {
         let card = this.activeDonDeck.getCard(cardId);
+        if(card !== undefined && card !== null) return card;
+
+        card = this.donDeck.getCard(cardId);
         return card;
     }
 

@@ -175,6 +175,12 @@ class Client {
                 this.gameScene.gameState.exit(GAME_STATES.ACTIVE_INTERACTION);
             }
         })
+        this.socket.on('game_play_card_on_play_event', () => {
+            if(!this.gameScene.gameStateManager.gameOver) {
+                this.gameScene.gameStateUI.nextTurnbutton.fsmState.exit(NEXT_TURN_BUTTON_FSM_STATES.ON_PLAY_EVENT);
+                this.gameScene.gameState.exit(GAME_STATES.ON_PLAY_EVENT_INTERACTION);
+            }
+        });
         //#endregion
 
         //#region SOCKET.ON ATTACH DON TO CHARACTER

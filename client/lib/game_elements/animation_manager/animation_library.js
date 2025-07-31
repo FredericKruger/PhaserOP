@@ -615,6 +615,7 @@ class AnimationLibrary {
         
         let tweens = [
             { // Phase 1: Initial reveal coming from under the deck
+                targets: card,
                 scaleX: 0,
                 scaleY: CARD_SCALE.IN_DON_DECK * 1.1, // Slightly taller
                 y: card.y + 10, // Move slightly down first, as if being pulled from under deck
@@ -626,6 +627,7 @@ class AnimationLibrary {
                 }
             },
             { // Phase 2: Launch into dramatic arc with gradual rotation
+                targets: card,
                 scaleX: CARD_SCALE.IN_DON_DECK,
                 scaleY: CARD_SCALE.IN_DON_DECK,
                 x: controlX, // Move to midpoint
@@ -635,6 +637,7 @@ class AnimationLibrary {
                 duration: 200,
             },
             { // Phase 3: Rapid approach to active don area with full rotation
+                targets: card,
                 scale: CARD_SCALE.DON_IN_ACTIVE_DON * 1.2, // Slightly larger for emphasis
                 x: posX,
                 y: posY,
