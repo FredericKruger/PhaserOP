@@ -1055,7 +1055,7 @@ class Match {
                 break;
             case PLAY_CARD_STATES.ON_PLAY_EVENT_TARGETS_REQUIRED:
                 actionInfos = this.state.pending_action.actionInfos;
-                if(cancel) {
+                if(cancel && actionInfos.optional) {
                     if(actionInfos.optional) {
                         if(!player.bot) player.socket.emit('game_play_card_event_triggered', actionInfos, true);
                     } else this.cancelPlayCard(true, player, this.playCardManager.playedCard.id, this.playCardManager.replacedCard, this.playCardManager.payedDon);
@@ -1066,7 +1066,7 @@ class Match {
                     
                     this.cleanupAction(player);
                 } else {
-                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
+                    let validTarget = (actionInfos.optional && targets.length === 0) || this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         if(!player.bot && actionInfos.optional) player.socket.emit('game_stop_on_play_event_optional');
@@ -1101,8 +1101,11 @@ class Match {
                 }
                 break;
             case PLAY_CARD_STATES.ABILITY_TARGETS_REQUIRED:
-                if(!cancel) {
-                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
+                actionInfos = this.state.pending_action.actionInfos;
+                if(cancel && actionInfos.optional) {
+                    player.socket.emit('game_reset_targets');
+                } else {
+                    let validTarget = (actionInfos.optional && targets.length === 0) || this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         actionInfos = this.state.pending_action.actionInfos;
@@ -1121,17 +1124,15 @@ class Match {
                     } else {
                         player.socket.emit('game_reset_targets');
                     }
-                } else {
-                    player.socket.emit('game_reset_targets');
-                    //console.log("Canceling ability targeting");
-                    //this.cleanupAction(player);
                 }
                 break;
             case PLAY_CARD_STATES.ON_BLOCK_EVENT_TARGETS_REQUIRED:
             case PLAY_CARD_STATES.ON_ATTACK_EVENT_TARGETS_REQUIRED:
                 actionInfos = this.state.pending_action.actionInfos;
-                if(!cancel) {
-                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
+                if(cancel && actionInfos.optional) {
+                    player.socket.emit('game_reset_targets');
+                } else {
+                    let validTarget = (actionInfos.optional && targets.length === 0) || this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
@@ -1151,8 +1152,6 @@ class Match {
                     } else {
                         player.socket.emit('game_reset_targets');
                     }
-                } else {
-                    player.socket.emit('game_reset_targets');
                 }
                 break;
             case PLAY_CARD_STATES.TRIGGER_EVENT_TARGETS_REQUIRED:
@@ -1160,7 +1159,7 @@ class Match {
                 if(cancel) {
                     if(!this.state.current_passive_player.bot) this.state.current_passive_player.socket.emit('game_trigger_cancel_targeting');
                 } else {
-                    let validTarget = this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
+                    let validTarget = (actionInfos.optional && targets.length === 0) || this.targetingManager.areValidTargets(player, targets, this.state.pending_action.actionInfos.targetData);
                     if(validTarget) {
                         if(!player.bot) player.socket.emit('game_stop_targetting', true, false);
                         let abilityResults = this.executeAbility(player, actionInfos.playedCard, this.state.pending_action.actionInfos.ability, targets);
@@ -1266,6 +1265,11 @@ class Match {
         let card = this.matchCardRegistry.get(cardId);
         let ability = card.getAbility(abilityId);
 
+        let actionInfos = {actionId: 'ABILITY_' + cardId, playedCard: cardId, playedCardData: card.cardData, ability: abilityId, targetData: null, optional: ability.optional};
+        let action = {actionResult: PLAY_CARD_STATES.CHECKING_TARGETS, actionInfos: actionInfos};
+        this.state.pending_action = action;
+        this.state.resolving_pending_action = false;
+
         if(!ability.canActivate()) {
             if(ability.type === "ON_PLAY" && this.playCardManager) {
                 this.flagManager.handleFlag(player, 'PLAY_ON_PLAY_EVENT_PHASE_READY');
@@ -1306,7 +1310,7 @@ class Match {
         };
         this.addActionToStack(abilityAction);
 
-        const actionInfos = this.executeAbility(player, cardId, abilityId, []);
+        actionInfos = this.executeAbility(player, cardId, abilityId, []);
         if(actionInfos.abilityResults.status === "DONE" || actionInfos.abilityResults.status === "GAME_OVER") {
             if(ability.type === "TRIGGER") { 
                 if(!player.bot) player.socket.emit('game_card_trigger_close_interaction_state');
@@ -1455,31 +1459,6 @@ class Match {
         }
 
         return validTarget;
-    }
-
-    /** Function to resolve an operation
-     * @param {string} operator
-     * @param {number} value1
-     * @param {number} value2
-     * @returns {boolean}  
-     */
-    resolveOperation(value1, operator, value2) {
-        switch (operator) {
-            case ">": 
-                return value1 > value2;
-            case ">=": 
-                return value1 >= value2;
-            case "=": 
-            case "==": 
-                return value1 === value2;
-            case "<=": 
-                return value1 <= value2;
-            case "<": 
-                return value1 < value2;
-            case "!=": 
-                return value1 !== value2;
-        }
-        return false;
     }
 
     //#endregion

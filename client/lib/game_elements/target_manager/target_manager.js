@@ -18,6 +18,7 @@ class TargetManager {
         this.targetData = {};
         this.targetAction = null;
         this.requiredTargets = 0;
+        this.optional = false;
         /** @type {Array<Target>} */
         this.targets = [];
         this.targetIDs = [];
@@ -40,6 +41,7 @@ class TargetManager {
         this.targetData = targetData;
         this.targetAction = targetData.targetAction;
         this.requiredTargets = targetData.requiredTargets;
+        this.optional = targetData.optional;
         for(let el of targetData.targets)
             this.targets.push(new Target(el, this));
     }

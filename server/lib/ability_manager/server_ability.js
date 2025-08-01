@@ -4,6 +4,8 @@ const SelectionManager = require("../managers/selection_manager");
 const TargetingManager = require("../managers/targeting_manager");
 const MatchPlayer = require('../match_objects/match_player');
 const { CARD_STATES } = require('../match_objects/match_card');
+const ConditionEvaluator = require('../utils/condition_evaluator');
+
 
 class ServerAbility {
 
@@ -33,6 +35,9 @@ class ServerAbility {
         this.currentAction = 0; // Current action being executed
         this.actionResults = []; // Array of results from the actions executed
         this.currentTargets = []; // Array of targets selected by the player
+
+        // Ability metadata
+        this.up_toStack = [];
     }
 
 
@@ -165,7 +170,7 @@ class ServerAbility {
                     return actionResults;
                 }
 
-                let results = func(match, player, card, action.params, targets);
+                let results = func(match, player, card, this, action.params, targets);
                 results.actionIndex = i;
 
                 this.currentAction++;
@@ -181,15 +186,35 @@ class ServerAbility {
 
                 if(action.name === "IF_THEN_ELSE") {
                     this.currentActions.splice(i + 1, 0, ...results.actionList);
+                } else if(action.name === "UP_TO") {
+                    let up_to_id = this.currentActions[i].params.id;
+                    let up_to = this.up_toStack.find(a => a.id === up_to_id);
+                    
+                    if(results.continue) {
+                        results.actionList.push(
+                            {name: "UP_TO_NEXT", params: {"id": up_to_id}}
+                        );
+                        this.currentActions.splice(i + 1, 0, ...results.actionList);
+                    }
+                    else {
+                        this.up_toStack.splice(this.up_toStack.indexOf(up_to), 1); //Remove the up_to from the stack
+                    }
+                } else if(action.name === "UP_TO_NEXT") {
+                    let up_to_id = this.currentActions[i].params.id;
+                    let up_to = this.up_toStack.find(a => a.id === up_to_id);
+                    //remove all actions between i and up_to.startIndex from this.currentActions
+                    this.currentActions.splice(up_to.startIndex+1, i - up_to.startIndex);
+                    i = up_to.startIndex-1; // Set the current action to the index of the next action
                 } else {
-                    //this.currentAction++;
                     this.actionResults.push(results);
 
                     if(action.name === "target") {
+
                         actionResults = {
                             status: "TARGETING",
                             actionResults: this.actionResults,
-                            targetData: results.targets
+                            targetData: results.targets,
+                            optional: results.targets.optional === undefined ? false : results.targets.optional
                         };
                         this.actionResults = [];
                         return actionResults;
@@ -271,13 +296,14 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      player: 'owner' | 'opponent',
      *      amount: number
      * }} params
      * @returns 
      */
-    activateExertedDon: (match, player, card, params) => {
+    activateExertedDon: (match, player, card, ability, params) => {
         let actionResults = {name: "activateExertedDon"};
         actionResults.donId = [];
         actionResults.player = params.player;
@@ -306,13 +332,14 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      amount: number,
      *      player: 'PLAYER'|'OPPONENT',
      * }} params
      * @returns 
      */
-    addActiveDonFromDeck: (match, player, card, params) => {
+    addActiveDonFromDeck: (match, player, card, ability, params) => {
         let actionResults = {name: "addActiveDonFromDeck"};
 
         actionResults.donId = [];
@@ -342,6 +369,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      amount: number,
      *      target: 'TARGET',
@@ -349,7 +377,7 @@ const serverAbilityActions = {
      * @param {Array<integer>} targets 
      * @returns 
      */
-    addCounterToCard: (match, player, card, params, targets) => {
+    addCounterToCard: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "addCounterToCard"};
         actionResults.defenderId = -1;
         actionResults.counterAmount = 0;
@@ -378,6 +406,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      amount: number,
      *      duration: 'TURN' | 'GAME',
@@ -386,7 +415,7 @@ const serverAbilityActions = {
      * @param {Array<integer>} targets 
      * @returns 
      */
-    addPowerToCard: (match, player, card, params, targets) => {
+    addPowerToCard: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "addPowerToCard"};
         actionResults.cardId = -1;
         actionResults.addedPower = params.amount;
@@ -422,6 +451,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      amount: number,
      *      target: 'SELF' | 'TARGET',
@@ -430,7 +460,7 @@ const serverAbilityActions = {
      * @param {Object} targets 
      * @returns 
      */
-    attachDonCard: (match, player, card, params, targets) => {
+    attachDonCard: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "attachDonCard"};
         actionResults.targetId = -1;
         actionResults.donId = [];
@@ -483,7 +513,7 @@ const serverAbilityActions = {
     },
     //#endregion
     //#region block
-    block: (match, player, card, params, targets) => {
+    block: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "block"};
         actionResults.blockerID = card.id;
         // Blocker ability action
@@ -498,6 +528,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *     state: 'IN_PLAY_RESTED' | 'IN_PLAY_ACTIVE', 
      *     target: 'SELF' | 'TARGET'
@@ -505,7 +536,7 @@ const serverAbilityActions = {
      * @param {Array<integer>} targets 
      * @returns 
      */
-    changeCardState: (match, player, card, params, targets) => {
+    changeCardState: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "changeCardState"};
         actionResults.restedCardId = -1;
         actionResults.cardState = params.state;
@@ -532,6 +563,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      target: 'SELF' | 'TARGET',
      *      aura: Object
@@ -539,7 +571,7 @@ const serverAbilityActions = {
      * @param {Array<integer>} targets 
      * @returns 
      */
-    createAura: (match, player, card, params, targets) => {
+    createAura: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "createAura"};
 
         let targetCard = null;
@@ -571,6 +603,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      amount: number,
      *      cardPool: 'DECK' | 'DISCARD',
@@ -578,7 +611,7 @@ const serverAbilityActions = {
      * }} params 
      * @returns 
      */
-    createSelectionManager: (match, player, card, params) => {
+    createSelectionManager: (match, player, card, ability, params) => {
         let actionResults = {name: "createSelectionManager"};
 
         let selectedCards = [];
@@ -640,9 +673,10 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @returns 
      */
-    destroySelectionManager: (match, player, card) => {
+    destroySelectionManager: (match, player, card, ability) => {
         let actionResults = {name: "destroySelectionManager"};
 
         match.currentSelectionManager = null; //Remove the current selection manager from the match
@@ -656,13 +690,14 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      target: 'SELF' | 'TARGET'
      * }} params 
      * @param {Array<integer>} targets 
      * @returns 
      */
-    discardCard: (match, player, card, params, targets) => {
+    discardCard: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "discardCard"};
 
         switch(params.target) {
@@ -686,6 +721,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      cardPool: 'SELECTION' | 'DECK' | 'DISCARD',
      *      amount: number,
@@ -693,7 +729,7 @@ const serverAbilityActions = {
      * }} params 
      * @returns 
      */
-    drawCards: (match, player, card, params, targets) => {
+    drawCards: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "drawCards"};
 
         let cards = [];
@@ -741,13 +777,14 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      target: 'SELECTION'
      * }} params 
      * @param {Object} targets 
      * @returns 
      */
-    drawCardAnimation: (match, player, scene, params, targets) => {
+    drawCardAnimation: (match, player, scene, ability, params, targets) => {
         let actionResults = {name: "drawCardAnimation"};
 
         let cards = [];
@@ -776,6 +813,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      player: 'OPPONENT' | 'PLAYER',
      *      amount: number
@@ -783,7 +821,7 @@ const serverAbilityActions = {
      * @param {Object} targets 
      * @returns 
      */
-    drawCardsToPanel: (match, player, card, params, targets) => {
+    drawCardsToPanel: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "drawCardsToPanel"};
 
         actionResults.drawnCards = [];
@@ -808,13 +846,14 @@ const serverAbilityActions = {
      * 
      * @param {Match} match 
      * @param {MatchPlayer} player 
-     * @param {MatchCard} card 
+     * @param {MatchCard} card
+     * @param {ServerAbility} ability 
      * @param {{
      *      returnCardsToPool: Array<'CARD_POOL' | 'REMAINING_CARDS'>
      * }}
      * @returns 
      */
-    hideSelectionManager: (match, player, card, params) => {
+    hideSelectionManager: (match, player, card, ability, params) => {
         if(params.returnCardsToDeck && match.currentSelectionManager) {
             for(let cardsType of params.returnCardsToDeck){
                 let cardPool = [];
@@ -857,47 +896,24 @@ const serverAbilityActions = {
      * 
      * @param {Match} match 
      * @param {MatchPlayer} player 
+     * @param {MatchCard} card
+     * @param {ServerAbility} ability
+     * @param {Object} params
+     * @param {Array} targets
      * @returns 
      */
-    IF_THEN_ELSE: (match, player, card, params) => {
+    IF_THEN_ELSE: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "IF_THEN_ELSE"};
 
         //Check conditions
-        let conditionResults = true;
-        
-        if(params.if) {
-            for(let condition of params.if) {
-                let conditionResult = false; //Reset condition result for each condition
-                
-                switch (condition.type) {
-                    case "SELECTION_COUNT": {
-                        const count = match.currentSelectionManager.selectedCards[condition.selectionIndex].length; //Get the first array of selected cards
-                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
-                        break;
-                    }
-                    case "NUMBER_CARDS_IN_HAND": {
-                        const count = player.inHand.length;
-                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
-                        break;
-                    }
-                    case "SELECTION_CARD_POOL_LENGTH": {
-                        const count = match.currentSelectionManager.cardPool.length;
-                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
-                        break;
-                    }
-                    case "NUMBER_CARDS_IN_DECK": {
-                        const count = player.deck.cards.length;
-                        conditionResult = match.resolveOperation(count, condition.operator, condition.value);
-                        break;
-                    }
-                }
-
-                if(!conditionResult) {
-                    conditionResults = false;
-                    break;
-                }
-            }
-        }
+        const context = ConditionEvaluator.createContext({
+            match,
+            player,
+            card,
+            targets
+        });
+    
+        const conditionResults = ConditionEvaluator.evaluateConditions(params.if, context);
 
         if(conditionResults) {
             //insert then actions behind this action
@@ -918,6 +934,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      cardPool: 'SELECTION' | 'TARGET'
     *       from: 'DECK_TOP' | 'DECK_BOTTOM' | 'CHARACTER_AREA' | 'HAND',
@@ -925,7 +942,7 @@ const serverAbilityActions = {
      * }} params  
      * @returns 
      */
-    moveCardsToDeck: (match, player, card, params, targets) => {
+    moveCardsToDeck: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "moveCardsToDeck"};
 
         // Get the cards from the cardpool
@@ -1000,6 +1017,7 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      cardPool: 'SELECTION' | 'TARGET',
      *      from: 'DISCARD'
@@ -1007,7 +1025,7 @@ const serverAbilityActions = {
      * @param {Array<integer>} targets 
      * @returns 
      */
-    moveCardsToHand: (match, player, card, params, targets) => {
+    moveCardsToHand: (match, player, card, ability, params, targets) => {
         //creating Play Card Action
         let actionResults = {name: "moveCardsToHand"};
 
@@ -1042,14 +1060,15 @@ const serverAbilityActions = {
      * 
      * @param {Match} match 
      * @param {MatchPlayer} player 
-     * @param {MatchCard} card 
+     * @param {MatchCard} card
+     * @param {ServerAbility} ability 
      * @param {{
      *      target: 'TARGET' | 'SELF' | 'SELECTION'
      * }} params 
      * @param {Array<integer>} targets 
      * @returns 
      */
-    playCard: (match, player, card, params, targets) => {
+    playCard: (match, player, card, ability, params, targets) => {
         //creating Play Card Action
         let actionResults = {name: "playCard"};
 
@@ -1079,13 +1098,14 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      player: 'PLAYER' | 'OPPONENT',
      *      amount: number
      * }} params 
      * @returns 
      */
-    restDon: (match, player, card, params) => {
+    restDon: (match, player, card, ability, params) => {
         let actionResults = {name: "restDon"};
         actionResults.donId = [];
         actionResults.player = params.player;
@@ -1114,13 +1134,14 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      amount: number,
      *      player: 'PLAYER'|'OPPONENT'
      * }} params 
      * @returns 
      */
-    returnDonToDeck: (match, player, card, params) => {
+    returnDonToDeck: (match, player, card, ability, params) => {
         let actionResults = {name: "returnDonToDeck"};
         actionResults.donId = [];
         actionResults.player = params.player;
@@ -1172,14 +1193,15 @@ const serverAbilityActions = {
      * 
      * @param {Match} match 
      * @param {MatchPlayer} player 
-     * @param {MatchCard} card 
+     * @param {MatchCard} card
+     * @param {ServerAbility} ability 
      * @param {{
      *      target: 'TARGET' | 'SELF',
      *      to: 'BOTTOM' | 'TOP'
      * }} params 
      * @returns 
      */
-    returnCardToDeck: (match, player, card, params, targets) => {
+    returnCardToDeck: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "returnCardToDeck"};
 
         let cardToReturn = card;
@@ -1218,12 +1240,13 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      target: 'TARGET' | 'SELF'
      * }} params 
      * @returns 
      */
-    returnCardToHand: (match, player, card, params, targets) => {
+    returnCardToHand: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "returnCardToHand"};
 
         let cardToReturn = card;
@@ -1253,13 +1276,14 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {{
      *      player: 'owner' | 'player',
      *      amount: number
      * }} params 
      * @returns 
      */
-    selectCards: (match, player, card, params, targets) => {
+    selectCards: (match, player, card, ability, params, targets) => {
         let actionResults = {name: "selectCards"};
         
         //Set the params to the server selection manager
@@ -1285,10 +1309,11 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {Object} params 
      * @returns 
      */
-    shuffleDeck: (match, player, card, params) => {
+    shuffleDeck: (match, player, card, ability, params) => {
         let actionResults = {name: "shuffleDeck"};
 
         player.deck.shuffle();
@@ -1302,11 +1327,12 @@ const serverAbilityActions = {
      * @param {Match} match 
      * @param {MatchPlayer} player 
      * @param {MatchCard} card 
+     * @param {ServerAbility} ability
      * @param {Object} params 
      * @param {Object} targets 
      * @returns 
      */
-    target: (match, player, card, params) => {
+    target: (match, player, card, ability, params) => {
         return {
             name: "target",
             targets: params.target,
@@ -1315,9 +1341,61 @@ const serverAbilityActions = {
         }; // Return the target id
     },
     //#endregion
+    //#region UP_TO
+    UP_TO: (match, player, card, ability, params, targets) => {
+        let actionResults = {name: "UP_TO"};
+        console.log("UP_TO");
+
+        const context = ConditionEvaluator.createContext({
+            match,
+            player,
+            card,
+            targets
+        });
+    
+        let conditionResults = ConditionEvaluator.evaluateConditions(params.while, context);
+    
+        // Test if it's the first call
+        if(ability.up_toStack.find(a => a.id === params.id) === undefined) {
+           ability.up_toStack.push({
+                id: params.id,
+                from: 0,
+                startIndex: ability.currentAction,
+                stopped: false
+           }); 
+        }
+        let up_to = ability.up_toStack.find(a => a.id === params.id);
+        conditionResults = conditionResults && up_to.from < params.to && !up_to.stopped;
+
+        console.log("continue? ", conditionResults);
+        if(conditionResults) {
+            //insert then actions behind this action
+            actionResults.actionList = params.do;
+            actionResults.continue = true;
+        } else {
+            actionResults.actionList = [];
+            actionResults.continue = false;
+        }
+        
+        return actionResults;
+    },
+    //#endregion
+    //#region UP_TO_NEXT
+    UP_TO_NEXT: (match, player, card, ability, params,) => {
+        let actionResults = {name: "UP_TO_NEXT"};
+        return actionResults;
+    },
+    //#endregion
+    //#region UP_TO_INC
+    UP_TO_INC: (match, player, card, ability, params,) => {
+        let actionResults = {name: "UP_TO_INC"};
+        ability.up_toStack.find(a => a.id === params.id).from++;
+        return actionResults;
+    },
+    //#endregion
     //#region debug
-    debug: (match, player, card, params) => {
-        console.log("debug");
+    debug: (match, player, card, ability, params) => {
+        console.log(params.text);
         return {
             name: "debug"
         };

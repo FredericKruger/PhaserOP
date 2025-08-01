@@ -161,7 +161,7 @@ class TargetingState extends GameState {
         if(pointer.rightButtonDown()) {
             this.scene.actionLibrary.cancelTargetingAction();
         } else {
-            if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
+            if(gameObject === this.scene.gameStateUI.nextTurnbutton) this.scene.actionLibrary.cancelTargetingAction();//this.scene.gameStateUI.nextTurnbutton.fsmState.onPointerDown(pointer, gameObject);
             else if(gameObject instanceof GameCardUI) this.targetManager.addTarget(gameObject);
             else if(gameObject instanceof AbilityButton) this.targetManager.addTarget(gameObject.card);
             else this.scene.actionLibrary.cancelTargetingAction();

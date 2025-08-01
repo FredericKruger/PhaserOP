@@ -56,6 +56,19 @@
                         }
                     ]
                 }}},
+                {"name": "UP_TO", "params": {"id": 1,
+                    "to": 1,
+                    "while": [
+                        {"type": "HAS_EXERTED_DON", "player": "PLAYER"}
+                    ],
+                    "do": [
+                        {"name": "debug", "params": {"text": "debug1"}},
+                        {"name": "UP_TO_INC", "params": {"id": 1}}
+                    ]
+                }},
+                {"name": "debug", "params": {"text": "debug2"}}
+            ],
+            "comment" : [
                 {"name": "attachDonCard", "params": {"amount": 1, "target": "TARGET", "pile": "EXERTED"}}
             ]
         }
